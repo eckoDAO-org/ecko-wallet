@@ -1,0 +1,15 @@
+.main-container-wrapper {
+  display: flex;
+  justify-content: center;
+  flex: 1 0 auto;
+  min-height: 0;
+  width: 100%;
+  position: relative;
+}
+.container {
+  width: 62vw;
+  min-height: 82vh;
+  box-shadow: 0 0 7px 0 #444444;
+  position: absolute;
+  text-align: center;
+}

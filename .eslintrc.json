@@ -1,0 +1,58 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": ["plugin:react/recommended", "airbnb"],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["react", "import", "@typescript-eslint"],
+  "rules": {
+    "react/jsx-wrap-multilines": "off",
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "linebreak-style": 0,
+    "global-require": 0,
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-filename-extension": [
+      1,
+      { "extensions": [".js", ".jsx", ".ts", ".tsx"] }
+    ],
+    "no-param-reassign": "off",
+    "jsx-a11y/label-has-associated-control": "off",
+    "no-unused-expressions": "off",
+    "jsx-a11y/alt-text": "off",
+    "react/button-has-type": "off",
+    "max-len": "off",
+    "import/no-unresolved": "off",
+    "no-unused-vars": "warn",
+    "import/prefer-default-export": "off",
+    "react/jsx-props-no-spreading": "off",
+    "react/require-default-props": "off",
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "js": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
+      }
+    ]
+  },
+  "settings": {
+    "import/resolver": {
+      "typescript": {}
+    },
+    "jsx-a11y/click-events-have-key-events" : "off",
+    "jsx-a11y/no-noninteractive-element-interactions": "off",
+    "react/prop-types" : "off"
+  },
+  "ignorePatterns": ["build/*", ".cache/*", "dist/*"]
+}
