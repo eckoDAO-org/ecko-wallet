@@ -16,6 +16,7 @@ import received from './received-white.svg';
 import send from './send.svg';
 import trash from './trash.png';
 import info from './info.svg';
+import logoName from './logo-name.svg';
 import trashPink from './trash-pink.png';
 import view from './view.svg';
 import arrowRight from './arrow-right.png';
@@ -163,6 +164,7 @@ const toast = {
 const images = {
   wallet,
   back,
+  logoName,
   initPage,
   generateAccount,
   transfer,

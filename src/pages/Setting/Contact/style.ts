@@ -33,7 +33,7 @@ export const InputMessageError = styled.p`
 export const TitleMessage = styled.p`
   text-align: center;
   font-size: 13px;
-  color: #461A57;
+  color: #A187AB;
   height: 15vh;
   display: flex;
   justify-content: center;

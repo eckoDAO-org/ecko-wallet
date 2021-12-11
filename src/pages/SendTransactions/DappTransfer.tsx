@@ -54,7 +54,7 @@ const NotFoundImage = styled.img`
 `;
 const NotFoundDescription = styled.div`
   font-size: 18px;
-  color: #BBBBBB;
+  color: #461A57;
   text-align: center;
   word-break: break-word;
   margin-bottom: 222px;

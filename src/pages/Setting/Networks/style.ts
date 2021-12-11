@@ -33,7 +33,7 @@ export const TitleModal = styled.div`
 `;
 export const DescriptionModal = styled.div`
   color: #461A57;
-  font-weight: 700;
+  font-weight: normal;
   font-size: 16px;
   margin-top: 10px;
   text-align: center;

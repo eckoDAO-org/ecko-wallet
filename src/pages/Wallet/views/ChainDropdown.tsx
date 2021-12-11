@@ -116,11 +116,9 @@ const ChainDropdown = () => {
       promiseList.push(item);
     }
     Promise.all(promiseList).then((res) => {
-      const data = res.map((item, key) => ({
-        balance: item?.result?.data?.balance || 0,
-        account: listChainId[key]?.account,
-        status: listChainId[key]?.status,
-        chainId: listChainId[key]?.chainId,
+      const data = listChainId.map((item, key) => ({
+        ...item,
+        balance: res[key]?.result?.data?.balance || 0,
       }));
       listChainId = data;
       listChainId.sort(compare);
@@ -251,7 +249,7 @@ const ChainDropdown = () => {
           account,
           publicKey,
           secretKey,
-          connectedSites: [],
+          connectedSites: newAccount.connectedSites || [],
         };
         const newWallets = [...wallet.wallets, newW];
         setWallets(newWallets);

@@ -17,7 +17,7 @@ export const AccountDetails = styled.div`
 export const NoData = styled.div`
   text-align: center;
   font-size: 13px;
-  color: #461A57;
+  color: #A187AB;
   height: 47vh;
   display: flex;
   justify-content: center;
@@ -192,7 +192,7 @@ export const GasFeeTitle = styled.div`
 `;
 export const GasFeeBox = styled.div`
   background: #f2f2f2;
-  color: #686868;
+  color: #461A57;
   padding: 10px 13px;
 `;
 export const GasFeeValue = styled.div`

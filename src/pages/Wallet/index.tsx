@@ -121,7 +121,7 @@ const TitleSelectChain = styled.div`
 `;
 const LinearBackground = styled.div`
   background: linear-gradient(90deg, #E6FEFE 0%, #FDF6E6 100%);
-  padding-top: 30px;
+  padding-top: 15px;
 `;
 const FlexWrapper = styled.div`
   display: flex;
@@ -372,7 +372,7 @@ const Wallet = () => {
   }, [balance]);
   const TokenChild = (props: any) => {
     const {
-      value, src, valueUSD, tokenType,
+      value, src, valueUSD, tokenType, nameToken,
     } = props;
     return (
       <Div marginBottom="10px">
@@ -382,7 +382,7 @@ const Wallet = () => {
               <ImageBorder size="50px" src={src} alt="logo" />
               <DivChild marginLeft="15px">
                 <Div fontSize="16px" fontWeight="700" color="#461A57">{tokenType}</Div>
-                <Div fontSize="14px" color="#461A57" marginTop="5px">{tokenType}</Div>
+                <Div fontSize="14px" color="#461A57" marginTop="5px">{nameToken}</Div>
               </DivChild>
             </DivFlex>
             <DivChild>
@@ -404,7 +404,9 @@ const Wallet = () => {
       <Account>
         <DivHeaderAccount>
           <DivHeader>
-            <LableAccount>Name Account</LableAccount>
+            <LableAccount>
+              Account Name
+            </LableAccount>
             <DivFlex marginLeft="6px">
               <Dropdown
                 overlayDropdown={overlayDropdownSetting}
@@ -481,7 +483,13 @@ const Wallet = () => {
       <DivChild marginTop="15px" marginBottom="80px">
         <WrapAssets>
           <Tokens>
-            <TokenChild value={balance} tokenType="KDA" valueUSD={balanceKDAtoUSD} src={images.wallet.iconKadenaToken} />
+            <TokenChild
+              value={balance}
+              tokenType="KDA"
+              nameToken="Kadena"
+              valueUSD={balanceKDAtoUSD}
+              src={images.wallet.iconKadenaToken}
+            />
             {/* <TokenChild value="0" tokenType="Flux" valueUSD="0" src={images.wallet.iconFlux} /> */}
           </Tokens>
           {/* <AddMoreToken>

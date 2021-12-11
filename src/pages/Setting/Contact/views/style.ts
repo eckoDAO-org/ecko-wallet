@@ -231,7 +231,7 @@ export const DivChildFlex = styled.div`
   width: 100%;
   justify-content: space-between;
   @media screen and (max-width: 480px){
-    margin-top: 55px;
+    margin-top: 80px;
   }
 `;
 export const ItemWrapperContact = styled.div`

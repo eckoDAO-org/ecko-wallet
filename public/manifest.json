@@ -9,14 +9,8 @@
   "web_accessible_resources": ["app/script/inpage.js"],
   "content_scripts": [
     {
-      "matches": [
-        "file://*/*",
-        "http://*/*",
-        "https://*/*"
-      ],
-      "js": [
-        "app/content.js"
-      ],
+      "matches": ["file://*/*", "http://*/*", "https://*/*"],
+      "js": ["app/content.js"],
       "run_at": "document_start"
     }
   ],
@@ -30,7 +24,14 @@
       "128": "favicon.png"
     }
   },
-  "permissions": ["storage", "activeTab", "tabs", "webRequest", "notifications", "windows"],
+  "permissions": [
+    "storage",
+    "activeTab",
+    "tabs",
+    "webRequest",
+    "notifications",
+    "windows"
+  ],
   "icons": {
     "16": "favicon.png",
     "32": "favicon.png",

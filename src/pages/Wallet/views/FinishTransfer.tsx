@@ -59,7 +59,7 @@ const Hr = styled.hr`
 const NoData = styled.div`
   text-align: center;
   font-size: 13px;
-  color: #461A57;
+  color: #A187AB;
   height: 47vh;
   display: flex;
   justify-content: center;

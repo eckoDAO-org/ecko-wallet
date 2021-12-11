@@ -66,7 +66,17 @@ const DivHeader = styled.div`
 //   width: 29px;
 // `;
 const Logo = styled.img`
+`;
+
+const LogoImage = styled.img`
+  height: 16px;
+  width: auto;
+  margin-left: 12px;
+`;
+const ImageWrapper = styled.div`
   cursor: pointer;
+  display: flex;
+  align-items: center;
 `;
 const Hr = styled.div`
   background: linear-gradient(90deg, #D2AB72 0%, #B66E84 35.42%, #B2579B 64.06%, #9EE9E4 99.48%);
@@ -506,9 +516,10 @@ const Header = () => {
       { showHeader && (
       <DivHeader>
         <WrapHeader>
-          <DivImage>
-            <Logo alt="logo" src={images.logoHome} onClick={() => { history.push('/'); }} />
-          </DivImage>
+          <ImageWrapper onClick={() => { history.push('/'); }}>
+            <Logo alt="logo" src={images.logoHome} />
+            <LogoImage src={images.logoName} alt="logo" />
+          </ImageWrapper>
           <OptionHeader>
             {passwordHash && isLoggedIn && showSettingAndSelectNetworks && (
             <Dropdown ref={refSelectNetwork} placement="left" translate="-55%" trianglePosition="50px" overlayDropdown={overlayDropdownOptionNetwork}>

@@ -30,9 +30,7 @@ export const TitleDesVersion = styled.div`
   line-height: 19px;
 `;
 
-export const ContentAbout = styled.div`
-  padding: 10px 0;
-`;
+export const ContentAbout = styled.div``;
 export const Div = styled.div`
   padding: 0 20px;
 `;

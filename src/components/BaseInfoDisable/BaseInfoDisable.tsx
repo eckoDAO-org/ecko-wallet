@@ -31,21 +31,21 @@ const DivRoot = styled.div``;
 const Title = styled.div`
   font-size: 16px;
   font-weight: 700;
-  color: #444444;
+  color: #461A57;
   margin-bottom: 10px;
 `;
 const AdrressBox = styled.div`
   display: flex;
   gap: 10px;
   justify-content: space-between;
-  background: rgb(242, 242, 242);
-  color: rgb(104, 104, 104);
+  background: #eee6f3;
+  color: #461A57;
   margin: auto 0;
   padding: 12.5px 13px;
   outline: none;
 `;
 const AddressText = styled.div`
-  color: rgb(104, 104, 104);
+  ccolor: #461A57;
   word-break: break-word;
   margin: auto 0;
 `;

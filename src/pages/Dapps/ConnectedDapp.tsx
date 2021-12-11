@@ -109,7 +109,7 @@ const ConnectInfo = styled.div`
 const ConnectDescription = styled.div`
   font-size: 14px;
   font-weight: 700;
-  color: #BBBBBB;
+  color: #461A57;
   line-height: 25px;
   text-align: center;
 `;

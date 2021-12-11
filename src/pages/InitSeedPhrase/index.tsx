@@ -37,7 +37,7 @@ const ButtonWrapper = styled.div`
 `;
 const Restore = styled.div`
   margin-top: 30px;
-  color: ${(props) => (props.isDisabled ? '#BBBBBB' : '#461A57')};
+  color: ${(props) => (props.isDisabled ? '#A187AB' : '#461A57')};
   font-weight: 700;
   cursor: pointer;
   text-align: center;

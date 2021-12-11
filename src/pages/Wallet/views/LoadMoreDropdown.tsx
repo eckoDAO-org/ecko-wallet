@@ -224,7 +224,7 @@ const LoadMoreDropdown = (props: Props) => {
               <TitleModal>{`Disconnect ${shortenString(siteRemove)}`}</TitleModal>
               <DescriptionModal>Are you sure you want to disconnect?</DescriptionModal>
               <ActionButton>
-                <ButtonModal background="#f2f2f2" color="#606a73" onClick={() => setShowRemoveConfirmConnectedSite(false)}>Cancel</ButtonModal>
+                <ButtonModal background="#ffffff" border="1px solid #461A57" color="#461A57" onClick={() => setShowRemoveConfirmConnectedSite(false)}>Cancel</ButtonModal>
                 <ButtonModal background="#461A57" color="#ffffff" onClick={() => onRemoveConnectedSite(siteRemove)}>Disconnect</ButtonModal>
               </ActionButton>
             </BodyModal>
