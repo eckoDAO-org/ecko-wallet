@@ -1,6 +1,5 @@
 import {
   useEffect,
-  useState,
 } from 'react';
 import {
   useHistory, useLocation,
@@ -10,6 +9,7 @@ import styled from 'styled-components';
 import images from 'src/images';
 import {
   hideFetching,
+  setActiveTab,
   setContacts,
   setExpiredTime,
   setExtensionPassword,
@@ -44,6 +44,7 @@ import {
   convertRecent,
   revertNetworks,
 } from 'src/utils';
+import { ACTIVE_TAB } from 'src/utils/constant';
 
 const WrapHeader = styled.div`
   display: flex;
@@ -105,6 +106,7 @@ const Footer = () => {
     selectedNetwork,
     networks,
     expiredTime,
+    activeTab,
   } = rootState.extensions;
   const { account } = rootState.wallet;
   const location = useLocation().pathname;
@@ -156,6 +158,7 @@ const Footer = () => {
           setIsHaveSeedPhrase(true);
           if (!isSyncUrl) {
             history.push('/');
+            setActiveTab(ACTIVE_TAB.HOME);
           }
         }, () => {
         });
@@ -233,10 +236,12 @@ const Footer = () => {
           getLocalExpiredTime(() => {
             if (!isDappUrl) {
               history.push('/');
+              setActiveTab(ACTIVE_TAB.HOME);
             }
           }, () => {
             if (hash.includes('init')) {
               history.push('/');
+              setActiveTab(ACTIVE_TAB.HOME);
             }
           });
         }, () => {
@@ -246,10 +251,12 @@ const Footer = () => {
           getLocalExpiredTime(() => {
             if (!isDappUrl) {
               history.push('/');
+              setActiveTab(ACTIVE_TAB.HOME);
             }
           }, () => {
             if (hash.includes('init')) {
               history.push('/');
+              setActiveTab(ACTIVE_TAB.HOME);
             }
           });
         });
@@ -287,33 +294,19 @@ const Footer = () => {
     }, () => {});
   };
 
-  const [isActiveIconSetting, setIsActiveIconSetting] = useState(false);
-  const [isActiveIconHome, setIsActiveIconHome] = useState(true);
-  const [isActiveIconHistory, setIsActiveIconHistory] = useState(false);
   const isLoggedIn = expiredTime;
   const setIconHomeActive = () => {
-    setIsActiveIconHome(true);
-    setIsActiveIconHistory(false);
-    setIsActiveIconSetting(false);
     history.push('/');
+    setActiveTab(ACTIVE_TAB.HOME);
   };
   const setIconHistoryActive = () => {
-    setIsActiveIconHome(false);
-    setIsActiveIconHistory(true);
-    setIsActiveIconSetting(false);
     history.push('/history');
+    setActiveTab(ACTIVE_TAB.HISTORY);
   };
   const setIconSettingActive = () => {
-    setIsActiveIconHome(false);
-    setIsActiveIconHistory(false);
-    setIsActiveIconSetting(true);
     history.push('/setting');
+    setActiveTab(ACTIVE_TAB.SETTINGS);
   };
-  useEffect(() => {
-    setIsActiveIconHome(true);
-    setIsActiveIconHistory(false);
-    setIsActiveIconSetting(false);
-  }, []);
 
   return (
     <Wrapper isFooter={isFooter}>
@@ -321,20 +314,11 @@ const Footer = () => {
         <Hr />
         <WrapHeader>
           <DivImage onClick={setIconHomeActive}>
-            {isActiveIconHome ? (
-              <Logo alt="logo-home" src={images.iconHomeActive} />
-            ) : (
-              <Logo alt="logo-home" src={images.iconHome} />
-            )}
+            <Logo alt="logo-home" src={activeTab === ACTIVE_TAB.HOME ? images.iconHomeActive : images.iconHome} />
           </DivImage>
           <DivImage>
             <DivImage onClick={setIconHistoryActive}>
-              {isActiveIconHistory ? (
-                <Image alt="icon-history" src={images.iconHistoryActive} />
-              )
-                : (
-                  <Image alt="icon-history" src={images.iconHistory} />
-                )}
+              <Image alt="icon-history" src={activeTab === ACTIVE_TAB.HISTORY ? images.iconHistoryActive : images.iconHistory} />
             </DivImage>
           </DivImage>
           <OptionHeader>
@@ -342,12 +326,7 @@ const Footer = () => {
               isShow={passwordHash && isLoggedIn && showSettingAndSelectNetworks}
               onClick={setIconSettingActive}
             >
-              {isActiveIconSetting ? (
-                <ImgSetting alt="icon-setting" src={images.iconSettingActive} />
-              )
-                : (
-                  <ImgSetting alt="icon-setting" src={images.setting} />
-                )}
+              <ImgSetting alt="icon-setting" src={activeTab === ACTIVE_TAB.SETTINGS ? images.iconSettingActive : images.setting} />
             </SettingWrapper>
           </OptionHeader>
         </WrapHeader>

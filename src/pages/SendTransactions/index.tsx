@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import Back from 'src/components/Back';
+import { setActiveTab } from 'src/stores/extensions';
+import { ACTIVE_TAB } from 'src/utils/constant';
 import {
   PageSendTransaction,
   Title,
@@ -28,7 +30,8 @@ const SendTransactions = () => {
     if (step > 0) {
       setStep(0);
     } else {
-      history.push('/wallet');
+      history.push('/');
+      setActiveTab(ACTIVE_TAB.HOME);
     }
   };
   const goToTransfer = (account) => {

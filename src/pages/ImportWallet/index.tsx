@@ -4,7 +4,7 @@ import { BaseTextInput, BaseSelect, InputError } from 'src/baseComponent';
 import { useSelector } from 'react-redux';
 import QrReader from 'react-qr-reader';
 import ModalCustom from 'src/components/Modal/ModalCustom';
-import { hideLoading, showLoading } from 'src/stores/extensions';
+import { hideLoading, setActiveTab, showLoading } from 'src/stores/extensions';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
 import images from 'src/images';
@@ -24,6 +24,7 @@ import {
   setLocalSelectedWallet,
   setLocalWallets,
 } from 'src/utils/storage';
+import { ACTIVE_TAB } from 'src/utils/constant';
 import { fetchLocal } from '../../utils/chainweb';
 
 const Title = styled.div`
@@ -150,6 +151,7 @@ const ImportAccount = () => {
                 setCurrentWallet(newStateWallet);
                 toast.success(<Toast type="success" content="Import account successfully." />);
                 history.push('/');
+                setActiveTab(ACTIVE_TAB.HOME);
               } else {
                 toast.error(<Toast type="fail" content="The account you are trying to import is a duplicate." />);
               }

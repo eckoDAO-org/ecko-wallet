@@ -7,7 +7,7 @@ import { fetchLocal } from 'src/utils/chainweb';
 import { hideLoading, showLoading } from 'src/stores/extensions';
 import images from 'src/images';
 import Button from 'src/components/Buttons';
-import { BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
+import { BUTTON_SIZE } from 'src/utils/constant';
 import Transfer from './views/Transfer';
 import {
   Body,
@@ -164,7 +164,6 @@ const DappTransfer = () => {
                     Destination account not found
                   </NotFoundDescription>
                   <Button
-                    type={BUTTON_TYPE.DISABLE}
                     size={BUTTON_SIZE.FULL}
                     label="Close"
                     onClick={() => window.close()}
