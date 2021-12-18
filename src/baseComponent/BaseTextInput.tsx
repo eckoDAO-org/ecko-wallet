@@ -35,14 +35,14 @@ const BaseTextInput = memo(
     if (readOnly) {
       styles = {
         border: 'none',
-        background: '#EEE6F3',
+        background: 'none',
         color: '#461A57',
       };
     }
     return (
       <SDivRoot height={height} isFlex={isFlex}>
         <SText isFlex={isFlex}>{title}</SText>
-        <InputWrapper isFlex={isFlex}>
+        <InputWrapper isFlex={isFlex} readOnly={readOnly}>
           {
             typeInput === 'password' ? (
               <>
@@ -102,11 +102,16 @@ const SDivRoot = styled.div<{ height: string }>`
 `;
 const InputWrapper = styled.div`
   position: relative;
-${(props) => (props.isFlex ? 'flex-grow: 1' : '')};
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: ${(props) => (props.border ? props.border : '1px solid #c4c4c4')};
+  border-radius: 4px;
+  ${(props) => (props.isFlex ? 'flex-grow: 1' : '')};
+  background: ${(props) => (props.readOnly ? '#EEE6F3' : 'none')};
 `;
 const ImageWrapper = styled.div`
   height: 34px;
-  position: absolute;
   overflow: hidden;
   right: 2px;
   top: 3px;
@@ -115,6 +120,7 @@ const ImageWrapper = styled.div`
   align-items: center;
   justify-content: center;
   padding: 0 14px;
+  flex-shrink: 0;
 `;
 const SImage = styled.img`
   height: ${(props) => props.width};
@@ -133,16 +139,15 @@ const SText = styled.title`
 `;
 const SInput = styled.input`
   width: 100%;
-  border: ${(props) => (props.border ? props.border : '1px solid #c4c4c4')};
   background: ${(props) => props.background};
   color: ${(props) => props.color};
   box-sizing: border-box;
   font-size: 16px;
   height: 40px;
-  padding: 0 13px;
+  padding: 0 0 0 13px;
   font-family: 'Play', sans-serif;
   outline: none;
-  border-radius: 4px;
+  border: none;
   &::placeholder{
     color: #A187AB;
   }

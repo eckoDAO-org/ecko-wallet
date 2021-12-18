@@ -89,7 +89,7 @@ const Dropdown = forwardRef((props: Props, ref: any) => {
       <Triangle display={isShow} trianglePosition={trianglePosition} trianglePositionBottom={trianglePositionBottom} />
       <DropdownContent translate={translate} display={isShow} placement={placement} ref={contenRef} trianglePositionBottom={trianglePositionBottom}>
         <DivChild>
-          {overlayDropdown}
+          {isShow && overlayDropdown}
         </DivChild>
       </DropdownContent>
     </DropdownCustom>

@@ -5,8 +5,9 @@ import images from 'src/images';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { setExpiredTime } from 'src/stores/extensions';
+import { setActiveTab, setExpiredTime } from 'src/stores/extensions';
 import { getLocalSelectedWallet, setLocalExpiredTime } from 'src/utils/storage';
+import { ACTIVE_TAB } from 'src/utils/constant';
 import { DivError } from '../Setting/Contact/views/style';
 
 const CreatePasswordWrapper = styled.div`
@@ -97,6 +98,7 @@ const SignIn = () => {
         setLocalExpiredTime(expiredTime);
         getLocalSelectedWallet(() => {
           history.push('/');
+          setActiveTab(ACTIVE_TAB.HOME);
         }, () => {
           history.push('/init');
         });
