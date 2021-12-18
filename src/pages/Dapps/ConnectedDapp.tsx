@@ -107,8 +107,8 @@ const ConnectInfo = styled.div`
   word-break: break-word;
 `;
 const ConnectDescription = styled.div`
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 400;
   color: #461A57;
   line-height: 25px;
   text-align: center;

@@ -10,6 +10,24 @@ export const Body = styled.div`
 export const PageConfirm = styled.div`
   font-size: 16px;
 `;
+export const KeyItemWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 20px;
+  align-items: center;
+`;
+export const KeyWrapper = styled.div`
+  margin-top: 15px;
+`;
+export const KeyTitle = styled.div`
+  font-size: 16px;
+  font-weight: bold;
+`;
+export const KeyRemove = styled.img`
+  width: 14px;
+  height: 14px;
+  margin-left: 15px;
+`;
 export const AccountDetails = styled.div`
   display: flex;
   align-items: center;

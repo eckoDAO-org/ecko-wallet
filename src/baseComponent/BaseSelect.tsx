@@ -11,6 +11,7 @@ interface Props {
   height?: string;
   defaultValue?: any;
   isFlex?: boolean;
+  placeholder?: string;
 }
 const customStyles = {
   control: (provided) => ({
@@ -59,11 +60,11 @@ const customStyles = {
 };
 
 const BaseSelect = memo(({
-  title, options = [], defaultValue, selectProps = {}, height = '44px', isFlex,
+  title, options = [], defaultValue, selectProps = {}, height = '44px', isFlex, placeholder = 'Select Chain ID',
 }: Props) => (
   <SDivRoot height={height} isFlex={isFlex}>
     <SText isFlex={isFlex}>{title}</SText>
-    <Select options={options} {...selectProps} defaultValue={defaultValue} placeholder="Select Chain ID" styles={customStyles} isSearchable={false} />
+    <Select options={options} {...selectProps} defaultValue={defaultValue} placeholder={placeholder} styles={customStyles} isSearchable={false} />
   </SDivRoot>
 ));
 
