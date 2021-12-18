@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction, Store } from '@reduxjs/toolkit';
+import { ACTIVE_TAB } from 'src/utils/constant';
 
 let customStore: Store | undefined;
 
@@ -52,6 +53,7 @@ interface RawExtension {
   expiredTime: any;
   isHaveSeedPhrase: boolean;
   isCreateSeedPhrase: boolean;
+  activeTab: string;
 }
 
 const initialState:RawExtension = {
@@ -65,6 +67,7 @@ const initialState:RawExtension = {
   expiredTime: null,
   isHaveSeedPhrase: false,
   isCreateSeedPhrase: false,
+  activeTab: ACTIVE_TAB.HOME,
 };
 
 const storeExtensions = createSlice({
@@ -86,6 +89,10 @@ const storeExtensions = createSlice({
     setIsCreateSeedPhrase: (state, action: PayloadAction<any>) => {
       const isCreateSeedPhrase = action.payload;
       return { ...state, isCreateSeedPhrase };
+    },
+    setActiveTab: (state, action: PayloadAction<any>) => {
+      const activeTab = action.payload;
+      return { ...state, activeTab };
     },
     setContacts: (state, action: PayloadAction<any>) => {
       const contacts = action.payload;
@@ -136,6 +143,10 @@ export const setExpiredTime = (expiredTime: any) => {
 
 export const setIsHaveSeedPhrase = (isHaveSeedPhrase: any) => {
   customStore && customStore.dispatch(storeExtensions.actions.setIsHaveSeedPhrase(isHaveSeedPhrase));
+};
+
+export const setActiveTab = (activeTab: any) => {
+  customStore && customStore.dispatch(storeExtensions.actions.setActiveTab(activeTab));
 };
 
 export const setIsCreateSeedPhrase = (isCreateSeedPhrase: any) => {

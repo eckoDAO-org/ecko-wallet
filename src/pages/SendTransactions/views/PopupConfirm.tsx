@@ -1,7 +1,7 @@
 import Button from 'src/components/Buttons';
 import Pact from 'pact-lang-api';
 import { get } from 'lodash';
-import { BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
+import { ACTIVE_TAB, BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
 import { useHistory } from 'react-router-dom';
 import { convertRecent, getTimestamp } from 'src/utils';
 import { getApiUrl, getSignatureFromHash } from 'src/utils/chainweb';
@@ -9,7 +9,7 @@ import { CONFIG } from 'src/utils/config';
 import { toast } from 'react-toastify';
 import BigNumber from 'bignumber.js';
 import Toast from 'src/components/Toast/Toast';
-import { setRecent } from 'src/stores/extensions';
+import { setActiveTab, setRecent } from 'src/stores/extensions';
 import {
   getLocalActivities,
   getLocalCrossRequests,
@@ -145,11 +145,13 @@ const PopupConfirm = (props: Props) => {
         } else if (status === 'failure') {
           toast.error(<Toast type="fail" content="Transfer Fail" />);
         }
-        history.push('/history');
+        history.push('/');
+        setActiveTab(ACTIVE_TAB.HOME);
       })
       .catch(() => {
         setIsLoading(false);
         history.push('/');
+        setActiveTab(ACTIVE_TAB.HOME);
       });
   };
 

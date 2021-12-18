@@ -35,7 +35,14 @@ import {
   InputWrapper,
   WarningText,
 } from '../styles';
-import { NoData, TransferButton } from './style';
+import {
+  NoData,
+  TransferButton,
+  KeyWrapper,
+  KeyItemWrapper,
+  KeyRemove,
+  KeyTitle,
+} from './style';
 
 type Props = {
   goToTransfer: any;
@@ -59,6 +66,7 @@ const SelectReceiver = (props: Props) => {
   const [isScanSearching, setIsScanSearching] = useState(false);
   const [isOpenConfirmModal, setIsOpenConfirmModal] = useState(false);
   const [account, setAccount] = useState<any>({});
+  const [pKeys, setPKeys] = useState<any>([]);
   const rootState = useSelector((state) => state);
   const { contacts, recent, selectedNetwork } = rootState.extensions;
   const { wallet } = rootState;
@@ -72,6 +80,7 @@ const SelectReceiver = (props: Props) => {
     setValue,
     clearErrors,
     getValues,
+    setError,
   } = useForm();
 
   const onNext = () => {
@@ -127,10 +136,51 @@ const SelectReceiver = (props: Props) => {
       setIsScanSearching(false);
     }
   };
+
+  const onAddPublicKey = () => {
+    const publicKey = getValues('publicKey');
+    if (publicKey.length === 64) {
+      if (pKeys.includes(publicKey)) {
+        setError('publicKey', { type: 'match', message: 'The public key already in list' });
+      } else {
+        const newPKeys = [...pKeys, publicKey];
+        setPKeys(newPKeys);
+        setValue('publicKey', '');
+      }
+    } else {
+      setError('publicKey', { type: 'match', message: 'Key has unexpected length.' });
+    }
+  };
+
+  const onRemoveKey = (key) => {
+    const newKeys = pKeys.filter((k) => k !== key) || [];
+    setPKeys(newKeys);
+  };
+
+  const checkAfterTransfer = (data) => {
+    if (data?.accountName === wallet?.account && data?.chainId?.toString() === wallet?.chainId?.toString()) {
+      toast.error(<Toast type="fail" content="Can not send to yourself" />);
+    } else {
+      goToTransfer(data);
+    }
+  };
+
+  const renderKeys = () => (
+    <KeyWrapper>
+      <KeyTitle>Keys:</KeyTitle>
+      {pKeys.map((key) => (
+        <KeyItemWrapper key={key}>
+          {key}
+          <KeyRemove src={images.close} alt="remove" onClick={() => onRemoveKey(key)} />
+        </KeyItemWrapper>
+      ))}
+    </KeyWrapper>
+  );
+
   const getTabContent = (data) => (data.length
     ? data.map((contact: any, key) => (
       <ContactWrapper
-        onClick={() => goToTransfer({
+        onClick={() => checkAfterTransfer({
           accountName: contact.accountName,
           chainId: contact.chainId,
           pred: contact.pred,
@@ -157,10 +207,26 @@ const SelectReceiver = (props: Props) => {
     { title: 'Contact book', id: 1, content: getTabContent(contacts) },
   ];
   const onCreateAccount = () => {
-    const publicKey = getValues('publicKey');
+    if (errors.publicKey) return;
     const pred = getValues('pred').value;
-    const newAccount = { ...account, pred, keys: [publicKey] };
+    const publicKey = getValues('publicKey');
+    let keys:any = [];
+    if (pKeys.length > 0) {
+      keys = pKeys;
+    } else if (publicKey) {
+      if (publicKey.length === 64) {
+        keys = [publicKey];
+      } else {
+        setError('publicKey', { type: 'match', message: 'Key has unexpected length.' });
+        return;
+      }
+    } else {
+      setError('publicKey', { type: 'match', message: 'This field is required.' });
+      return;
+    }
+    const newAccount = { ...account, pred, keys };
     setValue('publicKey', '');
+    setPKeys([]);
     goToTransferAccount(newAccount);
   };
   return (
@@ -277,14 +343,14 @@ const SelectReceiver = (props: Props) => {
                 inputProps={{
                   placeholder: 'Input public key',
                   ...register('publicKey', {
-                    required: {
-                      value: true,
-                      message: 'This field is required.',
-                    },
-                    validate: {
-                      match: (val) => val.trim().length === 64 || 'Key has unexpected length.',
-                    },
+                    required: false,
                   }),
+                }}
+                image={{
+                  width: '20px',
+                  height: '20px',
+                  src: images.transfer.violetAdd,
+                  callback: () => onAddPublicKey(),
                 }}
                 title="Public Key"
                 height="auto"
@@ -292,6 +358,9 @@ const SelectReceiver = (props: Props) => {
               />
               {errors.publicKey && <InputError>{errors.publicKey.message}</InputError>}
             </InputWrapper>
+            {
+              pKeys.length > 0 && renderKeys()
+            }
             <InputWrapper>
               <Controller
                 control={control}
@@ -314,6 +383,7 @@ const SelectReceiver = (props: Props) => {
                     options={predList}
                     title="Predicate"
                     height="auto"
+                    placeholder="Predicate"
                   />
                 )}
               />

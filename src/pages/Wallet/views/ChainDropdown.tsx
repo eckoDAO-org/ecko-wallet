@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import images from 'src/images';
 import { fetchListLocal } from 'src/utils/chainweb';
+import ReactLoading from 'react-loading';
 // import { useHistory } from 'react-router-dom';
 // import Pact from 'pact-lang-api';
 import { useSelector } from 'react-redux';
@@ -40,6 +41,13 @@ const TitleChain = styled.div`
   font-weight: 700;
   border-bottom: 1px solid rgba(255, 255, 255, 0.5);
 `;
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+`;
+
 const DivFlex = styled.div`
   display: flex;
   justify-content: ${(props) => props.justifyContent};
@@ -76,13 +84,12 @@ const DivChild = styled.div`
 
 const ChainDropdown = () => {
   const [listChain, setListChain] = useState<any[]>([]);
-  // const history = useHistory();
-  // const [isOpenConfirmModal, setIsOpenConfirmModal] = useState(false);
-  // const [accountData, setAccountData] = useState<any>({});
+  const [isLoading, setIsLoading] = useState(true);
   const rootState = useSelector((state) => state);
   const { selectedNetwork } = rootState.extensions;
   const { wallet } = rootState;
   useEffect(() => {
+    setIsLoading(true);
     const { account, publicKey, secretKey } = wallet;
     let listChainSelected = wallet.wallets.filter((item: any) => item?.account === wallet?.account);
     if (account.includes('k:') && account.length === 66) {
@@ -124,8 +131,10 @@ const ChainDropdown = () => {
       listChainId.sort(compare);
       setListChain(listChainId);
       hideLoading();
+      setIsLoading(false);
     }).catch(() => {
       hideLoading();
+      setIsLoading(false);
       setListChain(listChainId);
     });
   }, [selectedNetwork?.networkId, wallet?.account]);
@@ -283,7 +292,8 @@ const ChainDropdown = () => {
     <Div>
       <TitleChain>Chains</TitleChain>
       <SelectChainContent>
-        { listChain.length > 0 && listChain.map((chain, key) => renderAccountChain(chain, key)) }
+        { isLoading && <LoadingWrapper><ReactLoading type="spin" color="white" width="45px" height="45px" /></LoadingWrapper> }
+        { !isLoading && listChain.length > 0 && listChain.map((chain, key) => renderAccountChain(chain, key)) }
       </SelectChainContent>
     </Div>
   );

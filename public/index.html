@@ -11,7 +11,7 @@
     />
     <style>
       body::-webkit-scrollbar {
-        width: 2px;               /* width of the entire scrollbar */
+        width: 3px;               /* width of the entire scrollbar */
       }
 
       body::-webkit-scrollbar-track {
@@ -21,6 +21,12 @@
       body::-webkit-scrollbar-thumb {
         background-color: rgb(54, 54, 54);    /* color of the scroll thumb */
         border-radius: 2px;       /* roundness of the scroll thumb */
+      }
+      html,body {
+        margin: 0;
+        min-width: 350px;
+        min-height: 600px;
+        overflow-x: hidden;
       }
     </style>
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/favicon.ico" />
@@ -43,7 +49,7 @@
     -->
     <title>X Wallet</title>
   </head>
-  <body style="margin: 0; min-width: 350px; min-height: 600px; overflow-x: hidden;">
+  <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <!--
