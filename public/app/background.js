@@ -67,6 +67,9 @@ chrome.runtime.onConnect.addListener(async (port) => {
       case 'kda_getChain':
         getSelectedChain();
         break;
+      case 'kda_getSelectedAccount':
+        getSelectedAccount();
+        break;
       case 'kda_sendKadena':
         sendKadena(payload.data);
         break;
@@ -458,6 +461,26 @@ const getSelectedChain = async () => {
       chainId: result?.selectedWallet?.chainId,
       target: 'kda.content',
       action: 'res_getChain',
+    });
+  });
+};
+
+const getSelectedAccount = async () => {
+  chrome.storage.local.get('selectedWallet', (result) => {
+    chrome.storage.local.get('accountPassword', (password) => {
+      const { accountPassword } = password;
+      contentPort.postMessage({
+        target: 'kda.content',
+        action: 'res_getSelectedAccount',
+        selectedAccount: {
+          chainId: result?.selectedWallet?.chainId,
+          account: decryptKey(result?.selectedWallet?.account, accountPassword),
+          publicKey: decryptKey(
+            result?.selectedWallet.publicKey,
+            accountPassword,
+          ),
+        },
+      });
     });
   });
 };
