@@ -314,12 +314,15 @@ const Wallet = () => {
     }
   };
 
+  const groupedAccountWallets = wallets.filter((value, index, self) => index === self.findIndex((t) => (
+    t.account === value.account)));
+
   const overlayDropdownSetting = (
     <Div>
       <TitleSetting>Wallets</TitleSetting>
-      {wallets.length > 0 && !location.includes('init') && (
+      {groupedAccountWallets.length > 0 && !location.includes('init') && (
         <ListWallet>
-          {wallets.map((wallet: any) => {
+          {groupedAccountWallets.map((wallet: any) => {
             const isSelected = checkSelectedWallet(wallet);
             return (
               <WalletWrapper
@@ -337,7 +340,6 @@ const Wallet = () => {
                 <WalletImage src={images.logoHome} alt="check-box" />
                 <DivChild fontSize="13px" marginLeft="22px">
                   <DivChild>{shortenAddress(wallet.account)}</DivChild>
-                  <DivChild>{`Chain ${wallet.chainId}`}</DivChild>
                 </DivChild>
                 {isSelected && (
                 <WalletImage isChecked src={images.checkbox} alt="check-box" />
