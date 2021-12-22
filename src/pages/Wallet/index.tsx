@@ -23,7 +23,7 @@ import {
   setLocalWallets,
 } from 'src/utils/storage';
 import { decryptKey, encryptKey } from 'src/utils/security';
-import { fetchLocal, getKeyPairsFromSeedPhrase } from '../../utils/chainweb';
+import { fetchListLocal, fetchLocal, getKeyPairsFromSeedPhrase } from '../../utils/chainweb';
 // import TabWallet from './views/TabContent';
 import LoadMoreDropdown from './views/LoadMoreDropdown';
 import ReceiveModal from './views/ReceiveModal';
@@ -210,8 +210,25 @@ const Wallet = () => {
   const location = useLocation().pathname;
   const { balance, wallets } = rootState?.wallet;
   const [isShowReceiveModal, setShowReceiveModal] = useState(false);
+  const [allChainBalance, setAllChainBalance] = useState(0);
   const stateWallet = useCurrentWallet();
   const walletDropdownRef = useRef();
+
+  useEffect(() => {
+    const promiseList: any[] = [];
+    const pactCode = `(coin.details "${wallets[0].account}")`;
+    for (let i = 0; i < 20; i += 1) {
+      const promise = fetchListLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, i.toString());
+      promiseList.push(promise);
+    }
+    let total = 0;
+    Promise.all(promiseList).then((res) => {
+      res?.forEach((fetched) => {
+        total += (fetched?.result?.data?.balance ?? 0);
+      });
+      setAllChainBalance(total);
+    }).catch();
+  }, [wallets]);
 
   useEffect(() => {
     if (stateWallet) {
@@ -237,6 +254,7 @@ const Wallet = () => {
     }
   }, [stateWallet?.account, stateWallet?.chainId]);
   const [balanceKDAtoUSD, setbalanceKDAtoUSD] = useState(balance);
+  const [allChainsBalanceKDAtoUSD, setAllChainsBalanceKDAtoUSD] = useState(balance);
 
   const checkSelectedWallet = (wallet) => wallet.chainId.toString() === stateWallet.chainId.toString() && wallet.account === stateWallet.account;
   const setSelectedLocalWallet = (wallet) => {
@@ -368,6 +386,7 @@ const Wallet = () => {
       .then(
         (result) => {
           setbalanceKDAtoUSD(BigNumberConverter(Number(balance) * Number(result?.kadena?.usd)));
+          setAllChainsBalanceKDAtoUSD(BigNumberConverter(Number(allChainBalance) * Number(result?.kadena?.usd)));
         },
         () => {},
       );
@@ -456,8 +475,10 @@ const Wallet = () => {
             <DivFlex alignItems="center" justifyContent="space-between" margin="10px">
               <DivChild><Image src={images.wallet.logoWalletKadena} size={50} width={50} alt="logo" /></DivChild>
               <DivChild>
-                <Div fontSize="16px" fontWeight="700" color="#461A57">{`${roundNumber(balance, 5)} KDA`}</Div>
+                <Div fontSize="16px" fontWeight="700" color="#461A57" textAlign="right">{`${roundNumber(balance, 5)} KDA`}</Div>
+                <Div fontSize="12px" fontWeight="700" color="#461A57" textAlign="right">{`${roundNumber(allChainBalance, 5)} KDA`}</Div>
                 <Div fontSize="14px" color="#461A57" marginTop="10px" textAlign="right">{`${roundNumber(balanceKDAtoUSD, 1)} USD`}</Div>
+                <Div fontSize="10px" color="#461A57" marginTop="1px" textAlign="right">{`${roundNumber(allChainsBalanceKDAtoUSD, 1)} USD`}</Div>
               </DivChild>
             </DivFlex>
           </DivChildKadena>
