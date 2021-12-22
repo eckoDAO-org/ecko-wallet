@@ -77,6 +77,9 @@ window.kadena = {
       case 'kda_getChain':
         return getKadenaChain();
 
+      case 'kda_getSelectedAccount':
+        return getSelectedAccount();
+
       case 'kda_requestAccount':
         return getAccountSelected(networkId, domain);
 
@@ -178,6 +181,19 @@ const getKadenaChain = async () => {
   let data = await listener.on('res_getChain');
 
   return data.chainId;
+};
+
+const getSelectedAccount = async () => {
+  const listener = new Listener('kda_getSelectedAccount');
+  listener.send({
+    target: 'kda.content',
+    action: listener.name,
+    data: {},
+  });
+
+  let data = await listener.on('res_getSelectedAccount');
+
+  return data.selectedAccount;
 };
 
 const sendKadena = async (params) => {

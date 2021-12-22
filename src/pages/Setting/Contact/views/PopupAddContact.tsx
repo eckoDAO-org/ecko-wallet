@@ -105,18 +105,13 @@ const PopupAddContact = (props: Props) => {
       showLoading();
       fetchLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, chainId.value).then((request) => {
         hideLoading();
-        const status = get(request, 'result.status');
-        if (status === 'success') {
-          const newContact = {
-            accountName,
-            chainId: chainId.value,
-            pred: get(request, 'result.data.guard.pred'),
-            keys: get(request, 'result.data.guard.keys'),
-          };
-          finishAddContact(newContact);
-        } else {
-          toast.error(<Toast type="fail" content="Contact doesn't exist" />);
-        }
+        const newContact = {
+          accountName,
+          chainId: chainId.value,
+          pred: get(request, 'result.data.guard.pred'),
+          keys: get(request, 'result.data.guard.keys'),
+        };
+        finishAddContact(newContact);
       }).catch(() => {
         hideLoading();
         toast.error(<Toast type="fail" content="Network error." />);
@@ -155,32 +150,33 @@ const PopupAddContact = (props: Props) => {
             <DivChildLeft>Chain ID</DivChildLeft>
             <DivChildRight>{contact.chainId}</DivChildRight>
           </TransactionInfo>
-          <TransactionInfo>
-            <DivChildLeft>Receiver Keyset</DivChildLeft>
-            <DivChildBreak>
-              {'{'}
-              <br />
-              {`"pred": "${contact.pred}",`}
-              <br />
-              &quot;keys&quot;: [
-              <br />
-              {contact.keys.map((ct, key) => (
-                <span key={ct}>
-                  {`"${ct}"`}
-                  {key !== contact.keys.length - 1 && (
-                    <>
-                      ,
-                      <br />
-                    </>
-                  )}
-                </span>
-              ))}
-              <br />
-              ]
-              <br />
-              {'}'}
-            </DivChildBreak>
-          </TransactionInfo>
+          {contact.keys ? (
+            <TransactionInfo>
+              <DivChildLeft>Receiver Keyset</DivChildLeft>
+              <DivChildBreak>
+                {'{'}
+                <br />
+                {`"pred": "${contact.pred}",`}
+                <br />
+                &quot;keys&quot;: [
+                <br />
+                {contact.keys?.map((ct, key) => (
+                  <span key={ct}>
+                    {`"${ct}"`}
+                    {key !== contact.keys.length - 1 && (
+                      <>
+                        ,
+                        <br />
+                      </>
+                    )}
+                  </span>
+                )) ?? ''}
+                <br />
+                ]
+                <br />
+                {'}'}
+              </DivChildBreak>
+            </TransactionInfo>) : null}
         </InfoWrapper>
       ) : (
         <InfoWrapper>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { hideLoading, showLoading } from 'src/stores/extensions';
 import { fetchListLocal } from 'src/utils/chainweb';
 import { BaseSelect, BaseTextInput, InputError } from 'src/baseComponent';
@@ -82,6 +82,11 @@ const SelectReceiver = (props: Props) => {
     getValues,
     setError,
   } = useForm();
+
+  useEffect(() => {
+    setValue('accountName', '');
+    setValue('chainId', { value: null, label: null });
+  }, []);
 
   const onNext = () => {
     const receiver = getValues('accountName');
@@ -180,12 +185,18 @@ const SelectReceiver = (props: Props) => {
   const getTabContent = (data) => (data.length
     ? data.map((contact: any, key) => (
       <ContactWrapper
-        onClick={() => checkAfterTransfer({
-          accountName: contact.accountName,
-          chainId: contact.chainId,
-          pred: contact.pred,
-          keys: contact.keys,
-        })}
+        onClick={() => {
+          setValue('accountName', contact.accountName);
+          setValue('chainId', { value: contact.chainId, label: contact.chainId });
+          if (contact.keys) {
+            checkAfterTransfer({
+              accountName: contact.accountName,
+              chainId: contact.chainId,
+              pred: contact.pred,
+              keys: contact.keys,
+            });
+          }
+        }}
         key={`${contact.accountName}-${contact.chainId}`}
       >
         <ContactItem isFirst={key === 0}>
