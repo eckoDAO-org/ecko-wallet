@@ -28,7 +28,7 @@ const DivBody = styled.div`
   line-height: 25px;
   display: flex;
   align-items: center;
-  margin: 80px 0 0 ;
+  margin: 60px 0 0 ;
 `;
 const ButtonWrapper = styled.div`
   @media screen and (max-width: 480px) {
@@ -66,6 +66,7 @@ const Term = styled.span`
 const getCheckboxLabel = () => (
   <SLabel>
     <Label>I have read and agree to the</Label>
+    <br />
     <Term><a href={TERM_LINK} target="_blank" rel="noreferrer">Terms of Use</a></Term>
   </SLabel>
 );
