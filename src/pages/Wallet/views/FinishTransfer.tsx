@@ -254,11 +254,11 @@ const FinishTransfer = () => {
         const newRequests = crossChainRequests.filter((request: any) => transferDetails.createdTime !== request.createdTime) || [];
         setCrossChainRequest(newRequests);
         setLocalCrossRequests(selectedNetwork.networkId, newRequests);
-        setIsOpenFinishTransferModal(false);
+        // setIsOpenFinishTransferModal(false);
         toast.success(<Toast type="success" content="Finish transfer successfully" />);
       })
       .catch(() => {
-        onListenFinishTransaction(listenCmd, targetChainId);
+        // onListenFinishTransaction(listenCmd, targetChainId);
       });
   };
 
