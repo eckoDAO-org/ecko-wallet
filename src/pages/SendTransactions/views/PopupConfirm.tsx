@@ -138,20 +138,20 @@ const PopupConfirm = (props: Props) => {
     Pact.fetch
       .listen(listenCmd, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, senderChainId))
       .then((data) => {
-        setIsLoading(false);
+        // setIsLoading(false);
         const status = get(data, 'result.status');
         if (status === 'success') {
           toast.success(<Toast type="success" content="Transfer Successfully" />);
         } else if (status === 'failure') {
           toast.error(<Toast type="fail" content="Transfer Fail" />);
         }
-        history.push('/');
-        setActiveTab(ACTIVE_TAB.HOME);
+        // history.push('/');
+        // setActiveTab(ACTIVE_TAB.HOME);
       })
       .catch(() => {
-        setIsLoading(false);
-        history.push('/');
-        setActiveTab(ACTIVE_TAB.HOME);
+        // setIsLoading(false);
+        // history.push('/');
+        // setActiveTab(ACTIVE_TAB.HOME);
       });
   };
 
@@ -232,6 +232,10 @@ const PopupConfirm = (props: Props) => {
           }, 500);
         }
         onListenTransaction(listenCmd);
+        setIsLoading(false);
+        toast.success(<Toast type="success" content="Transaction sent successfully! Please check the transaction status in the history tab" />);
+        history.push('/');
+        setActiveTab(ACTIVE_TAB.HOME);
       })
       .catch(() => {
         if (domain) {
