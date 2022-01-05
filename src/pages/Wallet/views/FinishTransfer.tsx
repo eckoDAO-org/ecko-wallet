@@ -14,8 +14,10 @@ import { fetchSend, getApiUrl } from 'src/utils/chainweb';
 import Button from 'src/components/Buttons';
 import { getTimestamp } from 'src/utils';
 import { CONFIG } from 'src/utils/config';
-import { hideLoading, showLoading } from 'src/stores/extensions';
-import { getLocalCrossRequests, setLocalCrossRequests } from 'src/utils/storage';
+import { hideLoading } from 'src/stores/extensions';
+import {
+  getLocalCrossRequests, getLocalStorageData, setLocalCrossRequests, setLocalStorageData,
+} from 'src/utils/storage';
 import { renderTransactionInfo } from 'src/pages/SendTransactions/views/Transfer';
 import FinishTransferItem from './FinishTransferItem';
 
@@ -80,6 +82,8 @@ const FinishTransfer = () => {
   };
   const [isLoadData, setIsLoadData] = useState(true);
   const [crossChainRequests, setCrossChainRequest] = useState<any[]>([]);
+  const [pendingFinishRequestKeys, setPendingFinishRequestKeys] = useState<string[]>([]);
+
   useEffect(() => {
     getLocalCrossRequests(selectedNetwork.networkId, (activities) => {
       const newActivityList = [...activities];
@@ -141,6 +145,25 @@ const FinishTransfer = () => {
     });
   }, [account, chainId, selectedNetwork.networkId]);
 
+  useEffect(() => {
+    if (crossChainRequests.filter((c:any) => c.sender === account)?.length) {
+      crossChainRequests.filter((c:any) => c.sender === account).forEach((crossChainTransaction) => {
+        getLocalStorageData('toFinishCrossChainTxs', (toFinishCrossChainTxs) => {
+          setPendingFinishRequestKeys(toFinishCrossChainTxs || []);
+          if (!toFinishCrossChainTxs?.includes(crossChainTransaction.requestKey) && crossChainTransaction.status === 'success') {
+            const newTxToFinish = [
+              ...(toFinishCrossChainTxs || []),
+              crossChainTransaction.requestKey,
+            ];
+            setLocalStorageData('toFinishCrossChainTxs', newTxToFinish);
+            setPendingFinishRequestKeys(newTxToFinish);
+            getSpv(crossChainTransaction);
+          }
+        });
+      });
+    }
+  }, [crossChainRequests]);
+
   const renderItem = (filterCrossChain) => filterCrossChain.map((request: any) => (
     <Div
       onClick={() => {
@@ -158,20 +181,28 @@ const FinishTransfer = () => {
         tokenType="KDA"
         receiver={request.receiver}
         domain={request.domain}
-        status={request.status}
+        status={pendingFinishRequestKeys?.includes(request.requestKey) ? 'finishing' : request.status}
       />
     </Div>
   ));
 
-  const getSpv = (spvCmd) => {
-    const { requestKey, targetChainId } = spvCmd;
-    const { senderChainId } = transferDetails;
-    showLoading();
+  const getSpv = (request) => {
+    const { requestKey, receiverChainId: targetChainId } = request;
+    const spvCmd = {
+      requestKey,
+      targetChainId,
+    };
     Pact.fetch
-      .spv(spvCmd, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, senderChainId))
+      .spv(spvCmd, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, request.senderChainId))
       .then((res) => {
+        if (res.includes('SPV target not reachable')) {
+          console.log('SPV target not reachable');
+          setTimeout(() => {
+            getSpv(request);
+          }, 10000);
+          return;
+        }
         if (res.includes(' ')) {
-          hideLoading();
           toast.error(<Toast type="fail" content={res} />);
           return;
         }
@@ -208,16 +239,17 @@ const FinishTransfer = () => {
           cmd.proof,
           cmd.networkId,
         );
-        finishCrossChain(c, host, targetChainId);
+        finishCrossChain(c, host, targetChainId, request);
       })
       .catch(() => {
+        hideLoading();
         setTimeout(() => {
-          getSpv(spvCmd);
+          getSpv(request);
         }, 10000);
       });
   };
 
-  const finishCrossChain = (cmd, host, targetChainId) => {
+  const finishCrossChain = (cmd, host, targetChainId, requestFinished) => {
     fetchSend(cmd, host)
       .then((data) => {
         if (data.ok) {
@@ -227,7 +259,9 @@ const FinishTransfer = () => {
               const listenCmd = {
                 listen: requestKeySend,
               };
-              onListenFinishTransaction(listenCmd, targetChainId);
+              hideLoading();
+              setIsOpenFinishTransferModal(false);
+              onListenFinishTransaction(listenCmd, targetChainId, requestFinished);
             } else {
               hideLoading();
               toast.error(<Toast type="fail" content="Network error." />);
@@ -244,33 +278,29 @@ const FinishTransfer = () => {
       });
   };
 
-  const onListenFinishTransaction = (listenCmd, targetChainId) => {
+  const onListenFinishTransaction = (listenCmd, targetChainId, requestFinished) => {
     Pact.fetch
       .listen(listenCmd, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, targetChainId))
       .then(() => {
-        hideLoading();
-        const newRequests = crossChainRequests.filter((request: any) => transferDetails.createdTime !== request.createdTime) || [];
+        const newRequests = crossChainRequests.filter((request: any) => requestFinished.createdTime !== request.createdTime) || [];
         setCrossChainRequest(newRequests);
         setLocalCrossRequests(selectedNetwork.networkId, newRequests);
-        setIsOpenFinishTransferModal(false);
-        toast.success(<Toast type="success" content="Finish transfer successfully" />);
+        getLocalStorageData('toFinishCrossChainTxs', (toFinishCrossChainTxs) => {
+          setLocalStorageData('toFinishCrossChainTxs', [
+            ...toFinishCrossChainTxs?.filter((requestKey) => requestKey !== requestFinished.requestKey) ?? [],
+          ]);
+          toast.success(<Toast type="success" content="Finish transfer successfully" />);
+        });
       })
       .catch(() => {
-        onListenFinishTransaction(listenCmd, targetChainId);
+        // onListenFinishTransaction(listenCmd, targetChainId, requestFinished);
       });
-  };
-
-  const finishTransfer = () => {
-    const spvCmd = {
-      requestKey: transferDetails.requestKey,
-      targetChainId: transferDetails.receiverChainId,
-    };
-    getSpv(spvCmd);
   };
 
   if (isLoadData) return <div />;
 
   const filterCrossChain = crossChainRequests.filter((c:any) => c.sender === account);
+
   return (
     <Div>
       {
@@ -297,7 +327,7 @@ const FinishTransfer = () => {
         isOpenFinishTransferModal && (
           <ModalCustom
             isOpen={isOpenFinishTransferModal}
-            title="Finish Transfer"
+            title="Cross Chain Transfer"
             onCloseModal={() => setIsOpenFinishTransferModal(false)}
             closeOnOverlayClick={false}
           >
@@ -318,8 +348,8 @@ const FinishTransfer = () => {
               </TransactionInfo>
               <DivChild>
                 <ActionButton marginTop="200px">
-                  <Button label="Cancel" onClick={() => setIsOpenFinishTransferModal(false)} type={BUTTON_TYPE.DISABLE} size={BUTTON_SIZE.FULL} />
-                  <Button label="Finish" onClick={finishTransfer} size={BUTTON_SIZE.FULL} />
+                  <Button label="Close" onClick={() => setIsOpenFinishTransferModal(false)} type={BUTTON_TYPE.DISABLE} size={BUTTON_SIZE.FULL} />
+                  {/* <Button label="Finish" onClick={finishTransfer} size={BUTTON_SIZE.FULL} /> */}
                 </ActionButton>
               </DivChild>
             </Div>

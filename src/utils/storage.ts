@@ -1,4 +1,21 @@
 import { get } from 'lodash';
+
+export const getLocalStorageData = (key, successCallback, failCallback?) => {
+  (window as any)?.chrome?.storage?.local?.get(key, (result) => {
+    if (result) {
+      successCallback(result[key] || null);
+    } else {
+      failCallback ? failCallback() : null;
+    }
+  });
+};
+
+export const setLocalStorageData = (key, data) => {
+  const obj = {};
+  obj[key] = data;
+  (window as any).chrome.storage.local.set(obj);
+};
+
 // Wallets
 export const setLocalWallets = (network, wallets) => {
   const key = `${network}.wallets`;
