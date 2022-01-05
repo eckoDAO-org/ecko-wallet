@@ -86,6 +86,9 @@ const FinishTransferItem = (props: any) => {
               {
                 status === 'failure' && <Span color="#f44336" fontSize="10px" fontWeight="700">Failed</Span>
               }
+              {
+                status === 'finishing' && <Span color="#eca822" fontSize="10px" fontWeight="700">Finishing</Span>
+              }
             </DivChild>
           </DivChild>
         </DivFlex>
