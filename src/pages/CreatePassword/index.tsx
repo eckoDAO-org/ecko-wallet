@@ -166,7 +166,7 @@ const CreatePassword = () => {
 
   const checkInValidPassword = (str) => {
     const pattern = new RegExp(
-      '^[a-z0-9A-Z_\\s]*$',
+      '^[À-úa-z0-9A-Z_!?"\'.#@,;-\\s]*$',
     );
     return !!pattern.test(str);
   };
@@ -225,7 +225,7 @@ const CreatePassword = () => {
                     message: 'Password should be maximum 256 characters.',
                   },
                   validate: {
-                    match: (val) => checkInValidPassword(val) || 'Sorry, only letters(a-z), numbers(0-9), and special character are allowed.',
+                    match: (val) => checkInValidPassword(val) || 'Sorry, only letters(a-z), numbers(0-9), and special characters _!?"\'.#@,;- are allowed.',
                   },
                 }),
               }}

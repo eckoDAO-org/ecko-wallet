@@ -390,7 +390,7 @@ const Wallet = () => {
         },
         () => {},
       );
-  }, [balance]);
+  }, [balance, allChainBalance]);
   const TokenChild = (props: any) => {
     const {
       value, src, valueUSD, tokenType, nameToken,
