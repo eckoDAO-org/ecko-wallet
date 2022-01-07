@@ -3,11 +3,10 @@ import { useHistory, useLocation } from 'react-router-dom';
 import images from 'src/images';
 import styled from 'styled-components';
 import ModalCustom from 'src/components/Modal/ModalCustom';
-import { hideLoading, showLoading } from 'src/stores/extensions';
 import Dropdown from 'src/components/Dropdown';
-import { get } from 'lodash';
 import { roundNumber, shortenAddress, BigNumberConverter } from 'src/utils';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
+import useLocalStorage from 'src/hooks/useLocalStorage';
 import { useSelector } from 'react-redux';
 import {
   setBalance, setCurrentWallet, setWallets,
@@ -23,11 +22,18 @@ import {
   setLocalWallets,
 } from 'src/utils/storage';
 import { decryptKey, encryptKey } from 'src/utils/security';
-import { fetchListLocal, fetchLocal, getKeyPairsFromSeedPhrase } from '../../utils/chainweb';
+import { fetchListLocal, getKeyPairsFromSeedPhrase } from '../../utils/chainweb';
 // import TabWallet from './views/TabContent';
 import LoadMoreDropdown from './views/LoadMoreDropdown';
 import ReceiveModal from './views/ReceiveModal';
 import ChainDropdown from './views/ChainDropdown';
+import { IFungibleToken } from '../ImportToken';
+
+export interface IFungibleTokenBalance {
+  contractAddress: string;
+  chainBalance: number;
+  allChainBalance: number;
+}
 
 const Div = styled.div`
   margin: auto 0;
@@ -164,19 +170,19 @@ const WalletWrapper = styled.div`
   line-height: 20px;
   text-align: left;
 `;
-// const AddMoreToken = styled.div`
-//   display: flex;
-//   justify-content: center;
-// `;
-// const DivText = styled.div`
-//   display: inline-block;
-//   border-radius: 18px;
-//   border: 1px solid #461A57;
-//   color: #461A57;
-//   font-size: 12px;
-//   padding: 11px 24px;
-//   cursor: pointer;
-// `;
+const AddMoreToken = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+const DivText = styled.div`
+  display: inline-block;
+  border-radius: 18px;
+  border: 1px solid #461A57;
+  color: #461A57;
+  font-size: 12px;
+  padding: 11px 24px;
+  cursor: pointer;
+`;
 const ListWallet = styled.div`
   padding: 15px 20px;
   max-height: 250px;
@@ -210,49 +216,66 @@ const Wallet = () => {
   const location = useLocation().pathname;
   const { balance, wallets } = rootState?.wallet;
   const [isShowReceiveModal, setShowReceiveModal] = useState(false);
+  const [fungibleTokensBalance, setFungibleTokensBalance] = useState<IFungibleTokenBalance[]>([]);
   const [allChainBalance, setAllChainBalance] = useState(0);
+  const [fungibleTokens] = useLocalStorage<IFungibleToken[]>('fungibleTokens', []);
   const stateWallet = useCurrentWallet();
   const walletDropdownRef = useRef();
 
-  useEffect(() => {
+  const fetchCoinBalance = async (contractAddress = 'coin') => {
+    const { account, chainId } = stateWallet;
+    const newFungibleTokensBalance = fungibleTokensBalance.filter((fTB) => fTB.contractAddress !== contractAddress);
+    const fungibleTokenBalance: IFungibleTokenBalance = {
+      contractAddress,
+      chainBalance: 0,
+      allChainBalance: 0,
+    };
     const promiseList: any[] = [];
-    const pactCode = `(coin.details "${wallets[0].account}")`;
+    const pactCode = `(${contractAddress}.details "${wallets[0].account}")`;
     for (let i = 0; i < 20; i += 1) {
       const promise = fetchListLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, i.toString());
       promiseList.push(promise);
     }
     let total = 0;
     Promise.all(promiseList).then((res) => {
-      res?.forEach((fetched) => {
-        total += (fetched?.result?.data?.balance ?? 0);
+      res?.forEach((fetched, chainIndex) => {
+        if (fetched?.result?.data?.account === account) {
+          if (fetched?.result?.data?.balance > 0) {
+            if (contractAddress === 'coin') {
+              total += fetched?.result?.data?.balance;
+              if (chainId === chainIndex.toString()) {
+                setBalance(fetched?.result?.data?.balance ?? 0);
+              }
+            } else {
+              fungibleTokenBalance.allChainBalance += (fetched?.result?.data?.balance ?? 0);
+              if (chainId === chainIndex.toString()) {
+                fungibleTokenBalance.chainBalance = (fetched?.result?.data?.balance ?? 0);
+              }
+            }
+          }
+        }
       });
-      setAllChainBalance(total);
+      if (contractAddress === 'coin') {
+        setAllChainBalance(total);
+      } else {
+        setFungibleTokensBalance([
+          ...newFungibleTokensBalance,
+          fungibleTokenBalance,
+        ]);
+      }
     }).catch();
-  }, [wallets]);
+  };
 
   useEffect(() => {
-    if (stateWallet) {
-      const { account, chainId } = stateWallet;
-      const pactCode = `(coin.details "${account}")`;
-      showLoading();
-      fetchLocal(pactCode, selectedNetwork?.url, selectedNetwork?.networkId, chainId).then((res) => {
-        const status = get(res, 'result.status');
-        if (status === 'success') {
-          const newBalance = get(res, 'result.data.balance', 0);
-          setBalance(newBalance);
-        } else {
-          // eslint-disable-next-line no-console
-          console.log('fetch error');
-          setBalance(0);
-        }
-        hideLoading();
-      })
-        .catch(() => {
-          setBalance(0);
-          hideLoading();
-        });
+    fetchCoinBalance();
+  }, [wallets, stateWallet?.account, stateWallet?.chainId]);
+
+  useEffect(() => {
+    if (fungibleTokens?.length) {
+      fungibleTokens.forEach((fT) => fetchCoinBalance(fT.contractAddress));
     }
-  }, [stateWallet?.account, stateWallet?.chainId]);
+  }, [fungibleTokens, wallets, stateWallet?.account, stateWallet?.chainId]);
+
   const [balanceKDAtoUSD, setbalanceKDAtoUSD] = useState(balance);
   const [allChainsBalanceKDAtoUSD, setAllChainsBalanceKDAtoUSD] = useState(balance);
 
@@ -513,13 +536,18 @@ const Wallet = () => {
               valueUSD={balanceKDAtoUSD}
               src={images.wallet.iconKadenaToken}
             />
-            {/* <TokenChild value="0" tokenType="Flux" valueUSD="0" src={images.wallet.iconFlux} /> */}
+            {fungibleTokens?.map((fT: IFungibleToken) => {
+              const tokenBalance = fungibleTokensBalance.find((f) => f.contractAddress === fT.contractAddress);
+              return (
+                <TokenChild value={tokenBalance?.chainBalance} tokenType={fT.symbol} valueUSD="0" src={images.wallet.iconFlux} />
+              );
+            })}
           </Tokens>
-          {/* <AddMoreToken>
+          <AddMoreToken>
             <DivText onClick={() => history.push('/import-token')}>
               Add more token
             </DivText>
-          </AddMoreToken> */}
+          </AddMoreToken>
         </WrapAssets>
       </DivChild>
       <ModalCustom isOpen={false} title="Confirm Send Transaction" closeOnOverlayClick={false} />

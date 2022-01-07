@@ -1,8 +1,16 @@
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import Back from 'src/components/Back';
+import { toast } from 'react-toastify';
+import Toast from 'src/components/Toast/Toast';
 import { useForm } from 'react-hook-form';
+import useLocalStorage from 'src/hooks/useLocalStorage';
 import { BaseTextInput, InputError } from 'src/baseComponent';
+
+export interface IFungibleToken {
+  contractAddress: string;
+  symbol: string;
+}
 
 const ImportTokenWrapper = styled.div`
   padding: 0 20px;
@@ -53,6 +61,8 @@ const Footer = styled.div`
 `;
 const ImportToken = () => {
   const history = useHistory();
+  const [fungibleTokens, setFungibleTokens] = useLocalStorage<IFungibleToken[]>('fungibleTokens', []);
+
   const {
     register,
     handleSubmit,
@@ -60,7 +70,18 @@ const ImportToken = () => {
     setValue,
     clearErrors,
   } = useForm();
-  const onImport = () => {};
+  const onImport = async (fT: IFungibleToken) => {
+    const alreadyExists = fungibleTokens?.find((fungToken) => fungToken.contractAddress);
+    if (alreadyExists) {
+      toast.error(<Toast type="error" content="Token already exists" />);
+    } else {
+      setFungibleTokens([
+        ...(fungibleTokens || []),
+        fT,
+      ]);
+      history.push('/');
+    }
+  };
   return (
     <ImportTokenWrapper>
       <Back title="Back" onBack={() => history.push('/')} />
@@ -81,7 +102,7 @@ const ImportToken = () => {
                   },
                 }),
               }}
-              title="Token Contract Address"
+              title="Token Contract Address (runonflux.flux)"
               height="auto"
               onChange={(e) => { clearErrors('contractAddress'); setValue('contractAddress', e.target.value); }}
             />
@@ -106,36 +127,6 @@ const ImportToken = () => {
               onChange={(e) => { clearErrors('symbol'); setValue('symbol', e.target.value); }}
             />
             {errors.symbol && <InputError>{errors.symbol.message}</InputError>}
-          </DivBody>
-          <DivBody>
-            <BaseTextInput
-              inputProps={{
-                placeholder: 'Input Decimal',
-                type: 'number',
-                ...register('decimalToken', {
-                  required: {
-                    value: true,
-                    message: 'This field is required.',
-                  },
-                  validate: {
-                    positive: (v) => {
-                      const value = Number(v);
-                      return value > 0;
-                    },
-                    isInteger: (v) => {
-                      const reg = /^\d+$/;
-                      return reg.test(v);
-                    },
-                  },
-                }),
-              }}
-              title="Token Decimal"
-              height="auto"
-              onChange={(e) => { clearErrors('decimalToken'); setValue('decimalToken', e.target.value); }}
-            />
-            {errors.decimalToken && errors.decimalToken.type === 'required' && <InputError>{errors.decimalToken.message}</InputError>}
-            {errors.decimalToken && errors.decimalToken.type === 'positive' && <InputError>Invalid Token Decimal</InputError>}
-            {errors.decimalToken && errors.decimalToken.type === 'isInteger' && <InputError>Token Decimal must be integer</InputError>}
           </DivBody>
         </form>
       </Body>
