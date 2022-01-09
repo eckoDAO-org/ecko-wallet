@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Pact from 'pact-lang-api';
 import { useSelector } from 'react-redux';
 import images from 'src/images';
+import useLocalStorage from 'src/hooks/useLocalStorage';
 import ModalCustom from 'src/components/Modal/ModalCustom';
 import { toast } from 'react-toastify';
 import BigNumber from 'bignumber.js';
@@ -15,9 +16,7 @@ import Button from 'src/components/Buttons';
 import { getTimestamp } from 'src/utils';
 import { CONFIG } from 'src/utils/config';
 import { hideLoading } from 'src/stores/extensions';
-import {
-  getLocalCrossRequests, getLocalStorageData, setLocalCrossRequests, setLocalStorageData,
-} from 'src/utils/storage';
+import { getLocalCrossRequests, setLocalCrossRequests } from 'src/utils/storage';
 import { renderTransactionInfo } from 'src/pages/SendTransactions/views/Transfer';
 import FinishTransferItem from './FinishTransferItem';
 
@@ -73,6 +72,7 @@ const NoData = styled.div`
 const FinishTransfer = () => {
   const [isOpenFinishTransferModal, setIsOpenFinishTransferModal] = useState(false);
   const [transferDetails, setTransferDetails] = useState<any>({});
+  const [toFinishCrossChainTxs, setToFinishCrossChainTxs] = useLocalStorage<string[]>('toFinishCrossChainTxs', []);
   const rootState = useSelector((state) => state);
   const { selectedNetwork } = rootState.extensions;
   const { account, chainId } = rootState.wallet;
@@ -148,18 +148,16 @@ const FinishTransfer = () => {
   useEffect(() => {
     if (crossChainRequests.filter((c:any) => c.sender === account)?.length) {
       crossChainRequests.filter((c:any) => c.sender === account).forEach((crossChainTransaction) => {
-        getLocalStorageData('toFinishCrossChainTxs', (toFinishCrossChainTxs) => {
-          setPendingFinishRequestKeys(toFinishCrossChainTxs || []);
-          if (!toFinishCrossChainTxs?.includes(crossChainTransaction.requestKey) && crossChainTransaction.status === 'success') {
-            const newTxToFinish = [
-              ...(toFinishCrossChainTxs || []),
-              crossChainTransaction.requestKey,
-            ];
-            setLocalStorageData('toFinishCrossChainTxs', newTxToFinish);
-            setPendingFinishRequestKeys(newTxToFinish);
-            getSpv(crossChainTransaction);
-          }
-        });
+        setPendingFinishRequestKeys(toFinishCrossChainTxs || []);
+        if (crossChainTransaction.status === 'success') {
+          const newTxToFinish = [
+            ...(toFinishCrossChainTxs || []),
+            crossChainTransaction.requestKey,
+          ];
+          setToFinishCrossChainTxs(newTxToFinish);
+          setPendingFinishRequestKeys(newTxToFinish);
+          getSpv(crossChainTransaction);
+        }
       });
     }
   }, [crossChainRequests]);
@@ -285,12 +283,10 @@ const FinishTransfer = () => {
         const newRequests = crossChainRequests.filter((request: any) => requestFinished.createdTime !== request.createdTime) || [];
         setCrossChainRequest(newRequests);
         setLocalCrossRequests(selectedNetwork.networkId, newRequests);
-        getLocalStorageData('toFinishCrossChainTxs', (toFinishCrossChainTxs) => {
-          setLocalStorageData('toFinishCrossChainTxs', [
-            ...toFinishCrossChainTxs?.filter((requestKey) => requestKey !== requestFinished.requestKey) ?? [],
-          ]);
-          toast.success(<Toast type="success" content="Finish transfer successfully" />);
-        });
+        setToFinishCrossChainTxs([
+          ...toFinishCrossChainTxs?.filter((requestKey) => requestKey !== requestFinished.requestKey) ?? [],
+        ]);
+        // toast.success(<Toast type="success" content="Finish transfer successfully" />);
       })
       .catch(() => {
         // onListenFinishTransaction(listenCmd, targetChainId, requestFinished);

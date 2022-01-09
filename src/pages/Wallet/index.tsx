@@ -14,6 +14,7 @@ import {
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
 import { ESTIMATE_KDA_TO_USD_API } from 'src/utils/config';
+import { CHAIN_COUNT } from 'src/utils/constant';
 import {
   getLocalPassword,
   getLocalSeedPhrase,
@@ -22,8 +23,7 @@ import {
   setLocalWallets,
 } from 'src/utils/storage';
 import { decryptKey, encryptKey } from 'src/utils/security';
-import { fetchListLocal, getKeyPairsFromSeedPhrase } from '../../utils/chainweb';
-// import TabWallet from './views/TabContent';
+import { fetchListLocal, getBalanceFromChainwebApiResponse, getKeyPairsFromSeedPhrase } from '../../utils/chainweb';
 import LoadMoreDropdown from './views/LoadMoreDropdown';
 import ReceiveModal from './views/ReceiveModal';
 import ChainDropdown from './views/ChainDropdown';
@@ -31,6 +31,7 @@ import { IFungibleToken } from '../ImportToken';
 
 export interface IFungibleTokenBalance {
   contractAddress: string;
+  symbol: string;
   chainBalance: number;
   allChainBalance: number;
 }
@@ -216,68 +217,66 @@ const Wallet = () => {
   const location = useLocation().pathname;
   const { balance, wallets } = rootState?.wallet;
   const [isShowReceiveModal, setShowReceiveModal] = useState(false);
+  const [usdPrices, setUsdPrices] = useState<any[]>([]);
   const [fungibleTokensBalance, setFungibleTokensBalance] = useState<IFungibleTokenBalance[]>([]);
   const [allChainBalance, setAllChainBalance] = useState(0);
   const [fungibleTokens] = useLocalStorage<IFungibleToken[]>('fungibleTokens', []);
   const stateWallet = useCurrentWallet();
   const walletDropdownRef = useRef();
 
-  const fetchCoinBalance = async (contractAddress = 'coin') => {
+  const fetchCoinBalance = async (fungibleToken: IFungibleToken, chainArray: number[]) => {
     const { account, chainId } = stateWallet;
+    const { contractAddress, symbol } = fungibleToken;
     const newFungibleTokensBalance = fungibleTokensBalance.filter((fTB) => fTB.contractAddress !== contractAddress);
     const fungibleTokenBalance: IFungibleTokenBalance = {
       contractAddress,
+      symbol,
       chainBalance: 0,
       allChainBalance: 0,
     };
     const promiseList: any[] = [];
-    const pactCode = `(${contractAddress}.details "${wallets[0].account}")`;
-    for (let i = 0; i < 20; i += 1) {
+    const pactCode = `(${contractAddress}.details "${account}")`;
+    chainArray.forEach((i) => {
       const promise = fetchListLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, i.toString());
       promiseList.push(promise);
-    }
+    });
     let total = 0;
     Promise.all(promiseList).then((res) => {
       res?.forEach((fetched, chainIndex) => {
-        if (fetched?.result?.data?.account === account) {
-          if (fetched?.result?.data?.balance > 0) {
-            if (contractAddress === 'coin') {
-              total += fetched?.result?.data?.balance;
-              if (chainId === chainIndex.toString()) {
-                setBalance(fetched?.result?.data?.balance ?? 0);
-              }
-            } else {
-              fungibleTokenBalance.allChainBalance += (fetched?.result?.data?.balance ?? 0);
-              if (chainId === chainIndex.toString()) {
-                fungibleTokenBalance.chainBalance = (fetched?.result?.data?.balance ?? 0);
-              }
-            }
+        // if (fetched?.result?.data?.account === account) {
+        const resBalance = getBalanceFromChainwebApiResponse(fetched);
+        if (contractAddress === 'coin') {
+          total += resBalance;
+          if (chainId === chainIndex.toString()) {
+            setBalance(resBalance ?? 0);
           }
+        } else {
+          fungibleTokenBalance.chainBalance = (resBalance ?? 0);
+          setFungibleTokensBalance([
+            ...newFungibleTokensBalance,
+            fungibleTokenBalance,
+          ]);
         }
+        // }
       });
       if (contractAddress === 'coin') {
         setAllChainBalance(total);
-      } else {
-        setFungibleTokensBalance([
-          ...newFungibleTokensBalance,
-          fungibleTokenBalance,
-        ]);
       }
+      // updateUsdPrices();
     }).catch();
   };
 
   useEffect(() => {
-    fetchCoinBalance();
+    fetchCoinBalance({ contractAddress: 'coin', symbol: 'KDA' }, [...Array(CHAIN_COUNT).keys()]);
   }, [wallets, stateWallet?.account, stateWallet?.chainId]);
 
   useEffect(() => {
+    const { chainId } = stateWallet;
     if (fungibleTokens?.length) {
-      fungibleTokens.forEach((fT) => fetchCoinBalance(fT.contractAddress));
+      // selected chain only for fungible tokens
+      fungibleTokens.forEach((fT) => fetchCoinBalance(fT, [chainId]));
     }
-  }, [fungibleTokens, wallets, stateWallet?.account, stateWallet?.chainId]);
-
-  const [balanceKDAtoUSD, setbalanceKDAtoUSD] = useState(balance);
-  const [allChainsBalanceKDAtoUSD, setAllChainsBalanceKDAtoUSD] = useState(balance);
+  }, [fungibleTokens, stateWallet?.account, stateWallet?.chainId]);
 
   const checkSelectedWallet = (wallet) => wallet.chainId.toString() === stateWallet.chainId.toString() && wallet.account === stateWallet.account;
   const setSelectedLocalWallet = (wallet) => {
@@ -403,17 +402,29 @@ const Wallet = () => {
     </Div>
   );
 
-  useEffect(() => {
-    fetch(ESTIMATE_KDA_TO_USD_API)
+  const updateUsdPrices = () => {
+    fetch(`${ESTIMATE_KDA_TO_USD_API}${fungibleTokens?.map((ft) => ft.symbol).join(',')}`)
       .then((res) => res.json())
       .then(
         (result) => {
-          setbalanceKDAtoUSD(BigNumberConverter(Number(balance) * Number(result?.kadena?.usd)));
-          setAllChainsBalanceKDAtoUSD(BigNumberConverter(Number(allChainBalance) * Number(result?.kadena?.usd)));
+          setUsdPrices(Object.keys(result).map((token) => ({
+            symbol: token === 'kadena' ? 'coin' : token,
+            usdPrice: result[token].usd,
+          })));
         },
         () => {},
       );
-  }, [balance, allChainBalance]);
+  };
+
+  const getUsdPrice = (tokenSymbol, tokenBalance): number => {
+    const usdPrice = usdPrices.find((t) => t.symbol === tokenSymbol)?.usdPrice;
+    return BigNumberConverter(Number(tokenBalance) * Number(usdPrice)) || 0;
+  };
+
+  useEffect(() => {
+    updateUsdPrices();
+  }, [stateWallet?.chainId, stateWallet?.account, fungibleTokensBalance, allChainBalance]);
+
   const TokenChild = (props: any) => {
     const {
       value, src, valueUSD, tokenType, nameToken,
@@ -498,10 +509,10 @@ const Wallet = () => {
             <DivFlex alignItems="center" justifyContent="space-between" margin="10px">
               <DivChild><Image src={images.wallet.logoWalletKadena} size={50} width={50} alt="logo" /></DivChild>
               <DivChild>
-                <Div fontSize="16px" fontWeight="700" color="#461A57" textAlign="right">{`${roundNumber(balance, 5)} KDA`}</Div>
-                <Div fontSize="12px" fontWeight="700" color="#461A57" textAlign="right">{`${roundNumber(allChainBalance, 5)} KDA`}</Div>
-                <Div fontSize="14px" color="#461A57" marginTop="10px" textAlign="right">{`${roundNumber(balanceKDAtoUSD, 1)} USD`}</Div>
-                <Div fontSize="10px" color="#461A57" marginTop="1px" textAlign="right">{`${roundNumber(allChainsBalanceKDAtoUSD, 1)} USD`}</Div>
+                <Div fontSize="16px" fontWeight="700" color="#461A57" textAlign="right">{`${roundNumber(balance ?? 0, 5)} KDA`}</Div>
+                <Div fontSize="12px" fontWeight="700" color="#461A57" textAlign="right">{`${roundNumber(allChainBalance ?? 0, 5)} KDA`}</Div>
+                <Div fontSize="14px" color="#461A57" marginTop="10px" textAlign="right">{`${roundNumber(getUsdPrice('coin', balance ?? 0), 1)} USD`}</Div>
+                <Div fontSize="10px" color="#461A57" marginTop="1px" textAlign="right">{`${roundNumber(getUsdPrice('coin', allChainBalance ?? 0), 1)} USD`}</Div>
               </DivChild>
             </DivFlex>
           </DivChildKadena>
@@ -533,13 +544,13 @@ const Wallet = () => {
               value={balance}
               tokenType="KDA"
               nameToken="Kadena"
-              valueUSD={balanceKDAtoUSD}
+              valueUSD={roundNumber(getUsdPrice('coin', balance), 1)}
               src={images.wallet.iconKadenaToken}
             />
-            {fungibleTokens?.map((fT: IFungibleToken) => {
+            {fungibleTokensBalance?.map((fT) => {
               const tokenBalance = fungibleTokensBalance.find((f) => f.contractAddress === fT.contractAddress);
               return (
-                <TokenChild value={tokenBalance?.chainBalance} tokenType={fT.symbol} valueUSD="0" src={images.wallet.iconFlux} />
+                <TokenChild value={tokenBalance?.chainBalance} tokenType={fT.symbol?.toUpperCase()} valueUSD={getUsdPrice(fT.symbol, tokenBalance?.chainBalance || 0)} src={images.wallet.iconFlux} />
               );
             })}
           </Tokens>

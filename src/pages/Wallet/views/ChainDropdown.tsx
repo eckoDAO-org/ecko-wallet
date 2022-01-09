@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import images from 'src/images';
-import { fetchListLocal } from 'src/utils/chainweb';
+import { fetchListLocal, getBalanceFromChainwebApiResponse } from 'src/utils/chainweb';
 import ReactLoading from 'react-loading';
 // import { useHistory } from 'react-router-dom';
 // import Pact from 'pact-lang-api';
@@ -22,6 +22,7 @@ import {
   // setLocalWallets,
 } from 'src/utils/storage';
 import { encryptKey } from 'src/utils/security';
+import { CHAIN_COUNT } from 'src/utils/constant';
 // import { ButtonWrapper, PageConfirm } from 'src/pages/SendTransactions/views/style';
 // import { Footer } from 'src/pages/SendTransactions/styles';
 // import Button from 'src/components/Buttons';
@@ -94,7 +95,7 @@ const ChainDropdown = () => {
     let listChainSelected = wallet.wallets.filter((item: any) => item?.account === wallet?.account);
     if (account.includes('k:') && account.length === 66) {
       const newSelected:any = [];
-      for (let i = 0; i < 20; i += 1) {
+      for (let i = 0; i < CHAIN_COUNT; i += 1) {
         const itemExist = listChainSelected.find((item) => item.chainId.toString() === i.toString());
         if (itemExist) {
           newSelected.push(itemExist);
@@ -125,7 +126,7 @@ const ChainDropdown = () => {
     Promise.all(promiseList).then((res) => {
       const data = listChainId.map((item, key) => ({
         ...item,
-        balance: res[key]?.result?.data?.balance || 0,
+        balance: getBalanceFromChainwebApiResponse(res[key]),
       }));
       listChainId = data;
       listChainId.sort(compare);

@@ -77,7 +77,10 @@ const ImportToken = () => {
     } else {
       setFungibleTokens([
         ...(fungibleTokens || []),
-        fT,
+        {
+          ...fT,
+          symbol: fT.symbol?.toLowerCase(),
+        },
       ]);
       history.push('/');
     }

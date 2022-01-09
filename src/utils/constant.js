@@ -29,3 +29,5 @@ export const ACTIVE_TAB = {
   HISTORY: 'history',
   SETTINGS: 'settings',
 };
+
+export const CHAIN_COUNT = 20;

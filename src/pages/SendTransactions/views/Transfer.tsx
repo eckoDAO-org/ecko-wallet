@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { BaseSelect, BaseTextInput } from 'src/baseComponent';
 import { useSelector } from 'react-redux';
 import { hideLoading, showLoading } from 'src/stores/extensions';
-import { fetchLocal } from 'src/utils/chainweb';
+import { fetchLocal, getBalanceFromChainwebApiResponse } from 'src/utils/chainweb';
 import { getLocalContacts, getExistContacts } from 'src/utils/storage';
 import ModalCustom from 'src/components/Modal/ModalCustom';
 import PopupConfirm from 'src/pages/SendTransactions/views/PopupConfirm';
@@ -177,7 +177,7 @@ const Transfer = (props: Props) => {
       hideLoading();
       const status = get(res, 'result.status');
       if (status === 'success') {
-        const balance = get(res, 'result.data.balance');
+        const balance = getBalanceFromChainwebApiResponse(res);
         setWallet({
           accountName: account,
           balance,
