@@ -48,6 +48,9 @@ const DappTitle = styled.div`
 
 const FooterWrapper = styled(Footer)`
   padding: 0 20px;
+  position: fixed;
+  bottom: 10px;
+  width: 90%;
 `;
 const ContentWrapper = styled.div`
   padding: 20px;
@@ -111,7 +114,9 @@ const SignedCmd = () => {
           displayObjectSize={false}
           displayDataTypes={false}
           quotesOnKeys={false}
+          collapsed
           indentWidth={2}
+          style={{ paddingBottom: 40 }}
           collapseStringsAfterLength={false}
         />
       </ContentWrapper>
