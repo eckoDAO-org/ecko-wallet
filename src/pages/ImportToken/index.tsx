@@ -6,6 +6,9 @@ import Toast from 'src/components/Toast/Toast';
 import { useForm } from 'react-hook-form';
 import useLocalStorage from 'src/hooks/useLocalStorage';
 import { BaseTextInput, InputError } from 'src/baseComponent';
+import { useCurrentWallet } from 'src/stores/wallet/hooks';
+import { fetchListLocal } from 'src/utils/chainweb';
+import { useSelector } from 'react-redux';
 
 export interface IFungibleToken {
   contractAddress: string;
@@ -60,8 +63,17 @@ const Footer = styled.div`
   }
 `;
 const ImportToken = () => {
+  const stateWallet = useCurrentWallet();
+  const rootState = useSelector((state) => state);
+  const { selectedNetwork } = rootState.extensions;
   const history = useHistory();
   const [fungibleTokens, setFungibleTokens] = useLocalStorage<IFungibleToken[]>('fungibleTokens', []);
+
+  const checkTokenExists = (contractAddress: string): Promise<any> => {
+    const { account } = stateWallet;
+    const pactCode = `(${contractAddress}.details "${account}")`;
+    return fetchListLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, '0');
+  };
 
   const {
     register,
@@ -71,18 +83,26 @@ const ImportToken = () => {
     clearErrors,
   } = useForm();
   const onImport = async (fT: IFungibleToken) => {
-    const alreadyExists = fungibleTokens?.find((fungToken) => fungToken.contractAddress);
+    const alreadyExists = fungibleTokens?.find((fungToken) => fungToken.contractAddress === fT.contractAddress);
     if (alreadyExists) {
-      toast.error(<Toast type="error" content="Token already exists" />);
+      toast.error(<Toast type="error" content="Token already added" />);
     } else {
-      setFungibleTokens([
-        ...(fungibleTokens || []),
-        {
-          ...fT,
-          symbol: fT.symbol?.toLowerCase(),
-        },
-      ]);
-      history.push('/');
+      checkTokenExists(fT.contractAddress).then((res) => {
+        if (res?.result?.error?.message === `Cannot resolve ${fT.contractAddress}.details`) {
+          toast.error(<Toast type="error" content={`Cannot resolve ${fT.contractAddress}.details`} />);
+        } else {
+          setFungibleTokens([
+            ...(fungibleTokens || []),
+            {
+              ...fT,
+              symbol: fT.symbol?.toLowerCase(),
+            },
+          ]);
+          history.push('/');
+        }
+      }).catch(() => {
+        toast.error(<Toast type="error" content="Unable to add token" />);
+      });
     }
   };
   return (

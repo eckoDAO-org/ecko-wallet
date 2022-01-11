@@ -227,13 +227,6 @@ const Wallet = () => {
   const fetchCoinBalance = async (fungibleToken: IFungibleToken, chainArray: number[]) => {
     const { account, chainId } = stateWallet;
     const { contractAddress, symbol } = fungibleToken;
-    const newFungibleTokensBalance = fungibleTokensBalance.filter((fTB) => fTB.contractAddress !== contractAddress);
-    const fungibleTokenBalance: IFungibleTokenBalance = {
-      contractAddress,
-      symbol,
-      chainBalance: 0,
-      allChainBalance: 0,
-    };
     const promiseList: any[] = [];
     const pactCode = `(${contractAddress}.details "${account}")`;
     chainArray.forEach((i) => {
@@ -251,18 +244,20 @@ const Wallet = () => {
             setBalance(resBalance ?? 0);
           }
         } else {
-          fungibleTokenBalance.chainBalance = (resBalance ?? 0);
-          setFungibleTokensBalance([
-            ...newFungibleTokensBalance,
-            fungibleTokenBalance,
+          setFungibleTokensBalance((fungibleTokensBalance1) => [
+            ...fungibleTokensBalance1.filter((fTB) => fTB.contractAddress !== contractAddress) ?? [],
+            {
+              contractAddress,
+              symbol,
+              chainBalance: (resBalance ?? 0),
+              allChainBalance: 0,
+            },
           ]);
         }
-        // }
       });
       if (contractAddress === 'coin') {
         setAllChainBalance(total);
       }
-      // updateUsdPrices();
     }).catch();
   };
 
@@ -547,10 +542,10 @@ const Wallet = () => {
               valueUSD={roundNumber(getUsdPrice('coin', balance), 1)}
               src={images.wallet.iconKadenaToken}
             />
-            {fungibleTokensBalance?.map((fT) => {
+            {fungibleTokens?.map((fT) => {
               const tokenBalance = fungibleTokensBalance.find((f) => f.contractAddress === fT.contractAddress);
               return (
-                <TokenChild value={tokenBalance?.chainBalance} tokenType={fT.symbol?.toUpperCase()} valueUSD={getUsdPrice(fT.symbol, tokenBalance?.chainBalance || 0)} src={images.wallet.iconFlux} />
+                <TokenChild value={tokenBalance?.chainBalance ?? 0} tokenType={fT.symbol?.toUpperCase()} valueUSD={getUsdPrice(fT.symbol, tokenBalance?.chainBalance || 0)} src={images.wallet.iconFlux} />
               );
             })}
           </Tokens>
