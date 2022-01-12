@@ -70,10 +70,14 @@ const Div = styled.div`
   word-break: break-word;
 `;
 const FooterWrapper = styled(Footer)`
-  padding: 0 20px;
+  background: linear-gradient(90deg, rgba(230, 254, 254) 0%, rgba(253, 246, 230) 100%);
+  padding: 20px;
+  position: fixed;
+  bottom: 0;
+  width: 90%;
 `;
 const ContentWrapper = styled.div`
-  padding: 20px;
+  padding: 20px 20px 75px 20px;
 `;
 const Label = styled.span`
   display: inline-block;
