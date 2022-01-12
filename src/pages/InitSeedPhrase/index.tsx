@@ -66,7 +66,6 @@ const Term = styled.span`
 const getCheckboxLabel = () => (
   <SLabel>
     <Label>I have read and agree to the</Label>
-    <br />
     <Term><a href={TERM_LINK} target="_blank" rel="noreferrer">Terms of Use</a></Term>
   </SLabel>
 );
