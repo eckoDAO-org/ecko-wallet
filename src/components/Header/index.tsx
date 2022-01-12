@@ -42,7 +42,7 @@ const DivHeader = styled.div`
 const WrapBetaBanner = styled.div`
     height: 25px;
     background-color: white;
-    padding: 5px;
+    padding: 8px 5px 5px 5px;
     text-align: center;
     font-size: 0.7em;
     svg {
