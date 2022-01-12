@@ -108,7 +108,16 @@ const RemoveWalletPopup = (props: Props) => {
   const confirm = () => {
     bcrypt.compare(passwordInput, passwordHash, (_errors, isValid) => {
       if (isValid) {
-        if (wallets.length === 1) {
+        const newWallets = wallets.filter((w:any) => w.account !== account);
+        const sameAccountWallet:any = newWallets.find((w:any) => w.account === account);
+        if (sameAccountWallet && sameAccountWallet.account) {
+          getLocalCrossRequests(selectedNetwork.networkId, (crossChainRequests) => {
+            // Remove finish crosschain requests
+            const requests = crossChainRequests.filter((r:any) => r.sender !== account);
+            setLocalCrossRequests(selectedNetwork.networkId, requests);
+          }, () => {});
+        }
+        if (newWallets.length === 0) {
           setCurrentWallet({
             chainId: '0',
             account: '',
@@ -128,15 +137,6 @@ const RemoveWalletPopup = (props: Props) => {
           setLocalActivities(selectedNetwork.networkId, chainId, account, []);
           history.push('/init');
         } else {
-          const newWallets = wallets.filter((w:any) => w.chainId.toString() !== chainId.toString() || w.account !== account);
-          const sameAccountWallet:any = newWallets.find((w:any) => w.account === account);
-          if (sameAccountWallet && sameAccountWallet.account) {
-            getLocalCrossRequests(selectedNetwork.networkId, (crossChainRequests) => {
-              // Remove finish crosschain requests
-              const requests = crossChainRequests.filter((r:any) => r.sender !== account);
-              setLocalCrossRequests(selectedNetwork.networkId, requests);
-            }, () => {});
-          }
           setWallets(newWallets);
           setCurrentWallet(newWallets[0]);
           const newLocalWallets = newWallets.map((w:any) => ({
