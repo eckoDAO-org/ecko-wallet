@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import Back from 'src/components/Back';
+import useLocalStorage from 'src/hooks/useLocalStorage';
 import { setActiveTab } from 'src/stores/extensions';
 import { ACTIVE_TAB } from 'src/utils/constant';
 import {
@@ -14,6 +15,7 @@ import {
 } from './styles';
 import Transfer from './views/Transfer';
 import SelectReceiver from './views/SelectReceiver';
+import { IFungibleToken } from '../ImportToken';
 
 const Wrapper = styled(TransactionWrapper)`
   padding: 0;
@@ -24,8 +26,15 @@ const Header = styled.div`
 
 const SendTransactions = () => {
   const history = useHistory();
+  const { search } = useLocation();
+  const [fungibleTokens] = useLocalStorage<IFungibleToken[]>('fungibleTokens', []);
   const [step, setStep] = useState(0);
   const [destinationAccount, setDestinationAccount] = useState();
+
+  const params = new URLSearchParams(search);
+  const coin = params.get('coin');
+  const token = fungibleTokens?.find((ft) => ft.symbol === coin);
+
   const goBack = () => {
     if (step > 0) {
       setStep(0);
@@ -50,7 +59,7 @@ const SendTransactions = () => {
             <SelectWrapper isHide={step !== 0}>
               <SelectReceiver goToTransfer={goToTransfer} />
             </SelectWrapper>
-            {step > 0 && <Transfer destinationAccount={destinationAccount} />}
+            {step > 0 && <Transfer destinationAccount={destinationAccount} fungibleToken={token || { symbol: 'kda', contractAddress: 'coin' }} />}
           </FormSend>
         </Body>
       </Wrapper>

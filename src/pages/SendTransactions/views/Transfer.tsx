@@ -7,6 +7,7 @@ import { getLocalContacts, getExistContacts } from 'src/utils/storage';
 import ModalCustom from 'src/components/Modal/ModalCustom';
 import PopupConfirm from 'src/pages/SendTransactions/views/PopupConfirm';
 import { toast } from 'react-toastify';
+import useLocalStorage from 'src/hooks/useLocalStorage';
 import Toast from 'src/components/Toast/Toast';
 import { Controller, useForm } from 'react-hook-form';
 import { BUTTON_SIZE, BUTTON_TYPE, GAS_PAYER } from 'src/utils/constant';
@@ -14,6 +15,7 @@ import { ESTIMATE_KDA_TO_USD_API, GAS_CONFIGS, NUMBER_DECIMAL_AFTER_DOT } from '
 import { get } from 'lodash';
 import images from 'src/images';
 import { BigNumberConverter, shortenAddress } from 'src/utils';
+import { IFungibleToken } from 'src/pages/ImportToken';
 import Button from 'src/components/Buttons';
 import Tooltip from 'src/components/Tooltip';
 import {
@@ -54,6 +56,7 @@ import AddContact from './AddContact';
 
 type Props = {
   destinationAccount: any;
+  fungibleToken: IFungibleToken|null;
 }
 export const renderTransactionInfo = (info) => (
   <SendTransaction>
@@ -121,15 +124,17 @@ const defaultWallet:Wallet = {
   secretKey: '',
 };
 const Transfer = (props: Props) => {
-  const { destinationAccount } = props;
+  const { destinationAccount, fungibleToken } = props;
   const [wallet, setWallet] = useState(defaultWallet);
   const [selectedGas, setSelectedGas] = useState(GAS_CONFIGS.NORMAL);
+  const [fungibleTokens] = useLocalStorage<IFungibleToken[]>('fungibleTokens', []);
   const [amount, setAmount] = useState('');
   const [isNewContact, setIsNewContact] = useState(true);
   const [aliasContact, setAliasContact] = useState('');
   const [isOpenTransferModal, setIsOpenTransferModal] = useState(false);
   const [isOpenAddContactModal, setIsOpenAddContactModal] = useState(false);
   const [KDApriceEstimate, setKDApriceEstimate] = useState(1);
+
   const {
     register,
     handleSubmit,
@@ -145,11 +150,12 @@ const Transfer = (props: Props) => {
     initContact();
   }, [selectedNetwork.networkId]);
   useEffect(() => {
-    fetch(ESTIMATE_KDA_TO_USD_API)
+    fetch(`${ESTIMATE_KDA_TO_USD_API}${fungibleTokens?.map((ft) => ft.symbol).join(',')}`)
       .then((res) => res.json())
       .then(
         (result) => {
-          setKDApriceEstimate(result?.kadena?.usd);
+          const token = fungibleToken?.symbol ?? '';
+          setKDApriceEstimate(result[token]?.usd);
         },
         () => {},
       );
@@ -287,7 +293,7 @@ const Transfer = (props: Props) => {
   const renderAmountLabel = () => (
     <AmountWrapper>
       Amount
-      <Balance>{`Balance: ${BigNumberConverter(wallet?.balance)} KDA`}</Balance>
+      <Balance>{`Balance: ${BigNumberConverter(wallet?.balance)} ${fungibleToken?.symbol}`}</Balance>
     </AmountWrapper>
   );
   const renderTitle = (title, tooltip) => (
@@ -382,7 +388,7 @@ const Transfer = (props: Props) => {
                   <Item>
                     <LabelMax onClick={setMaxBalance}>MAX</LabelMax>
                     <KadenaImage src={images.wallet.iconKadenaToken} alt="logo" />
-                    <Label>KDA</Label>
+                    <Label>{fungibleToken?.symbol}</Label>
                   </Item>
                 ),
               }}
@@ -563,7 +569,7 @@ const Transfer = (props: Props) => {
           onCloseModal={onCloseTransfer}
           closeOnOverlayClick={false}
         >
-          <PopupConfirm configs={configs} onClose={onCloseTransfer} aliasContact={aliasContact} />
+          <PopupConfirm configs={configs} onClose={onCloseTransfer} aliasContact={aliasContact} fungibleToken={fungibleToken} />
         </ModalCustom>
       )}
       {isOpenAddContactModal && (

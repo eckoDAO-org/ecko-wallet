@@ -422,10 +422,10 @@ const Wallet = () => {
 
   const TokenChild = (props: any) => {
     const {
-      value, src, valueUSD, tokenType, nameToken,
+      value, src, valueUSD, tokenType, nameToken, onClick,
     } = props;
     return (
-      <Div marginBottom="10px">
+      <Div marginBottom="10px" onClick={onClick}>
         <DivChildKadena>
           <Transaction>
             <DivFlex alignItems="center">
@@ -513,7 +513,7 @@ const Wallet = () => {
           </DivChildKadena>
           <DivFlex alignItems="center" margin="20px" gap="10px">
             <DivWrapper background="#461A57" marginRight="10px">
-              <DivChild onClick={() => history.push('/transfer')}>
+              <DivChild onClick={() => history.push('/transfer?coin=kda')}>
                 <DivFlex justifyContent="center">
                   <Div marginRight="10px"><Image src={images.wallet.iconSend} alt="send" /></Div>
                   <Div fontSize="12px" color="#FFFFFF" fontWeight="700">Send</Div>
@@ -545,7 +545,13 @@ const Wallet = () => {
             {fungibleTokens?.map((fT) => {
               const tokenBalance = fungibleTokensBalance.find((f) => f.contractAddress === fT.contractAddress);
               return (
-                <TokenChild value={tokenBalance?.chainBalance ?? 0} tokenType={fT.symbol?.toUpperCase()} valueUSD={getUsdPrice(fT.symbol, tokenBalance?.chainBalance || 0)} src={images.wallet.iconFlux} />
+                <TokenChild
+                  value={tokenBalance?.chainBalance ?? 0}
+                  tokenType={fT.symbol?.toUpperCase()}
+                  valueUSD={getUsdPrice(fT.symbol, tokenBalance?.chainBalance || 0)}
+                  src={images.wallet.iconFlux}
+                  onClick={() => history.push(`/transfer?coin=${fT.symbol}`)}
+                />
               );
             })}
           </Tokens>
