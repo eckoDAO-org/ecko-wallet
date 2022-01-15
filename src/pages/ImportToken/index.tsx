@@ -1,4 +1,4 @@
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import Back from 'src/components/Back';
 import { toast } from 'react-toastify';
@@ -9,6 +9,7 @@ import { BaseTextInput, InputError } from 'src/baseComponent';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import { fetchListLocal } from 'src/utils/chainweb';
 import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
 
 export interface IFungibleToken {
   contractAddress: string;
@@ -64,10 +65,15 @@ const Footer = styled.div`
 `;
 const ImportToken = () => {
   const stateWallet = useCurrentWallet();
+  const { search } = useLocation();
   const rootState = useSelector((state) => state);
   const { selectedNetwork } = rootState.extensions;
   const history = useHistory();
   const [fungibleTokens, setFungibleTokens] = useLocalStorage<IFungibleToken[]>('fungibleTokens', []);
+
+  const params = new URLSearchParams(search);
+  const coin = params.get('coin');
+  const token = fungibleTokens?.find((ft) => ft.symbol === coin);
 
   const checkTokenExists = (contractAddress: string): Promise<any> => {
     const { account } = stateWallet;
@@ -82,22 +88,35 @@ const ImportToken = () => {
     setValue,
     clearErrors,
   } = useForm();
+
+  useEffect(() => {
+    if (token) {
+      setValue('contractAddress', token.contractAddress);
+      setValue('symbol', token.symbol);
+    }
+  }, [token]);
+
   const onImport = async (fT: IFungibleToken) => {
     const alreadyExists = fungibleTokens?.find((fungToken) => fungToken.contractAddress === fT.contractAddress);
-    if (alreadyExists) {
+    if (!token && alreadyExists) {
       toast.error(<Toast type="error" content="Token already added" />);
     } else {
       checkTokenExists(fT.contractAddress).then((res) => {
         if (res?.result?.error?.message === `Cannot resolve ${fT.contractAddress}.details`) {
           toast.error(<Toast type="error" content={`Cannot resolve ${fT.contractAddress}.details`} />);
         } else {
+          let newFungibleTokens = fungibleTokens || [];
+          if (token) {
+            newFungibleTokens = fungibleTokens?.filter((ft) => ft.contractAddress !== token.contractAddress) ?? [];
+          }
           setFungibleTokens([
-            ...(fungibleTokens || []),
+            ...newFungibleTokens,
             {
               ...fT,
               symbol: fT.symbol?.toLowerCase(),
             },
           ]);
+          toast.success(<Toast type="success" content="Token successfully saved" />);
           history.push('/');
         }
       }).catch(() => {

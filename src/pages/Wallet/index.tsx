@@ -422,10 +422,10 @@ const Wallet = () => {
 
   const TokenChild = (props: any) => {
     const {
-      value, src, valueUSD, tokenType, nameToken, onClick,
+      value, src, valueUSD, tokenType, nameToken, containerStyle, onClick,
     } = props;
     return (
-      <Div marginBottom="10px" onClick={onClick}>
+      <Div marginBottom="10px" onClick={onClick} style={containerStyle}>
         <DivChildKadena>
           <Transaction>
             <DivFlex alignItems="center">
@@ -550,14 +550,15 @@ const Wallet = () => {
                   tokenType={fT.symbol?.toUpperCase()}
                   valueUSD={getUsdPrice(fT.symbol, tokenBalance?.chainBalance || 0)}
                   src={images.wallet.iconFlux}
-                  onClick={() => history.push(`/transfer?coin=${fT.symbol}`)}
+                  containerStyle={{ cursor: 'pointer' }}
+                  onClick={() => history.push(`/token-menu?coin=${fT.symbol}`)}
                 />
               );
             })}
           </Tokens>
           <AddMoreToken>
             <DivText onClick={() => history.push('/import-token')}>
-              Add more token
+              Add more tokens
             </DivText>
           </AddMoreToken>
         </WrapAssets>

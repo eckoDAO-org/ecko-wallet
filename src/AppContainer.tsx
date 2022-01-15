@@ -34,6 +34,7 @@ import SeedPhrase from './pages/SeedPhrase';
 import InitSeedPhrase from './pages/InitSeedPhrase';
 import ExportSeedPhrase from './pages/Setting/ExportSeedPhrase';
 import History from './pages/Wallet/views/History';
+import TokenMenu from './pages/TokenMenu';
 
 const Container = styled.div`
   width: 1000px;
@@ -77,6 +78,7 @@ const AppContainer = () => {
         <PrivateRoute path="/networks" component={PageNetworks} />
         <PrivateRoute path="/about" component={PageAbout} />
         <PrivateRoute path="/setting" component={PageSetting} />
+        <PrivateRoute path="/token-menu" component={TokenMenu} />
         <PrivateRoute path="/history" component={History} />
         <PrivateRoute isHome path="/" component={Wallet} />
         <Redirect to="/" />
