@@ -144,7 +144,7 @@ const ImportToken = () => {
                   },
                 }),
               }}
-              title="Token Contract Address (runonflux.flux)"
+              title="Token Contract Address"
               height="auto"
               onChange={(e) => { clearErrors('contractAddress'); setValue('contractAddress', e.target.value); }}
             />
@@ -173,7 +173,7 @@ const ImportToken = () => {
         </form>
       </Body>
       <Footer>
-        <ButtonSubmit form="import-token-form">Add Custom Token</ButtonSubmit>
+        <ButtonSubmit form="import-token-form">{`${token ? 'Edit' : 'Add'} Custom Token`}</ButtonSubmit>
       </Footer>
     </ImportTokenWrapper>
   );

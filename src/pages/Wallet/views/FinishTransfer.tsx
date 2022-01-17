@@ -176,7 +176,7 @@ const FinishTransfer = () => {
         createdTime={request.createdTime}
         chainId={request.receiverChainId}
         value={request.amount}
-        tokenType="KDA"
+        tokenType={request.symbol?.toUpperCase() || 'KDA'}
         receiver={request.receiver}
         domain={request.domain}
         status={pendingFinishRequestKeys?.includes(request.requestKey) ? 'finishing' : request.status}
@@ -332,16 +332,19 @@ const FinishTransfer = () => {
                 {renderTransactionInfo(transferDetails)}
                 <TransactionInfo>
                   <DivChild fontWeight="700">Amount</DivChild>
-                  <DivChild fontWeight="700">{`${transferDetails?.amount} KDA`}</DivChild>
+                  <DivChild fontWeight="700">{`${transferDetails?.amount} ${transferDetails.symbol?.toUpperCase() || 'KDA'}`}</DivChild>
                 </TransactionInfo>
               </DivChild>
               <Hr />
+              {transferDetails.symbol === 'kda'
+              && (
               <TransactionInfo marginTop="20px">
                 <DivChild fontWeight="700">Total</DivChild>
                 <DivChild fontWeight="700">
                   {transferDetails.status !== 'pending' ? `${new BigNumber(parseFloat(transferDetails?.amount) + parseFloat(transferDetails?.gasFee) * parseFloat(transferDetails?.gasPrice)).decimalPlaces(12).toString()} KDA` : 'Pending'}
                 </DivChild>
               </TransactionInfo>
+              )}
               <DivChild>
                 <ActionButton marginTop="200px">
                   <Button label="Close" onClick={() => setIsOpenFinishTransferModal(false)} type={BUTTON_TYPE.DISABLE} size={BUTTON_SIZE.FULL} />

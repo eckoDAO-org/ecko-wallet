@@ -111,14 +111,16 @@ export const renderTransactionInfo = (info) => (
 );
 interface Wallet {
   accountName: string;
-  balance: number,
-  publicKey: string,
-  chainId: string | number,
-  secretKey: string,
+  coinBalance: number;
+  tokenBalance: number;
+  publicKey: string;
+  chainId: string | number;
+  secretKey: string;
 }
-const defaultWallet:Wallet = {
+const defaultWallet: Wallet = {
   accountName: '',
-  balance: 0,
+  coinBalance: 0,
+  tokenBalance: 0,
   publicKey: '',
   chainId: '0',
   secretKey: '',
@@ -154,8 +156,7 @@ const Transfer = (props: Props) => {
       .then((res) => res.json())
       .then(
         (result) => {
-          const token = fungibleToken?.symbol ?? '';
-          setKDApriceEstimate(result[token]?.usd);
+          setKDApriceEstimate(result?.kadena?.usd);
         },
         () => {},
       );
@@ -177,21 +178,26 @@ const Transfer = (props: Props) => {
       publicKey,
       secretKey,
     } = rootState.wallet;
-    const pactCode = `(coin.details "${account}")`;
+    const pactCodeCoin = `(coin.details "${account}")`;
+    const pactCodeToken = `(${fungibleToken?.contractAddress}.details "${account}")`;
     showLoading();
-    fetchLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, chainId).then((res) => {
-      hideLoading();
-      const status = get(res, 'result.status');
-      if (status === 'success') {
-        const balance = getBalanceFromChainwebApiResponse(res);
-        setWallet({
-          accountName: account,
-          balance,
-          publicKey,
-          secretKey,
-          chainId,
-        });
-      }
+    fetchLocal(pactCodeCoin, selectedNetwork.url, selectedNetwork.networkId, chainId).then((resCoin) => {
+      fetchLocal(pactCodeToken, selectedNetwork.url, selectedNetwork.networkId, chainId).then((resToken) => {
+        hideLoading();
+        const status = get(resToken, 'result.status');
+        if (status === 'success') {
+          const coinBalance = getBalanceFromChainwebApiResponse(resCoin);
+          const tokenBalance = getBalanceFromChainwebApiResponse(resToken);
+          setWallet({
+            accountName: account,
+            coinBalance,
+            tokenBalance,
+            publicKey,
+            secretKey,
+            chainId,
+          });
+        }
+      });
     })
       .catch(() => {
         hideLoading();
@@ -285,7 +291,10 @@ const Transfer = (props: Props) => {
   };
   const setMaxBalance = () => {
     const gasFee = BigNumberConverter(Number(selectedGas?.GAS_PRICE) * Number(selectedGas?.GAS_LIMIT));
-    const amountValue = BigNumberConverter(wallet?.balance - gasFee);
+    let amountValue = BigNumberConverter(wallet?.tokenBalance);
+    if (fungibleToken?.contractAddress === 'coin') {
+      amountValue -= gasFee;
+    }
     const amountCustom = amountValue > 0 ? amountValue.toString() : '0';
     setAmount(amountCustom);
     setValue('amount', amountCustom);
@@ -293,7 +302,7 @@ const Transfer = (props: Props) => {
   const renderAmountLabel = () => (
     <AmountWrapper>
       Amount
-      <Balance>{`Balance: ${BigNumberConverter(wallet?.balance)} ${fungibleToken?.symbol}`}</Balance>
+      <Balance>{`Balance: ${BigNumberConverter(wallet?.tokenBalance)} ${fungibleToken?.symbol.toUpperCase()}`}</Balance>
     </AmountWrapper>
   );
   const renderTitle = (title, tooltip) => (
@@ -342,9 +351,12 @@ const Transfer = (props: Props) => {
                     },
                     positive: (v) => {
                       const value = Number(v);
-                      const balance = Number(wallet.balance);
+                      const balance = Number(wallet.tokenBalance);
                       const gasFee = BigNumberConverter(Number(selectedGas.GAS_PRICE) * Number(selectedGas.GAS_LIMIT));
-                      const amountValue = BigNumberConverter(balance - gasFee);
+                      let amountValue = BigNumberConverter(balance);
+                      if (fungibleToken?.contractAddress === 'coin') {
+                        amountValue -= gasFee;
+                      }
                       return (value > 0 && value <= amountValue);
                     },
                   },
@@ -371,9 +383,12 @@ const Transfer = (props: Props) => {
                     },
                     positive: (v) => {
                       const value = Number(v);
-                      const balance = Number(wallet.balance);
+                      const balance = Number(wallet.tokenBalance);
                       const gasFee = BigNumberConverter(Number(selectedGas.GAS_PRICE) * Number(selectedGas.GAS_LIMIT));
-                      const amountValue = BigNumberConverter(balance - gasFee);
+                      let amountValue = BigNumberConverter(balance);
+                      if (fungibleToken?.contractAddress === 'coin') {
+                        amountValue -= gasFee;
+                      }
                       return (value > 0 && value <= amountValue);
                     },
                   },
@@ -388,7 +403,7 @@ const Transfer = (props: Props) => {
                   <Item>
                     <LabelMax onClick={setMaxBalance}>MAX</LabelMax>
                     <KadenaImage src={images.wallet.iconKadenaToken} alt="logo" />
-                    <Label>{fungibleToken?.symbol}</Label>
+                    <Label>{fungibleToken?.symbol.toUpperCase()}</Label>
                   </Item>
                 ),
               }}

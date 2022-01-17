@@ -549,7 +549,7 @@ const Wallet = () => {
                   value={tokenBalance?.chainBalance ?? 0}
                   tokenType={fT.symbol?.toUpperCase()}
                   valueUSD={getUsdPrice(fT.symbol, tokenBalance?.chainBalance || 0)}
-                  src={images.wallet.iconFlux}
+                  src={images.wallet.tokens[fT.symbol] || images.wallet.tokens.token}
                   containerStyle={{ cursor: 'pointer' }}
                   onClick={() => history.push(`/token-menu?coin=${fT.symbol}`)}
                 />

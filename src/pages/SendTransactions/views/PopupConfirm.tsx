@@ -197,6 +197,7 @@ const PopupConfirm = (props: Props) => {
         };
         addRecent(createdTime);
         const activity = {
+          symbol: fungibleToken?.symbol,
           requestKey,
           senderChainId: senderChainId.toString(),
           receiverChainId: receiverChainId.toString(),
@@ -285,7 +286,7 @@ const PopupConfirm = (props: Props) => {
         <TransactionTitle>Transaction</TransactionTitle>
         <FormItemConfirm>
           <LabelConfirm>Amount</LabelConfirm>
-          <LabelBold isRight>{`${validAmount} KDA`}</LabelBold>
+          <LabelBold isRight>{`${validAmount} ${fungibleToken?.symbol.toUpperCase()}`}</LabelBold>
         </FormItemConfirm>
         <FormItemConfirm>
           <LabelConfirm>Gas Limit</LabelConfirm>
@@ -307,12 +308,15 @@ const PopupConfirm = (props: Props) => {
         </GasFee>
       </BodyContent>
       <TransferHr />
-      <BodyContent>
-        <FormItemConfirm>
-          <LabelBold>Total</LabelBold>
-          <LabelBold isRight>{`${new BigNumber(total).decimalPlaces(12).toString()} KDA`}</LabelBold>
-        </FormItemConfirm>
-      </BodyContent>
+      {fungibleToken?.contractAddress === 'coin'
+        && (
+        <BodyContent>
+          <FormItemConfirm>
+            <LabelBold>Total</LabelBold>
+            <LabelBold isRight>{`${new BigNumber(total).decimalPlaces(12).toString()} KDA`}</LabelBold>
+          </FormItemConfirm>
+        </BodyContent>
+        )}
       <Footer>
         <ButtonWrapper>
           <Button label="Reject" type={BUTTON_TYPE.DISABLE} onClick={(() => onClose())} size={BUTTON_SIZE.FULL} />

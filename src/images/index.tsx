@@ -126,6 +126,10 @@ const wallet = {
   iconMorePurple,
   iconDropDown,
   iconCreate,
+  tokens: {
+    token: iconKadenaToken,
+    flux: iconFlux,
+  },
 };
 const initPage = {
   importPrivateKey,
