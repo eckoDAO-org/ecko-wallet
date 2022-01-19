@@ -63,6 +63,9 @@ import failToast from './fail-toast.svg';
 import closeWhite from './close-white.svg';
 import settingWhite from './setting-white.svg';
 import iconFlux from './flux-icon.png';
+import iconKdl from './kdl-logo.svg';
+import iconBabena from './babena-logo.svg';
+import iconAnedak from './anedak-logo.svg';
 import checkedViolet from './checked-violet.svg';
 import violetAdd from './violet-add.svg';
 import trashViolet from './trash-violet.svg';
@@ -129,6 +132,9 @@ const wallet = {
   tokens: {
     token: iconKadenaToken,
     flux: iconFlux,
+    kdl: iconKdl,
+    babena: iconBabena,
+    anedak: iconAnedak,
   },
 };
 const initPage = {

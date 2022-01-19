@@ -240,8 +240,8 @@ const Wallet = () => {
         const resBalance = getBalanceFromChainwebApiResponse(fetched);
         if (contractAddress === 'coin') {
           total += resBalance;
-          if (chainId === chainIndex.toString()) {
-            setBalance(resBalance ?? 0);
+          if (chainId === chainIndex.toString() && resBalance) {
+            setBalance(resBalance);
           }
         } else {
           setFungibleTokensBalance((fungibleTokensBalance1) => [

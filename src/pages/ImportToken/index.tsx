@@ -10,6 +10,7 @@ import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import { fetchListLocal } from 'src/utils/chainweb';
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
+import { KNOWN_TOKENS } from 'src/utils/constant';
 
 export interface IFungibleToken {
   contractAddress: string;
@@ -146,7 +147,17 @@ const ImportToken = () => {
               }}
               title="Token Contract Address"
               height="auto"
-              onChange={(e) => { clearErrors('contractAddress'); setValue('contractAddress', e.target.value); }}
+              onChange={(e) => {
+                clearErrors('contractAddress');
+                setValue('contractAddress', e.target.value);
+                if (KNOWN_TOKENS[e.target.value] && KNOWN_TOKENS[e.target.value]?.symbol) {
+                  clearErrors('symbol');
+                  setValue('symbol', KNOWN_TOKENS[e.target.value]?.symbol);
+                } else {
+                  clearErrors('symbol');
+                  setValue('symbol', '');
+                }
+              }}
             />
             {errors.contractAddress && <InputError>{errors.contractAddress.message}</InputError>}
           </DivBody>
