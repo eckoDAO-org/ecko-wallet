@@ -258,22 +258,25 @@ const Wallet = () => {
       if (contractAddress === 'coin') {
         setAllChainBalance(total);
       }
-    }).catch();
+    })
+      .catch();
   };
 
   useEffect(() => {
-    fetchCoinBalance({ contractAddress: 'coin', symbol: 'KDA' }, [...Array(CHAIN_COUNT).keys()]);
-  }, [wallets, stateWallet?.account, stateWallet?.chainId]);
+    if (stateWallet?.account) {
+      fetchCoinBalance({ contractAddress: 'coin', symbol: 'KDA' }, [...Array(CHAIN_COUNT).keys()]);
+    }
+  }, [stateWallet?.account]);
 
   useEffect(() => {
     const { chainId } = stateWallet;
-    if (fungibleTokens?.length) {
+    if (fungibleTokens?.length && stateWallet?.account) {
       // selected chain only for fungible tokens
       fungibleTokens.forEach((fT) => fetchCoinBalance(fT, [chainId]));
     }
   }, [fungibleTokens, stateWallet?.account, stateWallet?.chainId]);
 
-  const checkSelectedWallet = (wallet) => wallet.chainId.toString() === stateWallet.chainId.toString() && wallet.account === stateWallet.account;
+  const checkSelectedWallet = (wallet) => wallet.account === stateWallet.account;
   const setSelectedLocalWallet = (wallet) => {
     getLocalPassword((accountPassword) => {
       const newWallet = {
@@ -368,7 +371,7 @@ const Wallet = () => {
                     setCurrentWallet(wallet);
                     setBalance(0);
                     history.push('/');
-                    (walletDropdownRef as any).current.hideDropdownContent;
+                    (walletDropdownRef as any).current.hideDropdownContent();
                   }
                 }}
               >
