@@ -1,6 +1,6 @@
 {
   "name": "X Wallet",
-  "description": "X Wallet Extension",
+  "description": "The best webextension wallet for the Kadena blockchain. Powered by Kaddex",
   "version": "1.0",
   "manifest_version": 2,
   "background": {
