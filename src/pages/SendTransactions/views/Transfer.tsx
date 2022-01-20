@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 import { BaseSelect, BaseTextInput } from 'src/baseComponent';
 import { useSelector } from 'react-redux';
 import { hideLoading, showLoading } from 'src/stores/extensions';
-import { fetchLocal } from 'src/utils/chainweb';
+import { fetchLocal, getBalanceFromChainwebApiResponse } from 'src/utils/chainweb';
 import { getLocalContacts, getExistContacts } from 'src/utils/storage';
 import ModalCustom from 'src/components/Modal/ModalCustom';
 import PopupConfirm from 'src/pages/SendTransactions/views/PopupConfirm';
 import { toast } from 'react-toastify';
+import useLocalStorage from 'src/hooks/useLocalStorage';
 import Toast from 'src/components/Toast/Toast';
 import { Controller, useForm } from 'react-hook-form';
 import { BUTTON_SIZE, BUTTON_TYPE, GAS_PAYER } from 'src/utils/constant';
@@ -14,6 +15,7 @@ import { ESTIMATE_KDA_TO_USD_API, GAS_CONFIGS, NUMBER_DECIMAL_AFTER_DOT } from '
 import { get } from 'lodash';
 import images from 'src/images';
 import { BigNumberConverter, shortenAddress } from 'src/utils';
+import { IFungibleToken } from 'src/pages/ImportToken';
 import Button from 'src/components/Buttons';
 import Tooltip from 'src/components/Tooltip';
 import {
@@ -54,6 +56,7 @@ import AddContact from './AddContact';
 
 type Props = {
   destinationAccount: any;
+  fungibleToken: IFungibleToken|null;
 }
 export const renderTransactionInfo = (info) => (
   <SendTransaction>
@@ -108,28 +111,32 @@ export const renderTransactionInfo = (info) => (
 );
 interface Wallet {
   accountName: string;
-  balance: number,
-  publicKey: string,
-  chainId: string | number,
-  secretKey: string,
+  coinBalance: number;
+  tokenBalance: number;
+  publicKey: string;
+  chainId: string | number;
+  secretKey: string;
 }
-const defaultWallet:Wallet = {
+const defaultWallet: Wallet = {
   accountName: '',
-  balance: 0,
+  coinBalance: 0,
+  tokenBalance: 0,
   publicKey: '',
   chainId: '0',
   secretKey: '',
 };
 const Transfer = (props: Props) => {
-  const { destinationAccount } = props;
+  const { destinationAccount, fungibleToken } = props;
   const [wallet, setWallet] = useState(defaultWallet);
   const [selectedGas, setSelectedGas] = useState(GAS_CONFIGS.NORMAL);
+  const [fungibleTokens] = useLocalStorage<IFungibleToken[]>('fungibleTokens', []);
   const [amount, setAmount] = useState('');
   const [isNewContact, setIsNewContact] = useState(true);
   const [aliasContact, setAliasContact] = useState('');
   const [isOpenTransferModal, setIsOpenTransferModal] = useState(false);
   const [isOpenAddContactModal, setIsOpenAddContactModal] = useState(false);
   const [KDApriceEstimate, setKDApriceEstimate] = useState(1);
+
   const {
     register,
     handleSubmit,
@@ -145,7 +152,7 @@ const Transfer = (props: Props) => {
     initContact();
   }, [selectedNetwork.networkId]);
   useEffect(() => {
-    fetch(ESTIMATE_KDA_TO_USD_API)
+    fetch(`${ESTIMATE_KDA_TO_USD_API}${fungibleTokens?.map((ft) => ft.symbol).join(',')}`)
       .then((res) => res.json())
       .then(
         (result) => {
@@ -171,21 +178,26 @@ const Transfer = (props: Props) => {
       publicKey,
       secretKey,
     } = rootState.wallet;
-    const pactCode = `(coin.details "${account}")`;
+    const pactCodeCoin = `(coin.details "${account}")`;
+    const pactCodeToken = `(${fungibleToken?.contractAddress}.details "${account}")`;
     showLoading();
-    fetchLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, chainId).then((res) => {
-      hideLoading();
-      const status = get(res, 'result.status');
-      if (status === 'success') {
-        const balance = get(res, 'result.data.balance');
-        setWallet({
-          accountName: account,
-          balance,
-          publicKey,
-          secretKey,
-          chainId,
-        });
-      }
+    fetchLocal(pactCodeCoin, selectedNetwork.url, selectedNetwork.networkId, chainId).then((resCoin) => {
+      fetchLocal(pactCodeToken, selectedNetwork.url, selectedNetwork.networkId, chainId).then((resToken) => {
+        hideLoading();
+        const status = get(resToken, 'result.status');
+        if (status === 'success') {
+          const coinBalance = getBalanceFromChainwebApiResponse(resCoin);
+          const tokenBalance = getBalanceFromChainwebApiResponse(resToken);
+          setWallet({
+            accountName: account,
+            coinBalance,
+            tokenBalance,
+            publicKey,
+            secretKey,
+            chainId,
+          });
+        }
+      });
     })
       .catch(() => {
         hideLoading();
@@ -279,7 +291,10 @@ const Transfer = (props: Props) => {
   };
   const setMaxBalance = () => {
     const gasFee = BigNumberConverter(Number(selectedGas?.GAS_PRICE) * Number(selectedGas?.GAS_LIMIT));
-    const amountValue = BigNumberConverter(wallet?.balance - gasFee);
+    let amountValue = BigNumberConverter(wallet?.tokenBalance);
+    if (fungibleToken?.contractAddress === 'coin') {
+      amountValue -= gasFee;
+    }
     const amountCustom = amountValue > 0 ? amountValue.toString() : '0';
     setAmount(amountCustom);
     setValue('amount', amountCustom);
@@ -287,7 +302,7 @@ const Transfer = (props: Props) => {
   const renderAmountLabel = () => (
     <AmountWrapper>
       Amount
-      <Balance>{`Balance: ${BigNumberConverter(wallet?.balance)} KDA`}</Balance>
+      <Balance>{`Balance: ${BigNumberConverter(wallet?.tokenBalance)} ${fungibleToken?.symbol.toUpperCase()}`}</Balance>
     </AmountWrapper>
   );
   const renderTitle = (title, tooltip) => (
@@ -336,9 +351,12 @@ const Transfer = (props: Props) => {
                     },
                     positive: (v) => {
                       const value = Number(v);
-                      const balance = Number(wallet.balance);
+                      const balance = Number(wallet.tokenBalance);
                       const gasFee = BigNumberConverter(Number(selectedGas.GAS_PRICE) * Number(selectedGas.GAS_LIMIT));
-                      const amountValue = BigNumberConverter(balance - gasFee);
+                      let amountValue = BigNumberConverter(balance);
+                      if (fungibleToken?.contractAddress === 'coin') {
+                        amountValue -= gasFee;
+                      }
                       return (value > 0 && value <= amountValue);
                     },
                   },
@@ -365,9 +383,12 @@ const Transfer = (props: Props) => {
                     },
                     positive: (v) => {
                       const value = Number(v);
-                      const balance = Number(wallet.balance);
+                      const balance = Number(wallet.tokenBalance);
                       const gasFee = BigNumberConverter(Number(selectedGas.GAS_PRICE) * Number(selectedGas.GAS_LIMIT));
-                      const amountValue = BigNumberConverter(balance - gasFee);
+                      let amountValue = BigNumberConverter(balance);
+                      if (fungibleToken?.contractAddress === 'coin') {
+                        amountValue -= gasFee;
+                      }
                       return (value > 0 && value <= amountValue);
                     },
                   },
@@ -382,7 +403,7 @@ const Transfer = (props: Props) => {
                   <Item>
                     <LabelMax onClick={setMaxBalance}>MAX</LabelMax>
                     <KadenaImage src={images.wallet.iconKadenaToken} alt="logo" />
-                    <Label>KDA</Label>
+                    <Label>{fungibleToken?.symbol.toUpperCase()}</Label>
                   </Item>
                 ),
               }}
@@ -563,7 +584,7 @@ const Transfer = (props: Props) => {
           onCloseModal={onCloseTransfer}
           closeOnOverlayClick={false}
         >
-          <PopupConfirm configs={configs} onClose={onCloseTransfer} aliasContact={aliasContact} />
+          <PopupConfirm configs={configs} onClose={onCloseTransfer} aliasContact={aliasContact} fungibleToken={fungibleToken} />
         </ModalCustom>
       )}
       {isOpenAddContactModal && (

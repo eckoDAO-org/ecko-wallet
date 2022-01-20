@@ -115,7 +115,7 @@ const PopupDetailTransaction = (props: Props) => {
         </Item>
         <Item>
           <DivChild fontWeight="700">Symbol</DivChild>
-          <DivChild fontWeight="700">KDA</DivChild>
+          <DivChild fontWeight="700">{activityDetails?.symbol?.toUpperCase() ?? 'KDA'}</DivChild>
         </Item>
         <Item>
           <DivChild fontWeight="700">Quantity</DivChild>
@@ -127,10 +127,13 @@ const PopupDetailTransaction = (props: Props) => {
         </Item>
       </DetailTx>
       <Hr />
-      <Total>
-        <DivChild>Total</DivChild>
-        <DivChild>{ isPending ? 'Pending' : `${new BigNumber(total).decimalPlaces(12).toString()} KDA` }</DivChild>
-      </Total>
+      {(activityDetails.symbol || 'kda') === 'kda'
+      && (
+        <Total>
+          <DivChild>Total</DivChild>
+          <DivChild>{ isPending ? 'Pending' : `${new BigNumber(total).decimalPlaces(12).toString()} KDA` }</DivChild>
+        </Total>
+      )}
       <Item>
         <Button size={BUTTON_SIZE.FULL} onClick={openTransactionDetails} label="View Details" />
       </Item>
@@ -141,7 +144,7 @@ const PopupDetailTransaction = (props: Props) => {
             <TxStepText padding={`0 0 ${isPending ? '0' : '20px'} 20px`}>
               {convertedDateString(newTime)}
               <br />
-              {`Transaction created with a Value of ${activityDetails?.amount} KDA`}
+              {`Transaction created with a Value of ${activityDetails?.amount} ${activityDetails?.symbol?.toUpperCase() || 'KDA'}`}
             </TxStepText>
             <ImageBox>
               <Image src={images?.wallet?.addGray} alt="icon-add" />

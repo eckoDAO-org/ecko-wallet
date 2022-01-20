@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 import {
   setBalance,
 } from 'src/stores/wallet';
-import { fetchLocal } from '../../../utils/chainweb';
+import { fetchLocal, getBalanceFromChainwebApiResponse } from '../../../utils/chainweb';
 import TabWallet from './TabContent';
 import ReceiveModal from './ReceiveModal';
 
@@ -47,7 +47,7 @@ const History = () => {
       fetchLocal(pactCode, selectedNetwork?.url, selectedNetwork?.networkId, chainId).then((res) => {
         const status = get(res, 'result.status');
         if (status === 'success') {
-          const newBalance = get(res, 'result.data.balance', 0);
+          const newBalance = getBalanceFromChainwebApiResponse(res);
           setBalance(newBalance);
         } else {
           // eslint-disable-next-line no-console

@@ -13,7 +13,7 @@ export const CONFIG = {
   GAS_LIMIT,
 };
 export const NUMBER_DECIMAL_AFTER_DOT = 12;
-export const ESTIMATE_KDA_TO_USD_API = 'https://api.coingecko.com/api/v3/simple/price?ids=kadena&vs_currencies=usd';
+export const ESTIMATE_KDA_TO_USD_API = 'https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&ids=kadena,';
 export const TELEGRAM_GROUP_LINK = 'https://t.me/kadena_io';
 export const WEBSITE_LINK = 'https://kaddex.com/';
 export const TERM_LINK = 'https://kadena.io/chainweaver-tos/';

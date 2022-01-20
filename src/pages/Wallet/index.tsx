@@ -3,11 +3,10 @@ import { useHistory, useLocation } from 'react-router-dom';
 import images from 'src/images';
 import styled from 'styled-components';
 import ModalCustom from 'src/components/Modal/ModalCustom';
-import { hideLoading, showLoading } from 'src/stores/extensions';
 import Dropdown from 'src/components/Dropdown';
-import { get } from 'lodash';
 import { roundNumber, shortenAddress, BigNumberConverter } from 'src/utils';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
+import useLocalStorage from 'src/hooks/useLocalStorage';
 import { useSelector } from 'react-redux';
 import {
   setBalance, setCurrentWallet, setWallets,
@@ -15,6 +14,7 @@ import {
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
 import { ESTIMATE_KDA_TO_USD_API } from 'src/utils/config';
+import { CHAIN_COUNT } from 'src/utils/constant';
 import {
   getLocalPassword,
   getLocalSeedPhrase,
@@ -23,11 +23,18 @@ import {
   setLocalWallets,
 } from 'src/utils/storage';
 import { decryptKey, encryptKey } from 'src/utils/security';
-import { fetchListLocal, fetchLocal, getKeyPairsFromSeedPhrase } from '../../utils/chainweb';
-// import TabWallet from './views/TabContent';
+import { fetchListLocal, getBalanceFromChainwebApiResponse, getKeyPairsFromSeedPhrase } from '../../utils/chainweb';
 import LoadMoreDropdown from './views/LoadMoreDropdown';
 import ReceiveModal from './views/ReceiveModal';
 import ChainDropdown from './views/ChainDropdown';
+import { IFungibleToken } from '../ImportToken';
+
+export interface IFungibleTokenBalance {
+  contractAddress: string;
+  symbol: string;
+  chainBalance: number;
+  allChainBalance: number;
+}
 
 const Div = styled.div`
   margin: auto 0;
@@ -164,19 +171,19 @@ const WalletWrapper = styled.div`
   line-height: 20px;
   text-align: left;
 `;
-// const AddMoreToken = styled.div`
-//   display: flex;
-//   justify-content: center;
-// `;
-// const DivText = styled.div`
-//   display: inline-block;
-//   border-radius: 18px;
-//   border: 1px solid #461A57;
-//   color: #461A57;
-//   font-size: 12px;
-//   padding: 11px 24px;
-//   cursor: pointer;
-// `;
+const AddMoreToken = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+const DivText = styled.div`
+  display: inline-block;
+  border-radius: 18px;
+  border: 1px solid #461A57;
+  color: #461A57;
+  font-size: 12px;
+  padding: 11px 24px;
+  cursor: pointer;
+`;
 const ListWallet = styled.div`
   padding: 15px 20px;
   max-height: 250px;
@@ -210,53 +217,66 @@ const Wallet = () => {
   const location = useLocation().pathname;
   const { balance, wallets } = rootState?.wallet;
   const [isShowReceiveModal, setShowReceiveModal] = useState(false);
+  const [usdPrices, setUsdPrices] = useState<any[]>([]);
+  const [fungibleTokensBalance, setFungibleTokensBalance] = useState<IFungibleTokenBalance[]>([]);
   const [allChainBalance, setAllChainBalance] = useState(0);
+  const [fungibleTokens] = useLocalStorage<IFungibleToken[]>('fungibleTokens', []);
   const stateWallet = useCurrentWallet();
   const walletDropdownRef = useRef();
 
-  useEffect(() => {
+  const fetchCoinBalance = async (fungibleToken: IFungibleToken, chainArray: number[]) => {
+    const { account, chainId } = stateWallet;
+    const { contractAddress, symbol } = fungibleToken;
     const promiseList: any[] = [];
-    const pactCode = `(coin.details "${wallets[0].account}")`;
-    for (let i = 0; i < 20; i += 1) {
+    const pactCode = `(${contractAddress}.details "${account}")`;
+    chainArray.forEach((i) => {
       const promise = fetchListLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, i.toString());
       promiseList.push(promise);
-    }
+    });
     let total = 0;
     Promise.all(promiseList).then((res) => {
-      res?.forEach((fetched) => {
-        total += (fetched?.result?.data?.balance ?? 0);
+      res?.forEach((fetched, chainIndex) => {
+        // if (fetched?.result?.data?.account === account) {
+        const resBalance = getBalanceFromChainwebApiResponse(fetched);
+        if (contractAddress === 'coin') {
+          total += resBalance;
+          if (chainId === chainIndex.toString()) {
+            setBalance(resBalance);
+          }
+        } else {
+          setFungibleTokensBalance((fungibleTokensBalance1) => [
+            ...fungibleTokensBalance1.filter((fTB) => fTB.contractAddress !== contractAddress) ?? [],
+            {
+              contractAddress,
+              symbol,
+              chainBalance: (resBalance ?? 0),
+              allChainBalance: 0,
+            },
+          ]);
+        }
       });
-      setAllChainBalance(total);
-    }).catch();
-  }, [wallets]);
+      if (contractAddress === 'coin') {
+        setAllChainBalance(total);
+      }
+    })
+      .catch();
+  };
 
   useEffect(() => {
-    if (stateWallet) {
-      const { account, chainId } = stateWallet;
-      const pactCode = `(coin.details "${account}")`;
-      showLoading();
-      fetchLocal(pactCode, selectedNetwork?.url, selectedNetwork?.networkId, chainId).then((res) => {
-        const status = get(res, 'result.status');
-        if (status === 'success') {
-          const newBalance = get(res, 'result.data.balance', 0);
-          setBalance(newBalance);
-        } else {
-          // eslint-disable-next-line no-console
-          console.log('fetch error');
-          setBalance(0);
-        }
-        hideLoading();
-      })
-        .catch(() => {
-          setBalance(0);
-          hideLoading();
-        });
+    if (stateWallet?.account) {
+      fetchCoinBalance({ contractAddress: 'coin', symbol: 'KDA' }, [...Array(CHAIN_COUNT).keys()]);
     }
-  }, [stateWallet?.account, stateWallet?.chainId]);
-  const [balanceKDAtoUSD, setbalanceKDAtoUSD] = useState(balance);
-  const [allChainsBalanceKDAtoUSD, setAllChainsBalanceKDAtoUSD] = useState(balance);
+  }, [stateWallet?.account]);
 
-  const checkSelectedWallet = (wallet) => wallet.chainId.toString() === stateWallet.chainId.toString() && wallet.account === stateWallet.account;
+  useEffect(() => {
+    const { chainId } = stateWallet;
+    if (fungibleTokens?.length && stateWallet?.account) {
+      // selected chain only for fungible tokens
+      fungibleTokens.forEach((fT) => fetchCoinBalance(fT, [chainId]));
+    }
+  }, [fungibleTokens, stateWallet?.account, stateWallet?.chainId]);
+
+  const checkSelectedWallet = (wallet) => wallet.account === stateWallet.account;
   const setSelectedLocalWallet = (wallet) => {
     getLocalPassword((accountPassword) => {
       const newWallet = {
@@ -351,7 +371,7 @@ const Wallet = () => {
                     setCurrentWallet(wallet);
                     setBalance(0);
                     history.push('/');
-                    (walletDropdownRef as any).current.hideDropdownContent;
+                    (walletDropdownRef as any).current.hideDropdownContent();
                   }
                 }}
               >
@@ -380,23 +400,35 @@ const Wallet = () => {
     </Div>
   );
 
-  useEffect(() => {
-    fetch(ESTIMATE_KDA_TO_USD_API)
+  const updateUsdPrices = () => {
+    fetch(`${ESTIMATE_KDA_TO_USD_API}${fungibleTokens?.map((ft) => ft.symbol).join(',')}`)
       .then((res) => res.json())
       .then(
         (result) => {
-          setbalanceKDAtoUSD(BigNumberConverter(Number(balance) * Number(result?.kadena?.usd)));
-          setAllChainsBalanceKDAtoUSD(BigNumberConverter(Number(allChainBalance) * Number(result?.kadena?.usd)));
+          setUsdPrices(Object.keys(result).map((token) => ({
+            symbol: token === 'kadena' ? 'coin' : token,
+            usdPrice: result[token].usd,
+          })));
         },
         () => {},
       );
-  }, [balance, allChainBalance]);
+  };
+
+  const getUsdPrice = (tokenSymbol, tokenBalance): number => {
+    const usdPrice = usdPrices.find((t) => t.symbol === tokenSymbol)?.usdPrice;
+    return BigNumberConverter(Number(tokenBalance) * Number(usdPrice)) || 0;
+  };
+
+  useEffect(() => {
+    updateUsdPrices();
+  }, [stateWallet?.chainId, stateWallet?.account, fungibleTokensBalance, allChainBalance]);
+
   const TokenChild = (props: any) => {
     const {
-      value, src, valueUSD, tokenType, nameToken,
+      value, src, valueUSD, tokenType, nameToken, containerStyle, onClick,
     } = props;
     return (
-      <Div marginBottom="10px">
+      <Div marginBottom="10px" onClick={onClick} style={containerStyle}>
         <DivChildKadena>
           <Transaction>
             <DivFlex alignItems="center">
@@ -475,16 +507,16 @@ const Wallet = () => {
             <DivFlex alignItems="center" justifyContent="space-between" margin="10px">
               <DivChild><Image src={images.wallet.logoWalletKadena} size={50} width={50} alt="logo" /></DivChild>
               <DivChild>
-                <Div fontSize="16px" fontWeight="700" color="#461A57" textAlign="right">{`${roundNumber(balance, 5)} KDA`}</Div>
-                <Div fontSize="12px" fontWeight="700" color="#461A57" textAlign="right">{`${roundNumber(allChainBalance, 5)} KDA`}</Div>
-                <Div fontSize="14px" color="#461A57" marginTop="10px" textAlign="right">{`${roundNumber(balanceKDAtoUSD, 1)} USD`}</Div>
-                <Div fontSize="10px" color="#461A57" marginTop="1px" textAlign="right">{`${roundNumber(allChainsBalanceKDAtoUSD, 1)} USD`}</Div>
+                <Div fontSize="16px" fontWeight="700" color="#461A57" textAlign="right">{`${roundNumber(balance ?? 0, 5)} KDA`}</Div>
+                <Div fontSize="12px" fontWeight="700" color="#461A57" textAlign="right">{`${roundNumber(allChainBalance ?? 0, 5)} KDA`}</Div>
+                <Div fontSize="14px" color="#461A57" marginTop="10px" textAlign="right">{`${roundNumber(getUsdPrice('coin', balance ?? 0), 1)} USD`}</Div>
+                <Div fontSize="10px" color="#461A57" marginTop="1px" textAlign="right">{`${roundNumber(getUsdPrice('coin', allChainBalance ?? 0), 1)} USD`}</Div>
               </DivChild>
             </DivFlex>
           </DivChildKadena>
           <DivFlex alignItems="center" margin="20px" gap="10px">
             <DivWrapper background="#461A57" marginRight="10px">
-              <DivChild onClick={() => history.push('/transfer')}>
+              <DivChild onClick={() => history.push('/transfer?coin=kda')}>
                 <DivFlex justifyContent="center">
                   <Div marginRight="10px"><Image src={images.wallet.iconSend} alt="send" /></Div>
                   <Div fontSize="12px" color="#FFFFFF" fontWeight="700">Send</Div>
@@ -510,16 +542,28 @@ const Wallet = () => {
               value={balance}
               tokenType="KDA"
               nameToken="Kadena"
-              valueUSD={balanceKDAtoUSD}
+              valueUSD={roundNumber(getUsdPrice('coin', balance), 1)}
               src={images.wallet.iconKadenaToken}
             />
-            {/* <TokenChild value="0" tokenType="Flux" valueUSD="0" src={images.wallet.iconFlux} /> */}
+            {fungibleTokens?.map((fT) => {
+              const tokenBalance = fungibleTokensBalance.find((f) => f.contractAddress === fT.contractAddress);
+              return (
+                <TokenChild
+                  value={tokenBalance?.chainBalance ?? 0}
+                  tokenType={fT.symbol?.toUpperCase()}
+                  valueUSD={getUsdPrice(fT.symbol, tokenBalance?.chainBalance || 0)}
+                  src={images.wallet.tokens[fT.symbol] || images.wallet.tokens.token}
+                  containerStyle={{ cursor: 'pointer' }}
+                  onClick={() => history.push(`/token-menu?coin=${fT.symbol}`)}
+                />
+              );
+            })}
           </Tokens>
-          {/* <AddMoreToken>
+          <AddMoreToken>
             <DivText onClick={() => history.push('/import-token')}>
-              Add more token
+              Add more tokens
             </DivText>
-          </AddMoreToken> */}
+          </AddMoreToken>
         </WrapAssets>
       </DivChild>
       <ModalCustom isOpen={false} title="Confirm Send Transaction" closeOnOverlayClick={false} />

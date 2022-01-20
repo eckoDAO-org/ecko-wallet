@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Pact from 'pact-lang-api';
 import { useSelector } from 'react-redux';
 import images from 'src/images';
+import useLocalStorage from 'src/hooks/useLocalStorage';
 import ModalCustom from 'src/components/Modal/ModalCustom';
 import { toast } from 'react-toastify';
 import BigNumber from 'bignumber.js';
@@ -15,9 +16,7 @@ import Button from 'src/components/Buttons';
 import { getTimestamp } from 'src/utils';
 import { CONFIG } from 'src/utils/config';
 import { hideLoading } from 'src/stores/extensions';
-import {
-  getLocalCrossRequests, getLocalStorageData, setLocalCrossRequests, setLocalStorageData,
-} from 'src/utils/storage';
+import { getLocalCrossRequests, setLocalCrossRequests } from 'src/utils/storage';
 import { renderTransactionInfo } from 'src/pages/SendTransactions/views/Transfer';
 import FinishTransferItem from './FinishTransferItem';
 
@@ -73,6 +72,7 @@ const NoData = styled.div`
 const FinishTransfer = () => {
   const [isOpenFinishTransferModal, setIsOpenFinishTransferModal] = useState(false);
   const [transferDetails, setTransferDetails] = useState<any>({});
+  const [toFinishCrossChainTxs, setToFinishCrossChainTxs] = useLocalStorage<string[]>('toFinishCrossChainTxs', []);
   const rootState = useSelector((state) => state);
   const { selectedNetwork } = rootState.extensions;
   const { account, chainId } = rootState.wallet;
@@ -148,18 +148,16 @@ const FinishTransfer = () => {
   useEffect(() => {
     if (crossChainRequests.filter((c:any) => c.sender === account)?.length) {
       crossChainRequests.filter((c:any) => c.sender === account).forEach((crossChainTransaction) => {
-        getLocalStorageData('toFinishCrossChainTxs', (toFinishCrossChainTxs) => {
-          setPendingFinishRequestKeys(toFinishCrossChainTxs || []);
-          if (!toFinishCrossChainTxs?.includes(crossChainTransaction.requestKey) && crossChainTransaction.status === 'success') {
-            const newTxToFinish = [
-              ...(toFinishCrossChainTxs || []),
-              crossChainTransaction.requestKey,
-            ];
-            setLocalStorageData('toFinishCrossChainTxs', newTxToFinish);
-            setPendingFinishRequestKeys(newTxToFinish);
-            getSpv(crossChainTransaction);
-          }
-        });
+        setPendingFinishRequestKeys(toFinishCrossChainTxs || []);
+        if (crossChainTransaction.status === 'success') {
+          const newTxToFinish = [
+            ...(toFinishCrossChainTxs || []),
+            crossChainTransaction.requestKey,
+          ];
+          setToFinishCrossChainTxs(newTxToFinish);
+          setPendingFinishRequestKeys(newTxToFinish);
+          getSpv(crossChainTransaction);
+        }
       });
     }
   }, [crossChainRequests]);
@@ -178,7 +176,7 @@ const FinishTransfer = () => {
         createdTime={request.createdTime}
         chainId={request.receiverChainId}
         value={request.amount}
-        tokenType="KDA"
+        tokenType={request.symbol?.toUpperCase() || 'KDA'}
         receiver={request.receiver}
         domain={request.domain}
         status={pendingFinishRequestKeys?.includes(request.requestKey) ? 'finishing' : request.status}
@@ -285,12 +283,10 @@ const FinishTransfer = () => {
         const newRequests = crossChainRequests.filter((request: any) => requestFinished.createdTime !== request.createdTime) || [];
         setCrossChainRequest(newRequests);
         setLocalCrossRequests(selectedNetwork.networkId, newRequests);
-        getLocalStorageData('toFinishCrossChainTxs', (toFinishCrossChainTxs) => {
-          setLocalStorageData('toFinishCrossChainTxs', [
-            ...toFinishCrossChainTxs?.filter((requestKey) => requestKey !== requestFinished.requestKey) ?? [],
-          ]);
-          toast.success(<Toast type="success" content="Finish transfer successfully" />);
-        });
+        setToFinishCrossChainTxs([
+          ...toFinishCrossChainTxs?.filter((requestKey) => requestKey !== requestFinished.requestKey) ?? [],
+        ]);
+        // toast.success(<Toast type="success" content="Finish transfer successfully" />);
       })
       .catch(() => {
         // onListenFinishTransaction(listenCmd, targetChainId, requestFinished);
@@ -336,16 +332,19 @@ const FinishTransfer = () => {
                 {renderTransactionInfo(transferDetails)}
                 <TransactionInfo>
                   <DivChild fontWeight="700">Amount</DivChild>
-                  <DivChild fontWeight="700">{`${transferDetails?.amount} KDA`}</DivChild>
+                  <DivChild fontWeight="700">{`${transferDetails?.amount} ${transferDetails.symbol?.toUpperCase() || 'KDA'}`}</DivChild>
                 </TransactionInfo>
               </DivChild>
               <Hr />
+              {transferDetails.symbol === 'kda'
+              && (
               <TransactionInfo marginTop="20px">
                 <DivChild fontWeight="700">Total</DivChild>
                 <DivChild fontWeight="700">
                   {transferDetails.status !== 'pending' ? `${new BigNumber(parseFloat(transferDetails?.amount) + parseFloat(transferDetails?.gasFee) * parseFloat(transferDetails?.gasPrice)).decimalPlaces(12).toString()} KDA` : 'Pending'}
                 </DivChild>
               </TransactionInfo>
+              )}
               <DivChild>
                 <ActionButton marginTop="200px">
                   <Button label="Close" onClick={() => setIsOpenFinishTransferModal(false)} type={BUTTON_TYPE.DISABLE} size={BUTTON_SIZE.FULL} />

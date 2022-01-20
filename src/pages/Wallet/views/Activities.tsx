@@ -137,7 +137,7 @@ const Activities = () => {
                       createdTime={item.createdTime}
                       chainId={item.receiverChainId}
                       value={item.amount}
-                      tokenType="KDA"
+                      tokenType={item.symbol?.toUpperCase() ?? 'KDA'}
                       receiver={item.receiver}
                       domain={item.domain}
                       status={item.status}

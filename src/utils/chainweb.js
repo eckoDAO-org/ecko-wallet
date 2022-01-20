@@ -62,3 +62,13 @@ export const getSignatureFromHash = (hash, privateKey) => {
   const s = new Uint8Array(signature);
   return Pact.crypto.binToHex(s);
 };
+
+export const getBalanceFromChainwebApiResponse = (res) => {
+  let balance = 0;
+  if (typeof res?.result?.data?.balance === 'number') {
+    balance = res?.result?.data?.balance;
+  } else if (res?.result?.data?.balance?.decimal && !Number.isNaN(res?.result?.data?.balance?.decimal)) {
+    balance = Number(res?.result?.data?.balance?.decimal);
+  }
+  return balance;
+};

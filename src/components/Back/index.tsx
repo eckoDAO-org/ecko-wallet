@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 type Props = {
   title: string;
+  style?: any;
   onBack: any;
 }
 const Header = styled.div`
@@ -25,9 +26,9 @@ const Img = styled.img`
   margin-top: 4px;
 `;
 const Back = (props: Props) => {
-  const { title = 'Back', onBack } = props;
+  const { title = 'Back', style, onBack } = props;
   return (
-    <Header>
+    <Header style={style}>
       <Title onClick={onBack}>
         <Img src={images.back} />
         {title}

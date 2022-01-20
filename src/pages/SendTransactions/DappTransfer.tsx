@@ -155,7 +155,7 @@ const DappTransfer = () => {
                   <Padding>
                     <Title isSendTitle>Send Transaction</Title>
                   </Padding>
-                  <Transfer destinationAccount={destinationAccount} />
+                  <Transfer destinationAccount={destinationAccount} fungibleToken={{ symbol: 'kda', contractAddress: 'coin' }} />
                 </>
               ) : (
                 <NotFound>
