@@ -1,12 +1,17 @@
 {
-  "name": "X Wallet",
+  "name": "X-Wallet",
   "description": "The best webextension wallet for the Kadena blockchain. Powered by Kaddex",
   "version": "1.0",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "background": {
-    "scripts": ["app/background.js"]
+    "service_worker": "app/background.js"
   },
-  "web_accessible_resources": ["app/script/inpage.js"],
+  "web_accessible_resources": [
+    {
+      "resources": ["app/script/inpage.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
   "content_scripts": [
     {
       "matches": ["file://*/*", "http://*/*", "https://*/*"],
@@ -14,7 +19,7 @@
       "run_at": "document_start"
     }
   ],
-  "browser_action": {
+  "action": {
     "default_title": "Open the popup",
     "default_popup": "index.html#popup",
     "default_icon": {
@@ -24,13 +29,12 @@
       "128": "favicon.png"
     }
   },
-  "permissions": [
-    "storage",
-    "activeTab",
-    "tabs",
-    "webRequest",
-    "notifications",
-    "windows"
+  "permissions": ["storage", "windows"],
+  "host_permissions": [
+    "https://api.chainweb.com/",
+    "https://api.testnet.chainweb.com/",
+    "https://api.coingecko.com/",
+    "*://*/*"
   ],
   "icons": {
     "16": "favicon.png",
@@ -38,5 +42,7 @@
     "48": "favicon.png",
     "128": "favicon.png"
   },
-  "content_security_policy": "script-src 'self' 'sha256-vU0W9v06nkNxmO9SI9sZYWMfUY4gDKKpaiAFFHGa8Vk='; object-src 'self'"
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
 }
