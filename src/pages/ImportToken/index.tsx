@@ -1,8 +1,21 @@
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import Back from 'src/components/Back';
+import { toast } from 'react-toastify';
+import Toast from 'src/components/Toast/Toast';
 import { useForm } from 'react-hook-form';
+import useLocalStorage from 'src/hooks/useLocalStorage';
 import { BaseTextInput, InputError } from 'src/baseComponent';
+import { useCurrentWallet } from 'src/stores/wallet/hooks';
+import { fetchListLocal } from 'src/utils/chainweb';
+import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { KNOWN_TOKENS } from 'src/utils/constant';
+
+export interface IFungibleToken {
+  contractAddress: string;
+  symbol: string;
+}
 
 const ImportTokenWrapper = styled.div`
   padding: 0 20px;
@@ -52,7 +65,23 @@ const Footer = styled.div`
   }
 `;
 const ImportToken = () => {
+  const stateWallet = useCurrentWallet();
+  const { search } = useLocation();
+  const rootState = useSelector((state) => state);
+  const { selectedNetwork } = rootState.extensions;
   const history = useHistory();
+  const [fungibleTokens, setFungibleTokens] = useLocalStorage<IFungibleToken[]>('fungibleTokens', []);
+
+  const params = new URLSearchParams(search);
+  const coin = params.get('coin');
+  const token = fungibleTokens?.find((ft) => ft.symbol === coin);
+
+  const checkTokenExists = (contractAddress: string): Promise<any> => {
+    const { account } = stateWallet;
+    const pactCode = `(${contractAddress}.details "${account}")`;
+    return fetchListLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, '0');
+  };
+
   const {
     register,
     handleSubmit,
@@ -60,7 +89,42 @@ const ImportToken = () => {
     setValue,
     clearErrors,
   } = useForm();
-  const onImport = () => {};
+
+  useEffect(() => {
+    if (token) {
+      setValue('contractAddress', token.contractAddress);
+      setValue('symbol', token.symbol);
+    }
+  }, [token]);
+
+  const onImport = async (fT: IFungibleToken) => {
+    const alreadyExists = fungibleTokens?.find((fungToken) => fungToken.contractAddress === fT.contractAddress);
+    if (!token && alreadyExists) {
+      toast.error(<Toast type="error" content="Token already added" />);
+    } else {
+      checkTokenExists(fT.contractAddress).then((res) => {
+        if (res?.result?.error?.message === `Cannot resolve ${fT.contractAddress}.details`) {
+          toast.error(<Toast type="error" content={`Cannot resolve ${fT.contractAddress}.details`} />);
+        } else {
+          let newFungibleTokens = fungibleTokens || [];
+          if (token) {
+            newFungibleTokens = fungibleTokens?.filter((ft) => ft.contractAddress !== token.contractAddress) ?? [];
+          }
+          setFungibleTokens([
+            ...newFungibleTokens,
+            {
+              ...fT,
+              symbol: fT.symbol?.toLowerCase(),
+            },
+          ]);
+          toast.success(<Toast type="success" content="Token successfully saved" />);
+          history.push('/');
+        }
+      }).catch(() => {
+        toast.error(<Toast type="error" content="Unable to add token" />);
+      });
+    }
+  };
   return (
     <ImportTokenWrapper>
       <Back title="Back" onBack={() => history.push('/')} />
@@ -83,7 +147,17 @@ const ImportToken = () => {
               }}
               title="Token Contract Address"
               height="auto"
-              onChange={(e) => { clearErrors('contractAddress'); setValue('contractAddress', e.target.value); }}
+              onChange={(e) => {
+                clearErrors('contractAddress');
+                setValue('contractAddress', e.target.value);
+                if (KNOWN_TOKENS[e.target.value] && KNOWN_TOKENS[e.target.value]?.symbol) {
+                  clearErrors('symbol');
+                  setValue('symbol', KNOWN_TOKENS[e.target.value]?.symbol);
+                } else {
+                  clearErrors('symbol');
+                  setValue('symbol', '');
+                }
+              }}
             />
             {errors.contractAddress && <InputError>{errors.contractAddress.message}</InputError>}
           </DivBody>
@@ -107,40 +181,10 @@ const ImportToken = () => {
             />
             {errors.symbol && <InputError>{errors.symbol.message}</InputError>}
           </DivBody>
-          <DivBody>
-            <BaseTextInput
-              inputProps={{
-                placeholder: 'Input Decimal',
-                type: 'number',
-                ...register('decimalToken', {
-                  required: {
-                    value: true,
-                    message: 'This field is required.',
-                  },
-                  validate: {
-                    positive: (v) => {
-                      const value = Number(v);
-                      return value > 0;
-                    },
-                    isInteger: (v) => {
-                      const reg = /^\d+$/;
-                      return reg.test(v);
-                    },
-                  },
-                }),
-              }}
-              title="Token Decimal"
-              height="auto"
-              onChange={(e) => { clearErrors('decimalToken'); setValue('decimalToken', e.target.value); }}
-            />
-            {errors.decimalToken && errors.decimalToken.type === 'required' && <InputError>{errors.decimalToken.message}</InputError>}
-            {errors.decimalToken && errors.decimalToken.type === 'positive' && <InputError>Invalid Token Decimal</InputError>}
-            {errors.decimalToken && errors.decimalToken.type === 'isInteger' && <InputError>Token Decimal must be integer</InputError>}
-          </DivBody>
         </form>
       </Body>
       <Footer>
-        <ButtonSubmit form="import-token-form">Add Custom Token</ButtonSubmit>
+        <ButtonSubmit form="import-token-form">{`${token ? 'Edit' : 'Add'} Custom Token`}</ButtonSubmit>
       </Footer>
     </ImportTokenWrapper>
   );

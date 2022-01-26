@@ -59,19 +59,19 @@ const Condition = () => {
           <Icon>
             <Img src={images.wallet.checkedViolet} alt="check-box" />
           </Icon>
-          <TextRight>Never collect keys, addresses, transactions, balances, hashes, or any personal information</TextRight>
+          <TextRight>We never collect keys, addresses, transactions, balances, hashes, or any personal information</TextRight>
         </DivBody>
         <DivBody>
           <Icon>
             <Img src={images.wallet.checkedViolet} alt="check-box" />
           </Icon>
-          <TextRight>Never collect your full IP address</TextRight>
+          <TextRight>We never collect your full IP address</TextRight>
         </DivBody>
         <DivBody>
           <Icon>
             <Img src={images.wallet.checkedViolet} alt="check-box" />
           </Icon>
-          <TextRight>Never sell data for profit. Ever!</TextRight>
+          <TextRight>We never sell data for profit. Ever!</TextRight>
         </DivBody>
       </Body>
       <Footer>

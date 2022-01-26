@@ -19,7 +19,7 @@ source ./emsdk_env.sh
 ### X-Wallet build
 
 ```
-cp env.example .env
+cp .env.example .env
 npm install
 npm run build
 ```

@@ -23,6 +23,7 @@ import images from 'src/images';
 import { useState } from 'react';
 import SpokesLoading from 'src/components/Loading/Spokes';
 import Tooltip from 'src/components/Tooltip';
+import { IFungibleToken } from 'src/pages/ImportToken';
 import {
   PageConfirm, BodyContent, ButtonWrapper,
   LabelConfirm, FormItemConfirm, LabelBold, TooltipImage,
@@ -35,10 +36,16 @@ type Props = {
   configs: any;
   onClose: any;
   aliasContact: string;
+  fungibleToken: IFungibleToken|null;
 }
 
 const PopupConfirm = (props: Props) => {
-  const { configs, onClose, aliasContact } = props;
+  const {
+    configs,
+    onClose,
+    aliasContact,
+    fungibleToken,
+  } = props;
   const [isLoading, setIsLoading] = useState(false);
   const history = useHistory();
   const {
@@ -66,9 +73,9 @@ const PopupConfirm = (props: Props) => {
 
   const total = (validAmount + (validGasPrice * validGasLimit));
   const getCmd = () => {
-    let pactCode = `(coin.transfer-create "${senderName}" "${receiverName}" (read-keyset "ks") ${Number.parseFloat(amount).toFixed(8)})`;
+    let pactCode = `(${fungibleToken?.contractAddress}.transfer-create "${senderName}" "${receiverName}" (read-keyset "ks") ${Number.parseFloat(amount).toFixed(8)})`;
     if (isCrossChain) {
-      pactCode = `(coin.transfer-crosschain "${senderName}" "${receiverName}" (read-keyset "ks") "${receiverChainId}" ${Number.parseFloat(amount).toFixed(8)})`;
+      pactCode = `(${fungibleToken?.contractAddress}.transfer-crosschain "${senderName}" "${receiverName}" (read-keyset "ks") "${receiverChainId}" ${Number.parseFloat(amount).toFixed(8)})`;
     }
     const crossKeyPairs = {
       publicKey: senderPublicKey,
@@ -77,7 +84,7 @@ const PopupConfirm = (props: Props) => {
       publicKey: senderPublicKey,
       clist: [
         Pact.lang.mkCap('gas', 'pay gas', 'coin.GAS').cap,
-        Pact.lang.mkCap('transfer', 'transfer coin', 'coin.TRANSFER', [
+        Pact.lang.mkCap('transfer', 'transfer coin', `${fungibleToken?.contractAddress}.TRANSFER`, [
           senderName,
           receiverName,
           validAmount,
@@ -190,6 +197,7 @@ const PopupConfirm = (props: Props) => {
         };
         addRecent(createdTime);
         const activity = {
+          symbol: fungibleToken?.symbol,
           requestKey,
           senderChainId: senderChainId.toString(),
           receiverChainId: receiverChainId.toString(),
@@ -278,7 +286,7 @@ const PopupConfirm = (props: Props) => {
         <TransactionTitle>Transaction</TransactionTitle>
         <FormItemConfirm>
           <LabelConfirm>Amount</LabelConfirm>
-          <LabelBold isRight>{`${validAmount} KDA`}</LabelBold>
+          <LabelBold isRight>{`${validAmount} ${fungibleToken?.symbol.toUpperCase()}`}</LabelBold>
         </FormItemConfirm>
         <FormItemConfirm>
           <LabelConfirm>Gas Limit</LabelConfirm>
@@ -300,12 +308,15 @@ const PopupConfirm = (props: Props) => {
         </GasFee>
       </BodyContent>
       <TransferHr />
-      <BodyContent>
-        <FormItemConfirm>
-          <LabelBold>Total</LabelBold>
-          <LabelBold isRight>{`${new BigNumber(total).decimalPlaces(12).toString()} KDA`}</LabelBold>
-        </FormItemConfirm>
-      </BodyContent>
+      {fungibleToken?.contractAddress === 'coin'
+        && (
+        <BodyContent>
+          <FormItemConfirm>
+            <LabelBold>Total</LabelBold>
+            <LabelBold isRight>{`${new BigNumber(total).decimalPlaces(12).toString()} KDA`}</LabelBold>
+          </FormItemConfirm>
+        </BodyContent>
+        )}
       <Footer>
         <ButtonWrapper>
           <Button label="Reject" type={BUTTON_TYPE.DISABLE} onClick={(() => onClose())} size={BUTTON_SIZE.FULL} />
