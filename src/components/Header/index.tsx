@@ -39,19 +39,6 @@ const DivHeader = styled.div`
     z-index: 2;
     background: linear-gradient(90deg, #E6FEFE 0%, #FDF6E6 100%);
 `;
-const WrapBetaBanner = styled.div`
-    height: 25px;
-    background-color: white;
-    padding: 8px 5px 5px 5px;
-    text-align: center;
-    font-size: 0.7em;
-    svg {
-      margin-right: 5px;
-    }
-    span {
-      vertical-align: middle;
-    }
-`;
 const Logo = styled.img`
 `;
 
@@ -255,14 +242,6 @@ const Header = () => {
     <>
       { showHeader && (
       <DivHeader>
-        <WrapBetaBanner>
-          <IconFail style={{ width: 20, height: 20, verticalAlign: 'middle' }} />
-          <span>
-            This web extension is currently under
-            <b>{' BETA '}</b>
-            testing.
-          </span>
-        </WrapBetaBanner>
         <WrapHeader>
           <ImageWrapper
             onClick={() => {
