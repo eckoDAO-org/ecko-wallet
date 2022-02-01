@@ -16,7 +16,7 @@ import { BoxContent } from './Contact/style';
 const PageSetting = () => {
   const history = useHistory();
   const rootState = useSelector((state) => state);
-  const { account } = rootState?.wallet;
+  const { account, secretKey } = rootState?.wallet;
   const text = 'Settings';
 
   const goContact = () => {
@@ -58,15 +58,14 @@ const PageSetting = () => {
             </BoxContent>
             <ImageNetworks src={images.wallet.view} alt="view" />
           </DivContent>
-          <DivContent
-            onClick={goExportSeedPhrase}
-          >
-            <BoxContent>
-              <TitleSetting>Export Secret Recovery Phrase</TitleSetting>
-              <Descripton>Secret Recovery Phrase</Descripton>
-            </BoxContent>
-            <ImageNetworks src={images.wallet.view} alt="view" />
-          </DivContent>
+          {secretKey?.length === 256 && (
+            <DivContent onClick={goExportSeedPhrase}>
+              <BoxContent>
+                <TitleSetting>Export Secret Recovery Phrase</TitleSetting>
+                <Descripton>Secret Recovery Phrase</Descripton>
+              </BoxContent>
+              <ImageNetworks src={images.wallet.view} alt="view" />
+            </DivContent>)}
           <DivContent
             onClick={goAbout}
           >
