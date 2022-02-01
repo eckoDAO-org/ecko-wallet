@@ -1,4 +1,6 @@
 import { useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import Dropdown from 'src/components/Dropdown';
 import ModalCustom from 'src/components/Modal/ModalCustom';
 import { useWindowResizeMobile } from 'src/hooks/useWindowResizeMobile';
@@ -92,6 +94,7 @@ const LoadMoreDropdown = (props: Props) => {
     connectedSites,
     wallets,
   } = stateWallet;
+  const history = useHistory();
   const [isMobile] = useWindowResizeMobile(420);
   const [isShowConnectedSites, setShowConnectedSites] = useState(false);
   const [isShowRemoveWallet, setShowRemoveWallet] = useState(false);
@@ -99,6 +102,7 @@ const LoadMoreDropdown = (props: Props) => {
   const [isShowRemoveConfirmConnectedSite, setShowRemoveConfirmConnectedSite] = useState(false);
   const [siteRemove, setSiteRemove] = useState('');
   const refDropdownLoadMore = useRef();
+  const { wallet: { secretKey } } = useSelector((state) => state);
   const openNewTab = () => {
     (window as any)?.chrome?.tabs?.create({ url: '/index.html#/' });
   };
@@ -122,7 +126,14 @@ const LoadMoreDropdown = (props: Props) => {
           <DivImage><Image src={images.wallet.viewExplorer} alt="copy-gray" size={16} width={16} /></DivImage>
           <DivChild marginLeft="20px">View in Explorer</DivChild>
         </LoadMoreOption>
-        <LoadMoreOption onClick={() => { setShowExportPrivateKey(true); (refDropdownLoadMore as any).current.hideDropdownContent(); }}>
+        <LoadMoreOption onClick={() => {
+          if (secretKey?.length === 64) {
+            setShowExportPrivateKey(true); (refDropdownLoadMore as any).current.hideDropdownContent();
+          } else {
+            history.push('/export-seed-phrase');
+          }
+        }}
+        >
           <DivImage><Image src={images.wallet.exportKey} alt="copy-gray" size={16} width={16} /></DivImage>
           <DivChild marginLeft="20px">Export private key</DivChild>
         </LoadMoreOption>
