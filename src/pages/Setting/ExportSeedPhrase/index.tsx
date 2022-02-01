@@ -127,7 +127,7 @@ const ExportSeedPhrase = () => {
   };
 
   const goBack = () => {
-    history.push('/setting');
+    history.goBack();
   };
 
   const encryptText = (text) => {

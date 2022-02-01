@@ -166,7 +166,7 @@ const CreatePassword = () => {
 
   const checkInValidPassword = (str) => {
     const pattern = new RegExp(
-      '^[À-úa-z0-9A-Z_!?"\'.#@,;-\\s]*$',
+      '^[À-úa-z0-9A-Z_+!?"-\'.#@,;-\\s]*$',
     );
     return !!pattern.test(str);
   };
