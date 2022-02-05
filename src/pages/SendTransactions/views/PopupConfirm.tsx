@@ -137,21 +137,43 @@ const PopupConfirm = (props: Props) => {
     );
   };
 
-  const onListenTransaction = (listenCmd) => {
+  const onListenTransaction = (listenCmd, attempt = 1) => {
     Pact.fetch
       .listen(listenCmd, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, senderChainId))
       .then((data) => {
-        // setIsLoading(false);
         const status = get(data, 'result.status');
         if (status === 'success') {
           toast.success(<Toast type="success" content="Transfer Successfully" />);
         } else if (status === 'failure') {
           toast.error(<Toast type="fail" content="Transfer Fail" />);
         }
+        const activity = {
+          symbol: fungibleToken?.symbol,
+          requestKey: data.reqKey,
+          senderChainId: senderChainId.toString(),
+          receiverChainId: receiverChainId.toString(),
+          receiver: receiverName,
+          createdTime: new Date(data.metaData?.blockTime / 1000),
+          amount,
+          gasPrice,
+          sender: senderName,
+          domain,
+          status,
+        };
+        console.log('!!! ~ activity', activity);
+        const newCrossRequests = [...(crossChainRequests?.filter((ccr) => ccr.requestKey !== data.reqKey) || []), activity];
+        setCrossChainRequest && setCrossChainRequest(newCrossRequests);
         // history.push('/');
         // setActiveTab(ACTIVE_TAB.HOME);
       })
-      .catch(() => {
+      .catch((err) => {
+        console.log('!!! ~ err', err);
+        if (attempt < 5) {
+          onListenTransaction(listenCmd, attempt + 1);
+          toast.error(<Toast type="fail" content="Transfer Fail, I'm trying again" />);
+        } else {
+          toast.error(<Toast type="fail" content="Transfer Fail" />);
+        }
         // setIsLoading(false);
         // history.push('/');
         // setActiveTab(ACTIVE_TAB.HOME);
