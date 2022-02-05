@@ -10,11 +10,11 @@ const AppWrapper = styled.div`
   display: block;
   font-family: 'Play', sans-serif;
   display: flex;
-  color: #461A57;
+  color: #461a57;
   height: 100%;
   @media screen and (max-width: 1024px) {
     background: none;
-  } 
+  }
 `;
 const Content = styled.div`
   width: 100%;

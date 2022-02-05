@@ -4,7 +4,7 @@ import styled from 'styled-components';
 type Props = {
   type: LoadingType;
   color: string;
-}
+};
 
 const LoadingWrapper = styled.div`
   position: fixed;
@@ -21,7 +21,11 @@ const LoadingWrapper = styled.div`
 
 const Loading = (props: Props) => {
   const { type, color } = props;
-  return <LoadingWrapper id="loading"><ReactLoading type={type} color={color} /></LoadingWrapper>;
+  return (
+    <LoadingWrapper id="loading">
+      <ReactLoading type={type} color={color} />
+    </LoadingWrapper>
+  );
 };
 
 export default Loading;

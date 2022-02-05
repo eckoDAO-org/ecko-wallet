@@ -12,17 +12,17 @@ const Wrapper = styled.div`
     visibility: hidden;
     width: 300px;
     font-weight: 400;
-    background-color: #461A57;
+    background-color: #461a57;
     color: #fff;
     text-align: center;
     border-radius: 4px;
     padding: 10px;
-  
+
     position: absolute;
     z-index: 999999;
     left: -50px;
     top: 22px;
-    @media screen and (max-width: 480px){
+    @media screen and (max-width: 480px) {
       width: 200px;
     }
   }
@@ -37,9 +37,7 @@ const Tooltip = (props: Props) => {
   return (
     <Wrapper>
       {children}
-      <span className="tooltip-text">
-        {tooltipText}
-      </span>
+      <span className="tooltip-text">{tooltipText}</span>
     </Wrapper>
   );
 };

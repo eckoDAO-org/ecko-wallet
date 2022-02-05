@@ -1,12 +1,10 @@
 import { BaseTextInput } from 'src/baseComponent';
-import {
-  Content,
-} from '../../style';
+import { Content } from '../../style';
 import { DivBodyNetwork } from './style';
 
 type Props = {
   network: any;
-}
+};
 
 const ViewNetwork = (props: Props) => {
   const { network } = props;

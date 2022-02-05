@@ -32,7 +32,7 @@ const Footer = styled.div`
 const ButtonAdd = styled.button`
   width: 100%;
   height: 44px;
-  background: #461A57;
+  background: #461a57;
   border-radius: 20px;
   font-family: 'Play', sans-serif;
   border: none;
@@ -49,7 +49,7 @@ const ConditionWrapper = styled.div`
   padding: 0 20px;
   width: 62vw;
   min-height: 82vh;
-  box-shadow: 0 0 7px 0 #461A57;
+  box-shadow: 0 0 7px 0 #461a57;
   position: absolute;
   text-align: center;
 `;

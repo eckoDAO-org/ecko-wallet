@@ -1,6 +1,4 @@
-import React, {
-  useEffect, useRef, useState, useImperativeHandle, forwardRef,
-} from 'react';
+import React, { useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react';
 import styled from 'styled-components';
 
 const DropdownCustom = styled.div`
@@ -31,15 +29,15 @@ const DropdownContent = styled.div`
     background: #7b7b7b9e;
     border-radius: 2px;
   }
-  @media screen and (max-width: 480px){
+  @media screen and (max-width: 480px) {
     min-width: 250px;
-    bottom: ${(props) => (props.trianglePositionBottom)};
+    bottom: ${(props) => props.trianglePositionBottom};
     margin-bottom: 10px;
-  } 
-  ${(props) => (props.placement === 'center' && 'transform: translate(-30%)')}
-  ${(props) => (props.placement === 'left' && (props.translate ? `transform: translate(${props.translate})` : 'transform: translate(-90%)'))}
-  ${(props) => (props.placement === 'right' && 'transform: translate(0%)')}
-  ${(props) => (props.placement === 'left-dropdown' && 'transform: translate(-65%)')}
+  }
+  ${(props) => props.placement === 'center' && 'transform: translate(-30%)'}
+  ${(props) => props.placement === 'left' && (props.translate ? `transform: translate(${props.translate})` : 'transform: translate(-90%)')}
+  ${(props) => props.placement === 'right' && 'transform: translate(0%)'}
+  ${(props) => props.placement === 'left-dropdown' && 'transform: translate(-65%)'}
 `;
 const DivChild = styled.div`
   padding: 5px;
@@ -55,12 +53,10 @@ const Triangle = styled.div`
   display: ${(props) => (props.display ? 'block' : 'none')};
   @media screen and (max-width: 480px) {
     bottom: ${(props) => (props.trianglePositionBottom ? props.trianglePositionBottom : 'auto')};
-  } 
+  }
 `;
 const Dropdown = forwardRef((props: Props, ref: any) => {
-  const {
-    children, overlayDropdown, placement, translate, trianglePosition, trianglePositionBottom,
-  } = props;
+  const { children, overlayDropdown, placement, translate, trianglePosition, trianglePositionBottom } = props;
   const [isShow, setIsShow] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>();
   const contenRef = useRef<HTMLDivElement>();
@@ -88,9 +84,7 @@ const Dropdown = forwardRef((props: Props, ref: any) => {
       <DropdownBtn onClick={handleClickDropdown}>{children}</DropdownBtn>
       <Triangle display={isShow} trianglePosition={trianglePosition} trianglePositionBottom={trianglePositionBottom} />
       <DropdownContent translate={translate} display={isShow} placement={placement} ref={contenRef} trianglePositionBottom={trianglePositionBottom}>
-        <DivChild>
-          {isShow && overlayDropdown}
-        </DivChild>
+        <DivChild>{isShow && overlayDropdown}</DivChild>
       </DropdownContent>
     </DropdownCustom>
   );
@@ -102,5 +96,5 @@ type Props = {
   translate?: string;
   trianglePosition?: string;
   trianglePositionBottom?: string;
-}
+};
 export default Dropdown;

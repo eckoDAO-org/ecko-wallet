@@ -33,7 +33,7 @@ const Title = styled.div`
   font-weight: 700;
   font-size: 24px;
   line-height: 25px;
-  color: #461A57;
+  color: #461a57;
   text-align: left;
   margin-bottom: 50px;
 `;
@@ -50,7 +50,7 @@ const SignInButton = styled.button`
   font-size: 16px;
   cursor: pointer;
   border: none;
-  background: #461A57;
+  background: #461a57;
   color: white;
   font-weight: 700;
   font-family: 'Play', sans-serif;
@@ -107,7 +107,9 @@ const LoginDapp = (props: any) => {
   return (
     <CreatePasswordWrapper>
       <Body>
-        <DivImage marginBottom="30px" marginTop="30px"><Image src={images.logoDapps} size={80} width={80} alt="logo" /></DivImage>
+        <DivImage marginBottom="30px" marginTop="30px">
+          <Image src={images.logoDapps} size={80} width={80} alt="logo" />
+        </DivImage>
         <Title>Input Password Sign In</Title>
         <Wrapper onSubmit={handleSubmit(handleSignIn)} id="sign-in-form">
           <DivBody>
@@ -133,18 +135,17 @@ const LoginDapp = (props: any) => {
               typeInput="password"
               title="Password"
               height="auto"
-              onChange={(e) => { clearErrors('password'); setValue('password', e.target.value); }}
+              onChange={(e) => {
+                clearErrors('password');
+                setValue('password', e.target.value);
+              }}
             />
           </DivBody>
-          {errors.password && (
-            <InputError>{errors.password.message}</InputError>
-          )}
+          {errors.password && <InputError>{errors.password.message}</InputError>}
         </Wrapper>
       </Body>
       <Footer>
-        <SignInButton form="sign-in-form">
-          Sign In
-        </SignInButton>
+        <SignInButton form="sign-in-form">Sign In</SignInButton>
       </Footer>
     </CreatePasswordWrapper>
   );

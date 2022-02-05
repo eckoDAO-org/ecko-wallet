@@ -35,7 +35,7 @@ const Title = styled.div`
   font-weight: 700;
   font-size: 24px;
   line-height: 25px;
-  color: #461A57;
+  color: #461a57;
   text-align: left;
   margin-bottom: 50px;
   text-align: center;
@@ -53,7 +53,7 @@ const SignInButton = styled.button`
   font-size: 16px;
   cursor: pointer;
   border: none;
-  background: #461A57;
+  background: #461a57;
   color: white;
   font-weight: 700;
   font-family: 'Play', sans-serif;
@@ -96,12 +96,15 @@ const SignIn = () => {
         const expiredTime = time + 1000 * 1800;
         setExpiredTime(expiredTime);
         setLocalExpiredTime(expiredTime);
-        getLocalSelectedWallet(() => {
-          history.push('/');
-          setActiveTab(ACTIVE_TAB.HOME);
-        }, () => {
-          history.push('/init');
-        });
+        getLocalSelectedWallet(
+          () => {
+            history.push('/');
+            setActiveTab(ACTIVE_TAB.HOME);
+          },
+          () => {
+            history.push('/init');
+          },
+        );
         (window as any).chrome.runtime.sendMessage({
           target: 'kda.extension',
           action: 'sync_data',
@@ -115,8 +118,12 @@ const SignIn = () => {
   return (
     <CreatePasswordWrapper>
       <Body>
-        <DivImage marginBottom="30px" marginTop="30px"><Image src={images.logoDapps} size={80} width={80} alt="logo" /></DivImage>
-        <DivImage marginBottom="30px" marginTop="30px"><Image src={images.logoWallet} size={55} width={238} alt="logo-wallet" /></DivImage>
+        <DivImage marginBottom="30px" marginTop="30px">
+          <Image src={images.logoDapps} size={80} width={80} alt="logo" />
+        </DivImage>
+        <DivImage marginBottom="30px" marginTop="30px">
+          <Image src={images.logoWallet} size={55} width={238} alt="logo-wallet" />
+        </DivImage>
         <Title>Welcome</Title>
         <Wrapper onSubmit={handleSubmit(handleSignIn)} id="sign-in-form">
           <DivBody>
@@ -142,20 +149,17 @@ const SignIn = () => {
               typeInput="password"
               title="Password"
               height="auto"
-              onChange={(e) => { clearErrors('password'); setValue('password', e.target.value); }}
+              onChange={(e) => {
+                clearErrors('password');
+                setValue('password', e.target.value);
+              }}
             />
           </DivBody>
-          <DivError>
-            {errors.password && (
-            <InputError marginTop="0">{errors.password.message}</InputError>
-            )}
-          </DivError>
+          <DivError>{errors.password && <InputError marginTop="0">{errors.password.message}</InputError>}</DivError>
         </Wrapper>
       </Body>
       <Footer>
-        <SignInButton form="sign-in-form">
-          Sign In
-        </SignInButton>
+        <SignInButton form="sign-in-form">Sign In</SignInButton>
       </Footer>
     </CreatePasswordWrapper>
   );

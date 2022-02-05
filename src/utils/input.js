@@ -8,13 +8,7 @@ const V_KEY_CODE = 86;
 const C_KEY_CODE = 67;
 
 export const isNotValidASCIINumber = (keyCode, decimalRequired = false) => {
-  const abnormalKeys = [
-    ARROW_LEFT_KEY_CODE,
-    ARROW_RIGHT_KEY_CODE,
-    A_KEY_CODE,
-    C_KEY_CODE,
-    V_KEY_CODE,
-  ];
+  const abnormalKeys = [ARROW_LEFT_KEY_CODE, ARROW_RIGHT_KEY_CODE, A_KEY_CODE, C_KEY_CODE, V_KEY_CODE];
 
   decimalRequired && abnormalKeys.push(...[DECIMAL_KEY_CODE, DECIMAL_KEY_CODE_NUM_INPUT]);
 

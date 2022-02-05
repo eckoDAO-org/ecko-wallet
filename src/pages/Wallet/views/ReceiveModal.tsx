@@ -16,7 +16,7 @@ const Item = styled.div`
 `;
 const Text = styled.div`
   text-align: center;
-  color: #461A57;
+  color: #461a57;
   margin-bottom: 20px;
   font-weight: 700;
   font-size: 16px;
@@ -27,20 +27,14 @@ const DivChild = styled.div`
   justify-content: center;
 `;
 const ReceiveModal = (props: Props) => {
-  const {
-    isOpen, onCloseModal, closeOnOverlayClick, showCloseIcon, title,
-  } = props;
+  const { isOpen, onCloseModal, closeOnOverlayClick, showCloseIcon, title } = props;
   const { chainId, account, publicKey } = useSelector((state) => state?.wallet);
 
   return (
     <ModalCustom isOpen={isOpen} title={title} onCloseModal={onCloseModal} closeOnOverlayClick={closeOnOverlayClick} showCloseIcon={showCloseIcon}>
       <ReceiceContent>
         <Item>
-          <BaseTextInput
-            inputProps={{ readOnly: true, value: chainId }}
-            title="Chain ID"
-            height="auto"
-          />
+          <BaseTextInput inputProps={{ readOnly: true, value: chainId }} title="Chain ID" height="auto" />
         </Item>
         <Item>
           <BaseInfoDisable
@@ -74,12 +68,7 @@ const ReceiveModal = (props: Props) => {
         </Item>
         <Text>QR Code</Text>
         <DivChild>
-          <QRCode
-            id="receive"
-            value={account}
-            size={200}
-            level="H"
-          />
+          <QRCode id="receive" value={account} size={200} level="H" />
         </DivChild>
       </ReceiceContent>
     </ModalCustom>
@@ -91,5 +80,5 @@ type Props = {
   closeOnOverlayClick?: boolean;
   title?: string;
   showCloseIcon?: boolean;
-}
+};
 export default ReceiveModal;

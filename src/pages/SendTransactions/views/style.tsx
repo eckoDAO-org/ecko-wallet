@@ -35,12 +35,12 @@ export const AccountDetails = styled.div`
 export const NoData = styled.div`
   text-align: center;
   font-size: 13px;
-  color: #A187AB;
+  color: #a187ab;
   height: 47vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  @media screen and (max-width: 1024px){
+  @media screen and (max-width: 1024px) {
     height: 21vh;
   }
 `;
@@ -50,7 +50,7 @@ export const ItemWrapper = styled.div`
 export const InfoWrapper = styled.div`
   margin-top: 20px;
   width: 370px;
-  @media screen and (max-width: 480px){
+  @media screen and (max-width: 480px) {
     width: 100%;
   }
 `;
@@ -65,7 +65,7 @@ export const LoadingTitle = styled.div`
   text-align: center;
   font-weight: 700;
   line-height: 18.75px;
-  margin: ${(props) => (props.isTop ? '60px 0 0 0' : '0 0 70px 0')}
+  margin: ${(props) => (props.isTop ? '60px 0 0 0' : '0 0 70px 0')};
 `;
 export const SpinnerWrapper = styled.div`
   display: flex;
@@ -87,14 +87,14 @@ export const DivChildBreak = styled.div`
   font-weight: normal;
   font-size: 16px;
   line-height: 25px;
-  color:#461A57;
+  color: #461a57;
 `;
 
 export const DivChildRight = styled.div`
   font-weight: normal;
   font-size: 16px;
   line-height: 25px;
-  color: #461A57;
+  color: #461a57;
   word-break: break-all;
 `;
 
@@ -103,7 +103,7 @@ export const TransactionInfo = styled.div`
 `;
 
 export const TitleConfirm = styled.div`
-  color: #461A57;
+  color: #461a57;
   text-align: center;
   padding: 40px 0;
   font-weight: 700;
@@ -134,26 +134,26 @@ export const BodyConfirm = styled.div`
 `;
 
 export const LabelConfirm = styled.div`
-  color: #461A57;
+  color: #461a57;
 `;
 
 export const ButtonAdd = styled.button`
   width: 100%;
   height: 44px;
   border-radius: 10px;
-  border: 1px solid #461A57;
+  border: 1px solid #461a57;
   font-family: 'Play', sans-serif;
   background: ${(props) => (props.disabled ? 'white' : '#461A57')};
   cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
   font-weight: 700;
   color: ${(props) => (props.disabled ? '#461A57' : '#ffffff')};
   font-size: 16px;
-  margin: auto
+  margin: auto;
 `;
 
 export const LabelBold = styled.div`
   font-weight: bold;
-  color: #461A57;
+  color: #461a57;
   ${(props) => (props.isRight ? 'margin-left: auto' : '')}
 `;
 
@@ -190,7 +190,7 @@ export const ButtonConfirm = styled.button`
   width: 152px;
   height: 44px;
   border-radius: 20px;
-  background: #461A57;
+  background: #461a57;
   font-family: 'Play', sans-serif;
   border: none;
   color: #ffffff;
@@ -204,17 +204,17 @@ export const EstimateGas = styled.div`
 export const GasFeeTitle = styled.div`
   font-size: 16px;
   line-height: 25px;
-  color: #461A57;
+  color: #461a57;
   font-weight: 700;
   margin-bottom: 10px;
 `;
 export const GasFeeBox = styled.div`
   background: #f2f2f2;
-  color: #461A57;
+  color: #461a57;
   padding: 10px 13px;
 `;
 export const GasFeeValue = styled.div`
- font-size: ${(props) => props.fontSize};
+  font-size: ${(props) => props.fontSize};
 `;
 export const SendTransaction = styled.div`
   font-size: 16px;
@@ -222,7 +222,7 @@ export const SendTransaction = styled.div`
   position: relative;
 `;
 export const TransferItem = styled.div`
-  border: 1px solid #461A57;
+  border: 1px solid #461a57;
   box-sizing: border-box;
   border-radius: 8px;
   padding: 12px;
@@ -263,7 +263,7 @@ export const SpaceDiv = styled.div`
 `;
 export const TransferHr = styled.hr`
   height: 2px;
-  background: linear-gradient(90deg, #D2AB72 0%, #B66E84 35.42%, #B2579B 64.06%, #9EE9E4 99.48%);
+  background: linear-gradient(90deg, #d2ab72 0%, #b66e84 35.42%, #b2579b 64.06%, #9ee9e4 99.48%);
   transform: matrix(1, 0, 0, -1, 0, 0);
   border: none;
 `;
@@ -271,7 +271,7 @@ export const TransferHr = styled.hr`
 export const TransferDetails = styled.div`
   display: flex;
   justify-content: space-between;
-  color: #461A57;
+  color: #461a57;
 `;
 
 export const ImageSpace = styled.span`

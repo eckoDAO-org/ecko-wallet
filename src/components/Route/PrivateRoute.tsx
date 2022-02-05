@@ -8,9 +8,9 @@ type Props = {
   path: string;
   isFirstInstall?: boolean;
   isSignIn?: boolean;
-  isHome? : boolean;
-  isSeedPhrase? : boolean;
-}
+  isHome?: boolean;
+  isSeedPhrase?: boolean;
+};
 
 const FetchingWrapper = styled.div`
   position: fixed;
@@ -19,26 +19,15 @@ const FetchingWrapper = styled.div`
   bottom: 0;
   right: 0;
   z-index: 1000;
-  background: linear-gradient(90deg, #E6FEFE 0%, #FDF6E6 100%);
+  background: linear-gradient(90deg, #e6fefe 0%, #fdf6e6 100%);
 `;
 
 const PrivateRoute = (props: Props) => {
-  const {
-    component: Component,
-    path,
-    isFirstInstall,
-    isSignIn,
-    isHome,
-    isSeedPhrase,
-  } = props;
+  const { component: Component, path, isFirstInstall, isSignIn, isHome, isSeedPhrase } = props;
   const rootState = useSelector((state) => state);
   const { extensions, wallet } = rootState;
-  const {
-    passwordHash,
-    expiredTime,
-    isFetching,
-    isHaveSeedPhrase,
-  } = extensions;
+  const { passwordHash, expiredTime, isFetching, isHaveSeedPhrase } = extensions;
+  console.log('!!! ~ isHaveSeedPhrase', isHaveSeedPhrase);
   const isLoggedIn = expiredTime;
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -79,12 +68,7 @@ const PrivateRoute = (props: Props) => {
     }
   }
 
-  return (
-    <Route
-      path={path}
-      render={() => RenderComponent}
-    />
-  );
+  return <Route path={path} render={() => RenderComponent} />;
 };
 
 export default PrivateRoute;

@@ -28,11 +28,11 @@ const DivBody = styled.div`
   line-height: 25px;
   display: flex;
   align-items: center;
-  margin: 60px 0 0 ;
+  margin: 60px 0 0;
 `;
 const ButtonWrapper = styled.div`
   @media screen and (max-width: 480px) {
-    margin-top: 15px
+    margin-top: 15px;
   }
 `;
 const Restore = styled.div`
@@ -44,21 +44,21 @@ const Restore = styled.div`
   font-size: 16px;
   @media screen and (max-width: 480px) {
     margin-top: 20px;
-  } 
+  }
 `;
 const SLabel = styled.div`
   font-size: 16px;
 `;
 const Label = styled.span``;
 const Term = styled.span`
-  color: #461A57;
+  color: #461a57;
   font-weight: bold;
   padding-left: 5px;
   a {
-    color: #461A57;
+    color: #461a57;
     text-decoration: none;
     :hover {
-      color: #461A57;
+      color: #461a57;
     }
   }
 `;
@@ -66,7 +66,11 @@ const Term = styled.span`
 const getCheckboxLabel = () => (
   <SLabel>
     <Label>I have read and agree to the</Label>
-    <Term><a href={TERM_LINK} target="_blank" rel="noreferrer">Terms of Use</a></Term>
+    <Term>
+      <a href={TERM_LINK} target="_blank" rel="noreferrer">
+        Terms of Use
+      </a>
+    </Term>
   </SLabel>
 );
 
@@ -89,7 +93,9 @@ const InitSeedPhrase = () => {
       </DivBody>
       <ButtonWrapper>
         <Button onClick={() => goToCreatePassword(false)} isDisabled={!isChecked} size={BUTTON_SIZE.FULL} label="Create New Wallet" />
-        <Restore onClick={() => goToCreatePassword(true)} isDisabled={!isChecked}>Restore from recovery phrase</Restore>
+        <Restore onClick={() => goToCreatePassword(true)} isDisabled={!isChecked}>
+          Restore from recovery phrase
+        </Restore>
       </ButtonWrapper>
     </Wrapper>
   );

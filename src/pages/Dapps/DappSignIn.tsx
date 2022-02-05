@@ -25,7 +25,7 @@ const Wrapper = styled.div`
   bottom: 0;
   right: 0;
   z-index: 2;
-  background: linear-gradient(90deg, #E6FEFE 0%, #FDF6E6 100%);
+  background: linear-gradient(90deg, #e6fefe 0%, #fdf6e6 100%);
   font-size: 14px;
   overflow-y: scroll;
   overflow-x: hidden;
@@ -61,8 +61,7 @@ const Div = styled.div`
   text-align: center;
   word-break: break-word;
 `;
-const FooterWrapper = styled(Footer)`
-`;
+const FooterWrapper = styled(Footer)``;
 const ConnectInfo = styled.div`
   font-size: 16px;
   font-weight: 700;
@@ -90,46 +89,64 @@ const DappSignIn = () => {
   const [icon, setIcon] = useState(images.dappsLogo);
 
   useEffect(() => {
-    getLocalDapps((dapps) => {
-      getLocalSelectedNetwork((selectedNetwork) => {
-        if (selectedNetwork.networkId === dapps.networkId) {
-          setDomain(dapps.domain);
-          if (dapps.icon !== 'no icon') {
-            setIcon(dapps.icon);
-          }
-        }
-      }, () => {});
-    }, () => {});
+    getLocalDapps(
+      (dapps) => {
+        getLocalSelectedNetwork(
+          (selectedNetwork) => {
+            if (selectedNetwork.networkId === dapps.networkId) {
+              setDomain(dapps.domain);
+              if (dapps.icon !== 'no icon') {
+                setIcon(dapps.icon);
+              }
+            }
+          },
+          () => {},
+        );
+      },
+      () => {},
+    );
   }, []);
 
   const onSave = () => {
-    getLocalDapps((dapp) => {
-      getLocalActiveDapps((dapps) => {
-        const newDapps = dapps || [];
-        newDapps.push(dapp.domain);
-        setLocalActiveDapps(newDapps, () => {});
-      }, () => {
-        const newDapps = [dapp.domain];
-        setLocalActiveDapps(newDapps, () => {});
-      });
-      getLocalPassword((accountPassword) => {
-        getLocalSelectedWallet((selectedWallet) => {
-          const result = {
-            status: 'success',
-            message: 'Connected successfully',
-            account: {
-              chainId: selectedWallet.chainId,
-              account: decryptKey(selectedWallet.account, accountPassword),
-              publicKey: decryptKey(selectedWallet.publicKey, accountPassword),
-            },
-          };
-          updateConnectMessage(result);
-          setTimeout(() => {
-            window.close();
-          }, 500);
-        }, () => {});
-      }, () => {});
-    }, () => {});
+    getLocalDapps(
+      (dapp) => {
+        getLocalActiveDapps(
+          (dapps) => {
+            const newDapps = dapps || [];
+            newDapps.push(dapp.domain);
+            setLocalActiveDapps(newDapps, () => {});
+          },
+          () => {
+            const newDapps = [dapp.domain];
+            setLocalActiveDapps(newDapps, () => {});
+          },
+        );
+        getLocalPassword(
+          (accountPassword) => {
+            getLocalSelectedWallet(
+              (selectedWallet) => {
+                const result = {
+                  status: 'success',
+                  message: 'Connected successfully',
+                  account: {
+                    chainId: selectedWallet.chainId,
+                    account: decryptKey(selectedWallet.account, accountPassword),
+                    publicKey: decryptKey(selectedWallet.publicKey, accountPassword),
+                  },
+                };
+                updateConnectMessage(result);
+                setTimeout(() => {
+                  window.close();
+                }, 500);
+              },
+              () => {},
+            );
+          },
+          () => {},
+        );
+      },
+      () => {},
+    );
   };
   const onReject = () => {
     const result = {
@@ -154,34 +171,19 @@ const DappSignIn = () => {
           </Div>
         </ConnectItem>
         <ConnectItem alignTop>
-          <Div>
-            {domain}
-          </Div>
-          <Div>
-            X Wallet extension
-          </Div>
+          <Div>{domain}</Div>
+          <Div>X Wallet extension</Div>
         </ConnectItem>
-        <ConnectInfo>
-          {`${domain} would like to connect to your account`}
-        </ConnectInfo>
+        <ConnectInfo>{`${domain} would like to connect to your account`}</ConnectInfo>
         <ConnectDescription>
           This site is requesting access to view your current account address. Always make sure you trust the sites you interact with.
         </ConnectDescription>
         <FooterWrapper>
           <ButtonWrapper>
-            <Button
-              label="Reject"
-              type={BUTTON_TYPE.DISABLE}
-              onClick={onReject}
-              size={BUTTON_SIZE.FULL}
-            />
+            <Button label="Reject" type={BUTTON_TYPE.DISABLE} onClick={onReject} size={BUTTON_SIZE.FULL} />
           </ButtonWrapper>
           <ButtonWrapper>
-            <Button
-              label="Save"
-              onClick={onSave}
-              size={BUTTON_SIZE.FULL}
-            />
+            <Button label="Save" onClick={onSave} size={BUTTON_SIZE.FULL} />
           </ButtonWrapper>
         </FooterWrapper>
       </CompleteWrapper>

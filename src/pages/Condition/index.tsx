@@ -10,12 +10,12 @@ const DivBody = styled.div`
   text-align: left;
   font-size: 20px;
   line-height: 25px;
-  display:flex;
+  display: flex;
   margin-bottom: 10px;
 `;
 const Footer = styled.div`
   margin-top: 200px;
-  @media screen and (max-width: 1024px) { 
+  @media screen and (max-width: 1024px) {
     margin-top: 180px;
   }
 `;
@@ -33,15 +33,15 @@ const Body = styled.div`
   margin-top: 30px;
 `;
 const TextRight = styled.div`
-  width:calc(100% - 2em);
-  float:right;
-  height:100%;
+  width: calc(100% - 2em);
+  float: right;
+  height: 100%;
   font-size: 16px;
 `;
 const Icon = styled.div`
-  width:2em;
-  height:100%;
-  float:left;
+  width: 2em;
+  height: 100%;
+  float: left;
 `;
 const Condition = () => {
   const history = useHistory();

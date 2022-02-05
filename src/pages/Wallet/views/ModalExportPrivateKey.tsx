@@ -24,7 +24,7 @@ const Item = styled.div`
 `;
 const SubmitBtn = styled.div`
   margin-top: 100px;
-  @media screen and (max-width: 480px){
+  @media screen and (max-width: 480px) {
     margin-top: 30px;
   }
 `;
@@ -36,8 +36,8 @@ const DivChild = styled.div`
 const Warning = styled.div`
   padding: 13px;
   background: #eee6f3;
-  color: #461A57;
-  border: 1px solid #461A57;
+  color: #461a57;
+  border: 1px solid #461a57;
   border-radius: 8px;
   text-align: center;
 `;
@@ -49,9 +49,7 @@ const DivError = styled.div`
   min-height: 50px;
 `;
 const ModalExportPrivateKey = (props: Props) => {
-  const {
-    isOpen, onCloseModal, closeOnOverlayClick, title, showCloseIcon,
-  } = props;
+  const { isOpen, onCloseModal, closeOnOverlayClick, title, showCloseIcon } = props;
   const [isMobile] = useWindowResizeMobile(420);
   const { chainId, account, secretKey } = useSelector((state) => state?.wallet);
   const { passwordHash } = useSelector((state) => state.extensions);
@@ -130,73 +128,59 @@ const ModalExportPrivateKey = (props: Props) => {
           />
         </Item>
         <Item>
-          <BaseTextInput
-            inputProps={{ readOnly: true, value: chainId }}
-            title="Chain ID"
-            height="auto"
-          />
+          <BaseTextInput inputProps={{ readOnly: true, value: chainId }} title="Chain ID" height="auto" />
         </Item>
-        {
-          !isVerify && (
-            <Div>
-              <Item>
-                <BaseTextInput
-                  inputProps={{ placeholder: 'Input password', type: 'password' }}
-                  title="Input password to show private key"
-                  height="auto"
-                  onChange={onChangeInput}
-                  onKeyPress={(event) => {
-                    if (event.key === 'Enter') {
-                      handleVerifyPassword();
-                    }
-                  }}
-                  typeInput="password"
-                />
-                <DivError>
-                  {isErrorEmpty && <InputError marginTop="0">This field is required.</InputError>}
-                  {isErrorVerify && <InputError marginTop="0">Invalid Passwords.</InputError>}
-                </DivError>
-              </Item>
-              <SubmitBtn>
-                <Button label="Verify" size={BUTTON_SIZE.FULL} onClick={handleVerifyPassword} />
-              </SubmitBtn>
-            </Div>
-          )
-        }
-        {
-          isVerify && (
-            <Div>
-              <DivChild>
-                <BaseInfoDisable
-                  title="This is your private key"
-                  label={shortenPrivateKey(secretKey)}
-                  image={{
-                    width: '12px',
-                    height: '12px',
-                    src: images.wallet.copyGray,
-                    callback: () => {
-                      navigator.clipboard.writeText(secretKey);
-                      toast.success(<Toast type="success" content="Copied!" />);
-                    },
-                  }}
-                />
-              </DivChild>
-              <QrCodeBox>
-                <QRCode
-                  id="export-private-key"
-                  value={secretKey}
-                  size={200}
-                  level="H"
-                />
-              </QrCodeBox>
-              <Item>
-                <Button label="Download" size={BUTTON_SIZE.FULL} onClick={downloadQrCode} />
-              </Item>
-              <Warning>Warning: Never disclose this key. Anyone with your private keys can steal any assets held in your account.</Warning>
-            </Div>
-          )
-        }
-
+        {!isVerify && (
+          <Div>
+            <Item>
+              <BaseTextInput
+                inputProps={{ placeholder: 'Input password', type: 'password' }}
+                title="Input password to show private key"
+                height="auto"
+                onChange={onChangeInput}
+                onKeyPress={(event) => {
+                  if (event.key === 'Enter') {
+                    handleVerifyPassword();
+                  }
+                }}
+                typeInput="password"
+              />
+              <DivError>
+                {isErrorEmpty && <InputError marginTop="0">This field is required.</InputError>}
+                {isErrorVerify && <InputError marginTop="0">Invalid Passwords.</InputError>}
+              </DivError>
+            </Item>
+            <SubmitBtn>
+              <Button label="Verify" size={BUTTON_SIZE.FULL} onClick={handleVerifyPassword} />
+            </SubmitBtn>
+          </Div>
+        )}
+        {isVerify && (
+          <Div>
+            <DivChild>
+              <BaseInfoDisable
+                title="This is your private key"
+                label={shortenPrivateKey(secretKey)}
+                image={{
+                  width: '12px',
+                  height: '12px',
+                  src: images.wallet.copyGray,
+                  callback: () => {
+                    navigator.clipboard.writeText(secretKey);
+                    toast.success(<Toast type="success" content="Copied!" />);
+                  },
+                }}
+              />
+            </DivChild>
+            <QrCodeBox>
+              <QRCode id="export-private-key" value={secretKey} size={200} level="H" />
+            </QrCodeBox>
+            <Item>
+              <Button label="Download" size={BUTTON_SIZE.FULL} onClick={downloadQrCode} />
+            </Item>
+            <Warning>Warning: Never disclose this key. Anyone with your private keys can steal any assets held in your account.</Warning>
+          </Div>
+        )}
       </ExportPrivateKeyContent>
     </ModalCustom>
   );
@@ -207,6 +191,6 @@ type Props = {
   closeOnOverlayClick?: boolean;
   title?: string;
   showCloseIcon?: boolean;
-}
+};
 
 export default ModalExportPrivateKey;

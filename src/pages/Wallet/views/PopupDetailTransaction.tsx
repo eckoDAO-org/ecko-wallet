@@ -17,27 +17,27 @@ const Item = styled.div`
   margin-bottom: 15px;
 `;
 const DivChild = styled.div`
-  color: #461A57;
+  color: #461a57;
   font-size: ${(props) => props.fontSize};
   font-weight: ${(props) => props.fontWeight};
   margin: ${(props) => props.margin};
   padding: ${(props) => props.padding};
 `;
 const CustomDiv = styled(DivChild)`
-  color: #461A57;
+  color: #461a57;
   font-weight: bold;
 `;
 const Total = styled.div`
   display: flex;
   justify-content: space-between;
-  color: #461A57;
+  color: #461a57;
   font-weight: 700;
   margin-top: 20px;
   margin-bottom: 50px;
 `;
 const Hr = styled.hr`
   height: 2px;
-  background: linear-gradient(90deg, #D2AB72 0%, #B66E84 35.42%, #B2579B 64.06%, #9EE9E4 99.48%);
+  background: linear-gradient(90deg, #d2ab72 0%, #b66e84 35.42%, #b2579b 64.06%, #9ee9e4 99.48%);
   transform: matrix(1, 0, 0, -1, 0, 0);
   border: none;
 `;
@@ -56,8 +56,7 @@ const DetailItem = styled.div`
   border-left: ${(props) => props.borderLeft && '1px solid #461A57'};
   position: relative;
 `;
-const TxStepText = styled(DivChild)`
-`;
+const TxStepText = styled(DivChild)``;
 const ImageBox = styled.div`
   position: absolute;
   top: 0;
@@ -77,15 +76,7 @@ const convertedDateString = (newTime) => {
   return `${day}/${month}/${year} - ${hours}:${minutes}:${second}`;
 };
 const PopupDetailTransaction = (props: Props) => {
-  const {
-    isOpen,
-    onCloseModal,
-    closeOnOverlayClick,
-    title,
-    showCloseIcon,
-    activityDetails,
-    selectedNetwork,
-  } = props;
+  const { isOpen, onCloseModal, closeOnOverlayClick, title, showCloseIcon, activityDetails, selectedNetwork } = props;
   const openTransactionDetails = () => {
     (window as any).chrome.tabs.create({ url: `${selectedNetwork.explorer}/tx/${activityDetails.requestKey}` });
   };
@@ -111,7 +102,9 @@ const PopupDetailTransaction = (props: Props) => {
         {renderTransactionInfo(activityDetails)}
         <Item>
           <DivChild fontWeight="700">Status</DivChild>
-          <CustomDiv fontSize="14px" fontWeight="700">{statusText}</CustomDiv>
+          <CustomDiv fontSize="14px" fontWeight="700">
+            {statusText}
+          </CustomDiv>
         </Item>
         <Item>
           <DivChild fontWeight="700">Symbol</DivChild>
@@ -123,22 +116,23 @@ const PopupDetailTransaction = (props: Props) => {
         </Item>
         <Item>
           <DivChild>Gas Fee</DivChild>
-          <DivChild>{ isPending ? 'Pending' : new BigNumber(gasFee).decimalPlaces(12).toString() }</DivChild>
+          <DivChild>{isPending ? 'Pending' : new BigNumber(gasFee).decimalPlaces(12).toString()}</DivChild>
         </Item>
       </DetailTx>
       <Hr />
-      {(activityDetails.symbol || 'kda') === 'kda'
-      && (
+      {(activityDetails.symbol || 'kda') === 'kda' && (
         <Total>
           <DivChild>Total</DivChild>
-          <DivChild>{ isPending ? 'Pending' : `${new BigNumber(total).decimalPlaces(12).toString()} KDA` }</DivChild>
+          <DivChild>{isPending ? 'Pending' : `${new BigNumber(total).decimalPlaces(12).toString()} KDA`}</DivChild>
         </Total>
       )}
       <Item>
         <Button size={BUTTON_SIZE.FULL} onClick={openTransactionDetails} label="View Details" />
       </Item>
       <ActivityLog>
-        <DivChild margin="0 0 10px 0" fontSize="16px" fontWeight={700}>Activity Log</DivChild>
+        <DivChild margin="0 0 10px 0" fontSize="16px" fontWeight={700}>
+          Activity Log
+        </DivChild>
         <ActivityDetail>
           <DetailItem borderLeft>
             <TxStepText padding={`0 0 ${isPending ? '0' : '20px'} 20px`}>
@@ -151,8 +145,7 @@ const PopupDetailTransaction = (props: Props) => {
             </ImageBox>
           </DetailItem>
         </ActivityDetail>
-        {
-          !isPending && (
+        {!isPending && (
           <ActivityDetail>
             <DetailItem>
               <TxStepText padding="0 0 20px 20px">
@@ -165,8 +158,7 @@ const PopupDetailTransaction = (props: Props) => {
               </ImageBox>
             </DetailItem>
           </ActivityDetail>
-          )
-        }
+        )}
       </ActivityLog>
     </ModalCustom>
   );
@@ -179,5 +171,5 @@ type Props = {
   showCloseIcon?: boolean;
   activityDetails: any;
   selectedNetwork: any;
-}
+};
 export default PopupDetailTransaction;

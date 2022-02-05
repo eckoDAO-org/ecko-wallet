@@ -17,14 +17,12 @@ type Props = {
   onChange?: any;
   numberOptions?: any;
   onKeyPress?: any;
-  onWheel?:any;
-  onBlur?:any;
+  onWheel?: any;
+  onBlur?: any;
   typeInput?: String;
 };
 const BaseTextInput = memo(
-  ({
-    title, inputProps = {}, typeInput, image, height = '44px', isFlex, onChange, numberOptions, onKeyPress, onWheel, onBlur,
-  }: Props) => {
+  ({ title, inputProps = {}, typeInput, image, height = '44px', isFlex, onChange, numberOptions, onKeyPress, onWheel, onBlur }: Props) => {
     const [type, setType] = useState('password');
     const { readOnly } = inputProps;
     let styles = {
@@ -43,30 +41,8 @@ const BaseTextInput = memo(
       <SDivRoot height={height} isFlex={isFlex}>
         <SText isFlex={isFlex}>{title}</SText>
         <InputWrapper isFlex={isFlex} readOnly={readOnly}>
-          {
-            typeInput === 'password' ? (
-              <>
-                <SInput
-                  {...inputProps}
-                  border={styles.border}
-                  background={styles.background}
-                  color={styles.color}
-                  onChange={onChange}
-                  onKeyPress={onKeyPress}
-                  onWheel={onWheel}
-                  autoComplete="off"
-                  onBlur={onBlur}
-                  type={type}
-                />
-                <ImageWrapper readOnly={readOnly}>
-                  <SImage
-                    src={type === 'password' ? images.initPage.eyeHidden : images.initPage.eye}
-                    alt="image"
-                    onClick={() => setType(type === 'password' ? 'text' : 'password')}
-                  />
-                </ImageWrapper>
-              </>
-            ) : (
+          {typeInput === 'password' ? (
+            <>
               <SInput
                 {...inputProps}
                 border={styles.border}
@@ -77,15 +53,35 @@ const BaseTextInput = memo(
                 onWheel={onWheel}
                 autoComplete="off"
                 onBlur={onBlur}
+                type={type}
               />
-            )
-          }
-          {
-            image && <ImageWrapper readOnly={readOnly}><SImage {...image} src={image.src} alt="image" onClick={image.callback} /></ImageWrapper>
-          }
-          {
-            numberOptions && <ImageWrapper readOnly={readOnly}>{numberOptions.content}</ImageWrapper>
-          }
+              <ImageWrapper readOnly={readOnly}>
+                <SImage
+                  src={type === 'password' ? images.initPage.eyeHidden : images.initPage.eye}
+                  alt="image"
+                  onClick={() => setType(type === 'password' ? 'text' : 'password')}
+                />
+              </ImageWrapper>
+            </>
+          ) : (
+            <SInput
+              {...inputProps}
+              border={styles.border}
+              background={styles.background}
+              color={styles.color}
+              onChange={onChange}
+              onKeyPress={onKeyPress}
+              onWheel={onWheel}
+              autoComplete="off"
+              onBlur={onBlur}
+            />
+          )}
+          {image && (
+            <ImageWrapper readOnly={readOnly}>
+              <SImage {...image} src={image.src} alt="image" onClick={image.callback} />
+            </ImageWrapper>
+          )}
+          {numberOptions && <ImageWrapper readOnly={readOnly}>{numberOptions.content}</ImageWrapper>}
         </InputWrapper>
       </SDivRoot>
     );
@@ -134,7 +130,7 @@ const SText = styled.title`
   margin-bottom: ${(props) => (props.isFlex ? '0' : '10px')};
   ${(props) => (props.isFlex ? 'width: 31%' : '')};
   ${(props) => (props.isFlex ? 'align-self: center' : '')};
-  color: #461A57;
+  color: #461a57;
   font-weight: 700;
 `;
 const SInput = styled.input`
@@ -148,8 +144,8 @@ const SInput = styled.input`
   font-family: 'Play', sans-serif;
   outline: none;
   border: none;
-  &::placeholder{
-    color: #A187AB;
+  &::placeholder {
+    color: #a187ab;
   }
 `;
 

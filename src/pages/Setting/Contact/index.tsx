@@ -13,30 +13,15 @@ import { getLocalContacts, setLocalContacts } from 'src/utils/storage';
 import { setContacts } from 'src/stores/extensions';
 import images from '../../../images';
 import { TitleMessage } from './style';
-import {
-  ButtonBack,
-  Descripton,
-  FooterWrapper,
-  SettingBody,
-  TitleHeader,
-  Wrapper,
-} from '../style';
-import {
-  Arrow,
-  Body,
-  ContactItem,
-  ContactTitle,
-  ContactWrapper,
-} from '../../SendTransactions/styles';
+import { ButtonBack, Descripton, FooterWrapper, SettingBody, TitleHeader, Wrapper } from '../style';
+import { Arrow, Body, ContactItem, ContactTitle, ContactWrapper } from '../../SendTransactions/styles';
 import PopupAddContact from './views/PopupAddContact';
 
 type Props = {
   setRemoveContactModal: boolean;
-}
+};
 const PageContact = (props: Props) => {
-  const {
-    setRemoveContactModal,
-  } = props;
+  const { setRemoveContactModal } = props;
   const [isOpenAddContact, setIsOpenAddContact] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [selectedContact, setSelectedContact] = useState<any>({});
@@ -57,46 +42,40 @@ const PageContact = (props: Props) => {
     setIsOpenAddContact(false);
   };
   const handleRemoveContact = () => {
-    getLocalContacts(selectedNetwork.networkId, (data) => {
-      const newContacts = data;
-      delete newContacts[`${selectedContact.chainId}`][`${selectedContact.accountName}`];
-      setLocalContacts(selectedNetwork.networkId, newContacts);
-      setContacts(convertContacts(newContacts));
-      setIsOpenAddContact(false);
-      setRemoveContactModal;
-      toast.success(<Toast type="success" content="Remove contact successfully" />);
-    }, () => {});
+    getLocalContacts(
+      selectedNetwork.networkId,
+      (data) => {
+        const newContacts = data;
+        delete newContacts[`${selectedContact.chainId}`][`${selectedContact.accountName}`];
+        setLocalContacts(selectedNetwork.networkId, newContacts);
+        setContacts(convertContacts(newContacts));
+        setIsOpenAddContact(false);
+        setRemoveContactModal;
+        toast.success(<Toast type="success" content="Remove contact successfully" />);
+      },
+      () => {},
+    );
   };
 
   const goBack = () => {
     history.push('/setting');
   };
-  const getTabContent = () => (contacts.length
-    ? contacts.map((contact: any, key) => (
-      <ContactWrapper
-        onClick={() => openEdit(contact)}
-        key={`${contact.accountName}-${contact.chainId}`}
-      >
-        <ContactItem isFirst={key === 0}>
-          {contact.aliasName && (
-            <ContactTitle>
-              {(contact.aliasName)}
-
-            </ContactTitle>
-          )}
-          <Descripton>
-            {shortenAddress(contact.accountName)}
-            {' '}
-            -
-            {' '}
-            {`Chain ${contact.chainId}`}
-          </Descripton>
-
-        </ContactItem>
-        <Arrow src={images.wallet.view} alt="view" />
-      </ContactWrapper>
-    ))
-    : <TitleMessage>No data</TitleMessage>);
+  const getTabContent = () =>
+    contacts.length ? (
+      contacts.map((contact: any, key) => (
+        <ContactWrapper onClick={() => openEdit(contact)} key={`${contact.accountName}-${contact.chainId}`}>
+          <ContactItem isFirst={key === 0}>
+            {contact.aliasName && <ContactTitle>{contact.aliasName}</ContactTitle>}
+            <Descripton>
+              {shortenAddress(contact.accountName)} - {`Chain ${contact.chainId}`}
+            </Descripton>
+          </ContactItem>
+          <Arrow src={images.wallet.view} alt="view" />
+        </ContactWrapper>
+      ))
+    ) : (
+      <TitleMessage>No data</TitleMessage>
+    );
   return (
     <SettingBody>
       <ButtonBack>
@@ -105,12 +84,7 @@ const PageContact = (props: Props) => {
       <Body>
         <TitleHeader>Contacts</TitleHeader>
         {isOpenAddContact && (
-          <ModalCustom
-            isOpen={isOpenAddContact}
-            title="Contact"
-            onCloseModal={() => setIsOpenAddContact(false)}
-            closeOnOverlayClick={false}
-          >
+          <ModalCustom isOpen={isOpenAddContact} title="Contact" onCloseModal={() => setIsOpenAddContact(false)} closeOnOverlayClick={false}>
             <PopupAddContact
               onClose={closeAdd}
               isEdit={isEdit}
@@ -120,9 +94,7 @@ const PageContact = (props: Props) => {
             />
           </ModalCustom>
         )}
-        <Wrapper>
-          {getTabContent()}
-        </Wrapper>
+        <Wrapper>{getTabContent()}</Wrapper>
         <FooterWrapper>
           <Button size={BUTTON_SIZE.FULL} label="Add New Contact" onClick={() => openContact(false)} />
         </FooterWrapper>

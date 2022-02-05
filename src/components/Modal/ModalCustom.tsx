@@ -6,7 +6,7 @@ import images from 'src/images';
 
 const Div = styled.div`
   font-size: 16px;
-  color: #461A57;
+  color: #461a57;
   word-break: break-word;
 `;
 const Img = styled.img`
@@ -16,13 +16,13 @@ const TitleHeader = styled.div`
   text-align: center;
   font-size: 16px;
   font-weight: 700;
-  color: #461A57;
+  color: #461a57;
   margin-bottom: 15px;
 `;
 
 const Hr = styled.hr`
   height: 2px;
-  background: linear-gradient(90deg, #D2AB72 0%, #B66E84 35.42%, #B2579B 64.06%, #9EE9E4 99.48%);
+  background: linear-gradient(90deg, #d2ab72 0%, #b66e84 35.42%, #b2579b 64.06%, #9ee9e4 99.48%);
   transform: matrix(1, 0, 0, -1, 0, 0);
   border: none;
   width: 120%;
@@ -44,9 +44,7 @@ const ModalWrapper = styled.div`
 `;
 
 const ModalCustom = (props: Props) => {
-  const {
-    isOpen, onCloseModal, closeOnOverlayClick, title, showCloseIcon, children,
-  } = props;
+  const { isOpen, onCloseModal, closeOnOverlayClick, title, showCloseIcon, children } = props;
   const [isMobile] = useWindowResizeMobile(420);
   return (
     <ModalWrapper>
@@ -57,7 +55,11 @@ const ModalCustom = (props: Props) => {
         center
         styles={{
           modal: {
-            minWidth: isMobile ? '260px' : '350px', minHeight: '200px', fontFamily: 'Play', background: 'linear-gradient(90deg, #E6FEFE 0%, #FDF6E6 100%)', overflowX: 'hidden',
+            minWidth: isMobile ? '260px' : '350px',
+            minHeight: '200px',
+            fontFamily: 'Play',
+            background: 'linear-gradient(90deg, #E6FEFE 0%, #FDF6E6 100%)',
+            overflowX: 'hidden',
           },
         }}
         closeOnOverlayClick={closeOnOverlayClick}
@@ -71,9 +73,7 @@ const ModalCustom = (props: Props) => {
             <Hr />
           </>
         )}
-        <Div>
-          {children}
-        </Div>
+        <Div>{children}</Div>
       </Modal>
     </ModalWrapper>
   );
@@ -85,5 +85,5 @@ type Props = {
   title?: string;
   showCloseIcon?: boolean;
   children?: any;
-}
+};
 export default ModalCustom;

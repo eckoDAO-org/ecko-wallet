@@ -30,7 +30,7 @@ const Wrapper = styled.div`
   bottom: 0;
   right: 0;
   z-index: 2;
-  background: linear-gradient(90deg, #E6FEFE 0%, #FDF6E6 100%);
+  background: linear-gradient(90deg, #e6fefe 0%, #fdf6e6 100%);
   font-size: 14px;
   overflow-y: scroll;
   overflow-x: hidden;
@@ -83,8 +83,7 @@ const Label = styled.span`
   display: inline-block;
   line-height: 25px;
 `;
-const CheckboxWrapper = styled.div`
-`;
+const CheckboxWrapper = styled.div``;
 const NoData = styled.div`
   text-align: center;
   margin-top: 50px;
@@ -95,7 +94,7 @@ const AccountName = styled.span`
 `;
 const Brick = styled.div`
   height: 20px;
-  background: linear-gradient(90deg, #D2AB72 0%, #B66E84 35.42%, #B2579B 64.06%, #9EE9E4 99.48%);
+  background: linear-gradient(90deg, #d2ab72 0%, #b66e84 35.42%, #b2579b 64.06%, #9ee9e4 99.48%);
   transform: matrix(1, 0, 0, -1, 0, 0);
 `;
 const DappDescription = styled.div`
@@ -113,7 +112,7 @@ const ConnectInfo = styled.div`
 const ConnectDescription = styled.div`
   font-size: 16px;
   font-weight: 400;
-  color: #461A57;
+  color: #461a57;
   line-height: 25px;
   text-align: center;
 `;
@@ -144,39 +143,52 @@ const ConnectedDapp = () => {
   const [data, setData] = useState<any[]>([]);
 
   useEffect(() => {
-    getLocalDapps((dapps) => {
-      getLocalSelectedNetwork((selectedNetwork) => {
-        if (selectedNetwork.networkId === dapps.networkId) {
-          setNetworkId(selectedNetwork.networkId);
-          setDomain(dapps.domain);
-          if (dapps.icon !== 'no icon') {
-            setIcon(dapps.icon);
-          }
-          getLocalWallets(dapps.networkId, (wallets) => {
-            getLocalPassword((accountPassword) => {
-              const newWallets:any[] = [];
-              wallets.forEach((wallet:any) => {
-                const isSelected = wallet.connectedSites.includes(dapps.domain);
-                if (!isSelected) {
-                  newWallets.push({
-                    chainId: wallet.chainId,
-                    account: decryptKey(wallet.account, accountPassword),
-                    publicKey: decryptKey(wallet.publicKey, accountPassword),
-                    secretKey: decryptKey(wallet.secretKey, accountPassword),
-                    connectedSites: wallet.connectedSites,
-                    isSelected: true,
-                  });
-                }
-              });
-              setData(newWallets);
-            }, () => {});
-          }, () => {});
-        }
-      }, () => {});
-    }, () => {});
+    getLocalDapps(
+      (dapps) => {
+        getLocalSelectedNetwork(
+          (selectedNetwork) => {
+            if (selectedNetwork.networkId === dapps.networkId) {
+              setNetworkId(selectedNetwork.networkId);
+              setDomain(dapps.domain);
+              if (dapps.icon !== 'no icon') {
+                setIcon(dapps.icon);
+              }
+              getLocalWallets(
+                dapps.networkId,
+                (wallets) => {
+                  getLocalPassword(
+                    (accountPassword) => {
+                      const newWallets: any[] = [];
+                      wallets.forEach((wallet: any) => {
+                        const isSelected = wallet.connectedSites.includes(dapps.domain);
+                        if (!isSelected) {
+                          newWallets.push({
+                            chainId: wallet.chainId,
+                            account: decryptKey(wallet.account, accountPassword),
+                            publicKey: decryptKey(wallet.publicKey, accountPassword),
+                            secretKey: decryptKey(wallet.secretKey, accountPassword),
+                            connectedSites: wallet.connectedSites,
+                            isSelected: true,
+                          });
+                        }
+                      });
+                      setData(newWallets);
+                    },
+                    () => {},
+                  );
+                },
+                () => {},
+              );
+            }
+          },
+          () => {},
+        );
+      },
+      () => {},
+    );
   }, []);
 
-  const getSelectConnectedSites = (arr:any = [], dappName, isSelected) => {
+  const getSelectConnectedSites = (arr: any = [], dappName, isSelected) => {
     let newArr = [...arr];
     if (arr.includes(dappName)) {
       if (!isSelected) {
@@ -189,7 +201,10 @@ const ConnectedDapp = () => {
   };
 
   const onSelectChange = (item, value) => {
-    const newData = data.map((d) => ({ ...d, isSelected: d.chainId.toString() === item.chainId.toString() && d.account === item.account ? value : d.isSelected }));
+    const newData = data.map((d) => ({
+      ...d,
+      isSelected: d.chainId.toString() === item.chainId.toString() && d.account === item.account ? value : d.isSelected,
+    }));
     const selectedIndex = newData.findIndex((d) => d.isSelected);
     if (selectedIndex > -1) {
       setDisabledBtn(false);
@@ -200,67 +215,90 @@ const ConnectedDapp = () => {
   };
   const onSave = () => {
     if (disabledBtn) return;
-    getLocalWallets(networkId, (wallets) => {
-      getLocalPassword((accountPassword) => {
-        const newWallets = wallets.map((wallet:any) => {
-          const newWallet = { ...wallet };
-          const selectedWallet = data.find((d) => d.chainId.toString() === wallet.chainId.toString() && d.account === decryptKey(wallet.account, accountPassword));
-          if (selectedWallet) {
-            newWallet.connectedSites = getSelectConnectedSites(newWallet.connectedSites, domain, selectedWallet.isSelected);
-          }
-          return newWallet;
-        });
-        setLocalWallets(networkId, newWallets);
-        setStep(2);
-        getLocalSelectedNetwork((n) => {
-          if (n.networkId === networkId) {
-            const newStateWallets = newWallets.map((w) => ({
-              chainId: w.chainId,
-              account: decryptKey(w.account, accountPassword),
-              publicKey: decryptKey(w.publicKey, accountPassword),
-              secretKey: decryptKey(w.secretKey, accountPassword),
-              connectedSites: w.connectedSites,
-            }));
-            setWallets(newStateWallets);
-            getLocalSelectedWallet((w) => {
-              const selectedWallet = newWallets.find((d) => d.chainId.toString() === w.chainId.toString() && decryptKey(w.account, accountPassword) === decryptKey(d.account, accountPassword)) || {};
-              if (selectedWallet && selectedWallet.account) {
-                getLocalActiveDapps((activeDapps) => {
-                  const newActiveDapps = activeDapps || [];
-                  if (!newActiveDapps.includes(domain)) {
-                    newActiveDapps.push(domain);
-                  }
-                  setLocalActiveDapps(newActiveDapps, () => {
-                    const currentWallet = {
-                      chainId: selectedWallet.chainId,
-                      account: decryptKey(selectedWallet.account, accountPassword),
-                      publicKey: decryptKey(selectedWallet.publicKey, accountPassword),
-                      secretKey: decryptKey(selectedWallet.secretKey, accountPassword),
-                      connectedSites: selectedWallet.connectedSites,
-                    };
-                    setCurrentWallet(currentWallet);
-                    setLocalSelectedWallet({ ...w, connectedSites: selectedWallet.connectedSites });
-                  });
-                }, () => {
-                  const newActiveDapps = [domain];
-                  setLocalActiveDapps(newActiveDapps, () => {
-                    const currentWallet = {
-                      chainId: selectedWallet.chainId,
-                      account: decryptKey(selectedWallet.account, accountPassword),
-                      publicKey: decryptKey(selectedWallet.publicKey, accountPassword),
-                      secretKey: decryptKey(selectedWallet.secretKey, accountPassword),
-                      connectedSites: selectedWallet.connectedSites,
-                    };
-                    setCurrentWallet(currentWallet);
-                    setLocalSelectedWallet({ ...w, connectedSites: selectedWallet.connectedSites });
-                  });
-                });
+    getLocalWallets(
+      networkId,
+      (wallets) => {
+        getLocalPassword(
+          (accountPassword) => {
+            const newWallets = wallets.map((wallet: any) => {
+              const newWallet = { ...wallet };
+              const selectedWallet = data.find(
+                (d) => d.chainId.toString() === wallet.chainId.toString() && d.account === decryptKey(wallet.account, accountPassword),
+              );
+              if (selectedWallet) {
+                newWallet.connectedSites = getSelectConnectedSites(newWallet.connectedSites, domain, selectedWallet.isSelected);
               }
-            }, () => {});
-          }
-        }, () => {});
-      }, () => {});
-    }, () => {});
+              return newWallet;
+            });
+            setLocalWallets(networkId, newWallets);
+            setStep(2);
+            getLocalSelectedNetwork(
+              (n) => {
+                if (n.networkId === networkId) {
+                  const newStateWallets = newWallets.map((w) => ({
+                    chainId: w.chainId,
+                    account: decryptKey(w.account, accountPassword),
+                    publicKey: decryptKey(w.publicKey, accountPassword),
+                    secretKey: decryptKey(w.secretKey, accountPassword),
+                    connectedSites: w.connectedSites,
+                  }));
+                  setWallets(newStateWallets);
+                  getLocalSelectedWallet(
+                    (w) => {
+                      const selectedWallet =
+                        newWallets.find(
+                          (d) =>
+                            d.chainId.toString() === w.chainId.toString() &&
+                            decryptKey(w.account, accountPassword) === decryptKey(d.account, accountPassword),
+                        ) || {};
+                      if (selectedWallet && selectedWallet.account) {
+                        getLocalActiveDapps(
+                          (activeDapps) => {
+                            const newActiveDapps = activeDapps || [];
+                            if (!newActiveDapps.includes(domain)) {
+                              newActiveDapps.push(domain);
+                            }
+                            setLocalActiveDapps(newActiveDapps, () => {
+                              const currentWallet = {
+                                chainId: selectedWallet.chainId,
+                                account: decryptKey(selectedWallet.account, accountPassword),
+                                publicKey: decryptKey(selectedWallet.publicKey, accountPassword),
+                                secretKey: decryptKey(selectedWallet.secretKey, accountPassword),
+                                connectedSites: selectedWallet.connectedSites,
+                              };
+                              setCurrentWallet(currentWallet);
+                              setLocalSelectedWallet({ ...w, connectedSites: selectedWallet.connectedSites });
+                            });
+                          },
+                          () => {
+                            const newActiveDapps = [domain];
+                            setLocalActiveDapps(newActiveDapps, () => {
+                              const currentWallet = {
+                                chainId: selectedWallet.chainId,
+                                account: decryptKey(selectedWallet.account, accountPassword),
+                                publicKey: decryptKey(selectedWallet.publicKey, accountPassword),
+                                secretKey: decryptKey(selectedWallet.secretKey, accountPassword),
+                                connectedSites: selectedWallet.connectedSites,
+                              };
+                              setCurrentWallet(currentWallet);
+                              setLocalSelectedWallet({ ...w, connectedSites: selectedWallet.connectedSites });
+                            });
+                          },
+                        );
+                      }
+                    },
+                    () => {},
+                  );
+                }
+              },
+              () => {},
+            );
+          },
+          () => {},
+        );
+      },
+      () => {},
+    );
   };
   const onClose = () => {
     window.close();
@@ -269,15 +307,20 @@ const ConnectedDapp = () => {
     <Label>
       <AccountName>{shortenAddress(item.account)}</AccountName>
       <br />
-      {shortenAddress(item.publicKey)}
-      {' '}
-      - Chain
-      {' '}
-      {item.chainId}
+      {shortenAddress(item.publicKey)} - Chain {item.chainId}
     </Label>
   );
 
-  const renderCheckbox = (item) => <CheckboxWrapper><CheckBox key={`${item.chainId}-${item.account}`} isChecked={item.isSelected} onChange={(value) => onSelectChange(item, value)} label={getCheckboxLabel(item)} /></CheckboxWrapper>;
+  const renderCheckbox = (item) => (
+    <CheckboxWrapper>
+      <CheckBox
+        key={`${item.chainId}-${item.account}`}
+        isChecked={item.isSelected}
+        onChange={(value) => onSelectChange(item, value)}
+        label={getCheckboxLabel(item)}
+      />
+    </CheckboxWrapper>
+  );
   return (
     <Wrapper>
       {step > 1 ? (
@@ -292,25 +335,15 @@ const ConnectedDapp = () => {
             </Div>
           </ConnectItem>
           <ConnectItem alignTop>
-            <Div>
-              {domain}
-            </Div>
-            <Div>
-              X Wallet extension
-            </Div>
+            <Div>{domain}</Div>
+            <Div>X Wallet extension</Div>
           </ConnectItem>
-          <ConnectInfo>
-            {`${domain} would like to connect to your account`}
-          </ConnectInfo>
+          <ConnectInfo>{`${domain} would like to connect to your account`}</ConnectInfo>
           <ConnectDescription>
             This site is requesting access to view your current account address. Always make sure you trust the sites you interact with.
           </ConnectDescription>
           <ConnectFooterWrapper>
-            <Button
-              label="Close"
-              onClick={onClose}
-              size={BUTTON_SIZE.FULL}
-            />
+            <Button label="Close" onClick={onClose} size={BUTTON_SIZE.FULL} />
           </ConnectFooterWrapper>
         </CompleteWrapper>
       ) : (
@@ -322,25 +355,13 @@ const ConnectedDapp = () => {
           <Brick />
           {data.length > 0 ? (
             <>
-              <ContentWrapper>
-                {data.map((item) => renderCheckbox(item))}
-              </ContentWrapper>
+              <ContentWrapper>{data.map((item) => renderCheckbox(item))}</ContentWrapper>
               <FooterWrapper>
                 <ButtonWrapper>
-                  <Button
-                    label="Cancel"
-                    type={BUTTON_TYPE.DISABLE}
-                    onClick={onClose}
-                    size={BUTTON_SIZE.FULL}
-                  />
+                  <Button label="Cancel" type={BUTTON_TYPE.DISABLE} onClick={onClose} size={BUTTON_SIZE.FULL} />
                 </ButtonWrapper>
                 <ButtonWrapper>
-                  <Button
-                    label="Save"
-                    onClick={onSave}
-                    size={BUTTON_SIZE.FULL}
-                    isDisabled={disabledBtn}
-                  />
+                  <Button label="Save" onClick={onSave} size={BUTTON_SIZE.FULL} isDisabled={disabledBtn} />
                 </ButtonWrapper>
               </FooterWrapper>
             </>

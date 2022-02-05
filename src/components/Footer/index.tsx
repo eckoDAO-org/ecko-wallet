@@ -1,9 +1,5 @@
-import {
-  useEffect,
-} from 'react';
-import {
-  useHistory, useLocation,
-} from 'react-router-dom';
+import { useEffect } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import images from 'src/images';
@@ -19,10 +15,7 @@ import {
   setSelectedNetwork,
   showFetching,
 } from 'src/stores/extensions';
-import {
-  setCurrentWallet,
-  setWallets,
-} from 'src/stores/wallet';
+import { setCurrentWallet, setWallets } from 'src/stores/wallet';
 import { decryptKey } from 'src/utils/security';
 import {
   getLocalContacts,
@@ -38,12 +31,7 @@ import {
   setLocalSelectedNetwork,
   setLocalSelectedWallet,
 } from 'src/utils/storage';
-import {
-  convertContacts,
-  convertNetworks,
-  convertRecent,
-  revertNetworks,
-} from 'src/utils';
+import { convertContacts, convertNetworks, convertRecent, revertNetworks } from 'src/utils';
 import { ACTIVE_TAB } from 'src/utils/constant';
 
 const WrapHeader = styled.div`
@@ -72,7 +60,7 @@ const Wrapper = styled.div`
   width: inherit;
 `;
 const Hr = styled.div`
-  background: linear-gradient(90deg, #D2AB72 0%, #B66E84 35.42%, #B2579B 64.06%, #9EE9E4 99.48%);
+  background: linear-gradient(90deg, #d2ab72 0%, #b66e84 35.42%, #b2579b 64.06%, #9ee9e4 99.48%);
   height: 2px;
 `;
 
@@ -101,31 +89,22 @@ const OptionHeader = styled.div`
 
 const Footer = () => {
   const rootState = useSelector((state) => state);
-  const {
-    passwordHash,
-    selectedNetwork,
-    networks,
-    expiredTime,
-    activeTab,
-  } = rootState.extensions;
+  const { passwordHash, selectedNetwork, networks, expiredTime, activeTab } = rootState.extensions;
   const { account } = rootState.wallet;
   const location = useLocation().pathname;
   const locationExtension = window.location.hash;
-  const showSettingAndSelectNetworks = !(
-    location.includes('networks')
-    || location.includes('contact')
-    || location.includes('about')
-  );
-  const isFooterWeb = location === ('/') || location === ('/wallet') || location === ('/history') || location === ('/setting');
-  const isFooterExtenstion = (locationExtension.substr(1) === ('/')
-    || locationExtension.substr(1) === ('/wallet')
-    || locationExtension.substr(1) === ('/popup')
-    || locationExtension.substr(1) === ('/history')
-    || locationExtension.substr(1) === ('/setting')
-  );
+  const showSettingAndSelectNetworks = !(location.includes('networks') || location.includes('contact') || location.includes('about'));
+  const isFooterWeb = location === '/' || location === '/wallet' || location === '/history' || location === '/setting';
+  const isFooterExtenstion =
+    locationExtension.substr(1) === '/' ||
+    locationExtension.substr(1) === '/wallet' ||
+    locationExtension.substr(1) === '/popup' ||
+    locationExtension.substr(1) === '/history' ||
+    locationExtension.substr(1) === '/setting';
   const isFooter = (isFooterWeb || isFooterExtenstion) && account !== null && account !== '' && account !== undefined;
 
-  const isDappUrl = location.includes('connected-dapps') || location.includes('dapps-transfer') || location.includes('sign-dapps') || location.includes('signed-cmd');
+  const isDappUrl =
+    location.includes('connected-dapps') || location.includes('dapps-transfer') || location.includes('sign-dapps') || location.includes('signed-cmd');
   const history = useHistory();
   useEffect(() => {
     // set up listener
@@ -143,7 +122,12 @@ const Footer = () => {
   const handleMessage = async (request) => {
     if (request.action === 'sync_data') {
       const { hash } = window.location;
-      const isSyncUrl = hash === '#/' || hash.includes('connected-dapps') || hash.includes('dapps-transfer') || hash.includes('sign-dapps') || hash.includes('signed-cmd');
+      const isSyncUrl =
+        hash === '#/' ||
+        hash.includes('connected-dapps') ||
+        hash.includes('dapps-transfer') ||
+        hash.includes('sign-dapps') ||
+        hash.includes('signed-cmd');
       if (request.type === 'create_password') {
         setExtensionPassword(request.passwordHash);
         if (request.wallet) {
@@ -154,14 +138,16 @@ const Footer = () => {
         }
         history.push(request.path);
       } else {
-        getLocalSeedPhrase(() => {
-          setIsHaveSeedPhrase(true);
-          if (!isSyncUrl) {
-            history.push('/');
-            setActiveTab(ACTIVE_TAB.HOME);
-          }
-        }, () => {
-        });
+        getLocalSeedPhrase(
+          () => {
+            setIsHaveSeedPhrase(true);
+            if (!isSyncUrl) {
+              history.push('/');
+              setActiveTab(ACTIVE_TAB.HOME);
+            }
+          },
+          () => {},
+        );
         // Account changed
         initDataFromLocal();
       }
@@ -169,129 +155,168 @@ const Footer = () => {
   };
   const initDataFromLocal = () => {
     showFetching();
-    getLocalSeedPhrase(() => {
-      setIsHaveSeedPhrase(true);
-    }, () => {
-      setIsHaveSeedPhrase(false);
-    });
-    getLocalExpiredTime((newExpiredTime) => {
-      setExpiredTime(newExpiredTime);
-    }, () => {});
-    getLocalPassword((accountPassword) => {
-      setExtensionPassword(accountPassword);
-    }, () => {});
-    getLocalSelectedNetwork((network) => {
-      setSelectedNetwork({
-        name: network.name,
-        url: network.url,
-        explorer: network.explorer,
-        networkId: network.networkId,
-        id: network.id,
-        isDefault: network.isDefault,
-      });
-      updateContacts(network.networkId);
-      updateRecent(network.networkId);
-      updateWallets(network.networkId);
-    }, () => {
-      setLocalSelectedNetwork(selectedNetwork);
-      updateRecent(selectedNetwork.networkId);
-      updateContacts(selectedNetwork.networkId);
-      updateWallets(selectedNetwork.networkId);
-    });
-    getLocalNetworks((localNetworks) => {
-      setNetworks(convertNetworks(localNetworks));
-    }, () => {
-      const newNetworks = revertNetworks(networks);
-      setLocalNetworks(newNetworks);
-    });
+    getLocalSeedPhrase(
+      () => {
+        setIsHaveSeedPhrase(true);
+      },
+      () => {
+        setIsHaveSeedPhrase(false);
+      },
+    );
+    getLocalExpiredTime(
+      (newExpiredTime) => {
+        setExpiredTime(newExpiredTime);
+      },
+      () => {},
+    );
+    getLocalPassword(
+      (accountPassword) => {
+        setExtensionPassword(accountPassword);
+      },
+      () => {},
+    );
+    getLocalSelectedNetwork(
+      (network) => {
+        setSelectedNetwork({
+          name: network.name,
+          url: network.url,
+          explorer: network.explorer,
+          networkId: network.networkId,
+          id: network.id,
+          isDefault: network.isDefault,
+        });
+        updateContacts(network.networkId);
+        updateRecent(network.networkId);
+        updateWallets(network.networkId);
+      },
+      () => {
+        setLocalSelectedNetwork(selectedNetwork);
+        updateRecent(selectedNetwork.networkId);
+        updateContacts(selectedNetwork.networkId);
+        updateWallets(selectedNetwork.networkId);
+      },
+    );
+    getLocalNetworks(
+      (localNetworks) => {
+        setNetworks(convertNetworks(localNetworks));
+      },
+      () => {
+        const newNetworks = revertNetworks(networks);
+        setLocalNetworks(newNetworks);
+      },
+    );
   };
 
   const updateContacts = (networkId) => {
-    getLocalContacts(networkId, (data) => {
-      const contacts = convertContacts(data);
-      setContacts(contacts);
-    }, () => {});
+    getLocalContacts(
+      networkId,
+      (data) => {
+        const contacts = convertContacts(data);
+        setContacts(contacts);
+      },
+      () => {},
+    );
   };
 
   const updateWallets = (networkId) => {
-    getLocalPassword((accountPassword) => {
-      getLocalWallets(networkId, (data) => {
-        const newWallets = data.map((item) => ({
-          chainId: item.chainId,
-          account: decryptKey(item.account, accountPassword),
-          publicKey: decryptKey(item.publicKey, accountPassword),
-          secretKey: decryptKey(item.secretKey, accountPassword),
-          connectedSites: item.connectedSites,
-        }));
-        setWallets(newWallets);
-        const { hash } = window.location;
-        getLocalSelectedWallet((selectedWallet) => {
-          setCurrentWallet({
-            chainId: selectedWallet.chainId,
-            account: decryptKey(selectedWallet.account, accountPassword),
-            publicKey: decryptKey(selectedWallet.publicKey, accountPassword),
-            secretKey: decryptKey(selectedWallet.secretKey, accountPassword),
-            connectedSites: selectedWallet.connectedSites,
-          });
-          getLocalExpiredTime(() => {
+    getLocalPassword(
+      (accountPassword) => {
+        getLocalWallets(
+          networkId,
+          (data) => {
+            const newWallets = data.map((item) => ({
+              chainId: item.chainId,
+              account: decryptKey(item.account, accountPassword),
+              publicKey: decryptKey(item.publicKey, accountPassword),
+              secretKey: decryptKey(item.secretKey, accountPassword),
+              connectedSites: item.connectedSites,
+            }));
+            setWallets(newWallets);
+            const { hash } = window.location;
+            getLocalSelectedWallet(
+              (selectedWallet) => {
+                setCurrentWallet({
+                  chainId: selectedWallet.chainId,
+                  account: decryptKey(selectedWallet.account, accountPassword),
+                  publicKey: decryptKey(selectedWallet.publicKey, accountPassword),
+                  secretKey: decryptKey(selectedWallet.secretKey, accountPassword),
+                  connectedSites: selectedWallet.connectedSites,
+                });
+                getLocalExpiredTime(
+                  () => {
+                    if (!isDappUrl) {
+                      history.push('/');
+                      setActiveTab(ACTIVE_TAB.HOME);
+                    }
+                  },
+                  () => {
+                    if (hash.includes('init')) {
+                      history.push('/');
+                      setActiveTab(ACTIVE_TAB.HOME);
+                    }
+                  },
+                );
+              },
+              () => {
+                const newWallet = newWallets[0];
+                setCurrentWallet(newWallet);
+                setLocalSelectedWallet(data[0]);
+                getLocalExpiredTime(
+                  () => {
+                    if (!isDappUrl) {
+                      history.push('/');
+                      setActiveTab(ACTIVE_TAB.HOME);
+                    }
+                  },
+                  () => {
+                    if (hash.includes('init')) {
+                      history.push('/');
+                      setActiveTab(ACTIVE_TAB.HOME);
+                    }
+                  },
+                );
+              },
+            );
+            hideFetching();
+          },
+          () => {
+            setWallets([]);
+            setCurrentWallet({
+              chainId: 0,
+              account: '',
+              publicKey: '',
+              secretKey: '',
+              connectedSites: [],
+            });
+            setLocalSelectedWallet({
+              chainId: 0,
+              account: '',
+              publicKey: '',
+              secretKey: '',
+              connectedSites: [],
+            });
             if (!isDappUrl) {
-              history.push('/');
-              setActiveTab(ACTIVE_TAB.HOME);
+              history.push('/init');
             }
-          }, () => {
-            if (hash.includes('init')) {
-              history.push('/');
-              setActiveTab(ACTIVE_TAB.HOME);
-            }
-          });
-        }, () => {
-          const newWallet = newWallets[0];
-          setCurrentWallet(newWallet);
-          setLocalSelectedWallet(data[0]);
-          getLocalExpiredTime(() => {
-            if (!isDappUrl) {
-              history.push('/');
-              setActiveTab(ACTIVE_TAB.HOME);
-            }
-          }, () => {
-            if (hash.includes('init')) {
-              history.push('/');
-              setActiveTab(ACTIVE_TAB.HOME);
-            }
-          });
-        });
+            hideFetching();
+          },
+        );
+      },
+      () => {
         hideFetching();
-      }, () => {
-        setWallets([]);
-        setCurrentWallet({
-          chainId: 0,
-          account: '',
-          publicKey: '',
-          secretKey: '',
-          connectedSites: [],
-        });
-        setLocalSelectedWallet({
-          chainId: 0,
-          account: '',
-          publicKey: '',
-          secretKey: '',
-          connectedSites: [],
-        });
-        if (!isDappUrl) {
-          history.push('/init');
-        }
-        hideFetching();
-      });
-    }, () => {
-      hideFetching();
-    });
+      },
+    );
   };
 
   const updateRecent = (networkId) => {
-    getLocalRecent(networkId, (data) => {
-      const recent = convertRecent(data);
-      setRecent(recent);
-    }, () => {});
+    getLocalRecent(
+      networkId,
+      (data) => {
+        const recent = convertRecent(data);
+        setRecent(recent);
+      },
+      () => {},
+    );
   };
 
   const isLoggedIn = expiredTime;
@@ -322,10 +347,7 @@ const Footer = () => {
             </DivImage>
           </DivImage>
           <OptionHeader>
-            <SettingWrapper
-              isShow={passwordHash && isLoggedIn && showSettingAndSelectNetworks}
-              onClick={setIconSettingActive}
-            >
+            <SettingWrapper isShow={passwordHash && isLoggedIn && showSettingAndSelectNetworks} onClick={setIconSettingActive}>
               <ImgSetting alt="icon-setting" src={activeTab === ACTIVE_TAB.SETTINGS ? images.iconSettingActive : images.setting} />
             </SettingWrapper>
           </OptionHeader>

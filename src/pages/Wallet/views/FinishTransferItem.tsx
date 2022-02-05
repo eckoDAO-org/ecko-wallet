@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { convertTowCharacters, shortenAddress } from 'src/utils';
 
 const Div = styled.div`
-  border: 1px solid #461A57;
+  border: 1px solid #461a57;
   box-sizing: border-box;
   border-radius: 10px;
   padding: 10px;
@@ -44,12 +44,8 @@ const Span = styled.span`
   font-weight: ${(props) => props.fontWeight};
 `;
 const FinishTransferItem = (props: any) => {
-  const {
-    src, createdTime, chainId, value, tokenType, receiver, status, domain,
-  } = props;
-  useEffect(() => {
-
-  }, []);
+  const { src, createdTime, chainId, value, tokenType, receiver, status, domain } = props;
+  useEffect(() => {}, []);
   const newTime = new Date(createdTime);
   const year = newTime.getFullYear();
   const month = convertTowCharacters(newTime.getMonth() + 1);
@@ -62,7 +58,9 @@ const FinishTransferItem = (props: any) => {
     <Div marginLeft="20px" marginRight="20px">
       <Activity>
         <DivFlex>
-          <DivCenter><Image size="24px" width="24px" src={src} alt="logo" /></DivCenter>
+          <DivCenter>
+            <Image size="24px" width="24px" src={src} alt="logo" />
+          </DivCenter>
           <DivChild marginLeft="20px">
             <DivChild marginBottom="5px">
               <Span color="#461A57" fontSize="14px" marginRight="5px">
@@ -80,21 +78,29 @@ const FinishTransferItem = (props: any) => {
                   <Span fontSize="13px" color="#461A57" fontWeight="700">{`Chain ${chainId}${status !== 'success' ? ' - ' : ''}`}</Span>
                 </>
               )}
-              {
-                status === 'pending' && <Span color="#eca822" fontSize="10px" fontWeight="700">Pending</Span>
-              }
-              {
-                status === 'failure' && <Span color="#f44336" fontSize="10px" fontWeight="700">Failed</Span>
-              }
-              {
-                status === 'finishing' && <Span color="#eca822" fontSize="10px" fontWeight="700">Finishing</Span>
-              }
+              {status === 'pending' && (
+                <Span color="#eca822" fontSize="10px" fontWeight="700">
+                  Pending
+                </Span>
+              )}
+              {status === 'failure' && (
+                <Span color="#f44336" fontSize="10px" fontWeight="700">
+                  Failed
+                </Span>
+              )}
+              {status === 'finishing' && (
+                <Span color="#eca822" fontSize="10px" fontWeight="700">
+                  Finishing
+                </Span>
+              )}
             </DivChild>
           </DivChild>
         </DivFlex>
         <DivChild>
           <DivChild fontSize="14px" color="#461A57" marginBottom="5px">{`-${value}`}</DivChild>
-          <DivChild fontSize="14px" color="#461A57" textAlign="right">{tokenType}</DivChild>
+          <DivChild fontSize="14px" color="#461A57" textAlign="right">
+            {tokenType}
+          </DivChild>
         </DivChild>
       </Activity>
     </Div>
