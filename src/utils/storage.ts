@@ -149,25 +149,6 @@ export const getExistContacts = (accountName, chianId, contacts) => {
   return get(findName, 'aliasName', '');
 };
 
-// Cross chain requests
-export const setLocalCrossRequests = (network, requests) => {
-  const key = `${network}.crossRequests`;
-  const obj = {};
-  obj[key] = requests;
-  (window as any)?.chrome?.storage?.local?.set(obj);
-};
-
-export const getLocalCrossRequests = (network, successCallback, failCallback) => {
-  const key = `${network}.crossRequests`;
-  (window as any)?.chrome?.storage?.local?.get(`${key}`, (result) => {
-    if (result && result[key]) {
-      successCallback(result[key]);
-    } else {
-      failCallback();
-    }
-  });
-};
-
 // Recent
 export const setLocalRecent = (network, requests) => {
   const key = `${network}.recent`;

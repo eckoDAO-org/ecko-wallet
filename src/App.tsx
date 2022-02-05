@@ -5,6 +5,7 @@ import { ToastContainer } from 'react-toastify';
 import store from './stores';
 import 'react-toastify/dist/ReactToastify.css';
 import AppContainer from './AppContainer';
+import { CrossChainProvider } from './contexts/CrossChainContext';
 
 const AppWrapper = styled.div`
   display: block;
@@ -48,7 +49,9 @@ const App = () => (
   <Provider store={store}>
     <AppWrapper>
       <Content>
-        <AppContainer />
+        <CrossChainProvider>
+          <AppContainer />
+        </CrossChainProvider>
       </Content>
     </AppWrapper>
     <ToastWrapper>

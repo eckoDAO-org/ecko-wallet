@@ -27,7 +27,6 @@ const PrivateRoute = (props: Props) => {
   const rootState = useSelector((state) => state);
   const { extensions, wallet } = rootState;
   const { passwordHash, expiredTime, isFetching, isHaveSeedPhrase } = extensions;
-  console.log('!!! ~ isHaveSeedPhrase', isHaveSeedPhrase);
   const isLoggedIn = expiredTime;
   const [loading, setLoading] = useState(true);
   useEffect(() => {

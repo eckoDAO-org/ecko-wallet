@@ -9,18 +9,12 @@ import { CONFIG } from 'src/utils/config';
 import { toast } from 'react-toastify';
 import BigNumber from 'bignumber.js';
 import Toast from 'src/components/Toast/Toast';
+import { CrossChainContext } from 'src/contexts/CrossChainContext';
 import { setActiveTab, setRecent } from 'src/stores/extensions';
-import {
-  getLocalActivities,
-  getLocalCrossRequests,
-  getLocalRecent,
-  setLocalActivities,
-  setLocalCrossRequests,
-  setLocalRecent,
-} from 'src/utils/storage';
+import { getLocalActivities, getLocalRecent, setLocalActivities, setLocalRecent } from 'src/utils/storage';
 import { updateSendDapp } from 'src/utils/message';
 import images from 'src/images';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import SpokesLoading from 'src/components/Loading/Spokes';
 import Tooltip from 'src/components/Tooltip';
 import { IFungibleToken } from 'src/pages/ImportToken';
@@ -51,6 +45,7 @@ type Props = {
 const PopupConfirm = (props: Props) => {
   const { configs, onClose, aliasContact, fungibleToken } = props;
   const [isLoading, setIsLoading] = useState(false);
+  const { crossChainRequests, setCrossChainRequest } = useContext(CrossChainContext);
   const history = useHistory();
   const {
     senderName,
@@ -219,18 +214,9 @@ const PopupConfirm = (props: Props) => {
           },
         );
         if (senderChainId.toString() !== receiverChainId.toString()) {
-          getLocalCrossRequests(
-            selectedNetwork.networkId,
-            (crossChainRequests) => {
-              const requests = [...crossChainRequests];
-              requests.push(activity);
-              setLocalCrossRequests(selectedNetwork.networkId, requests);
-            },
-            () => {
-              const requests = [activity];
-              setLocalCrossRequests(selectedNetwork.networkId, requests);
-            },
-          );
+          const requests = [...(crossChainRequests || [])];
+          requests.push(activity);
+          setCrossChainRequest && setCrossChainRequest(requests);
         }
         if (domain) {
           const newData = {

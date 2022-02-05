@@ -1,16 +1,17 @@
 /* eslint-disable no-console */
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import Button from 'src/components/Buttons';
 import styled from 'styled-components';
 import bcrypt from 'bcryptjs';
 import { BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
 import { setCurrentWallet, setWallets } from 'src/stores/wallet';
-import { getLocalCrossRequests, setLocalActivities, setLocalCrossRequests, setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
+import { setLocalActivities, setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
 import { encryptKey } from 'src/utils/security';
 import { useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
+import { CrossChainContext } from 'src/contexts/CrossChainContext';
 
 const DivChild = styled.div`
   font-size: ${(props) => props.fontSize};
@@ -76,6 +77,7 @@ const RemoveWalletPopup = (props: Props) => {
   const rootState = useSelector((state) => state);
   const { passwordHash, selectedNetwork } = rootState.extensions;
   const { wallets, chainId, account } = rootState.wallet;
+  const { crossChainRequests, setCrossChainRequest } = useContext(CrossChainContext);
   const [passwordInput, setPasswordInput] = useState('');
 
   const {
@@ -97,15 +99,8 @@ const RemoveWalletPopup = (props: Props) => {
         const newWallets = wallets.filter((w: any) => w.account !== account);
         const sameAccountWallet: any = newWallets.find((w: any) => w.account === account);
         if (sameAccountWallet && sameAccountWallet.account) {
-          getLocalCrossRequests(
-            selectedNetwork.networkId,
-            (crossChainRequests) => {
-              // Remove finish crosschain requests
-              const requests = crossChainRequests.filter((r: any) => r.sender !== account);
-              setLocalCrossRequests(selectedNetwork.networkId, requests);
-            },
-            () => {},
-          );
+          const requests = crossChainRequests?.filter((r: any) => r.sender !== account);
+          setCrossChainRequest && setCrossChainRequest(requests);
         }
         if (newWallets.length === 0) {
           setCurrentWallet({
