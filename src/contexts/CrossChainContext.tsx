@@ -10,18 +10,23 @@ import { getTimestamp } from 'src/utils';
 import { CONFIG } from 'src/utils/config';
 
 interface CrossChainContextValue {
-  toFinishCrossChainTxs: any[] | null;
-  setToFinishCrossChainTxs?: (value: any) => void;
-  pendingFinishRequestKeys: any[] | null;
-  setPendingFinishRequestKeys?: (value: any) => void;
   crossChainRequests: any[] | null;
-  setCrossChainRequest?: (value: any) => void;
+  toFinishCrossChainTxs: any[] | null;
+  pendingFinishRequestKeys: any[] | null;
+  setToFinishCrossChainTxs: (value: any) => void;
+  setPendingFinishRequestKeys: (value: any) => void;
+  setCrossChainRequest: (value: any) => void;
+  getCrossChainRequestsAsync: () => Promise<any>;
 }
 
 const defaultCrossChainContextValue: CrossChainContextValue = {
   toFinishCrossChainTxs: [],
   crossChainRequests: [],
   pendingFinishRequestKeys: [],
+  setToFinishCrossChainTxs: () => {},
+  setPendingFinishRequestKeys: () => {},
+  setCrossChainRequest: () => {},
+  getCrossChainRequestsAsync: async () => {},
 };
 
 export const CrossChainContext = createContext<CrossChainContextValue>(defaultCrossChainContextValue);
@@ -32,25 +37,22 @@ export const CrossChainProvider = ({ children }: any) => {
   const { selectedNetwork } = rootState.extensions;
   const { account, chainId } = rootState.wallet;
 
-  const [toFinishCrossChainTxs, setToFinishCrossChainTxs] = useLocalStorage<any[]>('toFinishCrossChainTxs', []);
-  console.log('!!! ~ toFinishCrossChainTxs', toFinishCrossChainTxs);
+  const [toFinishCrossChainTxs, setToFinishCrossChainTxs, getTofinishTxhAsync] = useLocalStorage<any[]>('toFinishCrossChainTxs', []);
   const [pendingFinishRequestKeys, setPendingFinishRequestKeys] = useLocalStorage<any[]>('pendingFinishRequestKeys', []);
-  console.log('!!! ~ pendingFinishRequestKeys', pendingFinishRequestKeys);
-  const [crossChainRequests, setCrossChainRequest] = useLocalStorage<any[]>(`${selectedNetwork.networkId}.crossRequests`, []);
-  console.log('!!! ~ crossChainRequests', crossChainRequests);
+  const [crossChainRequests, setCrossChainRequest, getCrossChainRequestsAsync] = useLocalStorage<any[]>(
+    `${selectedNetwork.networkId}.crossRequests`,
+    [],
+  );
 
   useEffect(() => {
-    // setInterval(() => {
-    //   checkCrossRequests();
-    // }, 3000);
-    console.log('!!! ~ crossChainRequests useEffect', crossChainRequests);
     if (crossChainRequests?.filter((c: any) => c.sender === account)?.length) {
       crossChainRequests
         .filter((c: any) => c.sender === account)
-        .forEach((crossChainTransaction) => {
-          setPendingFinishRequestKeys(toFinishCrossChainTxs || []);
+        .forEach(async (crossChainTransaction) => {
+          const toFinishTxs = await getTofinishTxhAsync();
+          setPendingFinishRequestKeys(toFinishTxs);
           if (crossChainTransaction.status === 'success') {
-            const newTxToFinish = [...(toFinishCrossChainTxs || []), crossChainTransaction.requestKey];
+            const newTxToFinish = [...(toFinishTxs || []), crossChainTransaction.requestKey];
             setToFinishCrossChainTxs(newTxToFinish);
             setPendingFinishRequestKeys(newTxToFinish);
             getSpv(crossChainTransaction);
@@ -197,19 +199,21 @@ export const CrossChainProvider = ({ children }: any) => {
       });
   };
 
-  const onListenFinishTransaction = (listenCmd, targetChainId, requestFinished) => {
+  const onListenFinishTransaction = (listenCmd, targetChainId, requestFinished, attempt = 1) => {
     Pact.fetch
       .listen(listenCmd, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, targetChainId))
-      .then((resC) => {
-        console.log('!!! ~ resC', resC);
+      .then(async () => {
         const newRequests = crossChainRequests?.filter((request: any) => requestFinished.createdTime !== request.createdTime) || [];
-        console.log('!!! ~ newRequests', newRequests);
         setCrossChainRequest(newRequests);
-        setToFinishCrossChainTxs([...(toFinishCrossChainTxs?.filter((requestKey) => requestKey !== requestFinished.requestKey) ?? [])]);
-        toast.success(<Toast type="success" content="Finish transfer successfully" />);
+        const toFinishTxs = await getTofinishTxhAsync();
+        setPendingFinishRequestKeys([...(pendingFinishRequestKeys?.filter((requestKey) => requestKey !== requestFinished.requestKey) ?? [])]);
+        setToFinishCrossChainTxs([...(toFinishTxs?.filter((requestKey) => requestKey !== requestFinished.requestKey) ?? [])]);
+        // toast.success(<Toast type="success" content="Finish transfer successfully" />);
       })
       .catch(() => {
-        // onListenFinishTransaction(listenCmd, targetChainId, requestFinished);
+        if (attempt < 11) {
+          onListenFinishTransaction(listenCmd, targetChainId, requestFinished, attempt + 1);
+        }
       });
   };
 
@@ -222,6 +226,7 @@ export const CrossChainProvider = ({ children }: any) => {
         setPendingFinishRequestKeys,
         crossChainRequests,
         setCrossChainRequest,
+        getCrossChainRequestsAsync,
       }}
     >
       {children}

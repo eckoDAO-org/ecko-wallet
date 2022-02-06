@@ -45,7 +45,7 @@ type Props = {
 const PopupConfirm = (props: Props) => {
   const { configs, onClose, aliasContact, fungibleToken } = props;
   const [isLoading, setIsLoading] = useState(false);
-  const { crossChainRequests, setCrossChainRequest } = useContext(CrossChainContext);
+  const { setCrossChainRequest, getCrossChainRequestsAsync } = useContext(CrossChainContext);
   const history = useHistory();
   const {
     senderName,
@@ -140,29 +140,32 @@ const PopupConfirm = (props: Props) => {
   const onListenTransaction = (listenCmd, attempt = 1) => {
     Pact.fetch
       .listen(listenCmd, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, senderChainId))
-      .then((data) => {
+      .then(async (data) => {
         const status = get(data, 'result.status');
         if (status === 'success') {
           toast.success(<Toast type="success" content="Transfer Successfully" />);
         } else if (status === 'failure') {
           toast.error(<Toast type="fail" content="Transfer Fail" />);
         }
-        const activity = {
-          symbol: fungibleToken?.symbol,
-          requestKey: data.reqKey,
-          senderChainId: senderChainId.toString(),
-          receiverChainId: receiverChainId.toString(),
-          receiver: receiverName,
-          createdTime: new Date(data.metaData?.blockTime / 1000),
-          amount,
-          gasPrice,
-          sender: senderName,
-          domain,
-          status,
-        };
-        console.log('!!! ~ activity', activity);
-        const newCrossRequests = [...(crossChainRequests?.filter((ccr) => ccr.requestKey !== data.reqKey) || []), activity];
-        setCrossChainRequest && setCrossChainRequest(newCrossRequests);
+        if (senderChainId.toString() !== receiverChainId.toString()) {
+          const activity = {
+            symbol: fungibleToken?.symbol,
+            requestKey: data.reqKey,
+            senderChainId: senderChainId.toString(),
+            receiverChainId: receiverChainId.toString(),
+            receiver: receiverName,
+            createdTime: new Date(data.metaData?.blockTime / 1000).toString(),
+            amount,
+            gasPrice,
+            sender: senderName,
+            domain,
+            status,
+          };
+          const asyncCrossChainRequests = await getCrossChainRequestsAsync();
+          const newCrossRequests = [...(asyncCrossChainRequests?.filter((ccr) => ccr.requestKey !== data.reqKey) || []), activity];
+          setCrossChainRequest(newCrossRequests);
+        }
+
         // history.push('/');
         // setActiveTab(ACTIVE_TAB.HOME);
       })
@@ -201,7 +204,7 @@ const PopupConfirm = (props: Props) => {
     setIsLoading(true);
     Pact.wallet
       .sendSigned(sendCmd, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, senderChainId))
-      .then((data) => {
+      .then(async (data) => {
         const requestKey = data.requestKeys[0];
         const listenCmd = {
           listen: requestKey,
@@ -236,9 +239,10 @@ const PopupConfirm = (props: Props) => {
           },
         );
         if (senderChainId.toString() !== receiverChainId.toString()) {
-          const requests = [...(crossChainRequests || [])];
+          const asyncCrossTx = await getCrossChainRequestsAsync();
+          const requests = [...(asyncCrossTx || [])];
           requests.push(activity);
-          setCrossChainRequest && setCrossChainRequest(requests);
+          setCrossChainRequest(requests);
         }
         if (domain) {
           const newData = {

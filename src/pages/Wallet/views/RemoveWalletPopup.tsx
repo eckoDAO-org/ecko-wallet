@@ -100,7 +100,7 @@ const RemoveWalletPopup = (props: Props) => {
         const sameAccountWallet: any = newWallets.find((w: any) => w.account === account);
         if (sameAccountWallet && sameAccountWallet.account) {
           const requests = crossChainRequests?.filter((r: any) => r.sender !== account);
-          setCrossChainRequest && setCrossChainRequest(requests);
+          setCrossChainRequest(requests);
         }
         if (newWallets.length === 0) {
           setCurrentWallet({
