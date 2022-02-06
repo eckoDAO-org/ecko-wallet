@@ -1,8 +1,6 @@
 import styled from 'styled-components';
 import Select from 'react-select';
-import {
-  memo,
-} from 'react';
+import { memo } from 'react';
 
 interface Props {
   title: any;
@@ -59,14 +57,14 @@ const customStyles = {
   }),
 };
 
-const BaseSelect = memo(({
-  title, options = [], defaultValue, selectProps = {}, height = '44px', isFlex, placeholder = 'Select Chain ID',
-}: Props) => (
-  <SDivRoot height={height} isFlex={isFlex}>
-    <SText isFlex={isFlex}>{title}</SText>
-    <Select options={options} {...selectProps} defaultValue={defaultValue} placeholder={placeholder} styles={customStyles} isSearchable={false} />
-  </SDivRoot>
-));
+const BaseSelect = memo(
+  ({ title, options = [], defaultValue, selectProps = {}, height = '44px', isFlex, placeholder = 'Select Chain ID' }: Props) => (
+    <SDivRoot height={height} isFlex={isFlex}>
+      <SText isFlex={isFlex}>{title}</SText>
+      <Select options={options} {...selectProps} defaultValue={defaultValue} placeholder={placeholder} styles={customStyles} isSearchable={false} />
+    </SDivRoot>
+  ),
+);
 
 const SDivRoot = styled.div`
   display: ${(props) => (props.isFlex ? 'flex' : 'block')};
@@ -74,18 +72,18 @@ const SDivRoot = styled.div`
   width: 100%;
   justify-content: center;
   margin-bottom: 10px;
-  @media screen and (max-width: 480px){
+  @media screen and (max-width: 480px) {
     margin-bottom: 0;
   }
-  .css-8mmkcg{
+  .css-8mmkcg {
     margin-right: 8px;
-    color: #461A57;
+    color: #461a57;
   }
   .css-qc6sy-singleValue {
-    color: #461A57;
+    color: #461a57;
   }
   .css-417lad-placeholder {
-    color: #A187AB;
+    color: #a187ab;
     grid-area: 1 / 1 / 2 / 3;
     margin-left: 2px;
     margin-right: 2px;

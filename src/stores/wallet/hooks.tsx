@@ -5,10 +5,11 @@ import { RootState } from '../types';
 
 export const useCurrentWallet = (): any => {
   const selector = useMemo(
-    () => createSelector(
-      (state: RootState) => state.wallet,
-      (value) => value,
-    ),
+    () =>
+      createSelector(
+        (state: RootState) => state.wallet,
+        (value) => value,
+      ),
     [],
   );
 

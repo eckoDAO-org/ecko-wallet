@@ -7,7 +7,7 @@ export const setStoreExtensions = (store: Store) => {
   customStore = store;
 };
 
-const selectedNetwork:RawNetwork = {
+const selectedNetwork: RawNetwork = {
   name: 'Mainnet',
   url: 'https://api.chainweb.com',
   explorer: 'https://explorer.chainweb.com/mainnet',
@@ -15,7 +15,7 @@ const selectedNetwork:RawNetwork = {
   isDefault: true,
   id: '0',
 };
-const defaultNetworks:RawNetwork[] = [
+const defaultNetworks: RawNetwork[] = [
   {
     name: 'Mainnet',
     url: 'https://api.chainweb.com',
@@ -56,7 +56,7 @@ interface RawExtension {
   activeTab: string;
 }
 
-const initialState:RawExtension = {
+const initialState: RawExtension = {
   passwordHash: '',
   isFetching: true,
   isLoading: false,

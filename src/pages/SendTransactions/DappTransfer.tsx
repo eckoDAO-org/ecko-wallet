@@ -9,11 +9,7 @@ import images from 'src/images';
 import Button from 'src/components/Buttons';
 import { BUTTON_SIZE } from 'src/utils/constant';
 import Transfer from './views/Transfer';
-import {
-  Body,
-  TransactionWrapper,
-  FormSend,
-} from './styles';
+import { Body, TransactionWrapper, FormSend } from './styles';
 
 const Wrapper = styled(TransactionWrapper)`
   padding: 0;
@@ -54,7 +50,7 @@ const NotFoundImage = styled.img`
 `;
 const NotFoundDescription = styled.div`
   font-size: 18px;
-  color: #461A57;
+  color: #461a57;
   text-align: center;
   word-break: break-word;
   margin-bottom: 222px;
@@ -68,7 +64,7 @@ const Title = styled.div`
 const NetworkLabel = styled.div`
   padding: 10px 15px;
   text-align: center;
-  background-color: #F2F2F2;
+  background-color: #f2f2f2;
   border-radius: 20px;
   margin-left: auto;
   width: 70px;
@@ -84,7 +80,7 @@ export const PageSendTransaction = styled.div`
   bottom: 0;
   margin-bottom: 14px;
   overflow-y: scroll;
-  background: linear-gradient(90deg, #E6FEFE 0%, #FDF6E6 100%);
+  background: linear-gradient(90deg, #e6fefe 0%, #fdf6e6 100%);
   overflow-x: hidden;
   &::-webkit-scrollbar {
     width: 2px;
@@ -105,35 +101,40 @@ const DappTransfer = () => {
   const rootState = useSelector((state) => state);
   const { selectedNetwork } = rootState.extensions;
   useEffect(() => {
-    getLocalDapps((dapps) => {
-      const { account, chainId } = dapps;
-      const pactCode = `(coin.details "${account}")`;
-      showLoading();
-      fetchLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, chainId).then((res) => {
-        const status = get(res, 'result.status');
-        const exist = status === 'success';
-        const pred = get(res, 'result.data.guard.pred');
-        const keys = get(res, 'result.data.guard.keys');
-        const newDestinationAccount = exist
-          ? {
-            accountName: account,
-            chainId,
-            pred,
-            keys,
-            domain: dapps.domain,
-            dappAmount: dapps.amount,
-          }
-          : {};
-        setDestinationAccount(newDestinationAccount);
-        hideLoading();
+    getLocalDapps(
+      (dapps) => {
+        const { account, chainId } = dapps;
+        const pactCode = `(coin.details "${account}")`;
+        showLoading();
+        fetchLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, chainId)
+          .then((res) => {
+            const status = get(res, 'result.status');
+            const exist = status === 'success';
+            const pred = get(res, 'result.data.guard.pred');
+            const keys = get(res, 'result.data.guard.keys');
+            const newDestinationAccount = exist
+              ? {
+                  accountName: account,
+                  chainId,
+                  pred,
+                  keys,
+                  domain: dapps.domain,
+                  dappAmount: dapps.amount,
+                }
+              : {};
+            setDestinationAccount(newDestinationAccount);
+            hideLoading();
+            setLoading(false);
+          })
+          .catch(() => {
+            setLoading(false);
+            hideLoading();
+          });
+      },
+      () => {
         setLoading(false);
-      }).catch(() => {
-        setLoading(false);
-        hideLoading();
-      });
-    }, () => {
-      setLoading(false);
-    });
+      },
+    );
   }, []);
   return (
     <PageSendTransaction>
@@ -160,14 +161,8 @@ const DappTransfer = () => {
               ) : (
                 <NotFound>
                   <NotFoundImage src={images.transfer.accountNotFound} />
-                  <NotFoundDescription>
-                    Destination account not found
-                  </NotFoundDescription>
-                  <Button
-                    size={BUTTON_SIZE.FULL}
-                    label="Close"
-                    onClick={() => window.close()}
-                  />
+                  <NotFoundDescription>Destination account not found</NotFoundDescription>
+                  <Button size={BUTTON_SIZE.FULL} label="Close" onClick={() => window.close()} />
                 </NotFound>
               )}
             </FormSend>

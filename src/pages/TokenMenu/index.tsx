@@ -5,15 +5,7 @@ import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
 import useLocalStorage from 'src/hooks/useLocalStorage';
 import ModalCustom from 'src/components/Modal/ModalCustom';
-import {
-  SettingBody,
-  ContentSetting,
-  TitleSetting,
-  DivContent,
-  Descripton,
-  ImageNetworks,
-  TitleHeader,
-} from './style';
+import { SettingBody, ContentSetting, TitleSetting, DivContent, Descripton, ImageNetworks, TitleHeader } from './style';
 import { Body } from '../SendTransactions/styles';
 import images from '../../images';
 import { BoxContent } from '../Setting/Contact/style';
@@ -40,9 +32,7 @@ const TokenMenu = () => {
   };
   const handleRemoveToken = () => {
     const newFungibleTokens = fungibleTokens?.filter((ft) => ft.symbol !== symbol) ?? [];
-    setFungibleTokens([
-      ...newFungibleTokens,
-    ]);
+    setFungibleTokens([...newFungibleTokens]);
     toast.success(<Toast type="success" content="Token successfully removed" />);
     history.push('/');
   };
@@ -90,23 +80,13 @@ const TokenMenu = () => {
           <DescriptionModal>
             Are you sure you want to remove
             <br />
-            {symbol?.toUpperCase()}
-            ?
+            {symbol?.toUpperCase()}?
           </DescriptionModal>
           <ActionButton>
-            <ButtonModal
-              background="#ffffff"
-              color="#461A57"
-              border="1px solid #461A57"
-              onClick={() => setIsRemovingToken(false)}
-            >
+            <ButtonModal background="#ffffff" color="#461A57" border="1px solid #461A57" onClick={() => setIsRemovingToken(false)}>
               Cancel
             </ButtonModal>
-            <ButtonModal
-              background="#461A57"
-              color="#ffffff"
-              onClick={handleRemoveToken}
-            >
+            <ButtonModal background="#461A57" color="#ffffff" onClick={handleRemoveToken}>
               Remove
             </ButtonModal>
           </ActionButton>

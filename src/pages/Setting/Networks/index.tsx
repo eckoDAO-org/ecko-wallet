@@ -7,15 +7,7 @@ import Button from 'src/components/Buttons';
 import { BUTTON_SIZE } from 'src/utils/constant';
 import { ContactBody } from '../Contact/style';
 import { ImageLock, TitleLock } from './style';
-import {
-  ButtonBack,
-  DivContent,
-  ImageNetworks,
-  SettingBody,
-  TitleHeader,
-  LockWrapper,
-  Content,
-} from '../style';
+import { ButtonBack, DivContent, ImageNetworks, SettingBody, TitleHeader, LockWrapper, Content } from '../style';
 import { Body, Footer } from '../../SendTransactions/styles';
 import EditNetwork from './views/EditNetwork';
 import ViewNetwork from './views/ViewNetwork';
@@ -66,26 +58,16 @@ const PageNetworks = () => {
     setIsEdit(false);
   };
 
-  const renderNormalMode = () => networks.map((item) => (
-    <DivContent key={item.id} onClick={() => openMode(item.isDefault, item)}>
-      <TitleLock
-        isDefault={item.isDefault}
-      >
-        {item.name}
-
-      </TitleLock>
-      <LockWrapper>
-        {item.isDefault && (
-          <ImageLock src={images.settings.lock} alt="lock" />
-        )}
-        <ImageNetworks
-          isDefault={item.isDefault}
-          src={images.wallet.view}
-          alt="view"
-        />
-      </LockWrapper>
-    </DivContent>
-  ));
+  const renderNormalMode = () =>
+    networks.map((item) => (
+      <DivContent key={item.id} onClick={() => openMode(item.isDefault, item)}>
+        <TitleLock isDefault={item.isDefault}>{item.name}</TitleLock>
+        <LockWrapper>
+          {item.isDefault && <ImageLock src={images.settings.lock} alt="lock" />}
+          <ImageNetworks isDefault={item.isDefault} src={images.wallet.view} alt="view" />
+        </LockWrapper>
+      </DivContent>
+    ));
 
   return (
     <SettingBody>
@@ -95,33 +77,18 @@ const PageNetworks = () => {
       <Body>
         {isNormal ? (
           <>
-            <TitleHeader>
-              Networks
-            </TitleHeader>
+            <TitleHeader>Networks</TitleHeader>
           </>
         ) : (
-          <TitleHeader>
-            Network
-          </TitleHeader>
+          <TitleHeader>Network</TitleHeader>
         )}
-        {isEdit && <EditNetwork
-          network={network}
-          onBack={goBack}
-          isEdit
-          onClickPopup={handleClickPopup}
-        />}
+        {isEdit && <EditNetwork network={network} onBack={goBack} isEdit onClickPopup={handleClickPopup} />}
         {isView && <ViewNetwork network={network} />}
-        <ContactBody>
-          {isNormal && renderNormalMode()}
-        </ContactBody>
+        <ContactBody>{isNormal && renderNormalMode()}</ContactBody>
         {isNormal && (
           <Content>
             <Footer>
-              <Button
-                label="Add New Network"
-                onClick={addNewNetwork}
-                size={BUTTON_SIZE.FULL}
-              />
+              <Button label="Add New Network" onClick={addNewNetwork} size={BUTTON_SIZE.FULL} />
             </Footer>
           </Content>
         )}

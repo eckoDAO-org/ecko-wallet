@@ -10,17 +10,14 @@ const FetchingWrapper = styled.div`
   bottom: 0;
   right: 0;
   z-index: 1000;
-  background: linear-gradient(90deg, #E6FEFE 0%, #FDF6E6 100%);
+  background: linear-gradient(90deg, #e6fefe 0%, #fdf6e6 100%);
 `;
 type Props = {
   component: any;
   path: string;
-}
+};
 const DappPrivateRoute = (props: Props) => {
-  const {
-    component: Component,
-    path,
-  } = props;
+  const { component: Component, path } = props;
   const rootState = useSelector((state) => state);
   const { extensions } = rootState;
   const { expiredTime, isFetching } = extensions;
@@ -39,12 +36,7 @@ const DappPrivateRoute = (props: Props) => {
     RenderComponent = <Redirect to={{ pathname: '/login-dapps', state: { from: path } }} />;
   }
 
-  return (
-    <Route
-      path={path}
-      render={() => RenderComponent}
-    />
-  );
+  return <Route path={path} render={() => RenderComponent} />;
 };
 
 export default DappPrivateRoute;

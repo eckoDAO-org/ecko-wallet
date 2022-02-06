@@ -5,16 +5,17 @@ import { ToastContainer } from 'react-toastify';
 import store from './stores';
 import 'react-toastify/dist/ReactToastify.css';
 import AppContainer from './AppContainer';
+import { CrossChainProvider } from './contexts/CrossChainContext';
 
 const AppWrapper = styled.div`
   display: block;
   font-family: 'Play', sans-serif;
   display: flex;
-  color: #461A57;
+  color: #461a57;
   height: 100%;
   @media screen and (max-width: 1024px) {
     background: none;
-  } 
+  }
 `;
 const Content = styled.div`
   width: 100%;
@@ -48,7 +49,9 @@ const App = () => (
   <Provider store={store}>
     <AppWrapper>
       <Content>
-        <AppContainer />
+        <CrossChainProvider>
+          <AppContainer />
+        </CrossChainProvider>
       </Content>
     </AppWrapper>
     <ToastWrapper>

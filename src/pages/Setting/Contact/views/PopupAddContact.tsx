@@ -30,9 +30,7 @@ import { getLocalContacts, setLocalContacts } from 'src/utils/storage';
 import { useSelector } from 'react-redux';
 import ModalCustom from 'src/components/Modal/ModalCustom';
 import QrReader from 'react-qr-reader';
-import {
-  BodyModal, TitleModal, DivChild, DivError, DivChildButton, DivChildFlex, ItemWrapperContact, SelectChainConatact,
-} from './style';
+import { BodyModal, TitleModal, DivChild, DivError, DivChildButton, DivChildFlex, ItemWrapperContact, SelectChainConatact } from './style';
 import { ActionButton, ButtonModal, DescriptionModal } from '../../Networks/style';
 
 type Props = {
@@ -41,16 +39,10 @@ type Props = {
   networkId: any;
   isEdit: boolean;
   handleRemoveContact: Function;
-}
+};
 
 const PopupAddContact = (props: Props) => {
-  const {
-    onClose,
-    contact,
-    networkId,
-    isEdit,
-    handleRemoveContact,
-  } = props;
+  const { onClose, contact, networkId, isEdit, handleRemoveContact } = props;
   const {
     register,
     handleSubmit,
@@ -78,23 +70,27 @@ const PopupAddContact = (props: Props) => {
       pred: addContact.pred,
       keys: addContact.keys,
     };
-    getLocalContacts(networkId, (data) => {
-      const contacts = data;
-      contacts[`${addContact.chainId}`] = contacts[`${addContact.chainId}`] || {};
-      contacts[`${addContact.chainId}`][`${addContact.accountName}`] = newContact;
-      setLocalContacts(networkId, contacts);
-      setContacts(convertContacts(contacts));
-      onClose(aliasName);
-      toast.success(<Toast type="success" content="Add contact successfully" />);
-    }, () => {
-      const contacts = {};
-      contacts[`${addContact.chainId}`] = {};
-      contacts[`${addContact.chainId}`][`${addContact.accountName}`] = newContact;
-      setLocalContacts(networkId, contacts);
-      setContacts(convertContacts(contacts));
-      toast.success(<Toast type="success" content="Add contact successfully" />);
-      onClose(aliasName);
-    });
+    getLocalContacts(
+      networkId,
+      (data) => {
+        const contacts = data;
+        contacts[`${addContact.chainId}`] = contacts[`${addContact.chainId}`] || {};
+        contacts[`${addContact.chainId}`][`${addContact.accountName}`] = newContact;
+        setLocalContacts(networkId, contacts);
+        setContacts(convertContacts(contacts));
+        onClose(aliasName);
+        toast.success(<Toast type="success" content="Add contact successfully" />);
+      },
+      () => {
+        const contacts = {};
+        contacts[`${addContact.chainId}`] = {};
+        contacts[`${addContact.chainId}`][`${addContact.accountName}`] = newContact;
+        setLocalContacts(networkId, contacts);
+        setContacts(convertContacts(contacts));
+        toast.success(<Toast type="success" content="Add contact successfully" />);
+        onClose(aliasName);
+      },
+    );
   };
   const checkAddContact = () => {
     if (isEdit) {
@@ -103,19 +99,21 @@ const PopupAddContact = (props: Props) => {
       const { accountName, chainId } = getValues();
       const pactCode = `(coin.details "${accountName}")`;
       showLoading();
-      fetchLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, chainId.value).then((request) => {
-        hideLoading();
-        const newContact = {
-          accountName,
-          chainId: chainId.value,
-          pred: get(request, 'result.data.guard.pred'),
-          keys: get(request, 'result.data.guard.keys'),
-        };
-        finishAddContact(newContact);
-      }).catch(() => {
-        hideLoading();
-        toast.error(<Toast type="fail" content="Network error." />);
-      });
+      fetchLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, chainId.value)
+        .then((request) => {
+          hideLoading();
+          const newContact = {
+            accountName,
+            chainId: chainId.value,
+            pred: get(request, 'result.data.guard.pred'),
+            keys: get(request, 'result.data.guard.keys'),
+          };
+          finishAddContact(newContact);
+        })
+        .catch(() => {
+          hideLoading();
+          toast.error(<Toast type="fail" content="Network error." />);
+        });
     }
   };
 
@@ -140,7 +138,7 @@ const PopupAddContact = (props: Props) => {
         <InfoWrapper>
           <TransactionInfo>
             <DivChildLeft>Name</DivChildLeft>
-            <DivChildRight>{(contact.aliasName)}</DivChildRight>
+            <DivChildRight>{contact.aliasName}</DivChildRight>
           </TransactionInfo>
           <TransactionInfo>
             <DivChildLeft>Account name</DivChildLeft>
@@ -176,7 +174,8 @@ const PopupAddContact = (props: Props) => {
                 <br />
                 {'}'}
               </DivChildBreak>
-            </TransactionInfo>) : null}
+            </TransactionInfo>
+          ) : null}
         </InfoWrapper>
       ) : (
         <InfoWrapper>
@@ -209,9 +208,7 @@ const PopupAddContact = (props: Props) => {
                 }}
               />
             </ItemWrapperContact>
-            <DivError>
-              {errors.alias && <InputError marginTop="0">{errors.alias.message}</InputError>}
-            </DivError>
+            <DivError>{errors.alias && <InputError marginTop="0">{errors.alias.message}</InputError>}</DivError>
             <ItemWrapperContact>
               {isEdit ? (
                 <>
@@ -227,11 +224,7 @@ const PopupAddContact = (props: Props) => {
                     }}
                   />
                   <SelectChain>
-                    <BaseTextInput
-                      inputProps={{ readOnly: isEdit, value: contact.chainId }}
-                      title="Chain ID"
-                      height="auto"
-                    />
+                    <BaseTextInput inputProps={{ readOnly: isEdit, value: contact.chainId }} title="Chain ID" height="auto" />
                   </SelectChain>
                 </>
               ) : (
@@ -261,11 +254,12 @@ const PopupAddContact = (props: Props) => {
                       src: images.initPage.qrcode,
                       callback: () => setIsScanAccountName(true),
                     }}
-                    onChange={(e) => { clearErrors('accountName'); setValue('accountName', e.target.value); }}
+                    onChange={(e) => {
+                      clearErrors('accountName');
+                      setValue('accountName', e.target.value);
+                    }}
                   />
-                  <DivError>
-                    {errors.accountName && <InputError marginTop="0">{errors.accountName.message}</InputError>}
-                  </DivError>
+                  <DivError>{errors.accountName && <InputError marginTop="0">{errors.accountName.message}</InputError>}</DivError>
                   <SelectChainConatact>
                     <Controller
                       control={control}
@@ -276,14 +270,12 @@ const PopupAddContact = (props: Props) => {
                           message: 'This field is required.',
                         },
                       }}
-                      render={({
-                        field: {
-                          onChange, onBlur, value,
-                        },
-                      }) => (
+                      render={({ field: { onChange, onBlur, value } }) => (
                         <BaseSelect
                           selectProps={{
-                            onChange, onBlur, value,
+                            onChange,
+                            onBlur,
+                            value,
                           }}
                           options={optionsChain}
                           title="Chain ID"
@@ -291,35 +283,30 @@ const PopupAddContact = (props: Props) => {
                         />
                       )}
                     />
-                    <DivError>
-                      {errors.chainId && <InputError marginTop="0">{errors.chainId.message}</InputError>}
-                    </DivError>
-
+                    <DivError>{errors.chainId && <InputError marginTop="0">{errors.chainId.message}</InputError>}</DivError>
                   </SelectChainConatact>
                 </>
               )}
             </ItemWrapperContact>
           </form>
-          {
-            isScanAccountName && (
-              <ModalCustom isOpen={isScanAccountName} onCloseModal={() => setIsScanAccountName(false)}>
-                <BodyModal>
-                  <TitleModal>Scan QR Code</TitleModal>
-                  <QrReader
-                    delay={1000}
-                    onError={() => {
-                      if (isMobile) {
-                        (window as any)?.chrome?.tabs?.create({ url: `/index.html#${history?.location?.pathname}` });
-                      }
-                    }}
-                    onScan={handleScanAccountName}
-                    style={{ width: '100%' }}
-                  />
-                  <DivChild>Place the QR code in front of your camera</DivChild>
-                </BodyModal>
-              </ModalCustom>
-            )
-          }
+          {isScanAccountName && (
+            <ModalCustom isOpen={isScanAccountName} onCloseModal={() => setIsScanAccountName(false)}>
+              <BodyModal>
+                <TitleModal>Scan QR Code</TitleModal>
+                <QrReader
+                  delay={1000}
+                  onError={() => {
+                    if (isMobile) {
+                      (window as any)?.chrome?.tabs?.create({ url: `/index.html#${history?.location?.pathname}` });
+                    }
+                  }}
+                  onScan={handleScanAccountName}
+                  style={{ width: '100%' }}
+                />
+                <DivChild>Place the QR code in front of your camera</DivChild>
+              </BodyModal>
+            </ModalCustom>
+          )}
         </InfoWrapper>
       )}
       <DivChildButton>
@@ -327,58 +314,38 @@ const PopupAddContact = (props: Props) => {
           {isContactInfo ? (
             <>
               <ButtonWrapper>
-                <Button
-                  label="Delete"
-                  type={BUTTON_TYPE.DISABLE}
-                  onClick={() => setRemoveContactModal(true)}
-                  size={BUTTON_SIZE.FULL}
-                />
-                {
-                  isRemoveContactModal && (
-                    <ModalCustom isOpen={isRemoveContactModal} showCloseIcon={false}>
-                      <BodyModal>
-                        <TitleModal>Remove Contact?</TitleModal>
-                        <DescriptionModal>Are you sure you want to remove?</DescriptionModal>
-                        <ActionButton>
-                          <ButtonModal
-                            background="#ffffff"
-                            color="#461A57"
-                            border="1px solid #461A57"
-                            onClick={() => setRemoveContactModal(false)}
-                          >
-                            Cancel
-                          </ButtonModal>
-                          <ButtonModal
-                            background="#461A57"
-                            color="#ffffff"
-                            onClick={handleRemoveContact}
-                          >
-                            Remove
-                          </ButtonModal>
-                        </ActionButton>
-                      </BodyModal>
-                    </ModalCustom>
-                  )
-                }
+                <Button label="Delete" type={BUTTON_TYPE.DISABLE} onClick={() => setRemoveContactModal(true)} size={BUTTON_SIZE.FULL} />
+                {isRemoveContactModal && (
+                  <ModalCustom isOpen={isRemoveContactModal} showCloseIcon={false}>
+                    <BodyModal>
+                      <TitleModal>Remove Contact?</TitleModal>
+                      <DescriptionModal>Are you sure you want to remove?</DescriptionModal>
+                      <ActionButton>
+                        <ButtonModal background="#ffffff" color="#461A57" border="1px solid #461A57" onClick={() => setRemoveContactModal(false)}>
+                          Cancel
+                        </ButtonModal>
+                        <ButtonModal background="#461A57" color="#ffffff" onClick={handleRemoveContact}>
+                          Remove
+                        </ButtonModal>
+                      </ActionButton>
+                    </BodyModal>
+                  </ModalCustom>
+                )}
               </ButtonWrapper>
               <ButtonWrapper>
                 <Button
                   size={BUTTON_SIZE.FULL}
                   label="Edit"
-                  onClick={() => { setIsContactInfo(false); }}
+                  onClick={() => {
+                    setIsContactInfo(false);
+                  }}
                 />
               </ButtonWrapper>
             </>
-
           ) : (
             <DivChildFlex>
               <ButtonWrapper>
-                <Button
-                  label="Cancel"
-                  type={BUTTON_TYPE.DISABLE}
-                  onClick={() => onClose(false)}
-                  size={BUTTON_SIZE.FULL}
-                />
+                <Button label="Cancel" type={BUTTON_TYPE.DISABLE} onClick={() => onClose(false)} size={BUTTON_SIZE.FULL} />
               </ButtonWrapper>
               <ButtonWrapper>
                 <ButtonAdd form="contact-form">Save</ButtonAdd>
@@ -387,7 +354,6 @@ const PopupAddContact = (props: Props) => {
           )}
         </Footer>
       </DivChildButton>
-
     </PageConfirm>
   );
 };

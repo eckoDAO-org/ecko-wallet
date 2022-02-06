@@ -7,12 +7,10 @@ const InputError = styled.div`
   color: red;
   font-size: 16px;
   margin-top: ${(props) => (props.marginTop ? props.marginTop : '10px')};
-  @media screen and (max-width: 480px){
+  @media screen and (max-width: 480px) {
     font-size: 12px;
     margin-top: 5px;
   }
 `;
 
-export {
-  BaseButton, BaseTextInput, BaseSelect, InputError,
-};
+export { BaseButton, BaseTextInput, BaseSelect, InputError };

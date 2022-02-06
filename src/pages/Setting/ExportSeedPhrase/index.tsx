@@ -25,7 +25,7 @@ const Body = styled.div`
 `;
 const Wrapper = styled.div`
   padding: 0 20px;
-  color: #461A57;
+  color: #461a57;
   font-size: 16px;
   word-break: break-word;
 `;
@@ -33,7 +33,7 @@ const SPWrapper = styled.div`
   padding: 16px;
   font-size: 16px;
   position: relative;
-  border: 1px solid #461A57;
+  border: 1px solid #461a57;
   border-radius: 8px;
   box-sizing: border-box;
   margin: 30px 0;
@@ -61,7 +61,7 @@ const Title = styled.div`
   text-align: left;
   text-align: center;
   margin: 40px 0;
-  color: #461A57;
+  color: #461a57;
 `;
 const Text = styled.div`
   margin-bottom: ${(props) => (props.isLast ? '0' : '30px')};
@@ -70,7 +70,7 @@ const SPDropText = styled.div`
   text-align: center;
   margin-top: 12px;
   font-weight: 700;
-  color: #461A57;
+  color: #461a57;
   padding: 0 15px;
   line-height: 19px;
 `;
@@ -83,12 +83,12 @@ const CustomButton = styled.div`
 `;
 const SPContent = styled.div`
   text-align: center;
-  background: #EEE6F3;;
+  background: #eee6f3;
   padding: 18px 15px;
   margin-top: 20px;
-  color: #461A57;
+  color: #461a57;
   font-size: 16px;
-  border: 1px solid #461A57;
+  border: 1px solid #461a57;
   border-radius: 8px;
   align-items: center;
 `;
@@ -105,9 +105,7 @@ const defaultText = '***** ***** ***** ***** ***** ***** ***** ***** ***** *****
 const ExportSeedPhrase = () => {
   const history = useHistory();
   const rootState = useSelector((state) => state);
-  const {
-    passwordHash,
-  } = rootState.extensions;
+  const { passwordHash } = rootState.extensions;
   const [seedPhraseHash, setSeedPhraseHash] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [isHiddenSP, setIsHiddenSP] = useState(true);
@@ -116,9 +114,12 @@ const ExportSeedPhrase = () => {
   const [isErrorVerify, setErrorVerify] = useState(false);
 
   useEffect(() => {
-    getLocalSeedPhrase((hash) => {
-      setSeedPhraseHash(hash);
-    }, () => {});
+    getLocalSeedPhrase(
+      (hash) => {
+        setSeedPhraseHash(hash);
+      },
+      () => {},
+    );
   }, []);
 
   const onCopy = () => {
@@ -127,7 +128,7 @@ const ExportSeedPhrase = () => {
   };
 
   const goBack = () => {
-    history.push('/setting');
+    history.goBack();
   };
 
   const encryptText = (text) => {

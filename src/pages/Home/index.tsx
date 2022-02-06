@@ -29,7 +29,7 @@ const Wrapper = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  @media screen and (max-width: 1024px){
+  @media screen and (max-width: 1024px) {
     height: auto;
     margin-top: 100px;
   }
@@ -39,7 +39,7 @@ const Div = styled.div`
 `;
 const DivChildButon = styled.div`
   margin: 90px 20px 0;
-  @media screen and (max-width: 480px){
+  @media screen and (max-width: 480px) {
     margin: 70px 20px 0;
   }
 `;
@@ -61,12 +61,14 @@ const HomePage = () => {
   return (
     <Div marginTop="100px">
       <Wrapper>
-        <DivImage marginBottom="20px"><Image src={images.logoDapps} size={100} width={100} alt="logo" /></DivImage>
-        <DivImage marginBottom="60px"><Image src={images.logoWallet} size={55} width={238} alt="logo-wallet" /></DivImage>
+        <DivImage marginBottom="20px">
+          <Image src={images.logoDapps} size={100} width={100} alt="logo" />
+        </DivImage>
+        <DivImage marginBottom="60px">
+          <Image src={images.logoWallet} size={55} width={238} alt="logo-wallet" />
+        </DivImage>
         <DivTitle>{title}</DivTitle>
-        <DivContent>
-          Powered by Kadena
-        </DivContent>
+        <DivContent>Powered by Kadena</DivContent>
       </Wrapper>
       <DivChildButon>
         <Button onClick={goToTermsCondition} size={BUTTON_SIZE.FULL} label="Start Now" />

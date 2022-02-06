@@ -13,21 +13,22 @@ const Wrapper = styled.div`
   width: 100%;
 `;
 const Header = styled.div`
-    display: flex;
-    border: 1px solid #461A57;
-    box-sizing: border-box;
-    border-radius: 10px;
-    margin: 20px;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  border: 1px solid #461a57;
+  box-sizing: border-box;
+  border-radius: 10px;
+  margin: 20px;
+  justify-content: center;
+  align-items: center;
 `;
 
 const TabHeader = styled.div`
   width: ${(props) => props.width}%;
   text-align: center;
-  ${(props) => (props.isActive
-    ? 'color: #FFFFFF;font-weight: bold;font-size: 12px; border: 1px solid #461A57; font-weight: 700; background: #461A57; border-radius: 10px;'
-    : 'color: #461A57; font-weight: 700; font-size: 12px;')};
+  ${(props) =>
+    props.isActive
+      ? 'color: #FFFFFF;font-weight: bold;font-size: 12px; border: 1px solid #461A57; font-weight: 700; background: #461A57; border-radius: 10px;'
+      : 'color: #461A57; font-weight: 700; font-size: 12px;'};
   cursor: pointer;
   height: 36px;
   line-height: 36px;
@@ -46,12 +47,7 @@ const Tabs = (props: Props) => {
     <Wrapper>
       <Header>
         {children.map((item) => (
-          <TabHeader
-            key={item.id}
-            isActive={item.id === activeTab}
-            width={tabWidth}
-            onClick={() => setActiveTab(item.id)}
-          >
+          <TabHeader key={item.id} isActive={item.id === activeTab} width={tabWidth} onClick={() => setActiveTab(item.id)}>
             {item.title}
           </TabHeader>
         ))}

@@ -9,7 +9,7 @@ const CreateInitPageWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  @media screen and (max-width: 1024px){
+  @media screen and (max-width: 1024px) {
     height: auto;
     margin-top: 100px;
   }
@@ -24,7 +24,7 @@ const TextContent = styled.div`
   margin-bottom: 5px;
 `;
 const TextFooter = styled.div`
-  color: #461A57;
+  color: #461a57;
   text-align: center;
   font-weight: 700;
 `;
@@ -45,12 +45,8 @@ const InitPage = () => {
   return (
     <CreateInitPageWrapper>
       <Body>
-        <TextContent>
-          I have an existing private key.
-        </TextContent>
-        <TextContent>
-          Import your existing private key
-        </TextContent>
+        <TextContent>I have an existing private key.</TextContent>
+        <TextContent>Import your existing private key</TextContent>
         <DivChild>
           <Image src={images.initPage.importPrivateKey} alt="icon-import" onClick={goToImport} />
         </DivChild>

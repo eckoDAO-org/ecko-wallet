@@ -8,13 +8,7 @@ import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Back from 'src/components/Back';
 import { setExtensionPassword, setIsHaveSeedPhrase } from 'src/stores/extensions';
-import {
-  getLocalWallets,
-  setLocalPassword,
-  setLocalSeedPhrase,
-  setLocalSelectedWallet,
-  setLocalWallets,
-} from 'src/utils/storage';
+import { getLocalWallets, setLocalPassword, setLocalSeedPhrase, setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
 import Toast from 'src/components/Toast/Toast';
 import { encryptKey } from 'src/utils/security';
 import { getKeyPairsFromSeedPhrase } from 'src/utils/chainweb';
@@ -53,7 +47,7 @@ const Title = styled.div`
   font-weight: 700;
   font-size: 24px;
   line-height: 25px;
-  color: #461A57;
+  color: #461a57;
   text-align: left;
   margin: 20px 0 30px 0;
 `;
@@ -77,10 +71,7 @@ const CreatePassword = () => {
     clearErrors,
   } = useForm();
   const rootState = useSelector((state) => state);
-  const {
-    isCreateSeedPhrase,
-    selectedNetwork,
-  } = rootState.extensions;
+  const { isCreateSeedPhrase, selectedNetwork } = rootState.extensions;
 
   const history = useHistory();
 
@@ -100,18 +91,26 @@ const CreatePassword = () => {
           chainId: '0',
           connectedSites: [],
         };
-        getLocalWallets(selectedNetwork.networkId, (item) => {
-          const newData = [...item, wallet];
-          setLocalWallets(selectedNetwork.networkId, newData);
-        }, () => {
-          setLocalWallets(selectedNetwork.networkId, [wallet]);
-        });
-        getLocalWallets('testnet04', (item) => {
-          const newData = [...item, wallet];
-          setLocalWallets('testnet04', newData);
-        }, () => {
-          setLocalWallets('testnet04', [wallet]);
-        });
+        getLocalWallets(
+          selectedNetwork.networkId,
+          (item) => {
+            const newData = [...item, wallet];
+            setLocalWallets(selectedNetwork.networkId, newData);
+          },
+          () => {
+            setLocalWallets(selectedNetwork.networkId, [wallet]);
+          },
+        );
+        getLocalWallets(
+          'testnet04',
+          (item) => {
+            const newData = [...item, wallet];
+            setLocalWallets('testnet04', newData);
+          },
+          () => {
+            setLocalWallets('testnet04', [wallet]);
+          },
+        );
         const newStateWallet = {
           chainId: '0',
           account: accountName,
@@ -165,9 +164,7 @@ const CreatePassword = () => {
   };
 
   const checkInValidPassword = (str) => {
-    const pattern = new RegExp(
-      '^[À-úa-z0-9A-Z_!?"\'.#@,;-\\s]*$',
-    );
+    const pattern = new RegExp('^[À-úa-z0-9A-Z_+!?"-\'.#@,;-\\s]*$');
     return !!pattern.test(str);
   };
 
@@ -198,12 +195,13 @@ const CreatePassword = () => {
                   typeInput="password"
                   title="Secret Recovery Phrase"
                   height="auto"
-                  onChange={(e) => { clearErrors('seedPhrase'); setValue('seedPhrase', e.target.value.trim()); }}
+                  onChange={(e) => {
+                    clearErrors('seedPhrase');
+                    setValue('seedPhrase', e.target.value.trim());
+                  }}
                 />
               </DivBody>
-              <>
-                {errors.seedPhrase && <InputError>{errors.seedPhrase.message}</InputError>}
-              </>
+              <>{errors.seedPhrase && <InputError>{errors.seedPhrase.message}</InputError>}</>
             </>
           )}
           <DivBody>
@@ -225,19 +223,21 @@ const CreatePassword = () => {
                     message: 'Password should be maximum 256 characters.',
                   },
                   validate: {
-                    match: (val) => checkInValidPassword(val) || 'Sorry, only letters(a-z), numbers(0-9), and special characters _!?"\'.#@,;- are allowed.',
+                    match: (val) =>
+                      checkInValidPassword(val) || 'Sorry, only letters(a-z), numbers(0-9), and special characters _!?"\'.#@,;- are allowed.',
                   },
                 }),
               }}
               typeInput="password"
               title="New Password (min 8 chars)"
               height="auto"
-              onChange={(e) => { clearErrors('password'); setValue('password', e.target.value.trim()); }}
+              onChange={(e) => {
+                clearErrors('password');
+                setValue('password', e.target.value.trim());
+              }}
             />
           </DivBody>
-          <>
-            {errors.password && <InputError>{errors.password.message}</InputError>}
-          </>
+          <>{errors.password && <InputError>{errors.password.message}</InputError>}</>
           <DivBody>
             <BaseTextInput
               inputProps={{
@@ -260,12 +260,13 @@ const CreatePassword = () => {
               typeInput="password"
               title="Confirm Password"
               height="auto"
-              onChange={(e) => { clearErrors('confirmPassword'); setValue('confirmPassword', e.target.value); }}
+              onChange={(e) => {
+                clearErrors('confirmPassword');
+                setValue('confirmPassword', e.target.value);
+              }}
             />
           </DivBody>
-          <>
-            {errors.confirmPassword && <InputError>{errors.confirmPassword.message}</InputError>}
-          </>
+          <>{errors.confirmPassword && <InputError>{errors.confirmPassword.message}</InputError>}</>
         </Wrapper>
       </Body>
       <Footer>

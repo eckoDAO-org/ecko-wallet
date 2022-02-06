@@ -14,7 +14,7 @@ const LabelContainer = styled.label`
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  @media screen and (max-width: 480px){
+  @media screen and (max-width: 480px) {
     margin-bottom: 12px;
     font-size: 14px;
   }
@@ -43,8 +43,8 @@ const CheckMark = styled.span`
     -webkit-transform: rotate(45deg);
     -ms-transform: rotate(45deg);
     transform: rotate(45deg);
-    content: "";
-    display: ${(props) => (props.isChecked ? 'block' : 'none')};  
+    content: '';
+    display: ${(props) => (props.isChecked ? 'block' : 'none')};
   }
 `;
 

@@ -1,9 +1,6 @@
 /* eslint-disable no-console */
 import { useState } from 'react';
-import {
-  ButtonAdd,
-  ButtonWrapper,
-} from 'src/pages/SendTransactions/views/style';
+import { ButtonAdd, ButtonWrapper } from 'src/pages/SendTransactions/views/style';
 import Button from 'src/components/Buttons';
 import { BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
 import { BaseTextInput, InputError } from 'src/baseComponent';
@@ -16,18 +13,9 @@ import { getLocalNetworks, setLocalNetworks } from 'src/utils/storage';
 import { setNetworks } from 'src/stores/extensions';
 import ModalCustom from 'src/components/Modal/ModalCustom';
 import { Content } from '../../style';
-import {
-  ErrorWrapper,
-  Footer,
-} from '../../../SendTransactions/styles';
+import { ErrorWrapper, Footer } from '../../../SendTransactions/styles';
 import { DivBodyNetwork } from './style';
-import {
-  ActionButton,
-  BodyModal,
-  ButtonModal,
-  DescriptionModal,
-  TitleModal,
-} from '../style';
+import { ActionButton, BodyModal, ButtonModal, DescriptionModal, TitleModal } from '../style';
 import { DivError } from '../../Contact/views/style';
 
 type Props = {
@@ -38,9 +26,7 @@ type Props = {
 };
 
 const EditNetwork = (props: Props) => {
-  const {
-    onBack, network, isEdit, onClickPopup,
-  } = props;
+  const { onBack, network, isEdit, onClickPopup } = props;
   const [settingNetwork, setSettingNetwork] = useState<any>(network);
   const [errMessageDuplicateUrl, setErrorMessageDuplicateUrl] = useState('');
   const [errMessageDuplicateNetworksId, setErrorMessageDuplicateNetworksId] = useState('');
@@ -55,9 +41,7 @@ const EditNetwork = (props: Props) => {
   } = useForm();
   const id = network.id ? network.id : getTimestamp();
   const onSave = () => {
-    const alertText = network.id
-      ? 'Edit network successfully'
-      : 'Add network successfully';
+    const alertText = network.id ? 'Edit network successfully' : 'Add network successfully';
     const newNetwork = {
       id: id.toString(),
       name: settingNetwork.name.trim(),
@@ -94,16 +78,11 @@ const EditNetwork = (props: Props) => {
     );
   };
   const checkDuplicateUrl = (): boolean => {
-    const duplicate = networks.some(
-      (itemNetwork: any) => itemNetwork.url === settingNetwork.url && itemNetwork.id !== id,
-    );
+    const duplicate = networks.some((itemNetwork: any) => itemNetwork.url === settingNetwork.url && itemNetwork.id !== id);
     return duplicate;
   };
   const checkDuplicateNetworkId = (): boolean => {
-    const duplicate = networks.some(
-      (itemNetwork: any) => itemNetwork.networkId === settingNetwork.networkId
-        && itemNetwork.id !== id,
-    );
+    const duplicate = networks.some((itemNetwork: any) => itemNetwork.networkId === settingNetwork.networkId && itemNetwork.id !== id);
     return duplicate;
   };
   const onErrors = (err) => {
@@ -126,21 +105,19 @@ const EditNetwork = (props: Props) => {
         setNetworks(convertNetworks(localNetworks));
         onClickPopup();
         setModalRemoveNetwork(false);
-        toast.success(
-          <Toast type="success" content="Delete network successfully" />,
-        );
+        toast.success(<Toast type="success" content="Delete network successfully" />);
       },
       () => {},
     );
   };
   const checkInValidURL = (str) => {
     const pattern = new RegExp(
-      '^(https?:\\/\\/)?' // protocol
-        + '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' // domain name
-        + '((\\d{1,3}\\.){3}\\d{1,3}))' // OR ip (v4) address
-        + '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' // port and path
-        + '(\\?[;&a-z\\d%_.~+=-]*)?' // query string
-        + '(\\#[-a-z\\d_]*)?$',
+      '^(https?:\\/\\/)?' + // protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+        '(\\#[-a-z\\d_]*)?$',
       'i',
     );
     return !!pattern.test(str);
@@ -248,8 +225,7 @@ const EditNetwork = (props: Props) => {
                 },
                 maxLength: {
                   value: 1000,
-                  message:
-                    'Block Explorer URL should be maximum 1000 characters.',
+                  message: 'Block Explorer URL should be maximum 1000 characters.',
                 },
                 validate: {
                   required: (val) => val.trim().length > 0 || 'Invalid data',
@@ -329,38 +305,18 @@ const EditNetwork = (props: Props) => {
         {isEdit && network.id ? (
           <>
             <ButtonWrapper>
-              <Button
-                label="Remove"
-                type={BUTTON_TYPE.REMOVE}
-                onClick={() => setModalRemoveNetwork(true)}
-                size={BUTTON_SIZE.FULL}
-              />
+              <Button label="Remove" type={BUTTON_TYPE.REMOVE} onClick={() => setModalRemoveNetwork(true)} size={BUTTON_SIZE.FULL} />
             </ButtonWrapper>
             {isModalRemoveNetwork && (
-              <ModalCustom
-                isOpen={isModalRemoveNetwork}
-                showCloseIcon={false}
-                closeOnOverlayClick
-              >
+              <ModalCustom isOpen={isModalRemoveNetwork} showCloseIcon={false} closeOnOverlayClick>
                 <BodyModal>
                   <TitleModal>Remove Network?</TitleModal>
-                  <DescriptionModal>
-                    Are you sure you want to remove?
-                  </DescriptionModal>
+                  <DescriptionModal>Are you sure you want to remove?</DescriptionModal>
                   <ActionButton>
-                    <ButtonModal
-                      background="#ffffff"
-                      color="#461A57"
-                      border="1px solid #461A57"
-                      onClick={() => setModalRemoveNetwork(false)}
-                    >
+                    <ButtonModal background="#ffffff" color="#461A57" border="1px solid #461A57" onClick={() => setModalRemoveNetwork(false)}>
                       Cancel
                     </ButtonModal>
-                    <ButtonModal
-                      background="#461A57"
-                      color="#ffffff"
-                      onClick={deleteNetwork}
-                    >
+                    <ButtonModal background="#461A57" color="#ffffff" onClick={deleteNetwork}>
                       Remove
                     </ButtonModal>
                   </ActionButton>
@@ -368,12 +324,7 @@ const EditNetwork = (props: Props) => {
               </ModalCustom>
             )}
             <ButtonWrapper>
-              <Button
-                label="Cancel"
-                type={BUTTON_TYPE.DISABLE}
-                onClick={onBack}
-                size={BUTTON_SIZE.FULL}
-              />
+              <Button label="Cancel" type={BUTTON_TYPE.DISABLE} onClick={onBack} size={BUTTON_SIZE.FULL} />
             </ButtonWrapper>
             <ButtonWrapper>
               <ButtonAdd form="save-network">Save</ButtonAdd>
@@ -382,12 +333,7 @@ const EditNetwork = (props: Props) => {
         ) : (
           <>
             <ButtonWrapper>
-              <Button
-                label="Cancel"
-                type={BUTTON_TYPE.DISABLE}
-                onClick={onBack}
-                size={BUTTON_SIZE.FULL}
-              />
+              <Button label="Cancel" type={BUTTON_TYPE.DISABLE} onClick={onBack} size={BUTTON_SIZE.FULL} />
             </ButtonWrapper>
             <ButtonWrapper>
               <ButtonAdd form="save-network">Save</ButtonAdd>
