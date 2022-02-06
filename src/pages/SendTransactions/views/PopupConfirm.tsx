@@ -9,25 +9,28 @@ import { CONFIG } from 'src/utils/config';
 import { toast } from 'react-toastify';
 import BigNumber from 'bignumber.js';
 import Toast from 'src/components/Toast/Toast';
+import { CrossChainContext } from 'src/contexts/CrossChainContext';
 import { setActiveTab, setRecent } from 'src/stores/extensions';
-import {
-  getLocalActivities,
-  getLocalCrossRequests,
-  getLocalRecent,
-  setLocalActivities,
-  setLocalCrossRequests,
-  setLocalRecent,
-} from 'src/utils/storage';
+import { getLocalActivities, getLocalRecent, setLocalActivities, setLocalRecent } from 'src/utils/storage';
 import { updateSendDapp } from 'src/utils/message';
 import images from 'src/images';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import SpokesLoading from 'src/components/Loading/Spokes';
 import Tooltip from 'src/components/Tooltip';
 import { IFungibleToken } from 'src/pages/ImportToken';
 import {
-  PageConfirm, BodyContent, ButtonWrapper,
-  LabelConfirm, FormItemConfirm, LabelBold, TooltipImage,
-  GasFee, GasFeeText, LoadingTitle, SpinnerWrapper, TransferHr,
+  PageConfirm,
+  BodyContent,
+  ButtonWrapper,
+  LabelConfirm,
+  FormItemConfirm,
+  LabelBold,
+  TooltipImage,
+  GasFee,
+  GasFeeText,
+  LoadingTitle,
+  SpinnerWrapper,
+  TransferHr,
 } from './style';
 import { Footer, TransactionTitle } from '../styles';
 import { renderTransactionInfo } from './Transfer';
@@ -36,17 +39,13 @@ type Props = {
   configs: any;
   onClose: any;
   aliasContact: string;
-  fungibleToken: IFungibleToken|null;
-}
+  fungibleToken: IFungibleToken | null;
+};
 
 const PopupConfirm = (props: Props) => {
-  const {
-    configs,
-    onClose,
-    aliasContact,
-    fungibleToken,
-  } = props;
+  const { configs, onClose, aliasContact, fungibleToken } = props;
   const [isLoading, setIsLoading] = useState(false);
+  const { setCrossChainRequest, getCrossChainRequestsAsync } = useContext(CrossChainContext);
   const history = useHistory();
   const {
     senderName,
@@ -71,11 +70,15 @@ const PopupConfirm = (props: Props) => {
   const validGasPrice = parseFloat(gasPrice);
   const validGasLimit = parseFloat(gasLimit);
 
-  const total = (validAmount + (validGasPrice * validGasLimit));
+  const total = validAmount + validGasPrice * validGasLimit;
   const getCmd = () => {
-    let pactCode = `(${fungibleToken?.contractAddress}.transfer-create "${senderName}" "${receiverName}" (read-keyset "ks") ${Number.parseFloat(amount).toFixed(8)})`;
+    let pactCode = `(${fungibleToken?.contractAddress}.transfer-create "${senderName}" "${receiverName}" (read-keyset "ks") ${Number.parseFloat(
+      amount,
+    ).toFixed(8)})`;
     if (isCrossChain) {
-      pactCode = `(${fungibleToken?.contractAddress}.transfer-crosschain "${senderName}" "${receiverName}" (read-keyset "ks") "${receiverChainId}" ${Number.parseFloat(amount).toFixed(8)})`;
+      pactCode = `(${
+        fungibleToken?.contractAddress
+      }.transfer-crosschain "${senderName}" "${receiverName}" (read-keyset "ks") "${receiverChainId}" ${Number.parseFloat(amount).toFixed(8)})`;
     }
     const crossKeyPairs = {
       publicKey: senderPublicKey,
@@ -84,14 +87,10 @@ const PopupConfirm = (props: Props) => {
       publicKey: senderPublicKey,
       clist: [
         Pact.lang.mkCap('gas', 'pay gas', 'coin.GAS').cap,
-        Pact.lang.mkCap('transfer', 'transfer coin', `${fungibleToken?.contractAddress}.TRANSFER`, [
-          senderName,
-          receiverName,
-          validAmount,
-        ]).cap,
+        Pact.lang.mkCap('transfer', 'transfer coin', `${fungibleToken?.contractAddress}.TRANSFER`, [senderName, receiverName, validAmount]).cap,
       ],
     };
-    const keyPairs:any = isCrossChain ? crossKeyPairs : normalKeyPairs;
+    const keyPairs: any = isCrossChain ? crossKeyPairs : normalKeyPairs;
     if (senderPrivateKey.length === 64) {
       keyPairs.secretKey = senderPrivateKey;
     }
@@ -104,14 +103,7 @@ const PopupConfirm = (props: Props) => {
           pred: receiverPred,
         },
       },
-      meta: Pact.lang.mkMeta(
-        senderName,
-        senderChainId.toString(),
-        validGasPrice,
-        validGasLimit,
-        getTimestamp(),
-        CONFIG.X_CHAIN_TTL,
-      ),
+      meta: Pact.lang.mkMeta(senderName, senderChainId.toString(), validGasPrice, validGasLimit, getTimestamp(), CONFIG.X_CHAIN_TTL),
       networkId: selectedNetwork.networkId,
     };
     return cmd;
@@ -126,36 +118,65 @@ const PopupConfirm = (props: Props) => {
       pred: receiverPred,
       keys: receiverKeys,
     };
-    getLocalRecent(selectedNetwork.networkId, (data) => {
-      const recent = data;
-      recent[`${receiverChainId}`] = recent[`${receiverChainId}`] || {};
-      recent[`${receiverChainId}`][`${receiverName}`] = newRecent;
-      setLocalRecent(selectedNetwork.networkId, recent);
-      setRecent(convertRecent(recent));
-    }, () => {
-      const recent = {};
-      recent[`${receiverChainId}`] = {};
-      recent[`${receiverChainId}`][`${receiverName}`] = newRecent;
-      setLocalRecent(selectedNetwork.networkId, recent);
-      setRecent(convertRecent(recent));
-    });
+    getLocalRecent(
+      selectedNetwork.networkId,
+      (data) => {
+        const recent = data;
+        recent[`${receiverChainId}`] = recent[`${receiverChainId}`] || {};
+        recent[`${receiverChainId}`][`${receiverName}`] = newRecent;
+        setLocalRecent(selectedNetwork.networkId, recent);
+        setRecent(convertRecent(recent));
+      },
+      () => {
+        const recent = {};
+        recent[`${receiverChainId}`] = {};
+        recent[`${receiverChainId}`][`${receiverName}`] = newRecent;
+        setLocalRecent(selectedNetwork.networkId, recent);
+        setRecent(convertRecent(recent));
+      },
+    );
   };
 
-  const onListenTransaction = (listenCmd) => {
+  const onListenTransaction = (listenCmd, attempt = 1) => {
     Pact.fetch
       .listen(listenCmd, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, senderChainId))
-      .then((data) => {
-        // setIsLoading(false);
+      .then(async (data) => {
         const status = get(data, 'result.status');
         if (status === 'success') {
           toast.success(<Toast type="success" content="Transfer Successfully" />);
         } else if (status === 'failure') {
           toast.error(<Toast type="fail" content="Transfer Fail" />);
         }
+        if (senderChainId.toString() !== receiverChainId.toString()) {
+          const activity = {
+            symbol: fungibleToken?.symbol,
+            requestKey: data.reqKey,
+            senderChainId: senderChainId.toString(),
+            receiverChainId: receiverChainId.toString(),
+            receiver: receiverName,
+            createdTime: new Date(data.metaData?.blockTime / 1000).toString(),
+            amount,
+            gasPrice,
+            sender: senderName,
+            domain,
+            status,
+          };
+          const asyncCrossChainRequests = await getCrossChainRequestsAsync();
+          const newCrossRequests = [...(asyncCrossChainRequests?.filter((ccr) => ccr.requestKey !== data.reqKey) || []), activity];
+          setCrossChainRequest(newCrossRequests);
+        }
+
         // history.push('/');
         // setActiveTab(ACTIVE_TAB.HOME);
       })
-      .catch(() => {
+      .catch((err) => {
+        console.log('!!! ~ err', err);
+        if (attempt < 5) {
+          onListenTransaction(listenCmd, attempt + 1);
+          toast.error(<Toast type="fail" content="Transfer Fail, I'm trying again" />);
+        } else {
+          toast.error(<Toast type="fail" content="Transfer Fail" />);
+        }
         // setIsLoading(false);
         // history.push('/');
         // setActiveTab(ACTIVE_TAB.HOME);
@@ -166,15 +187,8 @@ const PopupConfirm = (props: Props) => {
     const newCreatedTime = new Date();
     const createdTime = newCreatedTime.toString();
     const cmd = getCmd();
-    const meta = Pact.lang.mkMeta(
-      senderName,
-      senderChainId.toString(),
-      validGasPrice,
-      validGasLimit,
-      getTimestamp(),
-      CONFIG.X_CHAIN_TTL,
-    );
-    const sendCmd:any = Pact.api.prepareExecCmd(
+    const meta = Pact.lang.mkMeta(senderName, senderChainId.toString(), validGasPrice, validGasLimit, getTimestamp(), CONFIG.X_CHAIN_TTL);
+    const sendCmd: any = Pact.api.prepareExecCmd(
       cmd.keyPairs,
       `"${new Date().toISOString()}"`,
       cmd.pactCode,
@@ -190,7 +204,7 @@ const PopupConfirm = (props: Props) => {
     setIsLoading(true);
     Pact.wallet
       .sendSigned(sendCmd, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, senderChainId))
-      .then((data) => {
+      .then(async (data) => {
         const requestKey = data.requestKeys[0];
         const listenCmd = {
           listen: requestKey,
@@ -209,24 +223,26 @@ const PopupConfirm = (props: Props) => {
           domain,
           status: 'pending',
         };
-        getLocalActivities(selectedNetwork.networkId, senderChainId, senderName, (activities) => {
-          const newActivities = [...activities];
-          newActivities.push(activity);
-          setLocalActivities(selectedNetwork.networkId, senderChainId, senderName, newActivities);
-        }, () => {
-          const newActivities:any[] = [];
-          newActivities.push(activity);
-          setLocalActivities(selectedNetwork.networkId, senderChainId, senderName, newActivities);
-        });
+        getLocalActivities(
+          selectedNetwork.networkId,
+          senderChainId,
+          senderName,
+          (activities) => {
+            const newActivities = [...activities];
+            newActivities.push(activity);
+            setLocalActivities(selectedNetwork.networkId, senderChainId, senderName, newActivities);
+          },
+          () => {
+            const newActivities: any[] = [];
+            newActivities.push(activity);
+            setLocalActivities(selectedNetwork.networkId, senderChainId, senderName, newActivities);
+          },
+        );
         if (senderChainId.toString() !== receiverChainId.toString()) {
-          getLocalCrossRequests(selectedNetwork.networkId, (crossChainRequests) => {
-            const requests = [...crossChainRequests];
-            requests.push(activity);
-            setLocalCrossRequests(selectedNetwork.networkId, requests);
-          }, () => {
-            const requests = [activity];
-            setLocalCrossRequests(selectedNetwork.networkId, requests);
-          });
+          const asyncCrossTx = await getCrossChainRequestsAsync();
+          const requests = [...(asyncCrossTx || [])];
+          requests.push(activity);
+          setCrossChainRequest(requests);
         }
         if (domain) {
           const newData = {
@@ -267,15 +283,11 @@ const PopupConfirm = (props: Props) => {
   if (isLoading) {
     return (
       <PageConfirm>
-        <LoadingTitle isTop>
-          Please don’t close this view
-        </LoadingTitle>
+        <LoadingTitle isTop>Please don’t close this view</LoadingTitle>
         <SpinnerWrapper>
           <SpokesLoading />
         </SpinnerWrapper>
-        <LoadingTitle>
-          You will be redirected when the transaction ends
-        </LoadingTitle>
+        <LoadingTitle>You will be redirected when the transaction ends</LoadingTitle>
       </PageConfirm>
     );
   }
@@ -308,18 +320,17 @@ const PopupConfirm = (props: Props) => {
         </GasFee>
       </BodyContent>
       <TransferHr />
-      {fungibleToken?.contractAddress === 'coin'
-        && (
+      {fungibleToken?.contractAddress === 'coin' && (
         <BodyContent>
           <FormItemConfirm>
             <LabelBold>Total</LabelBold>
             <LabelBold isRight>{`${new BigNumber(total).decimalPlaces(12).toString()} KDA`}</LabelBold>
           </FormItemConfirm>
         </BodyContent>
-        )}
+      )}
       <Footer>
         <ButtonWrapper>
-          <Button label="Reject" type={BUTTON_TYPE.DISABLE} onClick={(() => onClose())} size={BUTTON_SIZE.FULL} />
+          <Button label="Reject" type={BUTTON_TYPE.DISABLE} onClick={() => onClose()} size={BUTTON_SIZE.FULL} />
         </ButtonWrapper>
         <ButtonWrapper>
           <Button label="Confirm" onClick={onSend} size={BUTTON_SIZE.FULL} />

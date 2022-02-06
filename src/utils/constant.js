@@ -22,9 +22,7 @@ export const BUTTON_TYPE = {
   REMOVE: 'remove',
 };
 
-export const GAS_PAYER = [
-  { value: 0, label: 'Public Gas Station' },
-];
+export const GAS_PAYER = [{ value: 0, label: 'Public Gas Station' }];
 
 export const ACTIVE_TAB = {
   HOME: 'home',

@@ -5,14 +5,7 @@ import Back from 'src/components/Back';
 import useLocalStorage from 'src/hooks/useLocalStorage';
 import { setActiveTab } from 'src/stores/extensions';
 import { ACTIVE_TAB } from 'src/utils/constant';
-import {
-  PageSendTransaction,
-  Title,
-  Body,
-  TransactionWrapper,
-  FormSend,
-  SelectWrapper,
-} from './styles';
+import { PageSendTransaction, Title, Body, TransactionWrapper, FormSend, SelectWrapper } from './styles';
 import Transfer from './views/Transfer';
 import SelectReceiver from './views/SelectReceiver';
 import { IFungibleToken } from '../ImportToken';

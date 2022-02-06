@@ -56,14 +56,12 @@ import AddContact from './AddContact';
 
 type Props = {
   destinationAccount: any;
-  fungibleToken: IFungibleToken|null;
-}
+  fungibleToken: IFungibleToken | null;
+};
 export const renderTransactionInfo = (info) => (
   <SendTransaction>
     <TransferItem isTop>
-      <TransferName>
-        Sender Account
-      </TransferName>
+      <TransferName>Sender Account</TransferName>
       <TransferDetails>
         <AccountDetails>
           {shortenAddress(info.sender)}
@@ -86,9 +84,7 @@ export const renderTransactionInfo = (info) => (
       <TransferImage src={images?.transfer?.arrowDownViolet} width="100%" size="auto" alt="down-arrow" />
     </ImageWrapper>
     <TransferItem>
-      <TransferName>
-        Destination Account
-      </TransferName>
+      <TransferName>Destination Account</TransferName>
       <TransferDetails>
         <AccountDetails>
           {shortenAddress(info.receiver)}
@@ -162,43 +158,43 @@ const Transfer = (props: Props) => {
       );
   }, []);
   const initContact = () => {
-    getLocalContacts(selectedNetwork.networkId, (data) => {
-      const aliasName = getExistContacts(destinationAccount.accountName, destinationAccount.chainId, data);
-      if (aliasName && aliasName.length) {
-        setIsNewContact(false);
-        setAliasContact(aliasName);
-      }
-    }, () => {});
+    getLocalContacts(
+      selectedNetwork.networkId,
+      (data) => {
+        const aliasName = getExistContacts(destinationAccount.accountName, destinationAccount.chainId, data);
+        if (aliasName && aliasName.length) {
+          setIsNewContact(false);
+          setAliasContact(aliasName);
+        }
+      },
+      () => {},
+    );
   };
 
   const initData = () => {
-    const {
-      account,
-      chainId,
-      publicKey,
-      secretKey,
-    } = rootState.wallet;
+    const { account, chainId, publicKey, secretKey } = rootState.wallet;
     const pactCodeCoin = `(coin.details "${account}")`;
     const pactCodeToken = `(${fungibleToken?.contractAddress}.details "${account}")`;
     showLoading();
-    fetchLocal(pactCodeCoin, selectedNetwork.url, selectedNetwork.networkId, chainId).then((resCoin) => {
-      fetchLocal(pactCodeToken, selectedNetwork.url, selectedNetwork.networkId, chainId).then((resToken) => {
-        hideLoading();
-        const status = get(resToken, 'result.status');
-        if (status === 'success') {
-          const coinBalance = getBalanceFromChainwebApiResponse(resCoin);
-          const tokenBalance = getBalanceFromChainwebApiResponse(resToken);
-          setWallet({
-            accountName: account,
-            coinBalance,
-            tokenBalance,
-            publicKey,
-            secretKey,
-            chainId,
-          });
-        }
-      });
-    })
+    fetchLocal(pactCodeCoin, selectedNetwork.url, selectedNetwork.networkId, chainId)
+      .then((resCoin) => {
+        fetchLocal(pactCodeToken, selectedNetwork.url, selectedNetwork.networkId, chainId).then((resToken) => {
+          hideLoading();
+          const status = get(resToken, 'result.status');
+          if (status === 'success') {
+            const coinBalance = getBalanceFromChainwebApiResponse(resCoin);
+            const tokenBalance = getBalanceFromChainwebApiResponse(resToken);
+            setWallet({
+              accountName: account,
+              coinBalance,
+              tokenBalance,
+              publicKey,
+              secretKey,
+              chainId,
+            });
+          }
+        });
+      })
       .catch(() => {
         hideLoading();
       });
@@ -357,7 +353,7 @@ const Transfer = (props: Props) => {
                       if (fungibleToken?.contractAddress === 'coin') {
                         amountValue -= gasFee;
                       }
-                      return (value > 0 && value <= amountValue);
+                      return value > 0 && value <= amountValue;
                     },
                   },
                 }),
@@ -389,7 +385,7 @@ const Transfer = (props: Props) => {
                       if (fungibleToken?.contractAddress === 'coin') {
                         amountValue -= gasFee;
                       }
-                      return (value > 0 && value <= amountValue);
+                      return value > 0 && value <= amountValue;
                     },
                   },
                 }),
@@ -549,7 +545,13 @@ const Transfer = (props: Props) => {
                 <GasItem
                   key={gas.LABEL}
                   isActive={selectedGas.LABEL === gas.LABEL}
-                  onClick={() => { setSelectedGas(gas); clearErrors('gasLimit'); clearErrors('gasPrice'); setValue('gasLimit', gas?.GAS_LIMIT); setValue('gasPrice', gas.GAS_PRICE); }}
+                  onClick={() => {
+                    setSelectedGas(gas);
+                    clearErrors('gasLimit');
+                    clearErrors('gasPrice');
+                    setValue('gasLimit', gas?.GAS_LIMIT);
+                    setValue('gasPrice', gas.GAS_PRICE);
+                  }}
                 >
                   {gas.LABEL}
                 </GasItem>
@@ -578,12 +580,7 @@ const Transfer = (props: Props) => {
         </Footer>
       </form>
       {isOpenTransferModal && (
-        <ModalCustom
-          isOpen={isOpenTransferModal}
-          title="Confirm Send Transaction"
-          onCloseModal={onCloseTransfer}
-          closeOnOverlayClick={false}
-        >
+        <ModalCustom isOpen={isOpenTransferModal} title="Confirm Send Transaction" onCloseModal={onCloseTransfer} closeOnOverlayClick={false}>
           <PopupConfirm configs={configs} onClose={onCloseTransfer} aliasContact={aliasContact} fungibleToken={fungibleToken} />
         </ModalCustom>
       )}

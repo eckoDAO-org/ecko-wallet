@@ -1,28 +1,13 @@
 /* eslint-disable no-console */
-import {
-  useRef,
-} from 'react';
-import {
-  useHistory, useLocation,
-} from 'react-router-dom';
+import { useRef } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import images from 'src/images';
 import { ReactComponent as IconFail } from 'src/images/fail-icon-violet.svg';
-import {
-  setActiveTab,
-  setContacts,
-  setRecent,
-  setSelectedNetwork,
-} from 'src/stores/extensions';
-import {
-  setCurrentWallet,
-  setBalance,
-} from 'src/stores/wallet';
-import {
-  setLocalSelectedNetwork,
-  setLocalSelectedWallet,
-} from 'src/utils/storage';
+import { setActiveTab, setContacts, setRecent, setSelectedNetwork } from 'src/stores/extensions';
+import { setCurrentWallet, setBalance } from 'src/stores/wallet';
+import { setLocalSelectedNetwork, setLocalSelectedWallet } from 'src/utils/storage';
 import { ACTIVE_TAB } from 'src/utils/constant';
 import Dropdown from '../Dropdown';
 
@@ -32,15 +17,14 @@ const WrapHeader = styled.div`
   padding: 15px 15px;
 `;
 const DivHeader = styled.div`
-    font-size: 1.5em;
-    position: relative;
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    background: linear-gradient(90deg, #E6FEFE 0%, #FDF6E6 100%);
+  font-size: 1.5em;
+  position: relative;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: linear-gradient(90deg, #e6fefe 0%, #fdf6e6 100%);
 `;
-const Logo = styled.img`
-`;
+const Logo = styled.img``;
 
 const LogoImage = styled.img`
   height: 16px;
@@ -53,7 +37,7 @@ const ImageWrapper = styled.div`
   align-items: center;
 `;
 const Hr = styled.div`
-  background: linear-gradient(90deg, #D2AB72 0%, #B66E84 35.42%, #B2579B 64.06%, #9EE9E4 99.48%);
+  background: linear-gradient(90deg, #d2ab72 0%, #b66e84 35.42%, #b2579b 64.06%, #9ee9e4 99.48%);
   height: 2px;
 `;
 const Div = styled.div`
@@ -63,7 +47,7 @@ const Div = styled.div`
   color: ${(props) => props.color};
   padding-left: ${(props) => props.paddingLeft};
   padding-right: ${(props) => props.paddingRight};
-  padding-top: ${(props) => props.paddingTop}; 
+  padding-top: ${(props) => props.paddingTop};
 `;
 const TitleSetting = styled.div`
   padding: 15px 15px;
@@ -110,13 +94,13 @@ const NetWorkSelect = styled.div`
   gap: 10px;
   padding: 5px 20px;
   border-radius: 20px;
-  background: #E2D5E1;
-  border: 1px solid #461A57;
+  background: #e2d5e1;
+  border: 1px solid #461a57;
 `;
 const DivImage = styled.div`
   margin-left: ${(props) => props.marginLeft};
   margin: auto 0;
-  padding-bottom: ${(props) => props.paddingBottom}
+  padding-bottom: ${(props) => props.paddingBottom};
 `;
 const NetWorkName = styled.div`
   padding-bottom: ${(props) => props.paddingBottom};
@@ -145,23 +129,18 @@ const NetworkOption = styled.div`
   &::-webkit-scrollbar-thumb {
     background: #7b7b7b9e;
     border-radius: 2px;
-  } 
+  }
 `;
 
 const Header = () => {
   const rootState = useSelector((state) => state);
-  const {
-    passwordHash,
-    selectedNetwork,
-    networks,
-    expiredTime,
-  } = rootState.extensions;
+  const { passwordHash, selectedNetwork, networks, expiredTime } = rootState.extensions;
   const location = useLocation().pathname;
   const showSettingAndSelectNetworks = !(
-    location.includes('setting')
-    || location.includes('networks')
-    || location.includes('contact')
-    || location.includes('about')
+    location.includes('setting') ||
+    location.includes('networks') ||
+    location.includes('contact') ||
+    location.includes('about')
   );
   const showHeader = !(location.includes('sign-in') || location.includes('home-page'));
   const history = useHistory();
@@ -197,80 +176,73 @@ const Header = () => {
         <DivChildImage />
         <DivChild>Networks</DivChild>
       </TitleSetting>
-      {
-        networks.length > 0 && (
-          <NetworkOption>
-            {
-              networks.map((network: any) => {
-                const isSelected = selectedNetwork?.id?.toString() === network?.id?.toString();
-                return (
-                  <DivFlex
-                    key={network.id}
-                    marginBottom="10px"
-                    onClick={() => {
-                      if (!isSelected) {
-                        handleSelectNetwork(network?.id);
-                      }
-                    }}
-                  >
-                    <DivChildImage>
-                      {isSelected && (
-                      <Image src={images.checkbox} alt="check-box" />
-                      )}
-                    </DivChildImage>
-                    <DivChild
-                      fontSize="16px"
-                      color={isSelected ? '#ffffff' : '#c4c4c4'}
-                      Width="150px"
-                      OverFlow="hidden"
-                      TextOverflow="ellipsis"
-                      WhiteSpace="nowrap"
-                    >
-                      {network?.name}
-                    </DivChild>
-                  </DivFlex>
-                );
-              })
-            }
-          </NetworkOption>
-        )
-      }
+      {networks.length > 0 && (
+        <NetworkOption>
+          {networks.map((network: any) => {
+            const isSelected = selectedNetwork?.id?.toString() === network?.id?.toString();
+            return (
+              <DivFlex
+                key={network.id}
+                marginBottom="10px"
+                onClick={() => {
+                  if (!isSelected) {
+                    handleSelectNetwork(network?.id);
+                  }
+                }}
+              >
+                <DivChildImage>{isSelected && <Image src={images.checkbox} alt="check-box" />}</DivChildImage>
+                <DivChild
+                  fontSize="16px"
+                  color={isSelected ? '#ffffff' : '#c4c4c4'}
+                  Width="150px"
+                  OverFlow="hidden"
+                  TextOverflow="ellipsis"
+                  WhiteSpace="nowrap"
+                >
+                  {network?.name}
+                </DivChild>
+              </DivFlex>
+            );
+          })}
+        </NetworkOption>
+      )}
     </Div>
   );
 
   return (
     <>
-      { showHeader && (
-      <DivHeader>
-        <WrapHeader>
-          <ImageWrapper
-            onClick={() => {
-              history.push('/');
-              setActiveTab(ACTIVE_TAB.HOME);
-            }}
-          >
-            <Logo alt="logo" src={images.logoHome} />
-            <LogoImage src={images.logoName} alt="logo" />
-          </ImageWrapper>
-          <OptionHeader>
-            {passwordHash && isLoggedIn && showSettingAndSelectNetworks && (
-            <Dropdown ref={refSelectNetwork} placement="left" translate="-55%" trianglePosition="50px" overlayDropdown={overlayDropdownOptionNetwork}>
-              <NetWorkSelect>
-                <NetWorkName
-                  Width="60px"
-                  OverFlow="hidden"
-                  TextOverflow="ellipsis"
-                  WhiteSpace="nowrap"
-                  fontSize="14px"
-                  color="#461A57"
+      {showHeader && (
+        <DivHeader>
+          <WrapHeader>
+            <ImageWrapper
+              onClick={() => {
+                history.push('/');
+                setActiveTab(ACTIVE_TAB.HOME);
+              }}
+            >
+              <Logo alt="logo" src={images.logoHome} />
+              <LogoImage src={images.logoName} alt="logo" />
+            </ImageWrapper>
+            <OptionHeader>
+              {passwordHash && isLoggedIn && showSettingAndSelectNetworks && (
+                <Dropdown
+                  ref={refSelectNetwork}
+                  placement="left"
+                  translate="-55%"
+                  trianglePosition="50px"
+                  overlayDropdown={overlayDropdownOptionNetwork}
                 >
-                  {selectedNetwork?.name}
-                </NetWorkName>
-                <DivImage paddingBottom="2px"><Image src={images.wallet.arrayDropdownPurple} /></DivImage>
-              </NetWorkSelect>
-            </Dropdown>
-            )}
-            {/* {passwordHash && isLoggedIn && showSettingAndSelectNetworks && (
+                  <NetWorkSelect>
+                    <NetWorkName Width="60px" OverFlow="hidden" TextOverflow="ellipsis" WhiteSpace="nowrap" fontSize="14px" color="#461A57">
+                      {selectedNetwork?.name}
+                    </NetWorkName>
+                    <DivImage paddingBottom="2px">
+                      <Image src={images.wallet.arrayDropdownPurple} />
+                    </DivImage>
+                  </NetWorkSelect>
+                </Dropdown>
+              )}
+              {/* {passwordHash && isLoggedIn && showSettingAndSelectNetworks && (
             <DivChild marginLeft="15px">
               <Dropdown
                 overlayDropdown={overlayDropdownSetting}
@@ -281,10 +253,10 @@ const Header = () => {
               </Dropdown>
             </DivChild>
             )} */}
-          </OptionHeader>
-        </WrapHeader>
-        <Hr />
-      </DivHeader>
+            </OptionHeader>
+          </WrapHeader>
+          <Hr />
+        </DivHeader>
       )}
     </>
   );

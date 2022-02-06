@@ -1,8 +1,6 @@
 import { isNotValidASCIINumber, isPreventASCIICharacters } from '@Utils/input';
 
-const InputCurrency = ({
-  name, value, onChange, ...restProps
-}) => (
+const InputCurrency = ({ name, value, onChange, ...restProps }) => (
   <input
     onKeyDown={(e) => isNotValidASCIINumber(e.keyCode, true) && e.preventDefault()}
     onKeyPress={(e) => isPreventASCIICharacters(e.key) && e.preventDefault()}

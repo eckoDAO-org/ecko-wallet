@@ -23,7 +23,7 @@ export const setStoreWallet = (store: Store) => {
   customStore = store;
 };
 
-const initialState:Wallet = {
+const initialState: Wallet = {
   chainId: '0',
   balance: 0,
   account: '',

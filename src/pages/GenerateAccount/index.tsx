@@ -12,12 +12,7 @@ import { useMemo } from 'react';
 import Pact from 'pact-lang-api';
 import { getTimestamp } from 'src/utils';
 import { getApiUrl } from 'src/utils/chainweb';
-import {
-  getLocalPassword,
-  getLocalWallets,
-  setLocalSelectedWallet,
-  setLocalWallets,
-} from 'src/utils/storage';
+import { getLocalPassword, getLocalWallets, setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
 import { encryptKey } from 'src/utils/security';
 import useChainIdOptions from 'src/hooks/useChainIdOptions';
 import Toast from 'src/components/Toast/Toast';
@@ -57,14 +52,14 @@ const Warning = styled.div`
   text-align: left;
   background: #eee6f3;
   padding: 20px 15px;
-  color: #461A57;
+  color: #461a57;
   margin-bottom: 25px;
   font-size: 16px;
 `;
 const ButtonDiv = styled.button`
   width: 100%;
   height: 44px;
-  background: #461A57;
+  background: #461a57;
   border-radius: 10px;
   font-family: 'Play', sans-serif;
   font-weight: 700;
@@ -128,49 +123,62 @@ const GenerateAccount = () => {
     };
 
     showLoading();
-    Pact.fetch.send(cmd, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, chainIdValue)).then((data) => {
-      const requestKey = data.requestKeys[0];
-      const listenCmd = {
-        listen: requestKey,
-      };
-      Pact.fetch.listen(listenCmd, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, chainIdValue)).then(() => {
-        hideLoading();
-        getLocalPassword((accountPassword) => {
-          const wallet = {
-            account: encryptKey(accountName, accountPassword),
-            publicKey: encryptKey(publicKey, accountPassword),
-            secretKey: encryptKey(secretKey, accountPassword),
-            chainId: chainId.value,
-            connectedSites: [],
-          };
-          getLocalWallets(selectedNetwork.networkId, (item) => {
-            const newData = [...item, wallet];
-            setLocalWallets(selectedNetwork.networkId, newData);
-          }, () => {
-            setLocalWallets(selectedNetwork.networkId, [wallet]);
+    Pact.fetch
+      .send(cmd, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, chainIdValue))
+      .then((data) => {
+        const requestKey = data.requestKeys[0];
+        const listenCmd = {
+          listen: requestKey,
+        };
+        Pact.fetch
+          .listen(listenCmd, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, chainIdValue))
+          .then(() => {
+            hideLoading();
+            getLocalPassword(
+              (accountPassword) => {
+                const wallet = {
+                  account: encryptKey(accountName, accountPassword),
+                  publicKey: encryptKey(publicKey, accountPassword),
+                  secretKey: encryptKey(secretKey, accountPassword),
+                  chainId: chainId.value,
+                  connectedSites: [],
+                };
+                getLocalWallets(
+                  selectedNetwork.networkId,
+                  (item) => {
+                    const newData = [...item, wallet];
+                    setLocalWallets(selectedNetwork.networkId, newData);
+                  },
+                  () => {
+                    setLocalWallets(selectedNetwork.networkId, [wallet]);
+                  },
+                );
+                const newStateWallet = {
+                  chainId: chainId.value,
+                  account: accountName,
+                  publicKey,
+                  secretKey,
+                  connectedSites: [],
+                };
+                const newWallets = [...wallets, newStateWallet];
+                setWallets(newWallets);
+                setLocalSelectedWallet(wallet);
+                setCurrentWallet(newStateWallet);
+                toast.success(<Toast type="success" content="Generate account successfully!" />);
+                history.push('/');
+              },
+              () => {},
+            );
+          })
+          .catch(() => {
+            hideLoading();
+            toast.error(<Toast type="fail" content="Network error" />);
           });
-          const newStateWallet = {
-            chainId: chainId.value,
-            account: accountName,
-            publicKey,
-            secretKey,
-            connectedSites: [],
-          };
-          const newWallets = [...wallets, newStateWallet];
-          setWallets(newWallets);
-          setLocalSelectedWallet(wallet);
-          setCurrentWallet(newStateWallet);
-          toast.success(<Toast type="success" content="Generate account successfully!" />);
-          history.push('/');
-        }, () => {});
-      }).catch(() => {
+      })
+      .catch(() => {
         hideLoading();
         toast.error(<Toast type="fail" content="Network error" />);
       });
-    }).catch(() => {
-      hideLoading();
-      toast.error(<Toast type="fail" content="Network error" />);
-    });
   };
 
   const goBack = () => {
@@ -206,14 +214,12 @@ const GenerateAccount = () => {
                   message: 'This field is required.',
                 },
               }}
-              render={({
-                field: {
-                  onChange, onBlur, value,
-                },
-              }) => (
+              render={({ field: { onChange, onBlur, value } }) => (
                 <BaseSelect
                   selectProps={{
-                    onChange, onBlur, value,
+                    onChange,
+                    onBlur,
+                    value,
                   }}
                   options={optionsChain}
                   title="Chain ID"
@@ -269,7 +275,9 @@ const GenerateAccount = () => {
         </form>
       </Body>
       <Footer>
-        <ButtonDiv form="create-new-account" width={176}>Generate</ButtonDiv>
+        <ButtonDiv form="create-new-account" width={176}>
+          Generate
+        </ButtonDiv>
       </Footer>
       <Warning>Warning: Never disclose this key. Anyone with your private key can steal any assets held in your account.</Warning>
     </ConditionWrapper>

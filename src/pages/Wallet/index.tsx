@@ -8,20 +8,12 @@ import { roundNumber, shortenAddress, BigNumberConverter } from 'src/utils';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import useLocalStorage from 'src/hooks/useLocalStorage';
 import { useSelector } from 'react-redux';
-import {
-  setBalance, setCurrentWallet, setWallets,
-} from 'src/stores/wallet';
+import { setBalance, setCurrentWallet, setWallets } from 'src/stores/wallet';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
 import { ESTIMATE_KDA_TO_USD_API } from 'src/utils/config';
 import { CHAIN_COUNT } from 'src/utils/constant';
-import {
-  getLocalPassword,
-  getLocalSeedPhrase,
-  getLocalWallets,
-  setLocalSelectedWallet,
-  setLocalWallets,
-} from 'src/utils/storage';
+import { getLocalPassword, getLocalSeedPhrase, getLocalWallets, setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
 import { decryptKey, encryptKey } from 'src/utils/security';
 import { fetchListLocal, getBalanceFromChainwebApiResponse, getKeyPairsFromSeedPhrase } from '../../utils/chainweb';
 import LoadMoreDropdown from './views/LoadMoreDropdown';
@@ -74,14 +66,14 @@ const DivHeader = styled.div`
   display: block;
 `;
 const Hr = styled.div`
-  background: linear-gradient(90deg, #D2AB72 0%, #B66E84 35.42%, #B2579B 64.06%, #9EE9E4 99.48%);
+  background: linear-gradient(90deg, #d2ab72 0%, #b66e84 35.42%, #b2579b 64.06%, #9ee9e4 99.48%);
   height: 4px;
   margin: 30px 20px;
 `;
 const DivWrapper = styled.div`
   display: block;
   cursor: pointer;
-  border: 1px solid #461A57;
+  border: 1px solid #461a57;
   box-sizing: border-box;
   border-radius: 10px;
   background: ${(props) => props.background};
@@ -91,7 +83,7 @@ const DivWrapper = styled.div`
 const LableAccount = styled.div`
   font-weight: 700;
   font-size: 16px;
-  color: #461A57;
+  color: #461a57;
   padding: 5px;
   text-align: left;
 `;
@@ -103,7 +95,7 @@ const DivFlex = styled.div`
   align-items: ${(props) => props.alignItems};
   margin: ${(props) => props.margin};
   margin-top: ${(props) => props.marginTop};
-  gap: ${(props) => props.gap};;
+  gap: ${(props) => props.gap}; ;
 `;
 const Image = styled.img<{ size: string; top: string; width: string }>`
   height: ${($props) => $props.size};
@@ -120,14 +112,14 @@ const WalletImage = styled.img`
 
 const LoadMore = styled.div``;
 const TitleSelectChain = styled.div`
-  border: 1px solid #461A57;
+  border: 1px solid #461a57;
   border-radius: 20px;
   padding: 10px 18px;
   margin-right: 23px;
-  background: #E2D5E1;
+  background: #e2d5e1;
 `;
 const LinearBackground = styled.div`
-  background: linear-gradient(90deg, #E6FEFE 0%, #FDF6E6 100%);
+  background: linear-gradient(90deg, #e6fefe 0%, #fdf6e6 100%);
   padding-top: 15px;
 `;
 const FlexWrapper = styled.div`
@@ -139,7 +131,7 @@ const WalletOption = styled.div`
   border-top: 1px solid #ffffff80;
 `;
 const DivChildKadena = styled.div`
-  border: 1px solid #461A57;
+  border: 1px solid #461a57;
   border-radius: 8px;
   margin: 0 20px;
 `;
@@ -178,8 +170,8 @@ const AddMoreToken = styled.div`
 const DivText = styled.div`
   display: inline-block;
   border-radius: 18px;
-  border: 1px solid #461A57;
-  color: #461A57;
+  border: 1px solid #461a57;
+  color: #461a57;
   font-size: 12px;
   padding: 11px 24px;
   cursor: pointer;
@@ -197,7 +189,7 @@ const ListWallet = styled.div`
   &::-webkit-scrollbar-thumb {
     background: #7b7b7b9e;
     border-radius: 2px;
-  } 
+  }
 `;
 const TitleSetting = styled.div`
   padding: 10px 20px;
@@ -210,10 +202,7 @@ const WrapAssets = styled.div``;
 const Wallet = () => {
   const history = useHistory();
   const rootState = useSelector((state) => state);
-  const {
-    selectedNetwork,
-    passwordHash,
-  } = rootState.extensions;
+  const { selectedNetwork, passwordHash } = rootState.extensions;
   const location = useLocation().pathname;
   const { balance, wallets } = rootState?.wallet;
   const [isShowReceiveModal, setShowReceiveModal] = useState(false);
@@ -234,31 +223,32 @@ const Wallet = () => {
       promiseList.push(promise);
     });
     let total = 0;
-    Promise.all(promiseList).then((res) => {
-      res?.forEach((fetched, chainIndex) => {
-        // if (fetched?.result?.data?.account === account) {
-        const resBalance = getBalanceFromChainwebApiResponse(fetched);
-        if (contractAddress === 'coin') {
-          total += resBalance;
-          if (chainId.toString() === chainIndex.toString()) {
-            setBalance(resBalance);
+    Promise.all(promiseList)
+      .then((res) => {
+        res?.forEach((fetched, chainIndex) => {
+          // if (fetched?.result?.data?.account === account) {
+          const resBalance = getBalanceFromChainwebApiResponse(fetched);
+          if (contractAddress === 'coin') {
+            total += resBalance;
+            if (chainId.toString() === chainIndex.toString()) {
+              setBalance(resBalance);
+            }
+          } else {
+            setFungibleTokensBalance((fungibleTokensBalance1) => [
+              ...(fungibleTokensBalance1.filter((fTB) => fTB.contractAddress !== contractAddress) ?? []),
+              {
+                contractAddress,
+                symbol,
+                chainBalance: resBalance ?? 0,
+                allChainBalance: 0,
+              },
+            ]);
           }
-        } else {
-          setFungibleTokensBalance((fungibleTokensBalance1) => [
-            ...fungibleTokensBalance1.filter((fTB) => fTB.contractAddress !== contractAddress) ?? [],
-            {
-              contractAddress,
-              symbol,
-              chainBalance: (resBalance ?? 0),
-              allChainBalance: 0,
-            },
-          ]);
+        });
+        if (contractAddress === 'coin') {
+          setAllChainBalance(total);
         }
-      });
-      if (contractAddress === 'coin') {
-        setAllChainBalance(total);
-      }
-    })
+      })
       .catch();
   };
 
@@ -278,16 +268,19 @@ const Wallet = () => {
 
   const checkSelectedWallet = (wallet) => wallet.account === stateWallet.account;
   const setSelectedLocalWallet = (wallet) => {
-    getLocalPassword((accountPassword) => {
-      const newWallet = {
-        account: encryptKey(wallet.account, accountPassword),
-        publicKey: encryptKey(wallet.publicKey, accountPassword),
-        secretKey: encryptKey(wallet.secretKey, accountPassword),
-        chainId: wallet.chainId,
-        connectedSites: wallet.connectedSites,
-      };
-      setLocalSelectedWallet(newWallet);
-    }, () => {});
+    getLocalPassword(
+      (accountPassword) => {
+        const newWallet = {
+          account: encryptKey(wallet.account, accountPassword),
+          publicKey: encryptKey(wallet.publicKey, accountPassword),
+          secretKey: encryptKey(wallet.secretKey, accountPassword),
+          chainId: wallet.chainId,
+          connectedSites: wallet.connectedSites,
+        };
+        setLocalSelectedWallet(newWallet);
+      },
+      () => {},
+    );
   };
 
   const goImportAccount = () => {
@@ -310,10 +303,13 @@ const Wallet = () => {
     return result;
   };
   const onCreateAccount = () => {
-    getLocalSeedPhrase((hash) => {
-      const plainSeedPhrase = decryptKey(hash, passwordHash);
-      createAccount(plainSeedPhrase, 0);
-    }, () => {});
+    getLocalSeedPhrase(
+      (hash) => {
+        const plainSeedPhrase = decryptKey(hash, passwordHash);
+        createAccount(plainSeedPhrase, 0);
+      },
+      () => {},
+    );
   };
   const createAccount = (seedPhrase, index) => {
     const keyPairs = getKeyPairsFromSeedPhrase(seedPhrase, index);
@@ -327,12 +323,16 @@ const Wallet = () => {
         chainId: '0',
         connectedSites: [],
       };
-      getLocalWallets(selectedNetwork.networkId, (item) => {
-        const newData = [...item, wallet];
-        setLocalWallets(selectedNetwork.networkId, newData);
-      }, () => {
-        setLocalWallets(selectedNetwork.networkId, [wallet]);
-      });
+      getLocalWallets(
+        selectedNetwork.networkId,
+        (item) => {
+          const newData = [...item, wallet];
+          setLocalWallets(selectedNetwork.networkId, newData);
+        },
+        () => {
+          setLocalWallets(selectedNetwork.networkId, [wallet]);
+        },
+      );
       const newStateWallet = {
         chainId: '0',
         account: accountName,
@@ -352,8 +352,7 @@ const Wallet = () => {
     }
   };
 
-  const groupedAccountWallets = wallets.filter((value, index, self) => index === self.findIndex((t) => (
-    t.account === value.account)));
+  const groupedAccountWallets = wallets.filter((value, index, self) => index === self.findIndex((t) => t.account === value.account));
 
   const overlayDropdownSetting = (
     <Div>
@@ -379,9 +378,7 @@ const Wallet = () => {
                 <DivChild fontSize="13px" marginLeft="22px">
                   <DivChild>{shortenAddress(wallet.account)}</DivChild>
                 </DivChild>
-                {isSelected && (
-                <WalletImage isChecked src={images.checkbox} alt="check-box" />
-                )}
+                {isSelected && <WalletImage isChecked src={images.checkbox} alt="check-box" />}
               </WalletWrapper>
             );
           })}
@@ -389,12 +386,20 @@ const Wallet = () => {
       )}
       <WalletOption>
         <CreateAccountWrapper onClick={onCreateAccount}>
-          <DivChild marginRight="20px"><Image src={images.wallet.iconCreate} alt="create" size={20} width={20} /></DivChild>
-          <DivChild fontSize="16px" fontWeight="400">Create wallet</DivChild>
+          <DivChild marginRight="20px">
+            <Image src={images.wallet.iconCreate} alt="create" size={20} width={20} />
+          </DivChild>
+          <DivChild fontSize="16px" fontWeight="400">
+            Create wallet
+          </DivChild>
         </CreateAccountWrapper>
         <ImportAccountWrapper onClick={goImportAccount}>
-          <DivChild marginRight="20px"><Image src={images.received} alt="import" size={20} width={20} /></DivChild>
-          <DivChild fontSize="16px" fontWeight="400">Import wallet</DivChild>
+          <DivChild marginRight="20px">
+            <Image src={images.received} alt="import" size={20} width={20} />
+          </DivChild>
+          <DivChild fontSize="16px" fontWeight="400">
+            Import wallet
+          </DivChild>
         </ImportAccountWrapper>
       </WalletOption>
     </Div>
@@ -405,10 +410,12 @@ const Wallet = () => {
       .then((res) => res.json())
       .then(
         (result) => {
-          setUsdPrices(Object.keys(result).map((token) => ({
-            symbol: token === 'kadena' ? 'coin' : token,
-            usdPrice: result[token].usd,
-          })));
+          setUsdPrices(
+            Object.keys(result).map((token) => ({
+              symbol: token === 'kadena' ? 'coin' : token,
+              usdPrice: result[token].usd,
+            })),
+          );
         },
         () => {},
       );
@@ -424,9 +431,7 @@ const Wallet = () => {
   }, [stateWallet?.chainId, stateWallet?.account, fungibleTokensBalance, allChainBalance]);
 
   const TokenChild = (props: any) => {
-    const {
-      value, src, valueUSD, tokenType, nameToken, containerStyle, onClick,
-    } = props;
+    const { value, src, valueUSD, tokenType, nameToken, containerStyle, onClick } = props;
     return (
       <Div marginBottom="10px" onClick={onClick} style={containerStyle}>
         <DivChildKadena>
@@ -434,8 +439,12 @@ const Wallet = () => {
             <DivFlex alignItems="center">
               <ImageBorder size="50px" src={src} alt="logo" />
               <DivChild marginLeft="15px">
-                <Div fontSize="16px" fontWeight="700" color="#461A57">{tokenType}</Div>
-                <Div fontSize="14px" color="#461A57" marginTop="5px">{nameToken}</Div>
+                <Div fontSize="16px" fontWeight="700" color="#461A57">
+                  {tokenType}
+                </Div>
+                <Div fontSize="14px" color="#461A57" marginTop="5px">
+                  {nameToken}
+                </Div>
               </DivChild>
             </DivFlex>
             <DivChild>
@@ -443,8 +452,7 @@ const Wallet = () => {
                 {value}
               </Div>
               <Div fontSize="14px" color="#461A57" marginTop="10px" textAlign="right">
-                $
-                {roundNumber(valueUSD, 1)}
+                ${roundNumber(valueUSD, 1)}
               </Div>
             </DivChild>
           </Transaction>
@@ -457,19 +465,13 @@ const Wallet = () => {
       <Account>
         <DivHeaderAccount>
           <DivHeader>
-            <LableAccount>
-              Account Name
-            </LableAccount>
+            <LableAccount>Account Name</LableAccount>
             <DivFlex marginLeft="6px">
-              <Dropdown
-                overlayDropdown={overlayDropdownSetting}
-                placement="right"
-                ref={walletDropdownRef}
-                trianglePosition="44px"
-                translate="-58%"
-              >
+              <Dropdown overlayDropdown={overlayDropdownSetting} placement="right" ref={walletDropdownRef} trianglePosition="44px" translate="-58%">
                 <FlexWrapper>
-                  <DivChild marginRight="10px" fontSize="13px">{shortenAddress(stateWallet?.account)}</DivChild>
+                  <DivChild marginRight="10px" fontSize="13px">
+                    {shortenAddress(stateWallet?.account)}
+                  </DivChild>
                   <Div
                     marginRight="10px"
                     onClick={(e) => {
@@ -498,19 +500,30 @@ const Wallet = () => {
               </Dropdown>
             </DivChild>
             <LoadMore>
-              <LoadMoreDropdown stateWallet={stateWallet} networkId={selectedNetwork?.networkId} explorer={selectedNetwork?.explorer} passwordHash={passwordHash} />
+              <LoadMoreDropdown
+                stateWallet={stateWallet}
+                networkId={selectedNetwork?.networkId}
+                explorer={selectedNetwork?.explorer}
+                passwordHash={passwordHash}
+              />
             </LoadMore>
           </DivChildChain>
         </DivHeaderAccount>
         <LinearBackground>
           <DivChildKadena>
             <DivFlex alignItems="center" justifyContent="space-between" margin="10px">
-              <DivChild><Image src={images.wallet.logoWalletKadena} size={50} width={50} alt="logo" /></DivChild>
+              <DivChild>
+                <Image src={images.wallet.logoWalletKadena} size={50} width={50} alt="logo" />
+              </DivChild>
               <DivChild>
                 <Div fontSize="16px" fontWeight="700" color="#461A57" textAlign="right">{`${roundNumber(balance ?? 0, 5)} KDA`}</Div>
                 <Div fontSize="12px" fontWeight="700" color="#461A57" textAlign="right">{`${roundNumber(allChainBalance ?? 0, 5)} KDA`}</Div>
-                <Div fontSize="14px" color="#461A57" marginTop="10px" textAlign="right">{`${roundNumber(getUsdPrice('coin', balance ?? 0), 1)} USD`}</Div>
-                <Div fontSize="10px" color="#461A57" marginTop="1px" textAlign="right">{`${roundNumber(getUsdPrice('coin', allChainBalance ?? 0), 1)} USD`}</Div>
+                <Div fontSize="14px" color="#461A57" marginTop="10px" textAlign="right">
+                  {`${roundNumber(getUsdPrice('coin', balance ?? 0), 1)} USD`}
+                </Div>
+                <Div fontSize="10px" color="#461A57" marginTop="1px" textAlign="right">
+                  {`${roundNumber(getUsdPrice('coin', allChainBalance ?? 0), 1)} USD`}
+                </Div>
               </DivChild>
             </DivFlex>
           </DivChildKadena>
@@ -518,16 +531,24 @@ const Wallet = () => {
             <DivWrapper background="#461A57" marginRight="10px">
               <DivChild onClick={() => history.push('/transfer?coin=kda')}>
                 <DivFlex justifyContent="center">
-                  <Div marginRight="10px"><Image src={images.wallet.iconSend} alt="send" /></Div>
-                  <Div fontSize="12px" color="#FFFFFF" fontWeight="700">Send</Div>
+                  <Div marginRight="10px">
+                    <Image src={images.wallet.iconSend} alt="send" />
+                  </Div>
+                  <Div fontSize="12px" color="#FFFFFF" fontWeight="700">
+                    Send
+                  </Div>
                 </DivFlex>
               </DivChild>
             </DivWrapper>
             <DivWrapper background="white" marginLeft="10px">
               <DivChild onClick={() => setShowReceiveModal(true)}>
                 <DivFlex justifyContent="center">
-                  <Div marginRight="10px"><Image src={images.wallet.iconReceive} alt="download" /></Div>
-                  <Div fontSize="12px" color="#461A57" fontWeight="700">Receive</Div>
+                  <Div marginRight="10px">
+                    <Image src={images.wallet.iconReceive} alt="download" />
+                  </Div>
+                  <Div fontSize="12px" color="#461A57" fontWeight="700">
+                    Receive
+                  </Div>
                 </DivFlex>
               </DivChild>
             </DivWrapper>
@@ -560,9 +581,7 @@ const Wallet = () => {
             })}
           </Tokens>
           <AddMoreToken>
-            <DivText onClick={() => history.push('/import-token')}>
-              Add more tokens
-            </DivText>
+            <DivText onClick={() => history.push('/import-token')}>Add more tokens</DivText>
           </AddMoreToken>
         </WrapAssets>
       </DivChild>

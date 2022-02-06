@@ -1,24 +1,17 @@
 /* eslint-disable no-console */
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import Button from 'src/components/Buttons';
 import styled from 'styled-components';
 import bcrypt from 'bcryptjs';
 import { BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
 import { setCurrentWallet, setWallets } from 'src/stores/wallet';
-import {
-  getLocalCrossRequests,
-  setLocalActivities,
-  setLocalCrossRequests,
-  setLocalSelectedWallet,
-  setLocalWallets,
-} from 'src/utils/storage';
+import { setLocalActivities, setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
 import { encryptKey } from 'src/utils/security';
-import {
-  useHistory,
-} from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
+import { CrossChainContext } from 'src/contexts/CrossChainContext';
 
 const DivChild = styled.div`
   font-size: ${(props) => props.fontSize};
@@ -45,7 +38,7 @@ const RemoveWalletText = styled(DivChild)`
 const DesRemoveWallet = styled.div`
   text-align: center;
   font-size: 16px;
-  @media screen and (max-width: 480px){
+  @media screen and (max-width: 480px) {
     font-size: 16px;
   }
 `;
@@ -70,7 +63,7 @@ const RemoveButton = styled.button`
   background: ${(props) => (props.disabled ? 'white' : '#461A57')};
   color: ${(props) => (props.disabled ? '#461A57' : '#ffffff')};
   cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
-  border: 1px solid #461A57;
+  border: 1px solid #461a57;
   border: none;
   font-weight: 700;
 `;
@@ -79,17 +72,12 @@ const DivError = styled.div`
   min-height: 50px;
 `;
 const RemoveWalletPopup = (props: Props) => {
-  const {
-    onClose,
-  } = props;
+  const { onClose } = props;
   const history = useHistory();
   const rootState = useSelector((state) => state);
   const { passwordHash, selectedNetwork } = rootState.extensions;
-  const {
-    wallets,
-    chainId,
-    account,
-  } = rootState.wallet;
+  const { wallets, chainId, account } = rootState.wallet;
+  const { crossChainRequests, setCrossChainRequest } = useContext(CrossChainContext);
   const [passwordInput, setPasswordInput] = useState('');
 
   const {
@@ -108,14 +96,11 @@ const RemoveWalletPopup = (props: Props) => {
   const confirm = () => {
     bcrypt.compare(passwordInput, passwordHash, (_errors, isValid) => {
       if (isValid) {
-        const newWallets = wallets.filter((w:any) => w.account !== account);
-        const sameAccountWallet:any = newWallets.find((w:any) => w.account === account);
+        const newWallets = wallets.filter((w: any) => w.account !== account);
+        const sameAccountWallet: any = newWallets.find((w: any) => w.account === account);
         if (sameAccountWallet && sameAccountWallet.account) {
-          getLocalCrossRequests(selectedNetwork.networkId, (crossChainRequests) => {
-            // Remove finish crosschain requests
-            const requests = crossChainRequests.filter((r:any) => r.sender !== account);
-            setLocalCrossRequests(selectedNetwork.networkId, requests);
-          }, () => {});
+          const requests = crossChainRequests?.filter((r: any) => r.sender !== account);
+          setCrossChainRequest(requests);
         }
         if (newWallets.length === 0) {
           setCurrentWallet({
@@ -139,7 +124,7 @@ const RemoveWalletPopup = (props: Props) => {
         } else {
           setWallets(newWallets);
           setCurrentWallet(newWallets[0]);
-          const newLocalWallets = newWallets.map((w:any) => ({
+          const newLocalWallets = newWallets.map((w: any) => ({
             account: encryptKey(w.account, passwordHash),
             publicKey: encryptKey(w.publicKey, passwordHash),
             secretKey: encryptKey(w.secretKey, passwordHash),
@@ -161,7 +146,9 @@ const RemoveWalletPopup = (props: Props) => {
   };
   return (
     <RemoveWalletContent>
-      <RemoveWalletText fontSize="24px" fontWeight="700" marginBottom="20px">Remove Wallet?</RemoveWalletText>
+      <RemoveWalletText fontSize="24px" fontWeight="700" marginBottom="20px">
+        Remove Wallet?
+      </RemoveWalletText>
       <DesRemoveWallet>Input password to remove this wallet</DesRemoveWallet>
       <form onSubmit={handleSubmit(confirm, onError)} id="validate-password-form">
         <DivBody>
@@ -190,16 +177,15 @@ const RemoveWalletPopup = (props: Props) => {
             height="auto"
             onChange={onChangeInput}
           />
-          <DivError>
-            {errors.password && <InputError marginTop="0">{errors.password.message}</InputError>}
-          </DivError>
-
+          <DivError>{errors.password && <InputError marginTop="0">{errors.password.message}</InputError>}</DivError>
         </DivBody>
       </form>
       <DivChild>
         <ActionButton>
           <Button label="Cancel" onClick={onClose} type={BUTTON_TYPE.DISABLE} size={BUTTON_SIZE.FULL} />
-          <RemoveButton form="validate-password-form" disabled={!passwordInput}>Remove</RemoveButton>
+          <RemoveButton form="validate-password-form" disabled={!passwordInput}>
+            Remove
+          </RemoveButton>
         </ActionButton>
       </DivChild>
     </RemoveWalletContent>
@@ -207,5 +193,5 @@ const RemoveWalletPopup = (props: Props) => {
 };
 type Props = {
   onClose?: any;
-}
+};
 export default RemoveWalletPopup;

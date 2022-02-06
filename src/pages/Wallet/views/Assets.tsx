@@ -19,7 +19,6 @@ const DivChild = styled.div`
   margin-right: ${(props) => props.marginRight};
   font-size: ${(props) => props.fontSize};
   color: ${(props) => props.color};
-
 `;
 const Tokens = styled.div`
   margin-bottom: 60px;
@@ -49,16 +48,14 @@ const AddMoreToken = styled.div`
 const DivText = styled.div`
   display: inline-block;
   border-radius: 18px;
-  border: 1px solid #461A57;
-  color: #461A57;
+  border: 1px solid #461a57;
+  color: #461a57;
   font-size: 12px;
   padding: 11px 24px;
   cursor: pointer;
 `;
 const TokenChild = (props: any) => {
-  const {
-    value, src, valueUSD, tokenType,
-  } = props;
+  const { value, src, valueUSD, tokenType } = props;
   return (
     <DivChild>
       <Transaction>
@@ -68,23 +65,15 @@ const TokenChild = (props: any) => {
           </DivChild>
           <DivCenter>
             <DivChild fontSize="16px" color="#461A57">
-              {value}
-              {' '}
-              {tokenType}
+              {value} {tokenType}
             </DivChild>
             <DivChild marginTop="3px" fontSize="12px" color="#7b7b7b">
-              $
-              {valueUSD}
+              ${valueUSD}
             </DivChild>
           </DivCenter>
         </DivFlex>
         <DivCenter>
-          <Image
-            size="20px"
-            width="11px"
-            src={images.wallet.view}
-            alt=""
-          />
+          <Image size="20px" width="11px" src={images.wallet.view} alt="" />
         </DivCenter>
       </Transaction>
     </DivChild>
@@ -112,9 +101,7 @@ const Assets = () => {
         <TokenChild value="0" tokenType="Flux" valueUSD="0" src={images.wallet.iconFlux} />
       </Tokens>
       <AddMoreToken>
-        <DivText onClick={() => history.push('/import-token')}>
-          Add more token
-        </DivText>
+        <DivText onClick={() => history.push('/import-token')}>Add more token</DivText>
       </AddMoreToken>
     </WrapAssets>
   );

@@ -64,11 +64,13 @@ export const convertRecent = (data) => {
   return recent;
 };
 
-export const creationTime = () => Math.round((new Date()).getTime() / 1000) - 15;
+export const creationTime = () => Math.round(new Date().getTime() / 1000) - 15;
 
-export const shortenAddress = (address = '', start = 5, chars = 5) => (address.length > 14 ? `${address.substring(0, start)} ... ${address.substring(address.length - chars)}` : address);
+export const shortenAddress = (address = '', start = 5, chars = 5) =>
+  address.length > 14 ? `${address.substring(0, start)} ... ${address.substring(address.length - chars)}` : address;
 
-export const shortenPrivateKey = (address = '', start = 5, chars = 5) => `${address.substring(0, start)}****************${address.substring(address.length - chars)}`;
+export const shortenPrivateKey = (address = '', start = 5, chars = 5) =>
+  `${address.substring(0, start)}****************${address.substring(address.length - chars)}`;
 
 export const convertTowCharacters = (character) => `0${character}`.slice(-2);
 

@@ -5,9 +5,7 @@ import { hideLoading, showLoading } from 'src/stores/extensions';
 import { get } from 'lodash';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import { useSelector } from 'react-redux';
-import {
-  setBalance,
-} from 'src/stores/wallet';
+import { setBalance } from 'src/stores/wallet';
 import { fetchLocal, getBalanceFromChainwebApiResponse } from '../../../utils/chainweb';
 import TabWallet from './TabContent';
 import ReceiveModal from './ReceiveModal';
@@ -33,9 +31,7 @@ const DivChild = styled.div`
 
 const History = () => {
   const rootState = useSelector((state) => state);
-  const {
-    selectedNetwork,
-  } = rootState.extensions;
+  const { selectedNetwork } = rootState.extensions;
   const [isShowReceiveModal, setShowReceiveModal] = useState(false);
   const stateWallet = useCurrentWallet();
 
@@ -44,17 +40,18 @@ const History = () => {
       const { account, chainId } = stateWallet;
       const pactCode = `(coin.details "${account}")`;
       showLoading();
-      fetchLocal(pactCode, selectedNetwork?.url, selectedNetwork?.networkId, chainId).then((res) => {
-        const status = get(res, 'result.status');
-        if (status === 'success') {
-          const newBalance = getBalanceFromChainwebApiResponse(res);
-          setBalance(newBalance);
-        } else {
-          // eslint-disable-next-line no-console
-          console.log('fetch error');
-        }
-        hideLoading();
-      })
+      fetchLocal(pactCode, selectedNetwork?.url, selectedNetwork?.networkId, chainId)
+        .then((res) => {
+          const status = get(res, 'result.status');
+          if (status === 'success') {
+            const newBalance = getBalanceFromChainwebApiResponse(res);
+            setBalance(newBalance);
+          } else {
+            // eslint-disable-next-line no-console
+            console.log('fetch error');
+          }
+          hideLoading();
+        })
         .catch(() => {
           hideLoading();
         });

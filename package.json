@@ -57,8 +57,9 @@
     "build": "craco build && parcel build public/app/* -d build/app",
     "test": "craco test",
     "eject": "react-scripts eject",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --ext js --fix"
+    "lint": "eslint ./src",
+    "lint:fix": "eslint . --ext js --fix",
+    "pretty": "prettier --write \"./src/**/*.{tsx,js,jsx,json}\""
   },
   "eslintConfig": {
     "extends": [
@@ -92,7 +93,8 @@
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.26.1",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "parcel-bundler": "^1.12.5"
+    "parcel-bundler": "^1.12.5",
+    "prettier": "^2.5.1"
   },
   "targets": {
     "default": {

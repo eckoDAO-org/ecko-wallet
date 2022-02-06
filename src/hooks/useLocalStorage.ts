@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
-function useLocalStorage<S>(key: string, initialValue: S): [S|null, (value: any) => void, () => void] {
-  const [storedValue, setStoredValue] = useState<S|null>(initialValue);
+function useLocalStorage<S>(key: string, initialValue: S): [S | null, (value: any) => void, () => Promise<S>, () => void] {
+  const [storedValue, setStoredValue] = useState<S | null>(initialValue);
 
   useEffect(() => {
     try {
@@ -18,6 +18,21 @@ function useLocalStorage<S>(key: string, initialValue: S): [S|null, (value: any)
       console.log('useLocalStorageError', error);
     }
   }, []);
+
+  const getValueAsync = async (): Promise<S> =>
+    new Promise((resolve, reject) => {
+      try {
+        (window as any).chrome.storage.local.get([key], (result) => {
+          if (result[key] === undefined) {
+            reject();
+          } else {
+            resolve(result[key]);
+          }
+        });
+      } catch (error) {
+        reject();
+      }
+    });
 
   const setValue = (value) => {
     try {
@@ -38,7 +53,7 @@ function useLocalStorage<S>(key: string, initialValue: S): [S|null, (value: any)
     }
   };
 
-  return [storedValue, setValue, removeValue];
+  return [storedValue, setValue, getValueAsync, removeValue];
 }
 
 export default useLocalStorage;

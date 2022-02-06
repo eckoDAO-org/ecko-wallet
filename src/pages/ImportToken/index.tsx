@@ -46,7 +46,7 @@ const DivBody = styled.div`
 const ButtonSubmit = styled.button`
   width: 100%;
   height: 44px;
-  background: #461A57;
+  background: #461a57;
   border-radius: 10px;
   font-family: 'Play', sans-serif;
   border: none;
@@ -60,7 +60,7 @@ const Footer = styled.div`
   width: 100%;
   text-align: center;
   margin-top: 50px;
-  @media screen and (max-width: 480px){
+  @media screen and (max-width: 480px) {
     margin-top: 25px;
   }
 `;
@@ -102,27 +102,29 @@ const ImportToken = () => {
     if (!token && alreadyExists) {
       toast.error(<Toast type="error" content="Token already added" />);
     } else {
-      checkTokenExists(fT.contractAddress).then((res) => {
-        if (res?.result?.error?.message === `Cannot resolve ${fT.contractAddress}.details`) {
-          toast.error(<Toast type="error" content={`Cannot resolve ${fT.contractAddress}.details`} />);
-        } else {
-          let newFungibleTokens = fungibleTokens || [];
-          if (token) {
-            newFungibleTokens = fungibleTokens?.filter((ft) => ft.contractAddress !== token.contractAddress) ?? [];
+      checkTokenExists(fT.contractAddress)
+        .then((res) => {
+          if (res?.result?.error?.message === `Cannot resolve ${fT.contractAddress}.details`) {
+            toast.error(<Toast type="error" content={`Cannot resolve ${fT.contractAddress}.details`} />);
+          } else {
+            let newFungibleTokens = fungibleTokens || [];
+            if (token) {
+              newFungibleTokens = fungibleTokens?.filter((ft) => ft.contractAddress !== token.contractAddress) ?? [];
+            }
+            setFungibleTokens([
+              ...newFungibleTokens,
+              {
+                ...fT,
+                symbol: fT.symbol?.toLowerCase(),
+              },
+            ]);
+            toast.success(<Toast type="success" content="Token successfully saved" />);
+            history.push('/');
           }
-          setFungibleTokens([
-            ...newFungibleTokens,
-            {
-              ...fT,
-              symbol: fT.symbol?.toLowerCase(),
-            },
-          ]);
-          toast.success(<Toast type="success" content="Token successfully saved" />);
-          history.push('/');
-        }
-      }).catch(() => {
-        toast.error(<Toast type="error" content="Unable to add token" />);
-      });
+        })
+        .catch(() => {
+          toast.error(<Toast type="error" content="Unable to add token" />);
+        });
     }
   };
   return (
@@ -177,7 +179,10 @@ const ImportToken = () => {
               }}
               title="Token Symbol"
               height="auto"
-              onChange={(e) => { clearErrors('symbol'); setValue('symbol', e.target.value); }}
+              onChange={(e) => {
+                clearErrors('symbol');
+                setValue('symbol', e.target.value);
+              }}
             />
             {errors.symbol && <InputError>{errors.symbol.message}</InputError>}
           </DivBody>

@@ -18,7 +18,7 @@ export const ButtonWrapper = styled.div`
   margin: 50px 0;
   display: flex;
   justify-content: space-between;
-  @media screen and (max-width: 480px){
+  @media screen and (max-width: 480px) {
     margin: 25px 0;
   }
 `;
@@ -37,7 +37,7 @@ export const ButtonImport = styled.button`
   width: 100%;
   height: 44px;
   font-family: 'Play', sans-serif;
-  background: #461A57;
+  background: #461a57;
   border-radius: 10px;
   border: none;
   font-weight: 700;
@@ -77,7 +77,7 @@ export const ButtonScanner = styled.div`
 `;
 export const SelectLabel = styled.div`
   font-size: 15px;
-  color: #461A57;
+  color: #461a57;
   margin: 10px 20px;
 `;
 
@@ -100,12 +100,12 @@ export const ItemAvailable = styled.div`
 
 export const LabelMax = styled.div`
   font-weight: bold;
-  color: #461A57;
+  color: #461a57;
   cursor: pointer;
 `;
 
 export const Label = styled.div`
-  color: #461A57;
+  color: #461a57;
 `;
 export const Item = styled.div`
   display: flex;
@@ -117,7 +117,7 @@ export const Error = styled.span`
 `;
 
 export const FormSend = styled.div`
-  color: #461A57;
+  color: #461a57;
   position: relative;
 `;
 
@@ -145,7 +145,7 @@ export const LabelInputLimit = styled.div`
   padding: 0 79px 0 0;
 `;
 export const LabelInputPayer = styled.div`
-  color: #461A57;
+  color: #461a57;
   width: 14%;
   text-align: initial;
   padding: 0 42px 0 0;
@@ -157,25 +157,25 @@ export const FormItem = styled.div`
 `;
 export const Warning = styled.div`
   margin-bottom: 24px;
-  text-align: ${(props) => (props.isContact ? 'left' : 'center')};;
-  background: #EEE6F3;;
+  text-align: ${(props) => (props.isContact ? 'left' : 'center')};
+  background: #eee6f3;
   padding: ${(props) => (props.isContact ? '10px' : '20px 15px')};
   margin-top: ${(props) => (props.isContact ? '' : '50px')};
   cursor: ${(props) => (props.isContact ? 'pointer' : 'default')};
-  color: #461A57;
+  color: #461a57;
   font-size: 14px;
-  border: 1px solid #461A57;
+  border: 1px solid #461a57;
   border-radius: 8px;
   display: flex;
   align-items: center;
 `;
 export const SelectWrapper = styled.div`
-  display: ${(props) => (props.isHide ? 'none' : 'block')}
+  display: ${(props) => (props.isHide ? 'none' : 'block')};
 `;
 export const ButtonSend = styled.button`
   width: 100%;
   height: 44px;
-  background: #461A57;
+  background: #461a57;
   font-family: 'Play', sans-serif;
   border-radius: 10px;
   border: none;
@@ -190,7 +190,7 @@ export const Footer = styled.div`
   display: flex;
   justify-content: space-between;
   margin-top: 50px;
-  gap:10px;
+  gap: 10px;
 `;
 
 export const ReceiverInput = styled.div`
@@ -198,8 +198,7 @@ export const ReceiverInput = styled.div`
   margin: 0 20px 20px 20px;
 `;
 
-export const Content = styled.div`
-`;
+export const Content = styled.div``;
 export const ChainLeft = styled.div`
   width: 60px;
   text-align: center;
@@ -228,7 +227,7 @@ export const ContactTitle = styled.div`
   line-height: 25px;
   font-weight: 700;
   padding-bottom: 5px;
-  @media screen and (max-width: 480px){
+  @media screen and (max-width: 480px) {
     width: 200px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -264,7 +263,7 @@ export const GasItem = styled.div`
   width: 31%;
   height: 30px;
   border-radius: 10px;
-  border: 1px solid #461A57;
+  border: 1px solid #461a57;
   background: ${(props) => (props.isActive ? '#461A57' : 'white')};
   color: ${(props) => (props.isActive ? 'white' : '#461A57')};
   font-weight: bold;
@@ -310,7 +309,7 @@ export const SelectGasPrice = styled.select`
   height: 30px;
   right: 45px;
   top: 17px;
-  background: #461A57;
+  background: #461a57;
   border-radius: 15px;
   border: none;
   top: 53.4%;
@@ -323,14 +322,14 @@ export const BodyModal = styled.div`
   width: 100%;
 `;
 export const TitleModal = styled.div`
-text-align: center;
-font-size: 20x;
-font-weight: 700;
-color: #461A57;
-margin-bottom: 15px;
+  text-align: center;
+  font-size: 20x;
+  font-weight: 700;
+  color: #461a57;
+  margin-bottom: 15px;
 `;
 export const DivChild = styled.div`
-margin-top: 20px;
-color: #461A57;
-text-align: center;
+  margin-top: 20px;
+  color: #461a57;
+  text-align: center;
 `;

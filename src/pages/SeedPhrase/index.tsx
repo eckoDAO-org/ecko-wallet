@@ -9,18 +9,10 @@ import { useSelector } from 'react-redux';
 import CheckBox from 'src/baseComponent/CheckBox';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
-import {
-  generateSeedPhrase,
-  getKeyPairsFromSeedPhrase,
-} from 'src/utils/chainweb';
+import { generateSeedPhrase, getKeyPairsFromSeedPhrase } from 'src/utils/chainweb';
 import { setIsHaveSeedPhrase } from 'src/stores/extensions';
 import { encryptKey } from 'src/utils/security';
-import {
-  getLocalWallets,
-  setLocalSeedPhrase,
-  setLocalSelectedWallet,
-  setLocalWallets,
-} from 'src/utils/storage';
+import { getLocalWallets, setLocalSeedPhrase, setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
 import { setCurrentWallet, setWallets } from 'src/stores/wallet';
 
 const Footer = styled.div`
@@ -33,7 +25,7 @@ const CLabel = styled.span`
 `;
 const Wrapper = styled.div`
   padding: 0 20px;
-  color: #461A57;
+  color: #461a57;
   font-size: 16px;
   word-break: break-word;
 `;
@@ -41,7 +33,7 @@ const SPWrapper = styled.div`
   padding: 16px;
   font-size: 16px;
   position: relative;
-  border: 1px solid #B3B3B3;
+  border: 1px solid #b3b3b3;
   border-radius: 8px;
   box-sizing: border-box;
   margin-top: 30px;
@@ -112,17 +104,17 @@ const SInput = styled.input`
   border-radius: 8px;
   margin: 10px 0 25px 0;
   outline: none;
-  color: #461A57;
+  color: #461a57;
   font-family: 'Play', sans-serif;
   background: none;
 `;
 const SPContent = styled.div`
   text-align: center;
-  background: #EEE6F3;;
+  background: #eee6f3;
   padding: 18px 15px;
   margin-top: 20px;
   font-size: 16px;
-  border: 1px solid #461A57;
+  border: 1px solid #461a57;
   border-radius: 8px;
   align-items: center;
 `;
@@ -136,10 +128,7 @@ const defaultArr = ['', '', '', '', '', '', '', '', '', '', '', ''];
 const SeedPhrase = () => {
   const history = useHistory();
   const rootState = useSelector((state) => state);
-  const {
-    passwordHash,
-    selectedNetwork,
-  } = rootState.extensions;
+  const { passwordHash, selectedNetwork } = rootState.extensions;
   const [keyPairs, setKeyPairs] = useState<any>();
   const [step, setStep] = useState(1);
   const [sPMap, setSPMap] = useState<string[]>(defaultArr);
@@ -181,18 +170,26 @@ const SeedPhrase = () => {
           chainId: '0',
           connectedSites: [],
         };
-        getLocalWallets(selectedNetwork.networkId, (item) => {
-          const newData = [...item, wallet];
-          setLocalWallets(selectedNetwork.networkId, newData);
-        }, () => {
-          setLocalWallets(selectedNetwork.networkId, [wallet]);
-        });
-        getLocalWallets('testnet04', (item) => {
-          const newData = [...item, wallet];
-          setLocalWallets('testnet04', newData);
-        }, () => {
-          setLocalWallets('testnet04', [wallet]);
-        });
+        getLocalWallets(
+          selectedNetwork.networkId,
+          (item) => {
+            const newData = [...item, wallet];
+            setLocalWallets(selectedNetwork.networkId, newData);
+          },
+          () => {
+            setLocalWallets(selectedNetwork.networkId, [wallet]);
+          },
+        );
+        getLocalWallets(
+          'testnet04',
+          (item) => {
+            const newData = [...item, wallet];
+            setLocalWallets('testnet04', newData);
+          },
+          () => {
+            setLocalWallets('testnet04', [wallet]);
+          },
+        );
         const newStateWallet = {
           chainId: '0',
           account: accountName,
@@ -261,7 +258,7 @@ const SeedPhrase = () => {
   );
 
   const renderVerifySP = () => {
-    const result:any[] = [];
+    const result: any[] = [];
     for (let i = 1; i < 13; i += 1) {
       const item = renderItem(i);
       result.push(item);
@@ -279,7 +276,11 @@ const SeedPhrase = () => {
         <Text isLast>Kadena cannot access your recovery phrase if lost, please store it safely.</Text>
       </SPContent>
       <CheckboxWrapper>
-        <CheckBox isChecked={isChecked} onChange={(value) => setIsChecked(value)} label={<CLabel>I understand that if I lose my recovery phrase, I will not be able to restore my wallet.</CLabel>} />
+        <CheckBox
+          isChecked={isChecked}
+          onChange={(value) => setIsChecked(value)}
+          label={<CLabel>I understand that if I lose my recovery phrase, I will not be able to restore my wallet.</CLabel>}
+        />
       </CheckboxWrapper>
       <Footer>
         <Button onClick={onNext} isDisabled={!isChecked} label="Continue" size={BUTTON_SIZE.FULL} />

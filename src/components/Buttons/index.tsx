@@ -26,13 +26,7 @@ const ButtonWrapper = styled.button`
 `;
 
 const Button = (props: Props) => {
-  const {
-    size = BUTTON_SIZE.NORMAL,
-    type = BUTTON_TYPE.ACTIVE,
-    label,
-    onClick,
-    isDisabled,
-  } = props;
+  const { size = BUTTON_SIZE.NORMAL, type = BUTTON_TYPE.ACTIVE, label, onClick, isDisabled } = props;
   let buttonType = { color: 'white', background: '#461A57', border: 'none' };
   if (isDisabled) {
     buttonType = {

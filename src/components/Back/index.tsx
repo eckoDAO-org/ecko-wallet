@@ -5,7 +5,7 @@ type Props = {
   title: string;
   style?: any;
   onBack: any;
-}
+};
 const Header = styled.div`
   margin: 1.5em 0;
 `;

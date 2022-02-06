@@ -20,19 +20,17 @@ const TabWallet = () => {
     {
       title: 'Activities',
       id: 1,
-      content: (<Activities />),
+      content: <Activities />,
     },
     {
       title: 'Pending',
       id: 2,
-      content: (<FinishTransfer />),
+      content: <FinishTransfer />,
     },
   ];
   return (
     <TabContent>
-      <Tabs>
-        {tabList}
-      </Tabs>
+      <Tabs>{tabList}</Tabs>
     </TabContent>
   );
 };

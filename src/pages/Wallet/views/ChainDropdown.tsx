@@ -68,7 +68,7 @@ const SelectChainContent = styled.div`
 const ChainOption = styled(DivFlex)`
   margin-bottom: 20px;
   cursor: pointer;
-  padding-bottom: ${(props) => props.paddingBottom}
+  padding-bottom: ${(props) => props.paddingBottom};
 `;
 const ChainName = styled.div`
   margin-left: 10px;
@@ -94,7 +94,7 @@ const ChainDropdown = () => {
     const { account, publicKey, secretKey } = wallet;
     let listChainSelected = wallet.wallets.filter((item: any) => item?.account === wallet?.account);
     if (account.includes('k:') && account.length === 66) {
-      const newSelected:any = [];
+      const newSelected: any = [];
       for (let i = 0; i < CHAIN_COUNT; i += 1) {
         const itemExist = listChainSelected.find((item) => item.chainId.toString() === i.toString());
         if (itemExist) {
@@ -114,30 +114,32 @@ const ChainDropdown = () => {
     let listChainId = listChainSelected.map((item: any) => ({
       ...item,
       // eslint-disable-next-line no-nested-ternary
-      balance: item?.balance ? item?.balance : (item?.chainId === wallet?.chainId ? wallet?.balance : 0),
+      balance: item?.balance ? item?.balance : item?.chainId === wallet?.chainId ? wallet?.balance : 0,
     }));
     listChainId.sort(compare);
     const code = `(coin.details "${wallet.account}")`;
-    const promiseList : any[] = [];
+    const promiseList: any[] = [];
     for (let i = 0; i < listChainId?.length; i += 1) {
       const item = fetchListLocal(code, selectedNetwork.url, selectedNetwork.networkId, listChainId[i]?.chainId);
       promiseList.push(item);
     }
-    Promise.all(promiseList).then((res) => {
-      const data = listChainId.map((item, key) => ({
-        ...item,
-        balance: getBalanceFromChainwebApiResponse(res[key]),
-      }));
-      listChainId = data;
-      listChainId.sort(compare);
-      setListChain(listChainId);
-      hideLoading();
-      setIsLoading(false);
-    }).catch(() => {
-      hideLoading();
-      setIsLoading(false);
-      setListChain(listChainId);
-    });
+    Promise.all(promiseList)
+      .then((res) => {
+        const data = listChainId.map((item, key) => ({
+          ...item,
+          balance: getBalanceFromChainwebApiResponse(res[key]),
+        }));
+        listChainId = data;
+        listChainId.sort(compare);
+        setListChain(listChainId);
+        hideLoading();
+        setIsLoading(false);
+      })
+      .catch(() => {
+        hideLoading();
+        setIsLoading(false);
+        setListChain(listChainId);
+      });
   }, [selectedNetwork?.networkId, wallet?.account]);
   const compare = (a, b) => {
     if (Number(a?.chainId) < Number(b?.chainId)) {
@@ -229,42 +231,44 @@ const ChainDropdown = () => {
   //   });
   // };
   const changeExistWallet = (newAccount, balance) => {
-    const {
-      chainId,
-      account,
-      publicKey,
-      secretKey,
-    } = newAccount;
-    getLocalPassword((accountPassword) => {
-      const newWallet = {
-        account: encryptKey(account, accountPassword),
-        publicKey: encryptKey(publicKey, accountPassword),
-        secretKey: encryptKey(secretKey, accountPassword),
-        chainId,
-        connectedSites: newAccount.connectedSites || [],
-      };
-      setLocalSelectedWallet(newWallet);
-      setCurrentWallet(newAccount);
-      setBalance(balance);
-      const itemExist = wallet.wallets.find((item) => item.chainId.toString() === chainId.toString() && account === item.account);
-      if (!itemExist) {
-        getLocalWallets(selectedNetwork.networkId, (item) => {
-          const newData = [...item, newWallet];
-          setLocalWallets(selectedNetwork.networkId, newData);
-        }, () => {
-          setLocalWallets(selectedNetwork.networkId, [newWallet]);
-        });
-        const newW = {
+    const { chainId, account, publicKey, secretKey } = newAccount;
+    getLocalPassword(
+      (accountPassword) => {
+        const newWallet = {
+          account: encryptKey(account, accountPassword),
+          publicKey: encryptKey(publicKey, accountPassword),
+          secretKey: encryptKey(secretKey, accountPassword),
           chainId,
-          account,
-          publicKey,
-          secretKey,
           connectedSites: newAccount.connectedSites || [],
         };
-        const newWallets = [...wallet.wallets, newW];
-        setWallets(newWallets);
-      }
-    }, () => {});
+        setLocalSelectedWallet(newWallet);
+        setCurrentWallet(newAccount);
+        setBalance(balance);
+        const itemExist = wallet.wallets.find((item) => item.chainId.toString() === chainId.toString() && account === item.account);
+        if (!itemExist) {
+          getLocalWallets(
+            selectedNetwork.networkId,
+            (item) => {
+              const newData = [...item, newWallet];
+              setLocalWallets(selectedNetwork.networkId, newData);
+            },
+            () => {
+              setLocalWallets(selectedNetwork.networkId, [newWallet]);
+            },
+          );
+          const newW = {
+            chainId,
+            account,
+            publicKey,
+            secretKey,
+            connectedSites: newAccount.connectedSites || [],
+          };
+          const newWallets = [...wallet.wallets, newW];
+          setWallets(newWallets);
+        }
+      },
+      () => {},
+    );
   };
   const renderAccountChain = (account, key) => {
     const isSelected = account?.chainId?.toString() === wallet?.chainId?.toString();
@@ -277,12 +281,10 @@ const ChainDropdown = () => {
             changeExistWallet(account, account?.balance);
           }
         }}
-        paddingBottom={`${key === (listChain.length - 1) && '20px'}`}
+        paddingBottom={`${key === listChain.length - 1 && '20px'}`}
       >
         <DivFlex>
-          <Div marginRight={isSelected ? '0' : '12px'}>
-            { isSelected && <Image src={images.checkbox} alt="check-box" size={12} width={12} /> }
-          </Div>
+          <Div marginRight={isSelected ? '0' : '12px'}>{isSelected && <Image src={images.checkbox} alt="check-box" size={12} width={12} />}</Div>
           <ChainName>{`Chain ${account?.chainId}`}</ChainName>
         </DivFlex>
         <DivChild>{account?.balance}</DivChild>
@@ -293,8 +295,12 @@ const ChainDropdown = () => {
     <Div>
       <TitleChain>Chains</TitleChain>
       <SelectChainContent>
-        { isLoading && <LoadingWrapper><ReactLoading type="spin" color="white" width="45px" height="45px" /></LoadingWrapper> }
-        { !isLoading && listChain.length > 0 && listChain.map((chain, key) => renderAccountChain(chain, key)) }
+        {isLoading && (
+          <LoadingWrapper>
+            <ReactLoading type="spin" color="white" width="45px" height="45px" />
+          </LoadingWrapper>
+        )}
+        {!isLoading && listChain.length > 0 && listChain.map((chain, key) => renderAccountChain(chain, key))}
       </SelectChainContent>
     </Div>
   );
