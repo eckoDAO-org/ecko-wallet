@@ -293,10 +293,7 @@ const getSelectedWallet = async (isHaveSecret = false) => {
           const newWallet = {
             chainId: selectedWallet.chainId,
             account: decryptKey(selectedWallet.account, accountPassword),
-            publicKey: decryptKey(
-              selectedWallet.publicKey,
-              accountPassword,
-            ),
+            publicKey: decryptKey(selectedWallet.publicKey, accountPassword),
             connectedSites: selectedWallet.connectedSites,
           };
           if (isHaveSecret) {
@@ -324,10 +321,11 @@ const getWalletInfo = async (account) => {
         const { selectedNetwork } = result;
         const { account: accountName, chainId } = account;
         const pactCode = `(coin.details "${accountName}")`;
-        fetchLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, chainId).then((res) => {
-          const newBalance = get(res, 'result.data.balance', 0);
-          resolve({ ...account, balance: newBalance });
-        })
+        fetchLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, chainId)
+          .then((res) => {
+            const newBalance = get(res, 'result.data.balance', 0);
+            resolve({ ...account, balance: newBalance });
+          })
           .catch(() => {
             resolve({ ...account, balance: 0 });
           });
@@ -475,10 +473,7 @@ const getSelectedAccount = async () => {
         selectedAccount: {
           chainId: result?.selectedWallet?.chainId,
           account: decryptKey(result?.selectedWallet?.account, accountPassword),
-          publicKey: decryptKey(
-            result?.selectedWallet.publicKey,
-            accountPassword,
-          ),
+          publicKey: decryptKey(result?.selectedWallet.publicKey, accountPassword),
         },
       });
     });
@@ -536,18 +531,25 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
       if (!newValue || (newValue && oldValue && (newValue.account !== oldValue.account || newValue.chainId !== oldValue.chainId))) {
         chrome.storage.local.set({ activeDapps: [] });
       }
-      if (contentPort) {
-        setTimeout(() => {
-          contentPort.postMessage({
-            result: {
-              status: 'success',
-              message: 'Account changed',
-            },
-            target: 'kda.content',
-            action: 'res_accountChange',
+      const successMsg = {
+        result: {
+          status: 'success',
+          message: 'Account changed',
+        },
+        target: 'kda.content',
+        action: 'res_accountChange',
+      };
+      // if (contentPort) {
+      setTimeout(() => {
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+          console.log('!!! ~ tabs', tabs);
+          chrome.tabs.sendMessage(tabs[0].id, successMsg, function (response) {
+            console.log('!!! ~ response tabs', successMsg);
           });
-        }, 500);
-      }
+        });
+        // contentPort.postMessage(successMsg);
+      }, 500);
+      // }
       chrome.runtime.sendMessage({
         target: 'kda.extension',
         action: 'sync_data',
