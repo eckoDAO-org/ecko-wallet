@@ -41,12 +41,3 @@ window.addEventListener(
   },
   false,
 );
-
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  console.log('!!! ~ sender', sender);
-  console.log('!!! ~ request', request);
-  sendResponse({ test: 'hello' });
-  const event = new CustomEvent('message', { detail: request, data: request, target: 'kda.dapps' });
-  document.dispatchEvent(event);
-  return true;
-});
