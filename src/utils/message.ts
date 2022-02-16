@@ -8,19 +8,21 @@ export const updateSendDapp = (data) => {
 };
 
 // Connect
-export const updateConnectMessage = (result) => {
+export const updateConnectMessage = (result, tabId) => {
   (window as any)?.chrome?.runtime?.sendMessage({
     result,
     target: 'kda.background',
     action: 'res_checkStatus',
+    tabId,
   });
 };
 
 // Sign cmd
-export const updateSignedCmdMessage = (result) => {
+export const updateSignedCmdMessage = (result, tabId) => {
   (window as any)?.chrome?.runtime?.sendMessage({
     result,
     target: 'kda.background',
     action: 'res_requestSign',
+    tabId,
   });
 };
