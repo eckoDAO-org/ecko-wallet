@@ -25,39 +25,46 @@ chrome.runtime.onStartup.addListener(() => {
 /**
  * One-time connection
  */
-chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
-  console.log('🚀 ~ request', request);
-  console.log('🚀 ~ sender', sender);
+chrome.runtime.onMessage.addListener(async (request, sender) => {
+  const tabIdResponse = request.tabId || sender.tab.id;
   if (request.target === 'kda.background') {
     let senderPort = null;
     for (const [tabId, port] of portMap.entries()) {
-      if (tabId === sender.tab.id) {
-        senderPort;
+      if (tabId === tabIdResponse) {
+        senderPort = portMap.get(tabId);
       }
     }
     if (senderPort) {
       try {
+        if (request.tabId) {
+          delete request.tabId;
+        }
         senderPort.postMessage({
           ...request,
           target: 'kda.content',
         });
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {}
     }
   }
 });
 
 function sendToConnectedPorts(msg) {
-  chrome.tabs.query({ currentWindow: true }, function (tabs) {
-    for (const [tabId, port] of portMap.entries()) {
-      if (tabs.find((tab) => tab.id === tabId)) {
-        port.postMessage(msg);
-      } else {
-        portMap.delete(tabId);
-      }
+  if (msg.tabId) {
+    const port = portMap.get(msg.tabId);
+    if (port) {
+      port.postMessage(msg);
     }
-  });
+  } else {
+    chrome.tabs.query({ currentWindow: true }, function (tabs) {
+      for (const [tabId, port] of portMap.entries()) {
+        if (tabs.find((tab) => tab.id === tabId)) {
+          port.postMessage(msg);
+        } else {
+          portMap.delete(tabId);
+        }
+      }
+    });
+  }
 }
 
 /**
@@ -68,21 +75,21 @@ chrome.runtime.onConnect.addListener(async (port) => {
     return;
   }
   portMap.set(port.sender.tab.id, port);
-  console.log('🚀 ~ portMap', portMap);
   contentPort = port;
 
-  contentPort.onMessage.addListener(async (payload) => {
+  contentPort.onMessage.addListener(async (payload, sender) => {
     const action = payload.action || '';
+    const originTabId = sender?.sender?.tab?.id;
 
     switch (action) {
       case 'kda_connect':
-        checkConnect(payload.data);
+        checkConnect(payload.data, originTabId);
         break;
       case 'kda_disconnect':
-        disconnect(payload.data);
+        disconnect(payload.data, originTabId);
         break;
       case 'kda_requestAccount':
-        getAccountSelected(payload.data);
+        getAccountSelected(payload.data, originTabId);
         break;
       case 'kda_getNetwork':
         getNetwork();
@@ -97,7 +104,7 @@ chrome.runtime.onConnect.addListener(async (port) => {
         sendKadena(payload.data);
         break;
       case 'kda_requestSign':
-        kdaRequestSign(payload.data);
+        kdaRequestSign(payload.data, originTabId);
         break;
       case 'kda_checkStatus':
         checkStatus(payload.data);
@@ -111,8 +118,7 @@ chrome.runtime.onConnect.addListener(async (port) => {
   });
 });
 
-const checkConnect = async (data) => {
-  // if (contentPort) {
+const checkConnect = async (data, tabId) => {
   const isValidNetwork = await verifyNetwork(data.networkId);
   if (isValidNetwork) {
     const account = await getSelectedWallet();
@@ -131,10 +137,10 @@ const checkConnect = async (data) => {
         };
         sendToConnectedPorts(msg);
       } else {
-        showPopup(data, 'sign-dapps');
+        showPopup({ ...data, tabId }, 'sign-dapps');
       }
     } else {
-      showPopup(data, 'connected-dapps');
+      showPopup({ ...data, tabId }, 'connected-dapps');
     }
   } else {
     const msg = {
@@ -144,30 +150,29 @@ const checkConnect = async (data) => {
       },
       target: 'kda.content',
       action: 'res_checkStatus',
-    };
-    sendToConnectedPorts(msg);
-  }
-  // }
-};
-
-const disconnect = async (data) => {
-  if (contentPort) {
-    const activeDomains = await getActiveDomains();
-    const activeDapps = activeDomains.filter((a) => a !== data.domain);
-    chrome.storage.local.set({ activeDapps });
-    const msg = {
-      result: {
-        status: 'success',
-        message: 'Disconnected',
-      },
-      target: 'kda.content',
-      action: 'res_disconnect',
+      tabId,
     };
     sendToConnectedPorts(msg);
   }
 };
 
-const kdaRequestSign = async (data) => {
+const disconnect = async (data, tabId) => {
+  const activeDomains = await getActiveDomains();
+  const activeDapps = activeDomains.filter((a) => a !== data.domain);
+  chrome.storage.local.set({ activeDapps });
+  const msg = {
+    result: {
+      status: 'success',
+      message: 'Disconnected',
+    },
+    target: 'kda.content',
+    action: 'res_disconnect',
+    tabId,
+  };
+  sendToConnectedPorts(msg);
+};
+
+const kdaRequestSign = async (data, tabId) => {
   const isValidNetwork = await verifyNetwork(data.networkId);
   if (isValidNetwork) {
     const isValid = await checkValid(data);
@@ -209,9 +214,9 @@ const kdaRequestSign = async (data) => {
         }
 
         data.signedCmd = signedCmd;
+        data.tabId = tabId;
         showSignPopup(data);
       } catch {
-        // if (contentPort) {
         sendToConnectedPorts({
           result: {
             status: 'fail',
@@ -220,7 +225,6 @@ const kdaRequestSign = async (data) => {
           target: 'kda.content',
           action: 'res_requestSign',
         });
-        // }
       }
     } else {
       checkStatus(data);
@@ -245,8 +249,6 @@ const sendKadena = async (data) => {
 };
 
 const checkStatus = async (data) => {
-  console.log('🚀 ~ data checkStatus', data);
-  // if (contentPort) {
   const isValidNetwork = await verifyNetwork(data.networkId);
   if (isValidNetwork) {
     const isValid = await checkValid(data);
@@ -284,7 +286,6 @@ const checkStatus = async (data) => {
     };
     sendToConnectedPorts(msg);
   }
-  // }
 };
 
 const verifyNetwork = async (networkId) => {
@@ -440,6 +441,7 @@ const showPopup = async (data = {}, popupUrl) => {
     networkId: data.networkId,
     domain: data.domain,
     icon: data.icon,
+    tabId: data.tabId,
   };
 
   chrome.storage.local.set({ dapps });
@@ -464,6 +466,7 @@ const showSignPopup = async (data = {}) => {
     domain: data.domain,
     icon: data.icon,
     cmd: data.signedCmd,
+    tabId: data.tabId,
   };
 
   chrome.storage.local.set({ signedCmd });
@@ -515,8 +518,7 @@ const getSelectedAccount = async () => {
  *
  * @param {Object} port
  */
-const getAccountSelected = async (data) => {
-  // if (contentPort) {
+const getAccountSelected = async (data, tabId) => {
   const isValidNetwork = await verifyNetwork(data.networkId);
   if (isValidNetwork) {
     const isValid = await checkValid(data);
@@ -531,6 +533,7 @@ const getAccountSelected = async (data) => {
         },
         target: 'kda.content',
         action: 'res_requestAccount',
+        tabId,
       });
     } else {
       sendToConnectedPorts({
@@ -540,6 +543,7 @@ const getAccountSelected = async (data) => {
         },
         target: 'kda.content',
         action: 'res_requestAccount',
+        tabId,
       });
     }
   } else {
@@ -550,9 +554,9 @@ const getAccountSelected = async (data) => {
       },
       target: 'kda.content',
       action: 'res_requestAccount',
+      tabId,
     });
   }
-  // }
 };
 
 chrome.storage.onChanged.addListener((changes, namespace) => {

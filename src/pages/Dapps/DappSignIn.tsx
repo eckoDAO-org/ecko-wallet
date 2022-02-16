@@ -87,6 +87,7 @@ const CenterImage = styled.img`
 const DappSignIn = () => {
   const [domain, setDomain] = useState('example.com.vn');
   const [icon, setIcon] = useState(images.dappsLogo);
+  const [tabId, setTabId] = useState(null);
 
   useEffect(() => {
     getLocalDapps(
@@ -95,6 +96,7 @@ const DappSignIn = () => {
           (selectedNetwork) => {
             if (selectedNetwork.networkId === dapps.networkId) {
               setDomain(dapps.domain);
+              setTabId(dapps.tabId);
               if (dapps.icon !== 'no icon') {
                 setIcon(dapps.icon);
               }
@@ -134,7 +136,7 @@ const DappSignIn = () => {
                     publicKey: decryptKey(selectedWallet.publicKey, accountPassword),
                   },
                 };
-                updateConnectMessage(result);
+                updateConnectMessage(result, tabId);
                 setTimeout(() => {
                   window.close();
                 }, 500);
@@ -153,7 +155,7 @@ const DappSignIn = () => {
       status: 'fail',
       message: 'Connect fail',
     };
-    updateConnectMessage(result);
+    updateConnectMessage(result, tabId);
     setTimeout(() => {
       window.close();
     }, 500);
