@@ -64,6 +64,7 @@ const Logo = styled.img`
 `;
 const SignedCmd = () => {
   const [domain, setDomain] = useState('example.com.vn');
+  const [tabId, setTabId] = useState(null);
   const [cmd, setCmd] = useState<any>({});
 
   useEffect(() => {
@@ -74,6 +75,7 @@ const SignedCmd = () => {
             if (selectedNetwork.networkId === signedCmd.networkId) {
               setDomain(signedCmd.domain);
               setCmd(signedCmd.cmd);
+              setTabId(signedCmd.tabId);
             }
           },
           () => {},
@@ -88,7 +90,7 @@ const SignedCmd = () => {
       status: 'success',
       signedCmd: cmd,
     };
-    updateSignedCmdMessage(result);
+    updateSignedCmdMessage(result, tabId);
     setTimeout(() => {
       window.close();
     }, 300);
@@ -98,7 +100,7 @@ const SignedCmd = () => {
       status: 'fail',
       message: 'Rejected by user',
     };
-    updateSignedCmdMessage(result);
+    updateSignedCmdMessage(result, tabId);
     setTimeout(() => {
       window.close();
     }, 300);
