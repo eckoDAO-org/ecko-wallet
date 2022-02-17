@@ -80,7 +80,7 @@ const SelectReceiver = (props: Props) => {
   }, []);
 
   const onNext = () => {
-    const receiver = getValues('accountName');
+    const receiver: string = getValues('accountName');
     const chainId = getValues('chainId').value;
     const isDuplicated = receiver === wallet?.account && chainId.toString() === wallet?.chainId.toString();
     if (isDuplicated) {
@@ -102,6 +102,14 @@ const SelectReceiver = (props: Props) => {
               chainId,
               pred,
               keys,
+            };
+            goToTransferAccount(destinationAccount);
+          } else if (receiver.startsWith('k:')) {
+            const destinationAccount = {
+              accountName: receiver,
+              chainId,
+              pred: predList[0].value,
+              keys: [receiver.substring(2)],
             };
             goToTransferAccount(destinationAccount);
           } else {
