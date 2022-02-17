@@ -10,7 +10,8 @@ import { ActionButton, BodyModal, ButtonModal, DescriptionModal, TitleModal } fr
 import { shortenAddress } from 'src/utils';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
-import { getLocalSelectedWallet, getLocalWallets, setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
+import { setExpiredTime } from 'src/stores/extensions';
+import { getLocalSelectedWallet, getLocalWallets, setLocalSelectedWallet, setLocalWallets, setLocalExpiredTime } from 'src/utils/storage';
 import styled from 'styled-components';
 import { decryptKey } from 'src/utils/security';
 import ModalExportPrivateKey from './ModalExportPrivateKey';
@@ -90,10 +91,22 @@ const LoadMoreDropdown = (props: Props) => {
   const openNewTab = () => {
     (window as any)?.chrome?.tabs?.create({ url: '/index.html#/' });
   };
+
+  const lockWallet = () => {
+    setExpiredTime(null);
+    setLocalExpiredTime(null);
+  };
+
   const overlayDropdownLoadMore = (
     <Div textAlign="left" fontSize="16px">
       <Title>{shortenAddress(account)}</Title>
       <LoadMoreContent>
+        <LoadMoreOption onClick={lockWallet}>
+          <DivImage>
+            <Image src={images.settings.lockWhite} alt="lock-gray" size={16} width={16} />
+          </DivImage>
+          <DivChild marginLeft="20px">Lock X-Wallet</DivChild>
+        </LoadMoreOption>
         {isMobile && (
           <LoadMoreOption onClick={openNewTab}>
             <DivImage>

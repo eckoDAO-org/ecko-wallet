@@ -35,6 +35,7 @@ import dappsLogo from './dapps-logo.svg';
 import accountNotFound from './account-not-found.svg';
 import arrowDownViolet from './arrow-down-violet.svg';
 import lock from './padlock.svg';
+import lockWhite from './lock.svg';
 import iconBuni from './iconBuni.png';
 import iconTRYB from './iconTRYB.png';
 import iconPending from './icon-pending.svg';
@@ -161,6 +162,7 @@ const settings = {
   trashPink,
   closeBlack,
   lock,
+  lockWhite,
   trashViolet,
   lockImg,
 };
