@@ -82,6 +82,10 @@ const SelectReceiver = (props: Props) => {
   const onNext = () => {
     const receiver: string = getValues('accountName');
     const chainId = getValues('chainId').value;
+    if (chainId === null) {
+      setError('chainId', { type: 'required', message: 'Please select the Chain ID' });
+      return;
+    }
     const isDuplicated = receiver === wallet?.account && chainId.toString() === wallet?.chainId.toString();
     if (isDuplicated) {
       toast.error(<Toast type="fail" content="Can not send to yourself" />);
@@ -300,7 +304,7 @@ const SelectReceiver = (props: Props) => {
                 />
               )}
             />
-            {errors.chainId && !getValues('chainId') && <InputError>{errors.chainId.message}</InputError>}
+            {errors.chainId && <InputError>{errors.chainId.message}</InputError>}
           </InputWrapper>
         </form>
         <ButtonWrapper>
