@@ -59,8 +59,6 @@ function sendToConnectedPorts(msg) {
       for (const [tabId, port] of portMap.entries()) {
         if (tabs.find((tab) => tab.id === tabId)) {
           port.postMessage(msg);
-        } else {
-          portMap.delete(tabId);
         }
       }
     });
