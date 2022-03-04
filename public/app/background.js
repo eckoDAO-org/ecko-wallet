@@ -58,7 +58,9 @@ function sendToConnectedPorts(msg) {
     chrome.tabs.query({ currentWindow: true }, function (tabs) {
       for (const [tabId, port] of portMap.entries()) {
         if (tabs.find((tab) => tab.id === tabId)) {
-          port.postMessage(msg);
+          try {
+            port.postMessage(msg);
+          } catch (err) {}
         }
       }
     });
