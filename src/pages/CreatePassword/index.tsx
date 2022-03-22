@@ -197,7 +197,7 @@ const CreatePassword = () => {
                   height="auto"
                   onChange={(e) => {
                     clearErrors('seedPhrase');
-                    setValue('seedPhrase', e.target.value.trim());
+                    setValue('seedPhrase', e.target.value);
                   }}
                 />
               </DivBody>
