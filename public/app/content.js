@@ -20,6 +20,7 @@ port.onMessage.addListener(async (data) => {
     ...data,
     target: 'kda.dapps',
   });
+  return true;
 });
 port.onDisconnect.addListener(() => {
   // new connect

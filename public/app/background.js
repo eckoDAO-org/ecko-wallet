@@ -43,8 +43,12 @@ chrome.runtime.onMessage.addListener(async (request, sender) => {
           ...request,
           target: 'kda.content',
         });
-      } catch (error) {}
+        return true;
+      } catch (error) {
+        return true;
+      }
     }
+    return true;
   }
 });
 
@@ -60,7 +64,10 @@ function sendToConnectedPorts(msg) {
         if (tabs.find((tab) => tab.id === tabId)) {
           try {
             port.postMessage(msg);
-          } catch (err) {}
+            return true;
+          } catch (err) {
+            return true;
+          }
         }
       }
     });
@@ -112,6 +119,7 @@ chrome.runtime.onConnect.addListener(async (port) => {
       default:
         break;
     }
+    return true;
   });
   contentPort.onDisconnect.addListener(() => {
     contentPort = null;
