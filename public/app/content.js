@@ -33,10 +33,14 @@ window.addEventListener(
 
     const { data } = event;
     if (data.target && data.target === 'kda.content') {
-      port.postMessage({
-        ...data,
-        target: 'kda.background',
-      });
+      try {
+        port.postMessage({
+          ...data,
+          target: 'kda.background',
+        });
+      } catch (err) {
+        console.log(err);
+      }
     }
   },
   false,

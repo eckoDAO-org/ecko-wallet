@@ -65,6 +65,8 @@ import closeWhite from './close-white.svg';
 import settingWhite from './setting-white.svg';
 import iconFlux from './flux-icon.png';
 import iconKdl from './kdl-logo.svg';
+import iconKdx from './kdx-logo.svg';
+import iconHype from './hypercent-logo.svg';
 import iconBabena from './babena-logo.svg';
 import iconAnedak from './anedak-logo.svg';
 import checkedViolet from './checked-violet.svg';
@@ -132,6 +134,8 @@ const wallet = {
   iconCreate,
   tokens: {
     token: iconKadenaToken,
+    kdx: iconKdx,
+    hype: iconHype,
     flux: iconFlux,
     kdl: iconKdl,
     babena: iconBabena,
