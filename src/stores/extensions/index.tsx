@@ -32,6 +32,14 @@ const defaultNetworks: RawNetwork[] = [
     isDefault: true,
     id: '1',
   },
+  {
+    name: 'Kate Devnet',
+    url: 'https://devnet.private.kate.land',
+    explorer: 'https://explorer.chainweb.com/testnet',
+    networkId: 'development',
+    isDefault: true,
+    id: '2',
+  },
 ];
 
 interface RawNetwork {

@@ -25,7 +25,7 @@ chrome.runtime.onStartup.addListener(() => {
 /**
  * One-time connection
  */
-chrome.runtime.onMessage.addListener(async (request, sender) => {
+chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   const tabIdResponse = request.tabId || sender.tab.id;
   if (request.target === 'kda.background') {
     let senderPort = null;
@@ -43,8 +43,15 @@ chrome.runtime.onMessage.addListener(async (request, sender) => {
           ...request,
           target: 'kda.content',
         });
-      } catch (error) {}
+        sendResponse({
+          status: 'ok',
+        });
+        return true;
+      } catch (error) {
+        return true;
+      }
     }
+    return true;
   }
 });
 
@@ -60,7 +67,10 @@ function sendToConnectedPorts(msg) {
         if (tabs.find((tab) => tab.id === tabId)) {
           try {
             port.postMessage(msg);
-          } catch (err) {}
+            return true;
+          } catch (err) {
+            return true;
+          }
         }
       }
     });
@@ -112,6 +122,7 @@ chrome.runtime.onConnect.addListener(async (port) => {
       default:
         break;
     }
+    return true;
   });
   contentPort.onDisconnect.addListener(() => {
     contentPort = null;

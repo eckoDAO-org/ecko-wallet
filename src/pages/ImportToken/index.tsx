@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import Back from 'src/components/Back';
@@ -8,8 +10,7 @@ import useLocalStorage from 'src/hooks/useLocalStorage';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import { fetchListLocal } from 'src/utils/chainweb';
-import { useSelector } from 'react-redux';
-import { useEffect } from 'react';
+import { hideLoading, showLoading } from 'src/stores/extensions';
 import { KNOWN_TOKENS } from 'src/utils/constant';
 
 export interface IFungibleToken {
@@ -76,10 +77,25 @@ const ImportToken = () => {
   const coin = params.get('coin');
   const token = fungibleTokens?.find((ft) => ft.symbol === coin);
 
-  const checkTokenExists = (contractAddress: string): Promise<any> => {
+  const checkTokenExists = async (contractAddress: string) => {
+    showLoading();
     const { account } = stateWallet;
     const pactCode = `(${contractAddress}.details "${account}")`;
-    return fetchListLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, '0');
+    for (let i = 0; i < 20; i += 1) {
+      try {
+        /* eslint-disable no-await-in-loop */
+        const res = await fetchListLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, i);
+        if (res?.result?.error?.message?.startsWith('with-read: row not found') || res?.result?.status === 'success') {
+          hideLoading();
+          return true;
+        }
+        // contractAddress not exists on chain i
+      } catch (err) {
+        // contractAddress not exists on chain i
+      }
+    }
+    hideLoading();
+    return false;
   };
 
   const {
@@ -102,29 +118,24 @@ const ImportToken = () => {
     if (!token && alreadyExists) {
       toast.error(<Toast type="error" content="Token already added" />);
     } else {
-      checkTokenExists(fT.contractAddress)
-        .then((res) => {
-          if (res?.result?.error?.message === `Cannot resolve ${fT.contractAddress}.details`) {
-            toast.error(<Toast type="error" content={`Cannot resolve ${fT.contractAddress}.details`} />);
-          } else {
-            let newFungibleTokens = fungibleTokens || [];
-            if (token) {
-              newFungibleTokens = fungibleTokens?.filter((ft) => ft.contractAddress !== token.contractAddress) ?? [];
-            }
-            setFungibleTokens([
-              ...newFungibleTokens,
-              {
-                ...fT,
-                symbol: fT.symbol?.toLowerCase(),
-              },
-            ]);
-            toast.success(<Toast type="success" content="Token successfully saved" />);
-            history.push('/');
-          }
-        })
-        .catch(() => {
-          toast.error(<Toast type="error" content="Unable to add token" />);
-        });
+      const tokenExists = await checkTokenExists(fT.contractAddress);
+      if (!tokenExists) {
+        toast.error(<Toast type="error" content={`Cannot resolve ${fT.contractAddress}.details`} />);
+      } else {
+        let newFungibleTokens = fungibleTokens || [];
+        if (token) {
+          newFungibleTokens = fungibleTokens?.filter((ft) => ft.contractAddress !== token.contractAddress) ?? [];
+        }
+        setFungibleTokens([
+          ...newFungibleTokens,
+          {
+            ...fT,
+            symbol: fT.symbol?.toLowerCase(),
+          },
+        ]);
+        toast.success(<Toast type="success" content="Token successfully saved" />);
+        history.push('/');
+      }
     }
   };
   return (
