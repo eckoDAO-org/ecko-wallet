@@ -57,7 +57,6 @@ const HomePage = () => {
   const goToTermsCondition = () => {
     history.push('/term-condition');
   };
-  const title = 'Welcome to "X" Wallet';
   return (
     <Div marginTop="100px">
       <Wrapper>
@@ -67,8 +66,6 @@ const HomePage = () => {
         <DivImage marginBottom="60px">
           <Image src={images.logoWallet} size={55} width={238} alt="logo-wallet" />
         </DivImage>
-        <DivTitle>{title}</DivTitle>
-        <DivContent>Powered by Kadena</DivContent>
       </Wrapper>
       <DivChildButon>
         <Button onClick={goToTermsCondition} size={BUTTON_SIZE.FULL} label="Start Now" />

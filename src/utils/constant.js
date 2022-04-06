@@ -37,6 +37,14 @@ export const KNOWN_TOKENS = {
     symbol: 'flux',
     image: images.wallet.tokens.flux,
   },
+  'kaddex.kdx': {
+    symbol: 'kdx',
+    image: images.wallet.tokens.kdx,
+  },
+  'hypercent.prod-hype-coin': {
+    symbol: 'hype',
+    image: images.wallet.tokens.hypercent,
+  },
   'kdlaunch.token': {
     symbol: 'kdl',
     image: images.wallet.tokens.kdl,
