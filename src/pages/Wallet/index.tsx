@@ -4,7 +4,7 @@ import images from 'src/images';
 import styled from 'styled-components';
 import ModalCustom from 'src/components/Modal/ModalCustom';
 import Dropdown from 'src/components/Dropdown';
-import { roundNumber, shortenAddress, BigNumberConverter } from 'src/utils';
+import { roundNumber, shortenAddress, BigNumberConverter, getCoingeckoIdFromContractAddress } from 'src/utils';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import useLocalStorage from 'src/hooks/useLocalStorage';
 import { useSelector } from 'react-redux';
@@ -12,7 +12,7 @@ import { setBalance, setCurrentWallet, setWallets } from 'src/stores/wallet';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
 import { ESTIMATE_KDA_TO_USD_API } from 'src/utils/config';
-import { CHAIN_COUNT } from 'src/utils/constant';
+import { CHAIN_COUNT, KNOWN_TOKENS } from 'src/utils/constant';
 import { getLocalPassword, getLocalSeedPhrase, getLocalWallets, setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
 import { decryptKey, encryptKey } from 'src/utils/security';
 import { fetchListLocal, getBalanceFromChainwebApiResponse, getKeyPairsFromSeedPhrase } from '../../utils/chainweb';
@@ -406,13 +406,20 @@ const Wallet = () => {
   );
 
   const updateUsdPrices = () => {
-    fetch(`${ESTIMATE_KDA_TO_USD_API}${fungibleTokens?.map((ft) => ft.symbol).join(',')}`)
+    const coingeckoIds: any = [];
+    fungibleTokens?.forEach((tok) => {
+      const coingeckId = getCoingeckoIdFromContractAddress(tok?.contractAddress);
+      if (coingeckId) {
+        coingeckoIds.push(KNOWN_TOKENS[tok?.contractAddress]?.coingeckoId);
+      }
+    });
+    fetch(`${ESTIMATE_KDA_TO_USD_API}${coingeckoIds.join(',')}`)
       .then((res) => res.json())
       .then(
         (result) => {
           setUsdPrices(
             Object.keys(result).map((token) => ({
-              symbol: token === 'kadena' ? 'coin' : token,
+              symbol: token,
               usdPrice: result[token].usd,
             })),
           );
@@ -448,11 +455,11 @@ const Wallet = () => {
               </DivChild>
             </DivFlex>
             <DivChild>
-              <Div fontSize="16px" fontWeight="700" color="#461A57">
+              <Div fontSize="16px" fontWeight="700" color="#461A57" textAlign="right">
                 {value}
               </Div>
               <Div fontSize="14px" color="#461A57" marginTop="10px" textAlign="right">
-                ${roundNumber(valueUSD, 1)}
+                {valueUSD && `$${roundNumber(valueUSD, 1)}`}
               </Div>
             </DivChild>
           </Transaction>
@@ -563,7 +570,7 @@ const Wallet = () => {
               value={balance}
               tokenType="KDA"
               nameToken="Kadena"
-              valueUSD={roundNumber(getUsdPrice('coin', balance), 1)}
+              valueUSD={roundNumber(getUsdPrice('kadena', balance), 1)}
               src={images.wallet.iconKadenaToken}
             />
             {fungibleTokens?.map((fT) => {
@@ -572,7 +579,10 @@ const Wallet = () => {
                 <TokenChild
                   value={tokenBalance?.chainBalance ?? 0}
                   tokenType={fT.symbol?.toUpperCase()}
-                  valueUSD={getUsdPrice(fT.symbol, tokenBalance?.chainBalance || 0)}
+                  valueUSD={
+                    getCoingeckoIdFromContractAddress(fT.contractAddress) &&
+                    getUsdPrice(getCoingeckoIdFromContractAddress(fT.contractAddress), tokenBalance?.chainBalance || 0)
+                  }
                   src={images.wallet.tokens[fT.symbol] || images.wallet.tokens.token}
                   containerStyle={{ cursor: 'pointer' }}
                   onClick={() => history.push(`/token-menu?coin=${fT.symbol}`)}
