@@ -1,4 +1,4 @@
-import images from 'src/images';
+import images from '../images';
 
 export const OptionSelect = {
   ConnectedSite: 0,
@@ -36,6 +36,7 @@ export const KNOWN_TOKENS = {
   'runonflux.flux': {
     symbol: 'flux',
     image: images.wallet.tokens.flux,
+    coingeckoId: 'zelcash',
   },
   'kaddex.kdx': {
     symbol: 'kdx',

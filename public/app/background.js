@@ -26,7 +26,7 @@ chrome.runtime.onStartup.addListener(() => {
  * One-time connection
  */
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
-  const tabIdResponse = request.tabId || sender.tab.id;
+  const tabIdResponse = request?.tabId || sender?.tab?.id;
   if (request.target === 'kda.background') {
     let senderPort = null;
     for (const [tabId, port] of portMap.entries()) {
