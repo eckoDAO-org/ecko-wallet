@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js';
+import { KNOWN_TOKENS } from './constant';
 
 export const getTimestamp = () => Math.floor(new Date().getTime() / 1000);
 
@@ -84,3 +85,6 @@ export const BigNumberConverter = (value) => {
   const result = new BigNumber(valueConverter).decimalPlaces(12).toString();
   return parseFloat(result);
 };
+
+export const getCoingeckoIdFromContractAddress = (contractAddress) =>
+  KNOWN_TOKENS[contractAddress] && KNOWN_TOKENS[contractAddress]?.coingeckoId && KNOWN_TOKENS[contractAddress]?.coingeckoId;
