@@ -526,10 +526,10 @@ const Wallet = () => {
                 <Div fontSize="16px" fontWeight="700" color="#461A57" textAlign="right">{`${roundNumber(balance ?? 0, 5)} KDA`}</Div>
                 <Div fontSize="12px" fontWeight="700" color="#461A57" textAlign="right">{`${roundNumber(allChainBalance ?? 0, 5)} KDA`}</Div>
                 <Div fontSize="14px" color="#461A57" marginTop="10px" textAlign="right">
-                  {`${roundNumber(getUsdPrice('coin', balance ?? 0), 1)} USD`}
+                  {`${roundNumber(getUsdPrice('kadena', balance ?? 0), 1)} USD`}
                 </Div>
                 <Div fontSize="10px" color="#461A57" marginTop="1px" textAlign="right">
-                  {`${roundNumber(getUsdPrice('coin', allChainBalance ?? 0), 1)} USD`}
+                  {`${roundNumber(getUsdPrice('kadena', allChainBalance ?? 0), 1)} USD`}
                 </Div>
               </DivChild>
             </DivFlex>
