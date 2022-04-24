@@ -110,7 +110,6 @@ const PopupConfirm = (props: Props) => {
       meta: Pact.lang.mkMeta(senderName, senderChainId.toString(), validGasPrice, validGasLimit, getTimestamp(), CONFIG.X_CHAIN_TTL),
       networkId: selectedNetwork.networkId,
     };
-    console.log('🚀 !!! ~ cmd', cmd);
     return cmd;
   };
 
