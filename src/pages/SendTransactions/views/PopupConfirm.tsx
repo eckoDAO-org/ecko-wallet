@@ -82,6 +82,10 @@ const PopupConfirm = (props: Props) => {
     }
     const crossKeyPairs = {
       publicKey: senderPublicKey,
+      clist: [
+        Pact.lang.mkCap('gas', 'pay gas', 'coin.GAS').cap,
+        Pact.lang.mkCap('transfer', 'transfer coin', 'coin.TRANSFER_XCHAIN', [senderName, receiverName, validAmount, `${receiverChainId}`]).cap,
+      ],
     };
     const normalKeyPairs = {
       publicKey: senderPublicKey,
@@ -106,6 +110,7 @@ const PopupConfirm = (props: Props) => {
       meta: Pact.lang.mkMeta(senderName, senderChainId.toString(), validGasPrice, validGasLimit, getTimestamp(), CONFIG.X_CHAIN_TTL),
       networkId: selectedNetwork.networkId,
     };
+    console.log('🚀 !!! ~ cmd', cmd);
     return cmd;
   };
 
