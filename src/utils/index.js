@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import { KNOWN_TOKENS } from './constant';
 
-export const getTimestamp = () => Math.floor(new Date().getTime() / 1000);
+export const getTimestamp = () => Math.floor(new Date().getTime() / 1000) - 90;
 
 export const createBlob = (str, mime) => {
   const string = typeof str === 'object' ? JSON.stringify(str) : str;
@@ -64,8 +64,6 @@ export const convertRecent = (data) => {
   });
   return recent;
 };
-
-export const creationTime = () => Math.round(new Date().getTime() / 1000) - 15;
 
 export const shortenAddress = (address = '', start = 5, chars = 5) =>
   address.length > 14 ? `${address.substring(0, start)} ... ${address.substring(address.length - chars)}` : address;
