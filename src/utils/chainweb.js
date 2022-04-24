@@ -1,7 +1,7 @@
 import Pact from 'pact-lang-api';
 import lib from 'cardano-crypto.js/kadena-crypto';
 import { CONFIG } from './config';
-import { creationTime } from './index';
+import { getTimestamp } from './index';
 
 export const getApiUrl = (url, networkId, chainId) => `${url}/chainweb/0.0/${networkId}/chain/${chainId}/pact`;
 
@@ -9,7 +9,7 @@ export const fetchLocal = (code, url, networkId, chainId) => {
   const localCmd = {
     keyPairs: [],
     pactCode: code,
-    meta: Pact.lang.mkMeta('not-real', chainId.toString(), 0.00000001, 6000, creationTime(), 600),
+    meta: Pact.lang.mkMeta('not-real', chainId.toString(), 0.00000001, 6000, getTimestamp(), 600),
   };
   return Pact.fetch.local(localCmd, getApiUrl(url, networkId, chainId));
 };
