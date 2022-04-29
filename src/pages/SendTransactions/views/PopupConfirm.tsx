@@ -80,13 +80,15 @@ const PopupConfirm = (props: Props) => {
         fungibleToken?.contractAddress
       }.transfer-crosschain "${senderName}" "${receiverName}" (read-keyset "ks") "${receiverChainId}" ${Number.parseFloat(amount).toFixed(8)})`;
     }
-    const crossKeyPairs = {
+    const crossKeyPairs: any = {
       publicKey: senderPublicKey,
-      clist: [
+    };
+    if (fungibleToken?.contractAddress === 'coin') {
+      crossKeyPairs.clist = [
         Pact.lang.mkCap('gas', 'pay gas', 'coin.GAS').cap,
         Pact.lang.mkCap('transfer', 'transfer coin', 'coin.TRANSFER_XCHAIN', [senderName, receiverName, validAmount, `${receiverChainId}`]).cap,
-      ],
-    };
+      ];
+    }
     const normalKeyPairs = {
       publicKey: senderPublicKey,
       clist: [
