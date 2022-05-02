@@ -28,7 +28,7 @@ const DivChild = styled.div`
 `;
 const ReceiveModal = (props: Props) => {
   const { isOpen, onCloseModal, closeOnOverlayClick, showCloseIcon, title } = props;
-  const { chainId, account, publicKey } = useSelector((state) => state?.wallet);
+  const { chainId, account } = useSelector((state) => state?.wallet);
 
   return (
     <ModalCustom isOpen={isOpen} title={title} onCloseModal={onCloseModal} closeOnOverlayClick={closeOnOverlayClick} showCloseIcon={showCloseIcon}>
@@ -46,21 +46,6 @@ const ReceiveModal = (props: Props) => {
               src: images.wallet.copyGray,
               callback: () => {
                 navigator.clipboard.writeText(account);
-                toast.success(<Toast type="success" content="Copied!" />);
-              },
-            }}
-          />
-        </Item>
-        <Item>
-          <BaseInfoDisable
-            title="Your Public Key"
-            label={publicKey}
-            image={{
-              width: '12px',
-              height: '12px',
-              src: images.wallet.copyGray,
-              callback: () => {
-                navigator.clipboard.writeText(publicKey);
                 toast.success(<Toast type="success" content="Copied!" />);
               },
             }}
