@@ -4,7 +4,7 @@ import { get } from 'lodash';
 import { ACTIVE_TAB, BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
 import { useHistory } from 'react-router-dom';
 import { convertRecent, getTimestamp } from 'src/utils';
-import { getApiUrl, getSignatureFromHash } from 'src/utils/chainweb';
+import { getApiUrl, getSignatureFromHash, fetchLocal } from 'src/utils/chainweb';
 import { CONFIG } from 'src/utils/config';
 import { toast } from 'react-toastify';
 import BigNumber from 'bignumber.js';
@@ -71,7 +71,8 @@ const PopupConfirm = (props: Props) => {
   const validGasLimit = parseFloat(gasLimit);
 
   const total = validAmount + validGasPrice * validGasLimit;
-  const getCmd = () => {
+
+  const getCmd = async () => {
     let pactCode = `(${fungibleToken?.contractAddress}.transfer-create "${senderName}" "${receiverName}" (read-keyset "ks") ${Number.parseFloat(
       amount,
     ).toFixed(8)})`;
@@ -80,13 +81,28 @@ const PopupConfirm = (props: Props) => {
         fungibleToken?.contractAddress
       }.transfer-crosschain "${senderName}" "${receiverName}" (read-keyset "ks") "${receiverChainId}" ${Number.parseFloat(amount).toFixed(8)})`;
     }
-    const crossKeyPairs = {
+    const crossKeyPairs: any = {
       publicKey: senderPublicKey,
-      clist: [
-        Pact.lang.mkCap('gas', 'pay gas', 'coin.GAS').cap,
-        Pact.lang.mkCap('transfer', 'transfer coin', 'coin.TRANSFER_XCHAIN', [senderName, receiverName, validAmount, `${receiverChainId}`]).cap,
-      ],
     };
+    const interfaces = await fetchLocal(
+      `(at 'interfaces (describe-module "${fungibleToken?.contractAddress}"))`,
+      selectedNetwork.url,
+      selectedNetwork.networkId,
+      senderChainId.toString(),
+    );
+    if (interfaces?.result?.data && Array.isArray(interfaces?.result?.data)) {
+      if (interfaces?.result?.data?.some((moduleInterface) => moduleInterface === 'fungible-xchain-v1')) {
+        crossKeyPairs.clist = [
+          Pact.lang.mkCap('gas', 'pay gas', 'coin.GAS').cap,
+          Pact.lang.mkCap('transfer', 'transfer coin', `${fungibleToken?.contractAddress}.TRANSFER_XCHAIN`, [
+            senderName,
+            receiverName,
+            validAmount,
+            `${receiverChainId}`,
+          ]).cap,
+        ];
+      }
+    }
     const normalKeyPairs = {
       publicKey: senderPublicKey,
       clist: [
@@ -187,10 +203,10 @@ const PopupConfirm = (props: Props) => {
       });
   };
 
-  const onSend = () => {
+  const onSend = async () => {
     const newCreatedTime = new Date();
     const createdTime = newCreatedTime.toString();
-    const cmd = getCmd();
+    const cmd = await getCmd();
     const meta = Pact.lang.mkMeta(senderName, senderChainId.toString(), validGasPrice, validGasLimit, getTimestamp(), CONFIG.X_CHAIN_TTL);
     const sendCmd: any = Pact.api.prepareExecCmd(
       cmd.keyPairs,
