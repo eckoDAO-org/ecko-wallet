@@ -581,7 +581,13 @@ const Transfer = (props: Props) => {
       </form>
       {isOpenTransferModal && (
         <ModalCustom isOpen={isOpenTransferModal} title="Confirm Send Transaction" onCloseModal={onCloseTransfer} closeOnOverlayClick={false}>
-          <PopupConfirm configs={configs} onClose={onCloseTransfer} aliasContact={aliasContact} fungibleToken={fungibleToken} />
+          <PopupConfirm
+            configs={configs}
+            onClose={onCloseTransfer}
+            aliasContact={aliasContact}
+            fungibleToken={fungibleToken}
+            kdaUSDPrice={KDApriceEstimate}
+          />
         </ModalCustom>
       )}
       {isOpenAddContactModal && (

@@ -40,10 +40,11 @@ type Props = {
   onClose: any;
   aliasContact: string;
   fungibleToken: IFungibleToken | null;
+  kdaUSDPrice?: number;
 };
 
 const PopupConfirm = (props: Props) => {
-  const { configs, onClose, aliasContact, fungibleToken } = props;
+  const { configs, onClose, aliasContact, fungibleToken, kdaUSDPrice } = props;
   const [isLoading, setIsLoading] = useState(false);
   const { setCrossChainRequest, getCrossChainRequestsAsync } = useContext(CrossChainContext);
   const history = useHistory();
@@ -311,6 +312,8 @@ const PopupConfirm = (props: Props) => {
       </PageConfirm>
     );
   }
+  const isKDA = fungibleToken?.symbol.toUpperCase() === 'KDA';
+
   return (
     <PageConfirm>
       <BodyContent>
@@ -320,6 +323,12 @@ const PopupConfirm = (props: Props) => {
           <LabelConfirm>Amount</LabelConfirm>
           <LabelBold isRight>{`${validAmount} ${fungibleToken?.symbol.toUpperCase()}`}</LabelBold>
         </FormItemConfirm>
+        {isKDA && kdaUSDPrice && (
+          <GasFee>
+            <LabelConfirm>Amount $</LabelConfirm>
+            <GasFeeText>{`~${(validAmount * kdaUSDPrice).toFixed(2)} USD`}</GasFeeText>
+          </GasFee>
+        )}
         <FormItemConfirm>
           <LabelConfirm>Gas Limit</LabelConfirm>
           <Tooltip tooltipText="Gas limit is the maximum amount of units of gas you are willing to spend.">
@@ -346,6 +355,12 @@ const PopupConfirm = (props: Props) => {
             <LabelBold>Total</LabelBold>
             <LabelBold isRight>{`${new BigNumber(total).decimalPlaces(12).toString()} KDA`}</LabelBold>
           </FormItemConfirm>
+          {isKDA && kdaUSDPrice && (
+            <GasFee>
+              <LabelConfirm>Total $ </LabelConfirm>
+              <GasFeeText>{`~${(Number(new BigNumber(total).decimalPlaces(2)) * kdaUSDPrice).toFixed(2)} USD`}</GasFeeText>
+            </GasFee>
+          )}
         </BodyContent>
       )}
       <Footer>
