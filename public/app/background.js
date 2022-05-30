@@ -102,13 +102,13 @@ chrome.runtime.onConnect.addListener(async (port) => {
         getAccountSelected(payload.data, originTabId);
         break;
       case 'kda_getNetwork':
-        getNetwork();
+        getNetwork(originTabId);
         break;
       case 'kda_getChain':
-        getSelectedChain();
+        getSelectedChain(originTabId);
         break;
       case 'kda_getSelectedAccount':
-        getSelectedAccount();
+        getSelectedAccount(originTabId);
         break;
       case 'kda_sendKadena':
         sendKadena(payload.data);
@@ -117,7 +117,7 @@ chrome.runtime.onConnect.addListener(async (port) => {
         kdaRequestSign(payload.data, originTabId);
         break;
       case 'kda_checkStatus':
-        checkStatus(payload.data);
+        checkStatus(payload.data, originTabId);
         break;
       default:
         break;
@@ -145,6 +145,7 @@ const checkConnect = async (data, tabId) => {
           },
           target: 'kda.content',
           action: 'res_checkStatus',
+          tabId,
         };
         sendToConnectedPorts(msg);
       } else {
@@ -259,7 +260,7 @@ const sendKadena = async (data) => {
   }
 };
 
-const checkStatus = async (data) => {
+const checkStatus = async (data, tabId) => {
   const isValidNetwork = await verifyNetwork(data.networkId);
   if (isValidNetwork) {
     const isValid = await checkValid(data);
@@ -273,6 +274,7 @@ const checkStatus = async (data) => {
         },
         target: 'kda.content',
         action: 'res_checkStatus',
+        tabId,
       };
       sendToConnectedPorts(msg);
     } else {
@@ -283,6 +285,7 @@ const checkStatus = async (data) => {
         },
         target: 'kda.content',
         action: 'res_checkStatus',
+        tabId,
       };
       sendToConnectedPorts(msg);
     }
@@ -294,6 +297,7 @@ const checkStatus = async (data) => {
       },
       target: 'kda.content',
       action: 'res_checkStatus',
+      tabId,
     };
     sendToConnectedPorts(msg);
   }
@@ -485,29 +489,31 @@ const showSignPopup = async (data = {}) => {
   chrome.windows.create(options);
 };
 
-const getNetwork = async () => {
+const getNetwork = async (tabId) => {
   chrome.storage.local.get('selectedNetwork', (result) => {
     if (result && result.selectedNetwork) {
       sendToConnectedPorts({
         network: result.selectedNetwork,
         target: 'kda.content',
         action: 'res_getNetwork',
+        tabId,
       });
     }
   });
 };
 
-const getSelectedChain = async () => {
+const getSelectedChain = async (tabId) => {
   chrome.storage.local.get('selectedWallet', (result) => {
     sendToConnectedPorts({
       chainId: result?.selectedWallet?.chainId,
       target: 'kda.content',
       action: 'res_getChain',
+      tabId,
     });
   });
 };
 
-const getSelectedAccount = async () => {
+const getSelectedAccount = async (tabId) => {
   chrome.storage.local.get('selectedWallet', (result) => {
     chrome.storage.local.get('accountPassword', (password) => {
       const { accountPassword } = password;
@@ -519,6 +525,7 @@ const getSelectedAccount = async () => {
           account: decryptKey(result?.selectedWallet?.account, accountPassword),
           publicKey: decryptKey(result?.selectedWallet.publicKey, accountPassword),
         },
+        tabId,
       });
     });
   });
