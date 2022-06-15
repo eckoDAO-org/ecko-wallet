@@ -150,6 +150,7 @@ const DappSignIn = () => {
       () => {},
     );
   };
+
   const onReject = () => {
     const result = {
       status: 'fail',
