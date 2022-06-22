@@ -12,6 +12,7 @@ import {
   setLocalSelectedWallet,
   setLocalWallets,
 } from 'src/utils/storage';
+import { updateConnectMessage } from 'src/utils/message';
 import { decryptKey } from 'src/utils/security';
 import CheckBox from 'src/baseComponent/CheckBox';
 import { shortenAddress } from 'src/utils';
@@ -139,6 +140,7 @@ const ConnectedDapp = () => {
   const [step, setStep] = useState(1);
   const [disabledBtn, setDisabledBtn] = useState(false);
   const [domain, setDomain] = useState('example.com.vn');
+  const [tabId, setTabId] = useState(null);
   const [icon, setIcon] = useState(images.dappsLogo);
   const [data, setData] = useState<any[]>([]);
 
@@ -150,6 +152,7 @@ const ConnectedDapp = () => {
             if (selectedNetwork.networkId === dapps.networkId) {
               setNetworkId(selectedNetwork.networkId);
               setDomain(dapps.domain);
+              setTabId(dapps.tabId);
               if (dapps.icon !== 'no icon') {
                 setIcon(dapps.icon);
               }
@@ -282,6 +285,16 @@ const ConnectedDapp = () => {
                               };
                               setCurrentWallet(currentWallet);
                               setLocalSelectedWallet({ ...w, connectedSites: selectedWallet.connectedSites });
+                              const result = {
+                                status: 'success',
+                                message: 'Connected successfully',
+                                account: {
+                                  chainId: selectedWallet.chainId,
+                                  account: decryptKey(selectedWallet.account, accountPassword),
+                                  publicKey: decryptKey(selectedWallet.publicKey, accountPassword),
+                                },
+                              };
+                              updateConnectMessage(result, tabId);
                             });
                           },
                         );
@@ -300,8 +313,20 @@ const ConnectedDapp = () => {
       () => {},
     );
   };
+
   const onClose = () => {
     window.close();
+  };
+
+  const onReject = () => {
+    const result = {
+      status: 'fail',
+      message: 'Connect fail',
+    };
+    updateConnectMessage(result, tabId);
+    setTimeout(() => {
+      window.close();
+    }, 500);
   };
   const getCheckboxLabel = (item) => (
     <Label>
@@ -358,7 +383,7 @@ const ConnectedDapp = () => {
               <ContentWrapper>{data.map((item) => renderCheckbox(item))}</ContentWrapper>
               <FooterWrapper>
                 <ButtonWrapper>
-                  <Button label="Cancel" type={BUTTON_TYPE.DISABLE} onClick={onClose} size={BUTTON_SIZE.FULL} />
+                  <Button label="Cancel" type={BUTTON_TYPE.DISABLE} onClick={onReject} size={BUTTON_SIZE.FULL} />
                 </ButtonWrapper>
                 <ButtonWrapper>
                   <Button label="Save" onClick={onSave} size={BUTTON_SIZE.FULL} isDisabled={disabledBtn} />
