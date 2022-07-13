@@ -69,6 +69,7 @@ import iconKdx from './kdx-logo.svg';
 import iconHype from './hypercent-logo.svg';
 import iconBabena from './babena-logo.svg';
 import iconAnedak from './anedak-logo.svg';
+import iconMok from './mok-logo.png';
 import checkedViolet from './checked-violet.svg';
 import violetAdd from './violet-add.svg';
 import trashViolet from './trash-violet.svg';
@@ -140,6 +141,7 @@ const wallet = {
     kdl: iconKdl,
     babena: iconBabena,
     anedak: iconAnedak,
+    mok: iconMok,
   },
 };
 const initPage = {
