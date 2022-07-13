@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import images from 'src/images';
 import {
+  defaultNetworks,
   hideFetching,
   setActiveTab,
   setContacts,
@@ -198,10 +199,13 @@ const Footer = () => {
     );
     getLocalNetworks(
       (localNetworks) => {
-        setNetworks(convertNetworks(localNetworks));
+        const saveNetworks = [...convertNetworks(localNetworks ?? []), ...defaultNetworks].filter(
+          (net, index, self) => self.findIndex((t) => t.url === net.url && t.networkId === net.networkId) === index,
+        );
+        setNetworks(convertNetworks(saveNetworks));
       },
       () => {
-        const newNetworks = revertNetworks(networks);
+        const newNetworks = revertNetworks([...networks, ...defaultNetworks]);
         setLocalNetworks(newNetworks);
       },
     );

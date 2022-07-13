@@ -54,10 +54,6 @@ const EditNetwork = (props: Props) => {
       setErrorMessageDuplicateUrl('URL already exist');
       return;
     }
-    if (checkDuplicateNetworkId()) {
-      setErrorMessageDuplicateNetworksId('NetworkId already exist');
-      return;
-    }
     getLocalNetworks(
       (data) => {
         const localNetworks = data;
@@ -81,10 +77,6 @@ const EditNetwork = (props: Props) => {
     const duplicate = networks.some((itemNetwork: any) => itemNetwork.url === settingNetwork.url && itemNetwork.id !== id);
     return duplicate;
   };
-  const checkDuplicateNetworkId = (): boolean => {
-    const duplicate = networks.some((itemNetwork: any) => itemNetwork.networkId === settingNetwork.networkId && itemNetwork.id !== id);
-    return duplicate;
-  };
   const onErrors = (err) => {
     console.log('err', err);
   };
@@ -92,7 +84,6 @@ const EditNetwork = (props: Props) => {
     const { value } = e.target;
     const newValue = { ...settingNetwork };
     newValue[key] = value;
-    console.log(value);
     setSettingNetwork(newValue);
     console.log(newValue);
   };

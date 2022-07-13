@@ -58,4 +58,8 @@ export const KNOWN_TOKENS = {
     symbol: 'babena',
     image: images.wallet.tokens.babena,
   },
+  'mok.token': {
+    symbol: 'mok',
+    image: images.wallet.tokens.mok,
+  },
 };
