@@ -35,7 +35,10 @@ const Wrapper = styled.div`
   }
 `;
 const Div = styled.div`
-  margin-top: ${(props) => props.marginTop};
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  height: 100%;
 `;
 const DivChildButon = styled.div`
   margin: 90px 20px 0;
@@ -58,13 +61,10 @@ const HomePage = () => {
     history.push('/term-condition');
   };
   return (
-    <Div marginTop="100px">
+    <Div>
       <Wrapper>
-        <DivImage marginBottom="20px">
-          <Image src={images.logoDapps} size={100} width={100} alt="logo" />
-        </DivImage>
-        <DivImage marginBottom="60px">
-          <Image src={images.logoWallet} size={55} width={238} alt="logo-wallet" />
+        <DivImage marginBottom="120px">
+          <Image src={images.xWalletLogoSquare} size={200} width={200} alt="logo" />
         </DivImage>
       </Wrapper>
       <DivChildButon>

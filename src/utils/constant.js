@@ -62,4 +62,8 @@ export const KNOWN_TOKENS = {
     symbol: 'mok',
     image: images.wallet.tokens.mok,
   },
+  'lago.kwUSDC': {
+    symbol: 'usdc',
+    image: images.wallet.tokens.usdc,
+  },
 };

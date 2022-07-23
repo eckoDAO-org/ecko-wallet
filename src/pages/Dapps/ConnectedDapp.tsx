@@ -356,7 +356,7 @@ const ConnectedDapp = () => {
             </Div>
             <CenterImage src={images.connectedDapps} alt="logo" />
             <Div>
-              <Image src={images.logoDapps} alt="logo" />
+              <Image src={images.xWalletIcon} alt="logo" />
             </Div>
           </ConnectItem>
           <ConnectItem alignTop>
@@ -373,7 +373,7 @@ const ConnectedDapp = () => {
         </CompleteWrapper>
       ) : (
         <>
-          <Logo src={images.logoDapps} alt="logo" />
+          <Logo src={images.xWalletIcon} alt="logo" />
           <DappDescription>{domain}</DappDescription>
           <DappTitle>Connect with X Wallet</DappTitle>
           <DappDescription>Connect all wallets</DappDescription>

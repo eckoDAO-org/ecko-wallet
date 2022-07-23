@@ -25,6 +25,11 @@ const Img = styled.img`
 `;
 const ConditionWrapper = styled.div`
   padding: 0 20px;
+  padding: 0px 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 85%;
 `;
 const Body = styled.div`
   height: 100%;

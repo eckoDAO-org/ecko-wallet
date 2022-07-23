@@ -14,7 +14,11 @@ const Image = styled.img`
   margin-bottom: 30px;
 `;
 const Wrapper = styled.div`
-  padding: 0 20px;
+  padding: 0px 20px;
+  height: 85%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 `;
 const Div = styled.div`
   display: flex;
@@ -86,7 +90,7 @@ const InitSeedPhrase = () => {
   return (
     <Wrapper>
       <Div>
-        <Image src={images.logoDapps} alt="logo" />
+        <Image src={images.xWalletIcon} alt="logo" />
       </Div>
       <DivBody>
         <CheckBox isChecked={isChecked} onChange={(value) => setIsChecked(value)} label={getCheckboxLabel()} />
