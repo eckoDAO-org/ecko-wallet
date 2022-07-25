@@ -4,7 +4,6 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import images from 'src/images';
-import { ReactComponent as IconFail } from 'src/images/fail-icon-violet.svg';
 import { setActiveTab, setContacts, setRecent, setSelectedNetwork } from 'src/stores/extensions';
 import { setCurrentWallet, setBalance } from 'src/stores/wallet';
 import { setLocalSelectedNetwork, setLocalSelectedWallet } from 'src/utils/storage';
@@ -220,8 +219,7 @@ const Header = () => {
                 setActiveTab(ACTIVE_TAB.HOME);
               }}
             >
-              <Logo alt="logo" src={images.logoHome} />
-              <LogoImage src={images.logoName} alt="logo" />
+              <Logo alt="logo" src={images.xWalletLogo} />
             </ImageWrapper>
             <OptionHeader>
               {passwordHash && isLoggedIn && showSettingAndSelectNetworks && (

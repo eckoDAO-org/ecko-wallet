@@ -119,10 +119,7 @@ const SignIn = () => {
     <CreatePasswordWrapper>
       <Body>
         <DivImage marginBottom="30px" marginTop="30px">
-          <Image src={images.logoDapps} size={80} width={80} alt="logo" />
-        </DivImage>
-        <DivImage marginBottom="30px" marginTop="30px">
-          <Image src={images.logoWallet} size={55} width={238} alt="logo-wallet" />
+          <Image src={images.xWalletLogoSquare} size={200} width={200} alt="logo" />
         </DivImage>
         <Title>Welcome</Title>
         <Wrapper onSubmit={handleSubmit(handleSignIn)} id="sign-in-form">

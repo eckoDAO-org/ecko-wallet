@@ -109,7 +109,7 @@ const SignedCmd = () => {
   const newCmd = cmd.cmd ? { ...cmd, cmd: JSON.parse(cmd.cmd) } : {};
   return (
     <Wrapper>
-      <Logo src={images.logoDapps} alt="logo" />
+      <Logo src={images.xWalletIcon} alt="logo" />
       <DappDescription>{domain}</DappDescription>
       <DappTitle>Get signed command</DappTitle>
       <ContentWrapper>
