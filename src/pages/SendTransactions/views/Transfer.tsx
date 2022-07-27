@@ -298,7 +298,7 @@ const Transfer = (props: Props) => {
   const renderAmountLabel = () => (
     <AmountWrapper>
       Amount
-      <Balance>{`Balance: ${BigNumberConverter(wallet?.tokenBalance)} ${fungibleToken?.symbol.toUpperCase()}`}</Balance>
+      <Balance style={{ fontSize: 14 }}>{`Balance: ${BigNumberConverter(wallet?.tokenBalance)} ${fungibleToken?.symbol.toUpperCase()}`}</Balance>
     </AmountWrapper>
   );
   const renderTitle = (title, tooltip) => (
