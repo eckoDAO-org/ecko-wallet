@@ -66,4 +66,8 @@ export const KNOWN_TOKENS = {
     symbol: 'usdc',
     image: images.wallet.tokens.usdc,
   },
+  'kaddex.skdx': {
+    symbol: 'skdx',
+    image: images.wallet.tokens.skdx,
+  },
 };

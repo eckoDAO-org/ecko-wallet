@@ -3,7 +3,7 @@ const X_CHAIN_GAS_LIMIT = 400;
 const X_CHAIN_TTL = 28800;
 
 const GAS_PRICE = 0.000001;
-const GAS_LIMIT = 600;
+const GAS_LIMIT = 800;
 
 export const CONFIG = {
   X_CHAIN_GAS_PRICE,

@@ -209,7 +209,7 @@ const Wallet = () => {
   const [usdPrices, setUsdPrices] = useState<any[]>([]);
   const [fungibleTokensBalance, setFungibleTokensBalance] = useState<IFungibleTokenBalance[]>([]);
   const [allChainBalance, setAllChainBalance] = useState(0);
-  const [fungibleTokens] = useLocalStorage<IFungibleToken[]>('fungibleTokens', []);
+  const [fungibleTokens] = useLocalStorage<IFungibleToken[]>('fungibleTokens', [{ contractAddress: 'kaddex.kdx', symbol: 'kdx' }]);
   const stateWallet = useCurrentWallet();
   const walletDropdownRef = useRef();
 
@@ -573,22 +573,31 @@ const Wallet = () => {
               valueUSD={roundNumber(getUsdPrice('kadena', balance), 1)}
               src={images.wallet.iconKadenaToken}
             />
-            {fungibleTokens?.map((fT) => {
-              const tokenBalance = fungibleTokensBalance.find((f) => f.contractAddress === fT.contractAddress);
-              return (
-                <TokenChild
-                  value={tokenBalance?.chainBalance ?? 0}
-                  tokenType={fT.symbol?.toUpperCase()}
-                  valueUSD={
-                    getCoingeckoIdFromContractAddress(fT.contractAddress) &&
-                    getUsdPrice(getCoingeckoIdFromContractAddress(fT.contractAddress), tokenBalance?.chainBalance || 0)
-                  }
-                  src={images.wallet.tokens[fT.symbol] || images.wallet.tokens.token}
-                  containerStyle={{ cursor: 'pointer' }}
-                  onClick={() => history.push(`/token-menu?coin=${fT.symbol}`)}
-                />
-              );
-            })}
+            <TokenChild
+              value={fungibleTokensBalance?.find((f) => f.contractAddress === 'kaddex.kdx')?.chainBalance ?? 0}
+              tokenType="KDX"
+              src={images.wallet.tokens.kdx}
+              containerStyle={{ cursor: 'pointer' }}
+              onClick={() => history.push('/transfer?coin=kdx')}
+            />
+            {fungibleTokens
+              ?.filter((fT) => fT.contractAddress !== 'kaddex.kdx')
+              ?.map((fT) => {
+                const tokenBalance = fungibleTokensBalance.find((f) => f.contractAddress === fT.contractAddress);
+                return (
+                  <TokenChild
+                    value={tokenBalance?.chainBalance ?? 0}
+                    tokenType={fT.symbol?.toUpperCase()}
+                    valueUSD={
+                      getCoingeckoIdFromContractAddress(fT.contractAddress) &&
+                      getUsdPrice(getCoingeckoIdFromContractAddress(fT.contractAddress), tokenBalance?.chainBalance || 0)
+                    }
+                    src={images.wallet.tokens[fT.symbol] || images.wallet.tokens.token}
+                    containerStyle={{ cursor: 'pointer' }}
+                    onClick={() => history.push(`/token-menu?coin=${fT.symbol}`)}
+                  />
+                );
+              })}
           </Tokens>
           <AddMoreToken>
             <DivText onClick={() => history.push('/import-token')}>Add more tokens</DivText>
