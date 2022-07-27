@@ -576,6 +576,7 @@ const Wallet = () => {
             <TokenChild
               value={fungibleTokensBalance?.find((f) => f.contractAddress === 'kaddex.kdx')?.chainBalance ?? 0}
               tokenType="KDX"
+              nameToken="Kaddex"
               src={images.wallet.tokens.kdx}
               containerStyle={{ cursor: 'pointer' }}
               onClick={() => history.push('/transfer?coin=kdx')}
