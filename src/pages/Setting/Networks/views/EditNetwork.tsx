@@ -85,7 +85,6 @@ const EditNetwork = (props: Props) => {
     const newValue = { ...settingNetwork };
     newValue[key] = value;
     setSettingNetwork(newValue);
-    console.log(newValue);
   };
   const deleteNetwork = () => {
     getLocalNetworks(
