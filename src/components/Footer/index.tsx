@@ -178,6 +178,10 @@ const Footer = () => {
     );
     getLocalSelectedNetwork(
       (network) => {
+        const defaultFounded = defaultNetworks.find((dfNet) => dfNet.id && dfNet.id === network?.id);
+        if (defaultFounded) {
+          network = defaultFounded;
+        }
         setSelectedNetwork({
           name: network.name,
           url: network.url,
@@ -199,9 +203,7 @@ const Footer = () => {
     );
     getLocalNetworks(
       (localNetworks) => {
-        const saveNetworks = [...convertNetworks(localNetworks ?? []), ...defaultNetworks].filter(
-          (net, index, self) => self.findIndex((t) => t.url === net.url && t.networkId === net.networkId) === index,
-        );
+        const saveNetworks = [...convertNetworks(localNetworks ?? [])?.filter((n) => !n.isDefault), ...defaultNetworks];
         setNetworks(convertNetworks(saveNetworks));
       },
       () => {

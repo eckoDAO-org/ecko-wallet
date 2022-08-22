@@ -9,7 +9,7 @@ export const setStoreExtensions = (store: Store) => {
 
 const selectedNetwork: RawNetwork = {
   name: 'Mainnet',
-  url: 'https://api.chainweb.com',
+  url: 'https://chainweb.kaddex.com',
   explorer: 'https://explorer.chainweb.com/mainnet',
   networkId: 'mainnet01',
   isDefault: true,
@@ -18,7 +18,7 @@ const selectedNetwork: RawNetwork = {
 export const defaultNetworks: RawNetwork[] = [
   {
     name: 'Mainnet',
-    url: 'https://api.chainweb.com',
+    url: 'https://chainweb.kaddex.com',
     explorer: 'https://explorer.chainweb.com/mainnet',
     networkId: 'mainnet01',
     isDefault: true,
@@ -112,9 +112,7 @@ const storeExtensions = createSlice({
     },
     restoreNetworks: (state) => ({
       ...state,
-      networks: [...state.networks, ...initialState.networks].filter(
-        (net, index, self) => self.findIndex((t) => t.url === net.url && t.networkId === net.networkId) === index,
-      ),
+      networks: [...state.networks?.filter((n) => !n.isDefault), ...defaultNetworks],
     }),
     setRecent: (state, action: PayloadAction<any>) => {
       const recent = action.payload;
