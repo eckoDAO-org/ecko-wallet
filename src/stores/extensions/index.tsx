@@ -15,7 +15,7 @@ const selectedNetwork: RawNetwork = {
   isDefault: true,
   id: '0',
 };
-const defaultNetworks: RawNetwork[] = [
+export const defaultNetworks: RawNetwork[] = [
   {
     name: 'Mainnet',
     url: 'https://api.chainweb.com',
@@ -31,6 +31,14 @@ const defaultNetworks: RawNetwork[] = [
     networkId: 'testnet04',
     isDefault: true,
     id: '1',
+  },
+  {
+    name: 'Kaddex Devnet',
+    url: 'https://devnet.kaddex.com',
+    explorer: 'https://explorer.chainweb.com/testnet',
+    networkId: 'development',
+    isDefault: true,
+    id: '101',
   },
 ];
 
@@ -102,6 +110,12 @@ const storeExtensions = createSlice({
       const networks = action.payload;
       return { ...state, networks };
     },
+    restoreNetworks: (state) => ({
+      ...state,
+      networks: [...state.networks, ...initialState.networks].filter(
+        (net, index, self) => self.findIndex((t) => t.url === net.url && t.networkId === net.networkId) === index,
+      ),
+    }),
     setRecent: (state, action: PayloadAction<any>) => {
       const recent = action.payload;
       return { ...state, recent };
@@ -131,6 +145,10 @@ export const setContacts = (contacts: any) => {
 
 export const setNetworks = (networks: any) => {
   customStore && customStore.dispatch(storeExtensions.actions.setNetworks(networks));
+};
+
+export const restoreNetworks = () => {
+  customStore && customStore.dispatch(storeExtensions.actions.restoreNetworks());
 };
 
 export const setRecent = (recent: any) => {

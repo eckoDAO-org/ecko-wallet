@@ -69,6 +69,9 @@ import iconKdx from './kdx-logo.svg';
 import iconHype from './hypercent-logo.svg';
 import iconBabena from './babena-logo.svg';
 import iconAnedak from './anedak-logo.svg';
+import iconSkdx from './skdx-logo.png';
+import iconMok from './mok-logo.png';
+import iconUsdc from './usdc-logo.png';
 import checkedViolet from './checked-violet.svg';
 import violetAdd from './violet-add.svg';
 import trashViolet from './trash-violet.svg';
@@ -88,6 +91,9 @@ import arrayDropdownPurple from './arrow-down-purple.svg';
 import iconMorePurple from './more-purple.svg';
 import iconDropDown from './icon-dropdown.svg';
 import iconCreate from './icon-create.svg';
+import xWalletLogo from './x-wallet.svg';
+import xWalletLogoSquare from './x-wallet-square.svg';
+import xWalletIcon from './x-wallet-icon.png';
 
 const wallet = {
   checked,
@@ -140,6 +146,9 @@ const wallet = {
     kdl: iconKdl,
     babena: iconBabena,
     anedak: iconAnedak,
+    mok: iconMok,
+    usdc: iconUsdc,
+    skdx: iconSkdx,
   },
 };
 const initPage = {
@@ -204,6 +213,9 @@ const images = {
   iconHistoryActive,
   iconSettingActive,
   iconHomeActive,
+  xWalletIcon,
+  xWalletLogo,
+  xWalletLogoSquare,
 };
 
 export default images;

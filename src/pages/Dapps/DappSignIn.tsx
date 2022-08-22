@@ -150,6 +150,7 @@ const DappSignIn = () => {
       () => {},
     );
   };
+
   const onReject = () => {
     const result = {
       status: 'fail',
@@ -169,7 +170,7 @@ const DappSignIn = () => {
           </Div>
           <CenterImage src={images.connectedDapps} alt="logo" />
           <Div>
-            <Image src={images.logoDapps} alt="logo" />
+            <Image src={images.xWalletIcon} alt="logo" />
           </Div>
         </ConnectItem>
         <ConnectItem alignTop>

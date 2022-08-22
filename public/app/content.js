@@ -12,20 +12,21 @@ scriptInjection.onload = () => {
 };
 
 // Long-life connection to background
-let port = chrome.runtime.connect({ name: 'kda.extension' });
+let port = {};
 
-// Listen background message
-port.onMessage.addListener(async (data) => {
-  window.postMessage({
-    ...data,
-    target: 'kda.dapps',
+let setupPort = function() {
+  port = chrome.runtime.connect({name: 'kda.extension'});
+  port.onMessage.addListener(async (data) => {
+      window.postMessage({
+        ...data,
+        target: 'kda.dapps',
+    });
+    return true;
   });
-  return true;
-});
-port.onDisconnect.addListener(() => {
-  // new connect
-  port = chrome.runtime.connect({ name: 'kda.extension' });
-});
+  port.onDisconnect.addListener(() => { setupPort(); });
+};
+
+setupPort();
 // Listen webpage(dapps) message
 window.addEventListener(
   'message',
@@ -40,7 +41,16 @@ window.addEventListener(
           target: 'kda.background',
         });
       } catch (err) {
-        console.log(err);
+        try {
+          setupPort();
+          port.postMessage({
+            ...data,
+            target: 'kda.background',
+          });
+        }
+        catch (err) {
+          console.log(err);
+        }
       }
     }
   },

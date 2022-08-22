@@ -298,7 +298,7 @@ const Transfer = (props: Props) => {
   const renderAmountLabel = () => (
     <AmountWrapper>
       Amount
-      <Balance>{`Balance: ${BigNumberConverter(wallet?.tokenBalance)} ${fungibleToken?.symbol.toUpperCase()}`}</Balance>
+      <Balance style={{ fontSize: 14 }}>{`Balance: ${BigNumberConverter(wallet?.tokenBalance)} ${fungibleToken?.symbol.toUpperCase()}`}</Balance>
     </AmountWrapper>
   );
   const renderTitle = (title, tooltip) => (
@@ -581,7 +581,13 @@ const Transfer = (props: Props) => {
       </form>
       {isOpenTransferModal && (
         <ModalCustom isOpen={isOpenTransferModal} title="Confirm Send Transaction" onCloseModal={onCloseTransfer} closeOnOverlayClick={false}>
-          <PopupConfirm configs={configs} onClose={onCloseTransfer} aliasContact={aliasContact} fungibleToken={fungibleToken} />
+          <PopupConfirm
+            configs={configs}
+            onClose={onCloseTransfer}
+            aliasContact={aliasContact}
+            fungibleToken={fungibleToken}
+            kdaUSDPrice={KDApriceEstimate}
+          />
         </ModalCustom>
       )}
       {isOpenAddContactModal && (
