@@ -46,6 +46,7 @@ type Props = {
 const PopupConfirm = (props: Props) => {
   const { configs, onClose, aliasContact, fungibleToken, kdaUSDPrice } = props;
   const [isLoading, setIsLoading] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const { setCrossChainRequest, getCrossChainRequestsAsync } = useContext(CrossChainContext);
   const history = useHistory();
   const {
@@ -205,94 +206,97 @@ const PopupConfirm = (props: Props) => {
   };
 
   const onSend = async () => {
-    const newCreatedTime = new Date();
-    const createdTime = newCreatedTime.toString();
-    const cmd = await getCmd();
-    const meta = Pact.lang.mkMeta(senderName, senderChainId.toString(), validGasPrice, validGasLimit, getTimestamp(), CONFIG.X_CHAIN_TTL);
-    const sendCmd: any = Pact.api.prepareExecCmd(
-      cmd.keyPairs,
-      `"${new Date().toISOString()}"`,
-      cmd.pactCode,
-      cmd.envData,
-      meta,
-      selectedNetwork.networkId,
-    );
-    if (senderPrivateKey.length > 64) {
-      const signature = getSignatureFromHash(sendCmd.hash, senderPrivateKey);
-      const sigs = [{ sig: signature }];
-      sendCmd.sigs = sigs;
-    }
-    setIsLoading(true);
-    Pact.wallet
-      .sendSigned(sendCmd, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, senderChainId))
-      .then(async (data) => {
-        const requestKey = data.requestKeys[0];
-        const listenCmd = {
-          listen: requestKey,
-        };
-        addRecent(createdTime);
-        const activity = {
-          symbol: fungibleToken?.symbol,
-          requestKey,
-          senderChainId: senderChainId.toString(),
-          receiverChainId: receiverChainId.toString(),
-          receiver: receiverName,
-          createdTime,
-          amount,
-          gasPrice,
-          sender: senderName,
-          domain,
-          status: 'pending',
-        };
-        getLocalActivities(
-          selectedNetwork.networkId,
-          senderChainId,
-          senderName,
-          (activities) => {
-            const newActivities = [...activities];
-            newActivities.push(activity);
-            setLocalActivities(selectedNetwork.networkId, senderChainId, senderName, newActivities);
-          },
-          () => {
-            const newActivities: any[] = [];
-            newActivities.push(activity);
-            setLocalActivities(selectedNetwork.networkId, senderChainId, senderName, newActivities);
-          },
-        );
-        if (senderChainId.toString() !== receiverChainId.toString()) {
-          const asyncCrossTx = await getCrossChainRequestsAsync();
-          const requests = [...(asyncCrossTx || [])];
-          requests.push(activity);
-          setCrossChainRequest(requests);
-        }
-        if (domain) {
-          const newData = {
-            status: 'success',
-            message: 'Transfer successfully',
+    if (!isSending) {
+      setIsSending(true);
+      const newCreatedTime = new Date();
+      const createdTime = newCreatedTime.toString();
+      const cmd = await getCmd();
+      const meta = Pact.lang.mkMeta(senderName, senderChainId.toString(), validGasPrice, validGasLimit, getTimestamp(), CONFIG.X_CHAIN_TTL);
+      const sendCmd: any = Pact.api.prepareExecCmd(
+        cmd.keyPairs,
+        `"${new Date().toISOString()}"`,
+        cmd.pactCode,
+        cmd.envData,
+        meta,
+        selectedNetwork.networkId,
+      );
+      if (senderPrivateKey.length > 64) {
+        const signature = getSignatureFromHash(sendCmd.hash, senderPrivateKey);
+        const sigs = [{ sig: signature }];
+        sendCmd.sigs = sigs;
+      }
+      setIsLoading(true);
+      Pact.wallet
+        .sendSigned(sendCmd, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, senderChainId))
+        .then(async (data) => {
+          const requestKey = data.requestKeys[0];
+          const listenCmd = {
+            listen: requestKey,
+          };
+          addRecent(createdTime);
+          const activity = {
+            symbol: fungibleToken?.symbol,
             requestKey,
+            senderChainId: senderChainId.toString(),
+            receiverChainId: receiverChainId.toString(),
+            receiver: receiverName,
+            createdTime,
+            amount,
+            gasPrice,
+            sender: senderName,
+            domain,
+            status: 'pending',
           };
-          updateSendDapp(newData);
-          setTimeout(() => {
-            window.close();
-          }, 500);
-        }
-        onListenTransaction(listenCmd);
-        setIsLoading(false);
-        toast.success(<Toast type="success" content="Transaction sent successfully! Please check the transaction status in the history tab" />);
-        history.push('/');
-        setActiveTab(ACTIVE_TAB.HOME);
-      })
-      .catch(() => {
-        if (domain) {
-          const newData = {
-            status: 'fail',
-            message: 'Transfer failed',
-          };
-          updateSendDapp(newData);
-        }
-        toast.error(<Toast type="fail" content="Network Error." />);
-        setIsLoading(false);
-      });
+          getLocalActivities(
+            selectedNetwork.networkId,
+            senderChainId,
+            senderName,
+            (activities) => {
+              const newActivities = [...activities];
+              newActivities.push(activity);
+              setLocalActivities(selectedNetwork.networkId, senderChainId, senderName, newActivities);
+            },
+            () => {
+              const newActivities: any[] = [];
+              newActivities.push(activity);
+              setLocalActivities(selectedNetwork.networkId, senderChainId, senderName, newActivities);
+            },
+          );
+          if (senderChainId.toString() !== receiverChainId.toString()) {
+            const asyncCrossTx = await getCrossChainRequestsAsync();
+            const requests = [...(asyncCrossTx || [])];
+            requests.push(activity);
+            setCrossChainRequest(requests);
+          }
+          if (domain) {
+            const newData = {
+              status: 'success',
+              message: 'Transfer successfully',
+              requestKey,
+            };
+            updateSendDapp(newData);
+            setTimeout(() => {
+              window.close();
+            }, 500);
+          }
+          onListenTransaction(listenCmd);
+          setIsLoading(false);
+          toast.success(<Toast type="success" content="Transaction sent successfully! Please check the transaction status in the history tab" />);
+          history.push('/');
+          setActiveTab(ACTIVE_TAB.HOME);
+        })
+        .catch(() => {
+          if (domain) {
+            const newData = {
+              status: 'fail',
+              message: 'Transfer failed',
+            };
+            updateSendDapp(newData);
+          }
+          toast.error(<Toast type="fail" content="Network Error." />);
+          setIsLoading(false);
+        });
+    }
   };
 
   const info = {
