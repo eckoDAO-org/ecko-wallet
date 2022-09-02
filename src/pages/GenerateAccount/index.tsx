@@ -112,7 +112,7 @@ const GenerateAccount = () => {
         k: [publicKey],
       },
       meta: Pact.lang.mkMeta(
-        'free-x-chain-gas',
+        CONFIG.X_CHAIN_GAS_STATION,
         chainIdValue.toString(),
         CONFIG.X_CHAIN_GAS_PRICE,
         CONFIG.X_CHAIN_GAS_LIMIT,

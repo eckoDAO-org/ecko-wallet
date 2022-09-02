@@ -201,7 +201,7 @@ const ChainDropdown = () => {
   //       k: [publicKey],
   //     },
   //     meta: Pact.lang.mkMeta(
-  //       'free-x-chain-gas',
+  //       CONFIG.X_CHAIN_GAS_STATION,
   //       chainId.toString(),
   //       CONFIG.X_CHAIN_GAS_PRICE,
   //       CONFIG.X_CHAIN_GAS_LIMIT,
