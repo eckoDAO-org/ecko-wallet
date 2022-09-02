@@ -77,11 +77,11 @@ const PopupConfirm = (props: Props) => {
   const getCmd = async () => {
     let pactCode = `(${fungibleToken?.contractAddress}.transfer-create "${senderName}" "${receiverName}" (read-keyset "ks") ${Number.parseFloat(
       amount,
-    ).toFixed(8)})`;
+    )})`;
     if (isCrossChain) {
       pactCode = `(${
         fungibleToken?.contractAddress
-      }.transfer-crosschain "${senderName}" "${receiverName}" (read-keyset "ks") "${receiverChainId}" ${Number.parseFloat(amount).toFixed(8)})`;
+      }.transfer-crosschain "${senderName}" "${receiverName}" (read-keyset "ks") "${receiverChainId}" ${Number.parseFloat(amount)})`;
     }
     const crossKeyPairs: any = {
       publicKey: senderPublicKey,
