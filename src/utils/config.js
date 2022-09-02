@@ -1,5 +1,6 @@
+const X_CHAIN_GAS_STATION = 'kadena-xchain-gas';
 const X_CHAIN_GAS_PRICE = 0.00000001;
-const X_CHAIN_GAS_LIMIT = 400;
+const X_CHAIN_GAS_LIMIT = 750;
 const X_CHAIN_TTL = 28800;
 
 const GAS_PRICE = 0.000001;
