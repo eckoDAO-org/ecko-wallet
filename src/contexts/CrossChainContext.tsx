@@ -143,7 +143,7 @@ export const CrossChainProvider = ({ children }: any) => {
         const proof = res;
         const pactId = requestKey.length === 44 ? requestKey.slice(0, 43) : requestKey;
         const host = getApiUrl(selectedNetwork.url, selectedNetwork.networkId, targetChainId);
-        const gasStation = 'free-x-chain-gas';
+        const gasStation = CONFIG.X_CHAIN_GAS_STATION;
         const m = Pact.lang.mkMeta(gasStation, targetChainId, CONFIG.X_CHAIN_GAS_PRICE, CONFIG.X_CHAIN_GAS_LIMIT, getTimestamp(), CONFIG.X_CHAIN_TTL);
         const cmd = {
           type: 'cont',
