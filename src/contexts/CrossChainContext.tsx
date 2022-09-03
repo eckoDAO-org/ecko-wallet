@@ -168,7 +168,8 @@ export const CrossChainProvider = ({ children }: any) => {
         );
         finishCrossChain(c, host, targetChainId, request);
       })
-      .catch(() => {
+      .catch((err) => {
+        console.log('SPV err', err);
         setTimeout(() => {
           getSpv(request);
         }, 10000);
