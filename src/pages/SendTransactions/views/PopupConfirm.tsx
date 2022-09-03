@@ -6,6 +6,7 @@ import { useHistory } from 'react-router-dom';
 import { convertRecent, getTimestamp } from 'src/utils';
 import { getApiUrl, getSignatureFromHash, fetchLocal } from 'src/utils/chainweb';
 import { CONFIG } from 'src/utils/config';
+import { getFloatPrecision } from 'src/utils/numbers';
 import { toast } from 'react-toastify';
 import BigNumber from 'bignumber.js';
 import Toast from 'src/components/Toast/Toast';
@@ -75,13 +76,16 @@ const PopupConfirm = (props: Props) => {
   const total = validAmount + validGasPrice * validGasLimit;
 
   const getCmd = async () => {
+    const decimals = getFloatPrecision(Number.parseFloat(amount)) || 2;
     let pactCode = `(${fungibleToken?.contractAddress}.transfer-create "${senderName}" "${receiverName}" (read-keyset "ks") ${Number.parseFloat(
       amount,
-    )})`;
+    ).toFixed(decimals)})`;
     if (isCrossChain) {
       pactCode = `(${
         fungibleToken?.contractAddress
-      }.transfer-crosschain "${senderName}" "${receiverName}" (read-keyset "ks") "${receiverChainId}" ${Number.parseFloat(amount)})`;
+      }.transfer-crosschain "${senderName}" "${receiverName}" (read-keyset "ks") "${receiverChainId}" ${Number.parseFloat(amount).toFixed(
+        decimals,
+      )})`;
     }
     const crossKeyPairs: any = {
       publicKey: senderPublicKey,
