@@ -1,3 +1,5 @@
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-loop-func */
 import React, { useState, createContext, useEffect, useCallback } from 'react';
 import Pact from 'pact-lang-api';
 import { get } from 'lodash';
@@ -182,11 +184,7 @@ export const CrossChainProvider = ({ children }: any) => {
         if (data.ok) {
           data.json().then((res) => {
             if (res && res.requestKeys) {
-              const requestKeySend = res.requestKeys[0];
-              const listenCmd = {
-                listen: requestKeySend,
-              };
-              onListenFinishTransaction(listenCmd, targetChainId, requestFinished);
+              onListenFinishTransaction(res.requestKeys[0], targetChainId, requestFinished);
             } else {
               toast.error(<Toast type="fail" content="Network error." />);
             }
@@ -200,22 +198,28 @@ export const CrossChainProvider = ({ children }: any) => {
       });
   };
 
-  const onListenFinishTransaction = (listenCmd, targetChainId, requestFinished, attempt = 1) => {
-    Pact.fetch
-      .listen(listenCmd, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, targetChainId))
-      .then(async () => {
-        const newRequests = crossChainRequests?.filter((request: any) => requestFinished.createdTime !== request.createdTime) || [];
-        setCrossChainRequest(newRequests);
-        const toFinishTxs = await getTofinishTxhAsync();
-        setPendingFinishRequestKeys([...(pendingFinishRequestKeys?.filter((requestKey) => requestKey !== requestFinished.requestKey) ?? [])]);
-        setToFinishCrossChainTxs([...(toFinishTxs?.filter((requestKey) => requestKey !== requestFinished.requestKey) ?? [])]);
-        // toast.success(<Toast type="success" content="Finish transfer successfully" />);
-      })
-      .catch(() => {
-        if (attempt < 11) {
-          onListenFinishTransaction(listenCmd, targetChainId, requestFinished, attempt + 1);
+  const onListenFinishTransaction = async (reqKey, targetChainId, requestFinished) => {
+    let attempts = 100;
+    do {
+      const pollRes = await Pact.fetch.poll({ requestKeys: [reqKey] }, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, targetChainId));
+      if (pollRes[reqKey]) {
+        attempts = 0;
+        const status = pollRes[reqKey]?.result?.status;
+        if (status === 'success') {
+          const newRequests = crossChainRequests?.filter((request: any) => requestFinished.createdTime !== request.createdTime) || [];
+          setCrossChainRequest(newRequests);
+          const toFinishTxs = await getTofinishTxhAsync();
+          setPendingFinishRequestKeys([...(pendingFinishRequestKeys?.filter((requestKey) => requestKey !== requestFinished.requestKey) ?? [])]);
+          setToFinishCrossChainTxs([...(toFinishTxs?.filter((requestKey) => requestKey !== requestFinished.requestKey) ?? [])]);
+        } else if (status === 'failure') {
+          toast.error(<Toast type="fail" content="Finish cross transfer Fail" />);
         }
-      });
+      } else {
+        // waiting 5 secs
+      }
+      attempts -= 1;
+      await new Promise((rs) => setTimeout(rs, 5000));
+    } while (attempts > 0);
   };
 
   return (
