@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import Pact from 'pact-lang-api';
 import lib from 'cardano-crypto.js/kadena-crypto';
 import { CONFIG } from './config';
@@ -71,4 +72,19 @@ export const getBalanceFromChainwebApiResponse = (res) => {
     balance = Number(res?.result?.data?.balance?.decimal);
   }
   return balance;
+};
+
+export const pollRequestKey = async (reqKey, network) => {
+  let attempts = 100;
+  do {
+    const pollRes = await Pact.fetch.poll({ requestKeys: [reqKey] }, network);
+    if (pollRes[reqKey]) {
+      console.log('poll result util', pollRes);
+      attempts = 0;
+      return pollRes[reqKey];
+    }
+    attempts -= 1;
+    await new Promise((rs) => setTimeout(rs, 5000));
+  } while (attempts > 0);
+  return { success: false };
 };

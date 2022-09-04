@@ -1,12 +1,10 @@
-/* eslint-disable no-await-in-loop */
-/* eslint-disable no-loop-func */
-import React, { useState, createContext, useEffect, useCallback } from 'react';
+import { createContext, useEffect } from 'react';
 import Pact from 'pact-lang-api';
 import { get } from 'lodash';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
-import { fetchSend, getApiUrl } from 'src/utils/chainweb';
+import { fetchSend, getApiUrl, pollRequestKey } from 'src/utils/chainweb';
 import useLocalStorage from 'src/hooks/useLocalStorage';
 import { getTimestamp } from 'src/utils';
 import { CONFIG } from 'src/utils/config';
@@ -199,27 +197,21 @@ export const CrossChainProvider = ({ children }: any) => {
   };
 
   const onListenFinishTransaction = async (reqKey, targetChainId, requestFinished) => {
-    let attempts = 100;
-    do {
-      const pollRes = await Pact.fetch.poll({ requestKeys: [reqKey] }, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, targetChainId));
-      if (pollRes[reqKey]) {
-        attempts = 0;
-        const status = pollRes[reqKey]?.result?.status;
-        if (status === 'success') {
-          const newRequests = crossChainRequests?.filter((request: any) => requestFinished.createdTime !== request.createdTime) || [];
-          setCrossChainRequest(newRequests);
-          const toFinishTxs = await getTofinishTxhAsync();
-          setPendingFinishRequestKeys([...(pendingFinishRequestKeys?.filter((requestKey) => requestKey !== requestFinished.requestKey) ?? [])]);
-          setToFinishCrossChainTxs([...(toFinishTxs?.filter((requestKey) => requestKey !== requestFinished.requestKey) ?? [])]);
-        } else if (status === 'failure') {
-          toast.error(<Toast type="fail" content="Finish cross transfer Fail" />);
-        }
-      } else {
-        // waiting 5 secs
+    const pollRes = await pollRequestKey(reqKey, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, targetChainId));
+    if (pollRes) {
+      const status = pollRes?.result?.status;
+      if (status === 'success' || (pollRes?.result.error?.message && pollRes?.result.error?.message?.indexOf('resumePact: pact completed') > -1)) {
+        const newRequests = crossChainRequests?.filter((request: any) => requestFinished.createdTime !== request.createdTime) || [];
+        setCrossChainRequest(newRequests);
+        const toFinishTxs = await getTofinishTxhAsync();
+        setPendingFinishRequestKeys([...(pendingFinishRequestKeys?.filter((requestKey) => requestKey !== requestFinished.requestKey) ?? [])]);
+        setToFinishCrossChainTxs([...(toFinishTxs?.filter((requestKey) => requestKey !== requestFinished.requestKey) ?? [])]);
+      } else if (status === 'failure') {
+        toast.error(<Toast type="fail" content="Finish cross transfer Fail" />);
       }
-      attempts -= 1;
-      await new Promise((rs) => setTimeout(rs, 5000));
-    } while (attempts > 0);
+    } else {
+      // toast.error(<Toast type="fail" content="Finish cross transfer Fail" />);
+    }
   };
 
   return (

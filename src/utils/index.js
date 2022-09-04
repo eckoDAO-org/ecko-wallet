@@ -86,3 +86,5 @@ export const BigNumberConverter = (value) => {
 
 export const getCoingeckoIdFromContractAddress = (contractAddress) =>
   KNOWN_TOKENS[contractAddress] && KNOWN_TOKENS[contractAddress]?.coingeckoId && KNOWN_TOKENS[contractAddress]?.coingeckoId;
+
+export const wait = (ms) => new Promise((rs) => setTimeout(rs, ms));
