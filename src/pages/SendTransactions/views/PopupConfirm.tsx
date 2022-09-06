@@ -1,11 +1,11 @@
 import Button from 'src/components/Buttons';
 import Pact from 'pact-lang-api';
-import { get } from 'lodash';
 import { ACTIVE_TAB, BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
 import { useHistory } from 'react-router-dom';
 import { convertRecent, getTimestamp } from 'src/utils';
-import { getApiUrl, getSignatureFromHash, fetchLocal } from 'src/utils/chainweb';
+import { getApiUrl, getSignatureFromHash, fetchLocal, pollRequestKey } from 'src/utils/chainweb';
 import { CONFIG } from 'src/utils/config';
+import { getFloatPrecision } from 'src/utils/numbers';
 import { toast } from 'react-toastify';
 import BigNumber from 'bignumber.js';
 import Toast from 'src/components/Toast/Toast';
@@ -75,13 +75,16 @@ const PopupConfirm = (props: Props) => {
   const total = validAmount + validGasPrice * validGasLimit;
 
   const getCmd = async () => {
+    const decimals = getFloatPrecision(Number.parseFloat(amount)) || 2;
     let pactCode = `(${fungibleToken?.contractAddress}.transfer-create "${senderName}" "${receiverName}" (read-keyset "ks") ${Number.parseFloat(
       amount,
-    ).toFixed(8)})`;
+    ).toFixed(decimals)})`;
     if (isCrossChain) {
       pactCode = `(${
         fungibleToken?.contractAddress
-      }.transfer-crosschain "${senderName}" "${receiverName}" (read-keyset "ks") "${receiverChainId}" ${Number.parseFloat(amount).toFixed(8)})`;
+      }.transfer-crosschain "${senderName}" "${receiverName}" (read-keyset "ks") "${receiverChainId}" ${Number.parseFloat(amount).toFixed(
+        decimals,
+      )})`;
     }
     const crossKeyPairs: any = {
       publicKey: senderPublicKey,
@@ -159,50 +162,36 @@ const PopupConfirm = (props: Props) => {
     );
   };
 
-  const onListenTransaction = (listenCmd, attempt = 1) => {
-    Pact.fetch
-      .listen(listenCmd, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, senderChainId))
-      .then(async (data) => {
-        const status = get(data, 'result.status');
-        if (status === 'success') {
-          toast.success(<Toast type="success" content="Transfer Successfully" />);
-        } else if (status === 'failure') {
-          toast.error(<Toast type="fail" content="Transfer Fail" />);
-        }
-        if (senderChainId.toString() !== receiverChainId.toString()) {
-          const activity = {
-            symbol: fungibleToken?.symbol,
-            requestKey: data.reqKey,
-            senderChainId: senderChainId.toString(),
-            receiverChainId: receiverChainId.toString(),
-            receiver: receiverName,
-            createdTime: new Date(data.metaData?.blockTime / 1000).toString(),
-            amount,
-            gasPrice,
-            sender: senderName,
-            domain,
-            status,
-          };
-          const asyncCrossChainRequests = await getCrossChainRequestsAsync();
-          const newCrossRequests = [...(asyncCrossChainRequests?.filter((ccr) => ccr.requestKey !== data.reqKey) || []), activity];
-          setCrossChainRequest(newCrossRequests);
-        }
-
-        // history.push('/');
-        // setActiveTab(ACTIVE_TAB.HOME);
-      })
-      .catch((err) => {
-        console.log('!!! ~ err', err);
-        if (attempt < 5) {
-          onListenTransaction(listenCmd, attempt + 1);
-          toast.error(<Toast type="fail" content="Transfer Fail, I'm trying again" />);
-        } else {
-          toast.error(<Toast type="fail" content="Transfer Fail" />);
-        }
-        // setIsLoading(false);
-        // history.push('/');
-        // setActiveTab(ACTIVE_TAB.HOME);
-      });
+  const onListenTransaction = async (reqKey) => {
+    const pollRes = await pollRequestKey(reqKey, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, senderChainId));
+    const status = pollRes?.result?.status || 'failure';
+    if (pollRes) {
+      if (status === 'success') {
+        toast.success(<Toast type="success" content="Transfer Successfully" />);
+      } else if (status === 'failure') {
+        toast.error(<Toast type="fail" content="Transfer Fail" />);
+      }
+    } else {
+      toast.error(<Toast type="fail" content="Transfer Fail" />);
+    }
+    if (senderChainId.toString() !== receiverChainId.toString()) {
+      const activity = {
+        symbol: fungibleToken?.symbol,
+        requestKey: reqKey,
+        senderChainId: senderChainId.toString(),
+        receiverChainId: receiverChainId.toString(),
+        receiver: receiverName,
+        createdTime: new Date(pollRes?.metaData?.blockTime / 1000).toString(),
+        amount,
+        gasPrice,
+        sender: senderName,
+        domain,
+        status,
+      };
+      const asyncCrossChainRequests = await getCrossChainRequestsAsync();
+      const newCrossRequests = [...(asyncCrossChainRequests?.filter((ccr) => ccr.requestKey !== reqKey) || []), activity];
+      setCrossChainRequest(newCrossRequests);
+    }
   };
 
   const onSend = async () => {
@@ -230,9 +219,6 @@ const PopupConfirm = (props: Props) => {
         .sendSigned(sendCmd, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, senderChainId))
         .then(async (data) => {
           const requestKey = data.requestKeys[0];
-          const listenCmd = {
-            listen: requestKey,
-          };
           addRecent(createdTime);
           const activity = {
             symbol: fungibleToken?.symbol,
@@ -279,7 +265,7 @@ const PopupConfirm = (props: Props) => {
               window.close();
             }, 500);
           }
-          onListenTransaction(listenCmd);
+          onListenTransaction(requestKey);
           setIsLoading(false);
           toast.success(<Toast type="success" content="Transaction sent successfully! Please check the transaction status in the history tab" />);
           history.push('/');

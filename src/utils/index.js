@@ -80,9 +80,11 @@ export const roundNumber = (price, params = 6) => {
 
 export const BigNumberConverter = (value) => {
   const valueConverter = parseFloat(value);
-  const result = new BigNumber(valueConverter).decimalPlaces(12).toString();
+  const result = new BigNumber(valueConverter).decimalPlaces(12, BigNumber.ROUND_DOWN).toString();
   return parseFloat(result);
 };
 
 export const getCoingeckoIdFromContractAddress = (contractAddress) =>
   KNOWN_TOKENS[contractAddress] && KNOWN_TOKENS[contractAddress]?.coingeckoId && KNOWN_TOKENS[contractAddress]?.coingeckoId;
+
+export const wait = (ms) => new Promise((rs) => setTimeout(rs, ms));
