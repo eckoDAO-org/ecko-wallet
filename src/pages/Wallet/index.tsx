@@ -4,7 +4,7 @@ import images from 'src/images';
 import styled from 'styled-components';
 import ModalCustom from 'src/components/Modal/ModalCustom';
 import Dropdown from 'src/components/Dropdown';
-import { roundNumber, shortenAddress, BigNumberConverter, getCoingeckoIdFromContractAddress } from 'src/utils';
+import { roundNumber, shortenAddress, BigNumberConverter, getCoingeckoIdFromContractAddress, humanReadableNumber } from 'src/utils';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import useLocalStorage from 'src/hooks/useLocalStorage';
 import { useSelector } from 'react-redux';
@@ -523,7 +523,7 @@ const Wallet = () => {
                 <Image src={images.wallet.logoWalletKadena} size={50} width={50} alt="logo" />
               </DivChild>
               <DivChild>
-                <Div fontSize="16px" fontWeight="700" color="#461A57" textAlign="right">{`${roundNumber(balance ?? 0, 5)} KDA`}</Div>
+                <Div fontSize="16px" fontWeight="700" color="#461A57" textAlign="right">{`${humanReadableNumber(balance ?? 0, 5)} KDA`}</Div>
                 <Div fontSize="12px" fontWeight="700" color="#461A57" textAlign="right">{`${roundNumber(allChainBalance ?? 0, 5)} KDA`}</Div>
                 <Div fontSize="14px" color="#461A57" marginTop="10px" textAlign="right">
                   {`${roundNumber(getUsdPrice('kadena', balance ?? 0), 1)} USD`}
@@ -567,14 +567,14 @@ const Wallet = () => {
         <WrapAssets>
           <Tokens>
             <TokenChild
-              value={balance}
+              value={humanReadableNumber(balance ?? 0, 5)}
               tokenType="KDA"
               nameToken="Kadena"
               valueUSD={roundNumber(getUsdPrice('kadena', balance), 1)}
               src={images.wallet.iconKadenaToken}
             />
             <TokenChild
-              value={fungibleTokensBalance?.find((f) => f.contractAddress === 'kaddex.kdx')?.chainBalance ?? 0}
+              value={humanReadableNumber(fungibleTokensBalance?.find((f) => f.contractAddress === 'kaddex.kdx')?.chainBalance ?? 0 ?? 0, 5)}
               tokenType="KDX"
               nameToken="Kaddex"
               src={images.wallet.tokens.kdx}
@@ -587,7 +587,7 @@ const Wallet = () => {
                 const tokenBalance = fungibleTokensBalance.find((f) => f.contractAddress === fT.contractAddress);
                 return (
                   <TokenChild
-                    value={tokenBalance?.chainBalance ?? 0}
+                    value={humanReadableNumber(tokenBalance?.chainBalance ?? 0, 5) ?? 0}
                     tokenType={fT.symbol?.toUpperCase()}
                     valueUSD={
                       getCoingeckoIdFromContractAddress(fT.contractAddress) &&
