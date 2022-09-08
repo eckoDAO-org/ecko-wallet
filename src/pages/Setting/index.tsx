@@ -17,6 +17,9 @@ const PageSetting = () => {
   const goNetworks = () => {
     history.push('/networks');
   };
+  const goTxSettings = () => {
+    history.push('/tx-settings');
+  };
   const goAbout = () => {
     history.push('/about');
   };
@@ -41,6 +44,13 @@ const PageSetting = () => {
             <BoxContent>
               <TitleSetting>Networks</TitleSetting>
               <Descripton>Add or edit custom RPC networks</Descripton>
+            </BoxContent>
+            <ImageNetworks src={images.wallet.view} alt="view" />
+          </DivContent>
+          <DivContent onClick={goTxSettings}>
+            <BoxContent>
+              <TitleSetting>Tx Settings</TitleSetting>
+              <Descripton>Edit Transaction Settings</Descripton>
             </BoxContent>
             <ImageNetworks src={images.wallet.view} alt="view" />
           </DivContent>
