@@ -1,337 +1,183 @@
 /* eslint-disable no-console */
-import { useState } from 'react';
+import { useContext } from 'react';
+import { useHistory } from 'react-router-dom';
 import { ButtonAdd, ButtonWrapper } from 'src/pages/SendTransactions/views/style';
 import Button from 'src/components/Buttons';
+import { TxSettingsContextData, TxSettingsContext } from 'src/contexts/TxSettingsContext';
 import { BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
-import { useSelector } from 'react-redux';
+import Back from 'src/components/Back';
 import Toast from 'src/components/Toast/Toast';
-import { convertNetworks, getTimestamp } from 'src/utils';
-import { getLocalNetworks, setLocalNetworks } from 'src/utils/storage';
-import { setNetworks } from 'src/stores/extensions';
-import ModalCustom from 'src/components/Modal/ModalCustom';
-import { BodyModal, ErrorWrapper } from 'src/pages/SendTransactions/styles';
-import { Content } from '../style';
-import { ActionButton, DivBodyNetwork } from '../Networks/views/style';
-import { DivError, Footer, TitleModal } from '../Contact/views/style';
-import { ButtonModal, DescriptionModal } from '../Networks/style';
+import { ErrorWrapper } from 'src/pages/SendTransactions/styles';
+import { ButtonBack, Content, SettingBody, TitleHeader } from '../style';
+import { DivBodyNetwork } from '../Networks/views/style';
+import { Body, DivError, Footer } from '../Contact/views/style';
 
-type Props = {
-  onBack: any;
-  network: any;
-  isEdit: boolean;
-  onClickPopup: Function;
-};
+const PageTransaction = () => {
+  const history = useHistory();
+  const { data, setTxSettings } = useContext(TxSettingsContext);
 
-const PageTransaction = (props: Props) => {
-  const { onBack, network, isEdit, onClickPopup } = props;
-  const [settingNetwork, setSettingNetwork] = useState<any>(network);
-  const [errMessageDuplicateUrl, setErrorMessageDuplicateUrl] = useState('');
-  const [errMessageDuplicateNetworksId, setErrorMessageDuplicateNetworksId] = useState('');
-  const networks = useSelector((state) => state.extensions.networks);
-  const [isModalRemoveNetwork, setModalRemoveNetwork] = useState(false);
+  const getDefaultData = (): any => ({ ...data, gasPrice: data?.gasPrice?.toFixed(6), xChainGasPrice: data?.xChainGasPrice?.toFixed(8) });
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-    clearErrors,
     setValue,
-  } = useForm();
-  const id = network.id ? network.id : getTimestamp();
-  const onSave = () => {
-    const alertText = network.id ? 'Edit network successfully' : 'Add network successfully';
-    const newNetwork = {
-      id: id.toString(),
-      name: settingNetwork.name.trim(),
-      url: settingNetwork.url,
-      explorer: settingNetwork.explorer,
-      networkId: settingNetwork.networkId.trim(),
-      isDefault: false,
+    reset,
+  } = useForm({ defaultValues: getDefaultData() });
+
+  const onSave = (dataSubmit: TxSettingsContextData) => {
+    console.log('🚀 !!! ~ dataSubmit', dataSubmit);
+    const toSubmit = {
+      ...dataSubmit,
+      gasLimit: Number(dataSubmit.gasLimit),
+      gasPrice: Number(dataSubmit.gasPrice),
+      xChainGasLimit: Number(dataSubmit.xChainGasLimit),
+      xChainGasPrice: Number(dataSubmit.xChainGasPrice),
     };
-    if (checkDuplicateUrl()) {
-      setErrorMessageDuplicateUrl('URL already exist');
-      return;
-    }
-    getLocalNetworks(
-      (data) => {
-        const localNetworks = data;
-        localNetworks[`${newNetwork.id}`] = newNetwork;
-        setLocalNetworks(localNetworks);
-        setNetworks(convertNetworks(localNetworks));
-        onBack();
-        toast.success(<Toast type="success" content={alertText} />);
-      },
-      () => {
-        const localNetworks = {};
-        localNetworks[`${newNetwork.id}`] = newNetwork;
-        setLocalNetworks(localNetworks);
-        setNetworks(convertNetworks(localNetworks));
-        onBack();
-        toast.success(<Toast type="success" content={alertText} />);
-      },
-    );
-  };
-  const checkDuplicateUrl = (): boolean => {
-    const duplicate = networks.some((itemNetwork: any) => itemNetwork.url === settingNetwork.url && itemNetwork.id !== id);
-    return duplicate;
-  };
-  const onErrors = (err) => {
-    console.log('err', err);
-  };
-  const handleChangeNetwork = (e, key) => {
-    const { value } = e.target;
-    const newValue = { ...settingNetwork };
-    newValue[key] = value;
-    setSettingNetwork(newValue);
-  };
-  const deleteNetwork = () => {
-    getLocalNetworks(
-      (data) => {
-        const localNetworks = data;
-        delete localNetworks[`${id}`];
-        setLocalNetworks(localNetworks);
-        setNetworks(convertNetworks(localNetworks));
-        onClickPopup();
-        setModalRemoveNetwork(false);
-        toast.success(<Toast type="success" content="Delete network successfully" />);
-      },
-      () => {},
-    );
-  };
-  const checkInValidURL = (str) => {
-    const pattern = new RegExp(
-      '^(https?:\\/\\/)?' + // protocol
-        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
-        '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-        '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-        '(\\#[-a-z\\d_]*)?$',
-      'i',
-    );
-    return !!pattern.test(str);
+    console.log('🚀 !!! ~ toSubmit', toSubmit);
+    setTxSettings(toSubmit);
+    toast.success(<Toast type="success" content="" />);
+    history.push('/setting');
   };
 
+  const onErrors = () => {};
   return (
-    <Content>
-      <form onSubmit={handleSubmit(onSave, onErrors)} id="save-network">
-        <DivBodyNetwork>
-          <BaseTextInput
-            inputProps={{
-              value: settingNetwork.name,
-              placeholder: 'Insert Network Name',
-              ...register('name', {
-                required: {
-                  value: true,
-                  message: 'This field is required.',
-                },
-                maxLength: {
-                  value: 1000,
-                  message: 'Network name should be maximum 1000 characters.',
-                },
-                validate: {
-                  required: (val) => val.trim().length > 0 || 'Invalid data',
-                },
-              }),
-            }}
-            title="Gas Limit"
-            height="auto"
-            onChange={(e) => {
-              clearErrors('name');
-              handleChangeNetwork(e, 'name');
-              setValue('name', e.target.value);
-            }}
-            onBlur={(e) => {
-              setValue('name', e.target.value.trim());
-              handleChangeNetwork(e, 'name');
-            }}
-          />
-          {errors.name && (
-            <ErrorWrapper>
-              <DivError>
-                <InputError marginTop="0">{errors.name.message}</InputError>
-              </DivError>
-            </ErrorWrapper>
-          )}
-        </DivBodyNetwork>
-        <DivBodyNetwork>
-          <BaseTextInput
-            inputProps={{
-              value: settingNetwork.url,
-              placeholder: 'Insert New RPC URL',
-              ...register('url', {
-                required: {
-                  value: true,
-                  message: 'This field is required.',
-                },
-                maxLength: {
-                  value: 1000,
-                  message: 'New RPC URL should be maximum 1000 characters.',
-                },
-                validate: {
-                  required: (val) => val.trim().length > 0 || 'Invalid url',
-                  match: (val) => checkInValidURL(val) || 'Invalid url',
-                },
-              }),
-            }}
-            title="New RPC URL"
-            height="auto"
-            onChange={(e) => {
-              clearErrors('url');
-              handleChangeNetwork(e, 'url');
-              setValue('url', e.target.value);
-              setErrorMessageDuplicateUrl('');
-            }}
-            onBlur={(e) => {
-              setValue('url', e.target.value.trim());
-              handleChangeNetwork(e, 'url');
-            }}
-          />
-          {errors.url && (
-            <ErrorWrapper>
-              <DivError>
-                <InputError marginTop="0">{errors.url.message}</InputError>
-              </DivError>
-            </ErrorWrapper>
-          )}
-          {errMessageDuplicateUrl && (
-            <ErrorWrapper>
-              <DivError>
-                <InputError marginTop="0">{errMessageDuplicateUrl}</InputError>
-              </DivError>
-            </ErrorWrapper>
-          )}
-        </DivBodyNetwork>
-        <DivBodyNetwork>
-          <BaseTextInput
-            inputProps={{
-              value: settingNetwork.explorer,
-              placeholder: 'Insert Block Explorer URL',
-              ...register('explorer', {
-                required: {
-                  value: true,
-                  message: 'This field is required.',
-                },
-                maxLength: {
-                  value: 1000,
-                  message: 'Block Explorer URL should be maximum 1000 characters.',
-                },
-                validate: {
-                  required: (val) => val.trim().length > 0 || 'Invalid data',
-                  match: (val) => checkInValidURL(val) || 'Invalid url',
-                },
-              }),
-            }}
-            title="Block Explorer URL"
-            height="auto"
-            onChange={(e) => {
-              clearErrors('explorer');
-              handleChangeNetwork(e, 'explorer');
-              setValue('explorer', e.target.value);
-            }}
-            onBlur={(e) => {
-              setValue('explorer', e.target.value.trim());
-              handleChangeNetwork(e, 'explorer');
-            }}
-          />
-          {errors.explorer && (
-            <ErrorWrapper>
-              <DivError>
-                <InputError marginTop="0">{errors.explorer.message}</InputError>
-              </DivError>
-            </ErrorWrapper>
-          )}
-        </DivBodyNetwork>
-        <DivBodyNetwork>
-          <BaseTextInput
-            inputProps={{
-              value: settingNetwork.networkId,
-              placeholder: 'Insert Network ID',
-              ...register('networkId', {
-                required: {
-                  value: true,
-                  message: 'This field is required.',
-                },
-                maxLength: {
-                  value: 1000,
-                  message: 'Network ID should be maximum 1000 characters.',
-                },
-                validate: {
-                  required: (val) => val.trim().length > 0 || 'Invalid data',
-                },
-              }),
-            }}
-            title="Network ID"
-            height="auto"
-            onChange={(e) => {
-              clearErrors('networkId');
-              handleChangeNetwork(e, 'networkId');
-              setValue('networkId', e.target.value);
-              setErrorMessageDuplicateNetworksId('');
-            }}
-            onBlur={(e) => {
-              setValue('networkId', e.target.value.trim());
-              handleChangeNetwork(e, 'networkId');
-            }}
-          />
-          {errors.networkId && (
-            <ErrorWrapper>
-              <DivError>
-                <InputError marginTop="0">{errors.networkId.message}</InputError>
-              </DivError>
-            </ErrorWrapper>
-          )}
-          {errMessageDuplicateNetworksId && (
-            <ErrorWrapper>
-              <DivError>
-                <InputError marginTop="0">{errMessageDuplicateNetworksId}</InputError>
-              </DivError>
-            </ErrorWrapper>
-          )}
-        </DivBodyNetwork>
-      </form>
-      <Footer>
-        {isEdit && network.id ? (
-          <>
+    <SettingBody>
+      <ButtonBack>
+        <Back title="Back" onBack={() => history.push('/setting')} />
+      </ButtonBack>
+      <Body>
+        <TitleHeader>Transaction Settings</TitleHeader>
+        <Content>
+          <form onSubmit={handleSubmit(onSave, onErrors)} id="save-network">
+            <DivBodyNetwork>
+              <BaseTextInput
+                title="Gas Limit"
+                height="auto"
+                onChange={(e) => setValue('gasLimit', e.target.value)}
+                inputProps={{
+                  type: 'number',
+                  placeholder: 'Gas Limit',
+                  ...register('gasLimit', {
+                    required: true,
+                  }),
+                }}
+              />
+              {errors.gasLimit && (
+                <ErrorWrapper>
+                  <DivError>
+                    <InputError marginTop="0">{errors.gasLimit.message}</InputError>
+                  </DivError>
+                </ErrorWrapper>
+              )}
+            </DivBodyNetwork>
+            <DivBodyNetwork>
+              <BaseTextInput
+                title="Gas Price"
+                height="auto"
+                onChange={(e) => setValue('gasPrice', e.target.value)}
+                inputProps={{
+                  placeholder: 'Gas Price',
+                  ...register('gasPrice', {
+                    required: true,
+                    // validate: {
+                    //   required: (val) => !Number.isNaN(val) || 'Invalid value',
+                    // },
+                  }),
+                }}
+              />
+              {errors.gasPrice && (
+                <ErrorWrapper>
+                  <DivError>
+                    <InputError marginTop="0">{errors.gasPrice.message}</InputError>
+                  </DivError>
+                </ErrorWrapper>
+              )}
+            </DivBodyNetwork>
+            <DivBodyNetwork>
+              <BaseTextInput
+                title="Finish Crosschain Gas Station"
+                height="auto"
+                onChange={(e) => setValue('xChainGasStation', e.target.value)}
+                inputProps={{
+                  placeholder: 'Finish Crosschain Gas Station',
+                  ...register('xChainGasStation', {
+                    required: true,
+                  }),
+                }}
+              />
+              {errors.xChainGasStation && (
+                <ErrorWrapper>
+                  <DivError>
+                    <InputError marginTop="0">{errors.xChainGasStation.message}</InputError>
+                  </DivError>
+                </ErrorWrapper>
+              )}
+            </DivBodyNetwork>
+            <DivBodyNetwork>
+              <BaseTextInput
+                title="Crosschain Gas Limit"
+                height="auto"
+                onChange={(e) => setValue('xChainGasLimit', e.target.value)}
+                inputProps={{
+                  placeholder: 'Crosschain Gas Limit',
+                  ...register('xChainGasLimit', {
+                    required: {
+                      value: true,
+                      message: 'This field is required.',
+                    },
+                  }),
+                }}
+              />
+              {errors.xChainGasLimit && (
+                <ErrorWrapper>
+                  <DivError>
+                    <InputError marginTop="0">{errors.xChainGasLimit.message}</InputError>
+                  </DivError>
+                </ErrorWrapper>
+              )}
+            </DivBodyNetwork>
+            <DivBodyNetwork>
+              <BaseTextInput
+                title="Crosschain Gas Price"
+                height="auto"
+                onChange={(e) => setValue('xChainGasPrice', e.target.value)}
+                inputProps={{
+                  placeholder: 'Crosschain Gas Price',
+                  ...register('xChainGasPrice', {
+                    required: {
+                      value: true,
+                      message: 'This field is required.',
+                    },
+                  }),
+                }}
+              />
+              {errors.xChainGasPrice && (
+                <ErrorWrapper>
+                  <DivError>
+                    <InputError marginTop="0">{errors.xChainGasPrice.message}</InputError>
+                  </DivError>
+                </ErrorWrapper>
+              )}
+            </DivBodyNetwork>
+          </form>
+          <Footer>
             <ButtonWrapper>
-              <Button label="Remove" type={BUTTON_TYPE.REMOVE} onClick={() => setModalRemoveNetwork(true)} size={BUTTON_SIZE.FULL} />
-            </ButtonWrapper>
-            {isModalRemoveNetwork && (
-              <ModalCustom isOpen={isModalRemoveNetwork} showCloseIcon={false} closeOnOverlayClick>
-                <BodyModal>
-                  <TitleModal>Remove Network?</TitleModal>
-                  <DescriptionModal>Are you sure you want to remove?</DescriptionModal>
-                  <ActionButton>
-                    <ButtonModal background="#ffffff" color="#461A57" border="1px solid #461A57" onClick={() => setModalRemoveNetwork(false)}>
-                      Cancel
-                    </ButtonModal>
-                    <ButtonModal background="#461A57" color="#ffffff" onClick={deleteNetwork}>
-                      Remove
-                    </ButtonModal>
-                  </ActionButton>
-                </BodyModal>
-              </ModalCustom>
-            )}
-            <ButtonWrapper>
-              <Button label="Cancel" type={BUTTON_TYPE.DISABLE} onClick={onBack} size={BUTTON_SIZE.FULL} />
+              <Button label="Cancel" type={BUTTON_TYPE.DISABLE} onClick={() => reset(getDefaultData())} size={BUTTON_SIZE.FULL} />
             </ButtonWrapper>
             <ButtonWrapper>
-              <ButtonAdd form="save-network">Save</ButtonAdd>
+              <ButtonAdd form="save-network" type="submit">
+                Save
+              </ButtonAdd>
             </ButtonWrapper>
-          </>
-        ) : (
-          <>
-            <ButtonWrapper>
-              <Button label="Cancel" type={BUTTON_TYPE.DISABLE} onClick={onBack} size={BUTTON_SIZE.FULL} />
-            </ButtonWrapper>
-            <ButtonWrapper>
-              <ButtonAdd form="save-network">Save</ButtonAdd>
-            </ButtonWrapper>
-          </>
-        )}
-      </Footer>
-    </Content>
+          </Footer>
+        </Content>
+      </Body>
+    </SettingBody>
   );
 };
 

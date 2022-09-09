@@ -49,8 +49,8 @@ const PageSetting = () => {
           </DivContent>
           <DivContent onClick={goTxSettings}>
             <BoxContent>
-              <TitleSetting>Tx Settings</TitleSetting>
-              <Descripton>Edit Transaction Settings</Descripton>
+              <TitleSetting>Transaction Settings</TitleSetting>
+              <Descripton>Edit Gas Limit, Gas Price, Gas Station...</Descripton>
             </BoxContent>
             <ImageNetworks src={images.wallet.view} alt="view" />
           </DivContent>
