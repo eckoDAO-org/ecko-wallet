@@ -59,6 +59,7 @@ const PageTransaction = () => {
       xChainGasLimit: CONFIG.X_CHAIN_GAS_LIMIT,
       xChainGasPrice: CONFIG.X_CHAIN_GAS_PRICE,
       xChainGasStation: CONFIG.X_CHAIN_GAS_STATION,
+      xChainTTL: CONFIG.X_CHAIN_TTL,
     });
   };
 
