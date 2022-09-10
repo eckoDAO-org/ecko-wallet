@@ -233,7 +233,7 @@ const ExportSeedPhrase = () => {
       </Body>
       <SPContent>
         <Text>Your Secret Recovery Phrase makes it easy to back up and restore your account.</Text>
-        <Text isLast>Warning: Never disclose your Secret Recovery Phrase. Anyone with this phrase cane take your wallet forever.</Text>
+        <Text isLast>Warning: Never disclose your Secret Recovery Phrase. Anyone with this phrase can take your wallet forever.</Text>
       </SPContent>
     </Wrapper>
   );
