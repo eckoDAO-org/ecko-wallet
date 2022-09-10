@@ -31,6 +31,7 @@ import InitSeedPhrase from './pages/InitSeedPhrase';
 import ExportSeedPhrase from './pages/Setting/ExportSeedPhrase';
 import History from './pages/Wallet/views/History';
 import TokenMenu from './pages/TokenMenu';
+import PageTransaction from './pages/Setting/Transaction';
 
 const Container = styled.div`
   width: 1000px;
@@ -70,6 +71,7 @@ const AppContainer = () => {
         <DappPrivateRoute path="/dapps-transfer" component={DappTransfer} />
         <PrivateRoute path="/contact" component={PageContact} />
         <PrivateRoute path="/networks" component={PageNetworks} />
+        <PrivateRoute path="/tx-settings" component={PageTransaction} />
         <PrivateRoute path="/about" component={PageAbout} />
         <PrivateRoute path="/setting" component={PageSetting} />
         <PrivateRoute path="/token-menu" component={TokenMenu} />

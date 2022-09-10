@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { BaseSelect, BaseTextInput } from 'src/baseComponent';
 import { useSelector } from 'react-redux';
 import { hideLoading, showLoading } from 'src/stores/extensions';
@@ -9,9 +9,10 @@ import PopupConfirm from 'src/pages/SendTransactions/views/PopupConfirm';
 import { toast } from 'react-toastify';
 import useLocalStorage from 'src/hooks/useLocalStorage';
 import Toast from 'src/components/Toast/Toast';
+import { TxSettingsContext } from 'src/contexts/TxSettingsContext';
 import { Controller, useForm } from 'react-hook-form';
 import { BUTTON_SIZE, BUTTON_TYPE, GAS_PAYER } from 'src/utils/constant';
-import { ESTIMATE_KDA_TO_USD_API, GAS_CONFIGS, NUMBER_DECIMAL_AFTER_DOT } from 'src/utils/config';
+import { CONFIG, ESTIMATE_KDA_TO_USD_API, GAS_CONFIGS, NUMBER_DECIMAL_AFTER_DOT } from 'src/utils/config';
 import { get } from 'lodash';
 import images from 'src/images';
 import { BigNumberConverter, shortenAddress } from 'src/utils';
@@ -123,8 +124,9 @@ const defaultWallet: Wallet = {
 };
 const Transfer = (props: Props) => {
   const { destinationAccount, fungibleToken } = props;
+  const { data: txSettings } = useContext(TxSettingsContext);
   const [wallet, setWallet] = useState(defaultWallet);
-  const [selectedGas, setSelectedGas] = useState(GAS_CONFIGS.NORMAL);
+  const [selectedGas, setSelectedGas] = useState({ ...GAS_CONFIGS.NORMAL });
   const [fungibleTokens] = useLocalStorage<IFungibleToken[]>('fungibleTokens', []);
   const [amount, setAmount] = useState('');
   const [isNewContact, setIsNewContact] = useState(true);
@@ -132,6 +134,13 @@ const Transfer = (props: Props) => {
   const [isOpenTransferModal, setIsOpenTransferModal] = useState(false);
   const [isOpenAddContactModal, setIsOpenAddContactModal] = useState(false);
   const [KDApriceEstimate, setKDApriceEstimate] = useState(1);
+
+  useEffect(() => {
+    setSelectedGas({
+      ...selectedGas,
+      GAS_LIMIT: txSettings?.gasLimit || CONFIG.GAS_LIMIT,
+    });
+  }, [txSettings]);
 
   const {
     register,

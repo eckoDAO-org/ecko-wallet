@@ -6,6 +6,7 @@ import store from './stores';
 import 'react-toastify/dist/ReactToastify.css';
 import AppContainer from './AppContainer';
 import { CrossChainProvider } from './contexts/CrossChainContext';
+import { TxSettingsProvider } from './contexts/TxSettingsContext';
 
 const AppWrapper = styled.div`
   display: block;
@@ -49,9 +50,11 @@ const App = () => (
   <Provider store={store}>
     <AppWrapper>
       <Content>
-        <CrossChainProvider>
-          <AppContainer />
-        </CrossChainProvider>
+        <TxSettingsProvider>
+          <CrossChainProvider>
+            <AppContainer />
+          </CrossChainProvider>
+        </TxSettingsProvider>
       </Content>
     </AppWrapper>
     <ToastWrapper>

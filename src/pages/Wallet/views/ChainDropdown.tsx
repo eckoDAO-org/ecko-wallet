@@ -1,33 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import images from 'src/images';
 import { fetchListLocal, getBalanceFromChainwebApiResponse } from 'src/utils/chainweb';
 import ReactLoading from 'react-loading';
-// import { useHistory } from 'react-router-dom';
-// import Pact from 'pact-lang-api';
 import { useSelector } from 'react-redux';
 import { hideLoading } from 'src/stores/extensions';
 import { setBalance, setCurrentWallet, setWallets } from 'src/stores/wallet';
-// import { CONFIG } from 'src/utils/config';
-// import { toast } from 'react-toastify';
-// import Toast from 'src/components/Toast/Toast';
-// import { get } from 'lodash';
-// import { getTimestamp } from 'src/utils';
-import {
-  getLocalPassword,
-  getLocalWallets,
-  // getLocalWallets,
-  setLocalSelectedWallet,
-  setLocalWallets,
-  // setLocalWallets,
-} from 'src/utils/storage';
+import { getLocalPassword, getLocalWallets, setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
 import { encryptKey } from 'src/utils/security';
 import { CHAIN_COUNT } from 'src/utils/constant';
-// import { ButtonWrapper, PageConfirm } from 'src/pages/SendTransactions/views/style';
-// import { Footer } from 'src/pages/SendTransactions/styles';
-// import Button from 'src/components/Buttons';
-// import { BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
-// import ModalCustom from 'src/components/Modal/ModalCustom';
+import { TxSettingsContext } from 'src/contexts/TxSettingsContext';
 
 const Div = styled.div`
   margin: auto 0;
@@ -86,6 +68,7 @@ const DivChild = styled.div`
 const ChainDropdown = () => {
   const [listChain, setListChain] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { data: txSettings } = useContext(TxSettingsContext);
   const rootState = useSelector((state) => state);
   const { selectedNetwork } = rootState.extensions;
   const { wallet } = rootState;
@@ -120,7 +103,14 @@ const ChainDropdown = () => {
     const code = `(coin.details "${wallet.account}")`;
     const promiseList: any[] = [];
     for (let i = 0; i < listChainId?.length; i += 1) {
-      const item = fetchListLocal(code, selectedNetwork.url, selectedNetwork.networkId, listChainId[i]?.chainId);
+      const item = fetchListLocal(
+        code,
+        selectedNetwork.url,
+        selectedNetwork.networkId,
+        listChainId[i]?.chainId,
+        txSettings?.gasPrice,
+        txSettings?.gasLimit,
+      );
       promiseList.push(item);
     }
     Promise.all(promiseList)
@@ -150,86 +140,7 @@ const ChainDropdown = () => {
     }
     return 0;
   };
-  // const onHandleClickSingle = (isExist, account) => {
-  //   if (isExist) {
-  //     saveWallet(account);
-  //   } else {
-  //     setAccountData(account);
-  //     setIsOpenConfirmModal(true);
-  //   }
-  // };
-  // const saveWallet = (newAccount) => {
-  //   const {
-  //     chainId,
-  //     account,
-  //     publicKey,
-  //     secretKey,
-  //   } = newAccount;
-  //   const walletIndex = wallet.wallets.findIndex((w:any) => w.chainId.toString() === chainId.toString() && w.account === account);
-  //   getLocalPassword((accountPassword) => {
-  //     const newWallet = {
-  //       account: encryptKey(account, accountPassword),
-  //       publicKey: encryptKey(publicKey, accountPassword),
-  //       secretKey: encryptKey(secretKey, accountPassword),
-  //       chainId,
-  //       connectedSites: [],
-  //     };
-  //     if (walletIndex < 0) {
-  //       getLocalWallets(selectedNetwork.networkId, (item) => {
-  //         const newData = [...item, newWallet];
-  //         setLocalWallets(selectedNetwork.networkId, newData);
-  //       }, () => {
-  //         setLocalWallets(selectedNetwork.networkId, [newWallet]);
-  //       });
-  //       const newWallets = [...wallet.wallets, newAccount];
-  //       setWallets(newWallets);
-  //     }
-  //     setLocalSelectedWallet(newWallet);
-  //     setCurrentWallet(newAccount);
-  //   }, () => {});
-  // };
-  // const onCreateWallet = () => {
-  //   const {
-  //     chainId,
-  //     account,
-  //     publicKey,
-  //   } = accountData;
-  //   const cmd = {
-  //     keyPairs: [],
-  //     pactCode: `(coin.create-account "${account}" (read-keyset "k"))`,
-  //     envData: {
-  //       k: [publicKey],
-  //     },
-  //     meta: Pact.lang.mkMeta(
-  //       CONFIG.X_CHAIN_GAS_STATION,
-  //       chainId.toString(),
-  //       CONFIG.X_CHAIN_GAS_PRICE,
-  //       CONFIG.X_CHAIN_GAS_LIMIT,
-  //       getTimestamp(),
-  //       CONFIG.X_CHAIN_TTL,
-  //     ),
-  //     networkId: selectedNetwork.networkId,
-  //   };
 
-  //   showLoading();
-  //   Pact.fetch.send(cmd, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, chainId)).then((data) => {
-  //     const requestKey = data.requestKeys[0];
-  //     const listenCmd = {
-  //       listen: requestKey,
-  //     };
-  //     Pact.fetch.listen(listenCmd, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, chainId)).then(() => {
-  //       hideLoading();
-  //       setIsOpenConfirmModal(false);
-  //       saveWallet(accountData);
-  //     }).catch(() => {
-  //       hideLoading();
-  //       toast.error(<Toast type="fail" content="Network error" />);
-  //     });
-  //   }).catch(() => {
-  //     hideLoading();
-  //     toast.error(<Toast type="fail" content="Network error" />);
-  //   });
-  // };
   const changeExistWallet = (newAccount, balance) => {
     const { chainId, account, publicKey, secretKey } = newAccount;
     getLocalPassword(
