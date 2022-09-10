@@ -1,10 +1,10 @@
-import React, { useState, createContext, useEffect, useCallback } from 'react';
+import { createContext, useEffect } from 'react';
 import Pact from 'pact-lang-api';
 import { get } from 'lodash';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
-import { fetchSend, getApiUrl } from 'src/utils/chainweb';
+import { fetchSend, getApiUrl, pollRequestKey } from 'src/utils/chainweb';
 import useLocalStorage from 'src/hooks/useLocalStorage';
 import { getTimestamp } from 'src/utils';
 import { CONFIG } from 'src/utils/config';
@@ -182,11 +182,7 @@ export const CrossChainProvider = ({ children }: any) => {
         if (data.ok) {
           data.json().then((res) => {
             if (res && res.requestKeys) {
-              const requestKeySend = res.requestKeys[0];
-              const listenCmd = {
-                listen: requestKeySend,
-              };
-              onListenFinishTransaction(listenCmd, targetChainId, requestFinished);
+              onListenFinishTransaction(res.requestKeys[0], targetChainId, requestFinished);
             } else {
               toast.error(<Toast type="fail" content="Network error." />);
             }
@@ -200,22 +196,22 @@ export const CrossChainProvider = ({ children }: any) => {
       });
   };
 
-  const onListenFinishTransaction = (listenCmd, targetChainId, requestFinished, attempt = 1) => {
-    Pact.fetch
-      .listen(listenCmd, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, targetChainId))
-      .then(async () => {
+  const onListenFinishTransaction = async (reqKey, targetChainId, requestFinished) => {
+    const pollRes = await pollRequestKey(reqKey, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, targetChainId));
+    if (pollRes) {
+      const status = pollRes?.result?.status;
+      if (status === 'success' || (pollRes?.result.error?.message && pollRes?.result.error?.message?.indexOf('resumePact: pact completed') > -1)) {
         const newRequests = crossChainRequests?.filter((request: any) => requestFinished.createdTime !== request.createdTime) || [];
         setCrossChainRequest(newRequests);
         const toFinishTxs = await getTofinishTxhAsync();
         setPendingFinishRequestKeys([...(pendingFinishRequestKeys?.filter((requestKey) => requestKey !== requestFinished.requestKey) ?? [])]);
         setToFinishCrossChainTxs([...(toFinishTxs?.filter((requestKey) => requestKey !== requestFinished.requestKey) ?? [])]);
-        // toast.success(<Toast type="success" content="Finish transfer successfully" />);
-      })
-      .catch(() => {
-        if (attempt < 11) {
-          onListenFinishTransaction(listenCmd, targetChainId, requestFinished, attempt + 1);
-        }
-      });
+      } else if (status === 'failure') {
+        toast.error(<Toast type="fail" content="Finish cross transfer Fail" />);
+      }
+    } else {
+      // toast.error(<Toast type="fail" content="Finish cross transfer Fail" />);
+    }
   };
 
   return (
