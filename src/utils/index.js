@@ -78,6 +78,13 @@ export const roundNumber = (price, params = 6) => {
   return +numb.toFixed(params);
 };
 
+export const countDecimalPlaces = (value) => {
+  if (Math.floor(value) === value) return 0;
+  return value?.toString().split('.')[1]?.length || 0;
+};
+
+export const humanReadableNumber = (num, minimumFractionDigits = 2) => parseFloat(num).toLocaleString(undefined, { minimumFractionDigits });
+
 export const BigNumberConverter = (value) => {
   const valueConverter = parseFloat(value);
   const result = new BigNumber(valueConverter).decimalPlaces(12, BigNumber.ROUND_DOWN).toString();
