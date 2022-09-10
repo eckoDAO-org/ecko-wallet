@@ -6,7 +6,6 @@ function useLocalStorage<S>(key: string, initialValue: S): [S | null, (value: an
   useEffect(() => {
     try {
       (window as any).chrome.storage.local.get(key, (item) => {
-        console.log('🚀 !!! ~ key', key);
         if (!item[key]) {
           (window as any).chrome.storage.local.set({ [key]: initialValue }, () => {
             setStoredValue(initialValue);

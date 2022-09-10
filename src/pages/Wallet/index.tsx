@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import images from 'src/images';
 import styled from 'styled-components';
@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux';
 import { setBalance, setCurrentWallet, setWallets } from 'src/stores/wallet';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
+import { TxSettingsContext } from 'src/contexts/TxSettingsContext';
 import { ESTIMATE_KDA_TO_USD_API } from 'src/utils/config';
 import { CHAIN_COUNT, KNOWN_TOKENS } from 'src/utils/constant';
 import { getLocalPassword, getLocalSeedPhrase, getLocalWallets, setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
@@ -202,6 +203,7 @@ const WrapAssets = styled.div``;
 const Wallet = () => {
   const history = useHistory();
   const rootState = useSelector((state) => state);
+  const { data: txSettings } = useContext(TxSettingsContext);
   const { selectedNetwork, passwordHash } = rootState.extensions;
   const location = useLocation().pathname;
   const { balance, wallets } = rootState?.wallet;
@@ -219,7 +221,14 @@ const Wallet = () => {
     const promiseList: any[] = [];
     const pactCode = `(${contractAddress}.details "${account}")`;
     chainArray.forEach((i) => {
-      const promise = fetchListLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, i.toString());
+      const promise = fetchListLocal(
+        pactCode,
+        selectedNetwork.url,
+        selectedNetwork.networkId,
+        i.toString(),
+        txSettings?.gasPrice,
+        txSettings?.gasLimit,
+      );
       promiseList.push(promise);
     });
     let total = 0;

@@ -1,3 +1,4 @@
+import { useContext, useMemo } from 'react';
 import { BaseSelect, BaseTextInput, InputError } from 'src/baseComponent';
 import { useSelector } from 'react-redux';
 import { hideLoading, showLoading } from 'src/stores/extensions';
@@ -7,8 +8,8 @@ import { useHistory } from 'react-router-dom';
 import Back from 'src/components/Back';
 import images from 'src/images';
 import styled from 'styled-components';
+import { TxSettingsContext } from 'src/contexts/TxSettingsContext';
 import { useForm, Controller } from 'react-hook-form';
-import { useMemo } from 'react';
 import Pact from 'pact-lang-api';
 import { getTimestamp } from 'src/utils';
 import { getApiUrl } from 'src/utils/chainweb';
@@ -16,7 +17,6 @@ import { getLocalPassword, getLocalWallets, setLocalSelectedWallet, setLocalWall
 import { encryptKey } from 'src/utils/security';
 import useChainIdOptions from 'src/hooks/useChainIdOptions';
 import Toast from 'src/components/Toast/Toast';
-import { CONFIG } from '../../utils/config';
 
 const Title = styled.div`
   font-style: normal;
@@ -92,6 +92,8 @@ const GenerateAccount = () => {
     control,
   } = useForm();
 
+  const { data: txSettings } = useContext(TxSettingsContext);
+
   const history = useHistory();
   const rootState = useSelector((state) => state);
   const { wallets } = rootState.wallet;
@@ -112,12 +114,12 @@ const GenerateAccount = () => {
         k: [publicKey],
       },
       meta: Pact.lang.mkMeta(
-        CONFIG.X_CHAIN_GAS_STATION,
+        txSettings?.xChainGasStation,
         chainIdValue.toString(),
-        CONFIG.X_CHAIN_GAS_PRICE,
-        CONFIG.X_CHAIN_GAS_LIMIT,
+        txSettings?.xChainGasPrice,
+        txSettings?.xChainGasLimit,
         getTimestamp(),
-        CONFIG.X_CHAIN_TTL,
+        txSettings?.xChainTTL,
       ),
       networkId: selectedNetwork.networkId,
     };

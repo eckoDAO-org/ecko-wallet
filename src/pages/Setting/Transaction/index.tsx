@@ -1,25 +1,35 @@
 /* eslint-disable no-console */
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { ButtonAdd, ButtonWrapper } from 'src/pages/SendTransactions/views/style';
+import { ButtonAdd } from 'src/pages/SendTransactions/views/style';
 import Button from 'src/components/Buttons';
 import { TxSettingsContextData, TxSettingsContext } from 'src/contexts/TxSettingsContext';
 import { BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
+import BigNumber from 'bignumber.js';
 import Back from 'src/components/Back';
 import Toast from 'src/components/Toast/Toast';
+import { CONFIG } from 'src/utils/config';
 import { ErrorWrapper } from 'src/pages/SendTransactions/styles';
 import { ButtonBack, Content, SettingBody, TitleHeader } from '../style';
 import { DivBodyNetwork } from '../Networks/views/style';
-import { Body, DivError, Footer } from '../Contact/views/style';
+import { Body, DivError } from '../Contact/views/style';
 
 const PageTransaction = () => {
   const history = useHistory();
   const { data, setTxSettings } = useContext(TxSettingsContext);
 
-  const getDefaultData = (): any => ({ ...data, gasPrice: data?.gasPrice?.toFixed(6), xChainGasPrice: data?.xChainGasPrice?.toFixed(8) });
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const getDefaultData = (): any => {
+    const gasPriceDecimals = new BigNumber(data?.gasPrice ?? CONFIG.GAS_PRICE).decimalPlaces();
+    const xChainGasPriceDecimals = new BigNumber(data?.xChainGasPrice ?? CONFIG.X_CHAIN_GAS_PRICE).decimalPlaces();
+    return { ...data, gasPrice: data?.gasPrice?.toFixed(gasPriceDecimals), xChainGasPrice: data?.xChainGasPrice?.toFixed(xChainGasPriceDecimals) };
+  };
 
   const {
     register,
@@ -30,7 +40,6 @@ const PageTransaction = () => {
   } = useForm({ defaultValues: getDefaultData() });
 
   const onSave = (dataSubmit: TxSettingsContextData) => {
-    console.log('🚀 !!! ~ dataSubmit', dataSubmit);
     const toSubmit = {
       ...dataSubmit,
       gasLimit: Number(dataSubmit.gasLimit),
@@ -38,10 +47,19 @@ const PageTransaction = () => {
       xChainGasLimit: Number(dataSubmit.xChainGasLimit),
       xChainGasPrice: Number(dataSubmit.xChainGasPrice),
     };
-    console.log('🚀 !!! ~ toSubmit', toSubmit);
     setTxSettings(toSubmit);
-    toast.success(<Toast type="success" content="" />);
+    toast.success(<Toast type="success" content="Settings saved successfully" />);
     history.push('/setting');
+  };
+
+  const restoreDefault = () => {
+    onSave({
+      gasLimit: CONFIG.GAS_LIMIT,
+      gasPrice: CONFIG.GAS_PRICE,
+      xChainGasLimit: CONFIG.X_CHAIN_GAS_LIMIT,
+      xChainGasPrice: CONFIG.X_CHAIN_GAS_PRICE,
+      xChainGasStation: CONFIG.X_CHAIN_GAS_STATION,
+    });
   };
 
   const onErrors = () => {};
@@ -77,29 +95,6 @@ const PageTransaction = () => {
             </DivBodyNetwork>
             <DivBodyNetwork>
               <BaseTextInput
-                title="Gas Price"
-                height="auto"
-                onChange={(e) => setValue('gasPrice', e.target.value)}
-                inputProps={{
-                  placeholder: 'Gas Price',
-                  ...register('gasPrice', {
-                    required: true,
-                    // validate: {
-                    //   required: (val) => !Number.isNaN(val) || 'Invalid value',
-                    // },
-                  }),
-                }}
-              />
-              {errors.gasPrice && (
-                <ErrorWrapper>
-                  <DivError>
-                    <InputError marginTop="0">{errors.gasPrice.message}</InputError>
-                  </DivError>
-                </ErrorWrapper>
-              )}
-            </DivBodyNetwork>
-            <DivBodyNetwork>
-              <BaseTextInput
                 title="Finish Crosschain Gas Station"
                 height="auto"
                 onChange={(e) => setValue('xChainGasStation', e.target.value)}
@@ -124,6 +119,7 @@ const PageTransaction = () => {
                 height="auto"
                 onChange={(e) => setValue('xChainGasLimit', e.target.value)}
                 inputProps={{
+                  type: 'number',
                   placeholder: 'Crosschain Gas Limit',
                   ...register('xChainGasLimit', {
                     required: {
@@ -147,11 +143,16 @@ const PageTransaction = () => {
                 height="auto"
                 onChange={(e) => setValue('xChainGasPrice', e.target.value)}
                 inputProps={{
+                  type: 'number',
+                  step: 'any',
                   placeholder: 'Crosschain Gas Price',
                   ...register('xChainGasPrice', {
                     required: {
                       value: true,
                       message: 'This field is required.',
+                    },
+                    validate: {
+                      required: (val) => !Number.isNaN(val) || 'Invalid value',
                     },
                   }),
                 }}
@@ -165,16 +166,15 @@ const PageTransaction = () => {
               )}
             </DivBodyNetwork>
           </form>
-          <Footer>
-            <ButtonWrapper>
-              <Button label="Cancel" type={BUTTON_TYPE.DISABLE} onClick={() => reset(getDefaultData())} size={BUTTON_SIZE.FULL} />
-            </ButtonWrapper>
-            <ButtonWrapper>
-              <ButtonAdd form="save-network" type="submit">
-                Save
-              </ButtonAdd>
-            </ButtonWrapper>
-          </Footer>
+          <div>
+            <Button label="Restore default" type={BUTTON_TYPE.DISABLE} onClick={restoreDefault} size={BUTTON_SIZE.FULL} />
+          </div>
+          <div style={{ display: 'flex', margin: '10px 0', gap: 10 }}>
+            <Button label="Cancel" type={BUTTON_TYPE.DISABLE} onClick={() => reset(getDefaultData())} size={BUTTON_SIZE.FULL} />
+            <ButtonAdd form="save-network" type="submit">
+              Save
+            </ButtonAdd>
+          </div>
         </Content>
       </Body>
     </SettingBody>
