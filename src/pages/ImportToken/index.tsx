@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useContext } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
@@ -12,6 +12,7 @@ import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import { fetchListLocal } from 'src/utils/chainweb';
 import { hideLoading, showLoading } from 'src/stores/extensions';
 import { KNOWN_TOKENS } from 'src/utils/constant';
+import { TxSettingsContext } from 'src/contexts/TxSettingsContext';
 
 export interface IFungibleToken {
   contractAddress: string;
@@ -72,6 +73,7 @@ const ImportToken = () => {
   const { selectedNetwork } = rootState.extensions;
   const history = useHistory();
   const [fungibleTokens, setFungibleTokens] = useLocalStorage<IFungibleToken[]>('fungibleTokens', []);
+  const { data: txSettings } = useContext(TxSettingsContext);
 
   const params = new URLSearchParams(search);
   const coin = params.get('coin');
@@ -84,7 +86,7 @@ const ImportToken = () => {
     for (let i = 0; i < 20; i += 1) {
       try {
         /* eslint-disable no-await-in-loop */
-        const res = await fetchListLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, i);
+        const res = await fetchListLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, i, txSettings?.gasPrice, txSettings?.gasLimit);
         if (res?.result?.error?.message?.startsWith('with-read: row not found') || res?.result?.status === 'success') {
           hideLoading();
           return true;

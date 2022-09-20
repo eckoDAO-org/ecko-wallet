@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { hideLoading, showLoading } from 'src/stores/extensions';
 import { fetchListLocal } from 'src/utils/chainweb';
 import { BaseSelect, BaseTextInput, InputError } from 'src/baseComponent';
@@ -8,6 +8,7 @@ import { useHistory } from 'react-router-dom';
 import QrReader from 'react-qr-reader';
 import images from 'src/images';
 import { toast } from 'react-toastify';
+import { TxSettingsContext } from 'src/contexts/TxSettingsContext';
 import { useWindowResizeMobile } from 'src/hooks/useWindowResizeMobile';
 import Toast from 'src/components/Toast/Toast';
 import Tabs from 'src/components/Tabs';
@@ -63,6 +64,7 @@ const SelectReceiver = (props: Props) => {
   const { wallet } = rootState;
   const history = useHistory();
   const optionsChain = useChainIdOptions();
+  const { data: txSettings } = useContext(TxSettingsContext);
   const {
     register,
     handleSubmit,
@@ -92,7 +94,7 @@ const SelectReceiver = (props: Props) => {
     } else {
       showLoading();
       const code = `(coin.details "${receiver}")`;
-      fetchListLocal(code, selectedNetwork.url, selectedNetwork.networkId, chainId)
+      fetchListLocal(code, selectedNetwork.url, selectedNetwork.networkId, chainId, txSettings?.gasPrice, txSettings?.gasLimit)
         .then((res) => {
           hideLoading();
           setIsSearching(false);

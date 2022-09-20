@@ -1,4 +1,4 @@
-import { createContext, useEffect } from 'react';
+import { createContext, useEffect, useContext } from 'react';
 import Pact from 'pact-lang-api';
 import { get } from 'lodash';
 import { useSelector } from 'react-redux';
@@ -7,7 +7,7 @@ import Toast from 'src/components/Toast/Toast';
 import { fetchSend, getApiUrl, pollRequestKey } from 'src/utils/chainweb';
 import useLocalStorage from 'src/hooks/useLocalStorage';
 import { getTimestamp } from 'src/utils';
-import { CONFIG } from 'src/utils/config';
+import { TxSettingsContext } from './TxSettingsContext';
 
 interface CrossChainContextValue {
   crossChainRequests: any[] | null;
@@ -33,6 +33,8 @@ export const CrossChainContext = createContext<CrossChainContextValue>(defaultCr
 
 export const CrossChainProvider = ({ children }: any) => {
   const rootState = useSelector((state) => state);
+
+  const { data: txSettings } = useContext(TxSettingsContext);
 
   const { selectedNetwork } = rootState.extensions;
   const { account, chainId } = rootState.wallet;
@@ -143,8 +145,15 @@ export const CrossChainProvider = ({ children }: any) => {
         const proof = res;
         const pactId = requestKey.length === 44 ? requestKey.slice(0, 43) : requestKey;
         const host = getApiUrl(selectedNetwork.url, selectedNetwork.networkId, targetChainId);
-        const gasStation = CONFIG.X_CHAIN_GAS_STATION;
-        const m = Pact.lang.mkMeta(gasStation, targetChainId, CONFIG.X_CHAIN_GAS_PRICE, CONFIG.X_CHAIN_GAS_LIMIT, getTimestamp(), CONFIG.X_CHAIN_TTL);
+        const gasStation = txSettings?.xChainGasStation;
+        const m = Pact.lang.mkMeta(
+          gasStation,
+          targetChainId,
+          txSettings?.xChainGasPrice,
+          txSettings?.xChainGasLimit,
+          getTimestamp(),
+          txSettings?.xChainTTL,
+        );
         const cmd = {
           type: 'cont',
           keyPairs: [],

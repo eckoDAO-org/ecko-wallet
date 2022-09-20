@@ -25,12 +25,12 @@ const mkReq = (cmd) => ({
 
 export const fetchSend = (cmd, customApiHost) => fetch(`${customApiHost}/api/v1/send`, mkReq(cmd));
 
-export const fetchListLocal = (code, url, networkId, chainId) => {
+export const fetchListLocal = (code, url, networkId, chainId, gasPrice = CONFIG.GAS_PRICE, gasLimit = CONFIG.GAS_LIMIT) => {
   const customHost = getApiUrl(url, networkId, chainId);
   const localCmd = {
     pactCode: code,
     envData: {},
-    meta: Pact.lang.mkMeta('', '', CONFIG.GAS_PRICE, CONFIG.GAS_LIMIT, 0, CONFIG.X_CHAIN_TTL),
+    meta: Pact.lang.mkMeta('', '', gasPrice, gasLimit, 0, CONFIG.X_CHAIN_TTL),
     networkId,
   };
   return Pact.fetch.local(localCmd, customHost);
