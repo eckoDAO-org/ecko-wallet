@@ -10,7 +10,6 @@ const FetchingWrapper = styled.div`
   bottom: 0;
   right: 0;
   z-index: 1000;
-  background: linear-gradient(90deg, #e6fefe 0%, #fdf6e6 100%);
 `;
 type Props = {
   component: any;

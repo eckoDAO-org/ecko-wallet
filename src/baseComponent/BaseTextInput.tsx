@@ -130,7 +130,7 @@ const SText = styled.title`
   margin-bottom: ${(props) => (props.isFlex ? '0' : '10px')};
   ${(props) => (props.isFlex ? 'width: 31%' : '')};
   ${(props) => (props.isFlex ? 'align-self: center' : '')};
-  color: #461a57;
+
   font-weight: 700;
 `;
 const SInput = styled.input`

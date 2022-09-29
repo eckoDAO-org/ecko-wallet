@@ -25,7 +25,6 @@ const Wrapper = styled.div`
   bottom: 0;
   right: 0;
   z-index: 2;
-  background: linear-gradient(90deg, #e6fefe 0%, #fdf6e6 100%);
   font-size: 14px;
   overflow-y: scroll;
   overflow-x: hidden;
@@ -183,10 +182,10 @@ const DappSignIn = () => {
         </ConnectDescription>
         <FooterWrapper>
           <ButtonWrapper>
-            <Button label="Reject" type={BUTTON_TYPE.DISABLE} onClick={onReject} size={BUTTON_SIZE.FULL} />
+            <Button label="Reject" type="disabled" onClick={onReject} />
           </ButtonWrapper>
           <ButtonWrapper>
-            <Button label="Save" onClick={onSave} size={BUTTON_SIZE.FULL} />
+            <Button label="Save" onClick={onSave} />
           </ButtonWrapper>
         </FooterWrapper>
       </CompleteWrapper>

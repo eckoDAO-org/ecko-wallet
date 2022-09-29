@@ -36,7 +36,7 @@ const DivChild = styled.div`
 const Warning = styled.div`
   padding: 13px;
   background: #eee6f3;
-  color: #461a57;
+
   border: 1px solid #461a57;
   border-radius: 8px;
   text-align: center;
@@ -151,7 +151,7 @@ const ModalExportPrivateKey = (props: Props) => {
               </DivError>
             </Item>
             <SubmitBtn>
-              <Button label="Verify" size={BUTTON_SIZE.FULL} onClick={handleVerifyPassword} />
+              <Button label="Verify" onClick={handleVerifyPassword} />
             </SubmitBtn>
           </Div>
         )}
@@ -176,7 +176,7 @@ const ModalExportPrivateKey = (props: Props) => {
               <QRCode id="export-private-key" value={secretKey} size={200} level="H" />
             </QrCodeBox>
             <Item>
-              <Button label="Download" size={BUTTON_SIZE.FULL} onClick={downloadQrCode} />
+              <Button label="Download" onClick={downloadQrCode} />
             </Item>
             <Warning>Warning: Never disclose this key. Anyone with your private keys can steal any assets held in your account.</Warning>
           </Div>

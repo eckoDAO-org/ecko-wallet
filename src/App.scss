@@ -1,3 +1,8 @@
+@font-face {
+  font-family: 'Montserrat';
+  src: local('Montserrat'), url(./css/font/Montserrat-VariableFont_wght.ttf) format('truetype');
+}
+
 .main-container-wrapper {
   display: flex;
   justify-content: center;
@@ -12,4 +17,24 @@
   box-shadow: 0 0 7px 0 #444444;
   position: absolute;
   text-align: center;
+}
+
+.react-responsive-modal-modal {
+  .react-responsive-modal-closeButton {
+    &:focus-visible {
+      outline: none !important;
+    }
+  }
+}
+
+@keyframes animatebottom {
+  0% {
+    bottom: -300px;
+    opacity: 0;
+  }
+
+  100% {
+    bottom: 0;
+    opacity: 1;
+  }
 }

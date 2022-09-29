@@ -17,27 +17,24 @@ const Item = styled.div`
   margin-bottom: 15px;
 `;
 const DivChild = styled.div`
-  color: #461a57;
   font-size: ${(props) => props.fontSize};
   font-weight: ${(props) => props.fontWeight};
   margin: ${(props) => props.margin};
   padding: ${(props) => props.padding};
 `;
 const CustomDiv = styled(DivChild)`
-  color: #461a57;
   font-weight: bold;
 `;
 const Total = styled.div`
   display: flex;
   justify-content: space-between;
-  color: #461a57;
+
   font-weight: 700;
   margin-top: 20px;
   margin-bottom: 50px;
 `;
 const Hr = styled.hr`
   height: 2px;
-  background: linear-gradient(90deg, #d2ab72 0%, #b66e84 35.42%, #b2579b 64.06%, #9ee9e4 99.48%);
   transform: matrix(1, 0, 0, -1, 0, 0);
   border: none;
 `;
@@ -127,7 +124,7 @@ const PopupDetailTransaction = (props: Props) => {
         </Total>
       )}
       <Item>
-        <Button size={BUTTON_SIZE.FULL} onClick={openTransactionDetails} label="View Details" />
+        <Button onClick={openTransactionDetails} label="View Details" />
       </Item>
       <ActivityLog>
         <DivChild margin="0 0 10px 0" fontSize="16px" fontWeight={700}>

@@ -1,51 +1,48 @@
+import React from 'react';
 import 'react-responsive-modal/styles.css';
 import { Modal } from 'react-responsive-modal';
 import styled from 'styled-components';
-import { useWindowResizeMobile } from 'src/hooks/useWindowResizeMobile';
 import images from 'src/images';
 
-const Div = styled.div`
-  font-size: 16px;
-  color: #461a57;
-  word-break: break-word;
-`;
 const Img = styled.img`
-  margin-top: 5px;
+  width: 10px;
+  height: 10px;
+  &:focus-visible {
+    outline: none !important;
+  }
 `;
-const TitleHeader = styled.div`
-  text-align: center;
-  font-size: 16px;
-  font-weight: 700;
-  color: #461a57;
-  margin-bottom: 15px;
-`;
-
-const Hr = styled.hr`
-  height: 2px;
-  background: linear-gradient(90deg, #d2ab72 0%, #b66e84 35.42%, #b2579b 64.06%, #9ee9e4 99.48%);
-  transform: matrix(1, 0, 0, -1, 0, 0);
-  border: none;
-  width: 120%;
-  margin-left: -1.2rem;
-`;
-const ModalWrapper = styled.div`
-  .react-responsive-modal-containerCenter::-webkit-scrollbar {
+const DivBody = styled.div`
+  &::-webkit-scrollbar {
     width: 2px;
   }
-
-  .react-responsive-modal-containerCenter::-webkit-scrollbar-track {
+  &::-webkit-scrollbar-track {
     background: rgb(226, 226, 226);
   }
 
-  .react-responsive-modal-containerCenter::-webkit-scrollbar-thumb {
-    background-color: rgb(54, 54, 54);
+  &::-webkit-scrollbar-thumb {
+    background-color: rgb(186, 186, 186);
     border-radius: 2px;
+  }
+`;
+const TitleHeader = styled.div`
+  text-align: center;
+  font-weight: 700;
+  margin-bottom: 15px;
+  font-size: 16px;
+  padding: 27px 0px;
+  border-bottom: 1px solid #dfdfed;
+  word-break: break-word;
+`;
+
+const ModalWrapper = styled.div`
+  .react-responsive-modal-modal::-webkit-scrollbar {
+    display: none !important;
   }
 `;
 
 const ModalCustom = (props: Props) => {
-  const { isOpen, onCloseModal, closeOnOverlayClick, title, showCloseIcon, children } = props;
-  const [isMobile] = useWindowResizeMobile(420);
+  const { isOpen, onCloseModal, closeOnOverlayClick, title, showCloseIcon, roundIcon, children } = props;
+
   return (
     <ModalWrapper>
       <Modal
@@ -55,25 +52,38 @@ const ModalCustom = (props: Props) => {
         center
         styles={{
           modal: {
-            minWidth: isMobile ? '260px' : '350px',
-            minHeight: '200px',
-            fontFamily: 'Play',
-            background: 'linear-gradient(90deg, #E6FEFE 0%, #FDF6E6 100%)',
+            padding: 0,
+            margin: 0,
+            paddingBottom: 0,
+            fontFamily: 'Montserrat',
+            width: '100%',
+            position: 'absolute',
+            bottom: -20,
+            left: 0,
+            borderTopRightRadius: 25,
+            borderTopLeftRadius: 25,
             overflowX: 'hidden',
+          },
+          closeButton: {
+            marginRight: 20,
+            top: 32,
           },
         }}
         closeOnOverlayClick={closeOnOverlayClick}
         showCloseIcon={showCloseIcon}
       >
-        {title && (
-          <>
-            <Div>
-              <TitleHeader>{title}</TitleHeader>
-            </Div>
-            <Hr />
-          </>
-        )}
-        <Div>{children}</Div>
+        {title && <TitleHeader>{title}</TitleHeader>}
+        <DivBody
+          style={{
+            padding: '1rem',
+            marginBottom: 30,
+            maxHeight: window.innerHeight * 0.7,
+            overflowX: 'hidden',
+            overflowY: 'auto',
+          }}
+        >
+          {children}
+        </DivBody>
       </Modal>
     </ModalWrapper>
   );
@@ -82,8 +92,9 @@ type Props = {
   isOpen: boolean;
   onCloseModal?: any;
   closeOnOverlayClick?: boolean;
-  title?: string;
+  title?: React.ReactNode;
+  roundIcon?: React.ReactNode;
   showCloseIcon?: boolean;
-  children?: any;
+  children?: React.ReactNode;
 };
 export default ModalCustom;

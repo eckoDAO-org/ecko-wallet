@@ -168,10 +168,10 @@ const PageTransaction = () => {
             </DivBodyNetwork>
           </form>
           <div>
-            <Button label="Restore default" type={BUTTON_TYPE.DISABLE} onClick={restoreDefault} size={BUTTON_SIZE.FULL} />
+            <Button label="Restore default" type="disabled" onClick={restoreDefault} />
           </div>
           <div style={{ display: 'flex', margin: '10px 0', gap: 10 }}>
-            <Button label="Cancel" type={BUTTON_TYPE.DISABLE} onClick={() => reset(getDefaultData())} size={BUTTON_SIZE.FULL} />
+            <Button label="Cancel" type="disabled" onClick={() => reset(getDefaultData())} />
             <ButtonAdd form="save-network" type="submit">
               Save
             </ButtonAdd>

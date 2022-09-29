@@ -1,11 +1,10 @@
 import { useState, useEffect, useRef, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import moment from 'moment';
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import images from 'src/images';
 import styled from 'styled-components';
-import Button from 'src/components/Buttons';
-import { DropdownModal } from 'src/components/DropdownModal';
+import ModalCustom from 'src/components/Modal/ModalCustom';
+import Dropdown from 'src/components/Dropdown';
 import { roundNumber, shortenAddress, BigNumberConverter, humanReadableNumber } from 'src/utils';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import useLocalStorage from 'src/hooks/useLocalStorage';
@@ -13,14 +12,15 @@ import { useSelector } from 'react-redux';
 import { setBalance, setCurrentWallet, setWallets } from 'src/stores/wallet';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
-import { ModalContext } from 'src/contexts/ModalContext';
 import { TxSettingsContext } from 'src/contexts/TxSettingsContext';
 import { ESTIMATE_KDA_TO_USD_API, KADDEX_ANALYTICS_API } from 'src/utils/config';
 import { CHAIN_COUNT } from 'src/utils/constant';
 import { getLocalPassword, getLocalSeedPhrase, getLocalWallets, setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
 import { decryptKey, encryptKey } from 'src/utils/security';
-import { fetchListLocal, getKeyPairsFromSeedPhrase } from '../../utils/chainweb';
+import { fetchListLocal, getBalanceFromChainwebApiResponse, getKeyPairsFromSeedPhrase } from '../../utils/chainweb';
+import LoadMoreDropdown from './views/LoadMoreDropdown';
 import ReceiveModal from './views/ReceiveModal';
+import ChainDropdown from './views/ChainDropdown';
 import { IFungibleToken } from '../ImportToken';
 
 export interface IFungibleTokenBalance {
@@ -50,12 +50,47 @@ const DivChild = styled.div`
   margin-bottom: ${(props) => props.marginBottom};
   font-weight: ${(props) => props.fontWeight};
 `;
+const Account = styled.div`
+  text-align: center;
+  position: relative;
+`;
+const DivHeaderAccount = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 15px 0;
+`;
+const DivChildChain = styled.div`
+  display: flex;
+  align-items: center;
+`;
+const DivHeader = styled.div`
+  display: block;
+`;
+const Hr = styled.div`
+  height: 4px;
+  margin: 30px 20px;
+`;
+const DivWrapper = styled.div`
+  display: block;
+  cursor: pointer;
+  border: 1px solid #461a57;
+  box-sizing: border-box;
+  border-radius: 10px;
+  background: ${(props) => props.background};
+  width: 100%;
+  padding: 5px 20px;
+`;
+const LableAccount = styled.div`
+  font-weight: 700;
+  font-size: 16px;
 
-export const DivFlex = styled.div`
+  padding: 5px;
+  text-align: left;
+`;
+const DivFlex = styled.div`
   display: flex;
   justify-content: ${(props) => props.justifyContent};
-  flex-direction: ${(props) => props.flexDirection || 'row'};
-  padding: ${(props) => props.padding};
   margin-bottom: ${(props) => props.marginBottom};
   margin-left: ${(props) => props.marginLeft};
   align-items: ${(props) => props.alignItems};
@@ -63,35 +98,6 @@ export const DivFlex = styled.div`
   margin-top: ${(props) => props.marginTop};
   gap: ${(props) => props.gap}; ;
 `;
-
-const DivBalance = styled(DivFlex)`
-  box-shadow: 0px 167px 67px rgba(36, 8, 43, 0.01), 0px 94px 57px rgba(36, 8, 43, 0.03), 0px 42px 42px rgba(36, 8, 43, 0.06),
-    0px 10px 23px rgba(36, 8, 43, 0.06), 0px 0px 0px rgba(36, 8, 43, 0.07);
-  border-bottom-left-radius: 25px;
-  border-bottom-right-radius: 25px;
-`;
-
-const HeaderWallet = styled(DivFlex)`
-  padding: 22px;
-  border-bottom: 1px solid #dfdfed;
-`;
-
-const PrimaryLabel = styled.span`
-  text-transform: uppercase;
-  color: ${($props) => $props.color || '#000000'};
-  font-weight: 500;
-  font-size: 52px;
-  line-height: 63px;
-`;
-
-const SecondaryLabel = styled.span`
-  text-transform: uppercase;
-  color: ${($props) => $props.color || '#787b8e'};
-  font-weight: 600;
-  font-size: 12px;
-  line-height: 20px;
-`;
-
 const Image = styled.img<{ size: string; top: string; width: string }>`
   height: ${($props) => $props.size};
   width: ${($props) => ($props.width ? $props.width : $props.size)};
@@ -105,6 +111,14 @@ const WalletImage = styled.img`
   height: ${(props) => (props.isChecked ? '12px' : '24px')};
 `;
 
+const LoadMore = styled.div``;
+const TitleSelectChain = styled.div`
+  border: 1px solid #461a57;
+  border-radius: 20px;
+  padding: 10px 18px;
+  margin-right: 23px;
+  background: #e2d5e1;
+`;
 const LinearBackground = styled.div`
   padding-top: 15px;
 `;
@@ -149,7 +163,19 @@ const WalletWrapper = styled.div`
   line-height: 20px;
   text-align: left;
 `;
+const AddMoreToken = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+const DivText = styled.div`
+  display: inline-block;
+  border-radius: 18px;
+  border: 1px solid #461a57;
 
+  font-size: 12px;
+  padding: 11px 24px;
+  cursor: pointer;
+`;
 const ListWallet = styled.div`
   padding: 15px 20px;
   max-height: 250px;
@@ -172,16 +198,17 @@ const TitleSetting = styled.div`
   font-weight: 700;
   text-align: left;
 `;
-
+const WrapAssets = styled.div``;
 const Wallet = () => {
   const history = useHistory();
   const rootState = useSelector((state) => state);
   const { data: txSettings } = useContext(TxSettingsContext);
-  const { openModal } = useContext(ModalContext);
   const { selectedNetwork, passwordHash } = rootState.extensions;
   const location = useLocation().pathname;
   const { balance, wallets } = rootState?.wallet;
+  const [isShowReceiveModal, setShowReceiveModal] = useState(false);
   const [usdPrices, setUsdPrices] = useState<any[]>([]);
+  const [fungibleTokensBalance, setFungibleTokensBalance] = useState<IFungibleTokenBalance[]>([]);
   const [balances, setBalances] = useState<any[]>([]);
   const [allChainBalance, setAllChainBalance] = useState(0);
   const [fungibleTokens, , getFungibleTokensAsync] = useLocalStorage<IFungibleToken[]>('fungibleTokens', [
@@ -225,6 +252,58 @@ const Wallet = () => {
 
   const getTokenTotalBalance = (contractAddress: string): number => balances?.reduce((prev, curr) => prev + (curr[contractAddress] || 0), 0);
 
+  const fetchCoinBalance = async (fungibleToken: IFungibleToken, chainArray: number[]) => {
+    const { contractAddress, symbol } = fungibleToken;
+    const promiseList: any[] = [];
+    const pactCode = `(${contractAddress}.details "${account}")`;
+    fetchListLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, '0', txSettings?.gasPrice, txSettings?.gasLimit);
+    chainArray.forEach((i) => {
+      const promise = fetchListLocal(
+        pactCode,
+        selectedNetwork.url,
+        selectedNetwork.networkId,
+        i.toString(),
+        txSettings?.gasPrice,
+        txSettings?.gasLimit,
+      );
+      promiseList.push(promise);
+    });
+    let total = 0;
+    Promise.all(promiseList)
+      .then((res) => {
+        res?.forEach((fetched, chainIndex) => {
+          // if (fetched?.result?.data?.account === account) {
+          const resBalance = getBalanceFromChainwebApiResponse(fetched);
+          if (contractAddress === 'coin') {
+            total += resBalance;
+            if (chainId.toString() === chainIndex.toString()) {
+              setBalance(resBalance);
+            }
+          } else {
+            setFungibleTokensBalance((fungibleTokensBalance1) => [
+              ...(fungibleTokensBalance1.filter((fTB) => fTB.contractAddress !== contractAddress) ?? []),
+              {
+                contractAddress,
+                symbol,
+                chainBalance: resBalance ?? 0,
+                allChainBalance: 0,
+              },
+            ]);
+          }
+        });
+        if (contractAddress === 'coin') {
+          setAllChainBalance(total);
+        }
+      })
+      .catch();
+  };
+
+  // useEffect(() => {
+  //   if (stateWallet?.account) {
+  //     fetchCoinBalance({ contractAddress: 'coin', symbol: 'KDA' }, [...Array(CHAIN_COUNT).keys()]);
+  //   }
+  // }, [stateWallet?.account]);
+
   useEffect(() => {
     if (stateWallet?.account) {
       getFungibleTokensAsync().then((fts) => {
@@ -232,11 +311,12 @@ const Wallet = () => {
         fetchAllBalances(fts);
         updateUsdPrices(fts);
       });
+      // selected chain only for fungible tokens
+      // fungibleTokens.forEach((fT) => fetchCoinBalance(fT, [chainId]));
     }
   }, [stateWallet?.account]);
 
   const checkSelectedWallet = (wallet) => wallet.account === stateWallet.account;
-
   const setSelectedLocalWallet = (wallet) => {
     getLocalPassword(
       (accountPassword) => {
@@ -344,7 +424,7 @@ const Wallet = () => {
                   }
                 }}
               >
-                <Jazzicon diameter={24} seed={jsNumberForAddress(wallet?.account)} />
+                <WalletImage src={images.logoHome} alt="check-box" />
                 <DivChild fontSize="13px" marginLeft="22px">
                   <DivChild>{shortenAddress(wallet.account)}</DivChild>
                 </DivChild>
@@ -456,89 +536,53 @@ const Wallet = () => {
     );
   };
   return (
-    <div>
-      <HeaderWallet justifyContent="space-between">
-        <DropdownModal title="Mainnet" modalTitle="Networks" modalContent={<span>ciao</span>} />
-        <DropdownModal
-          title={
-            <DivFlex>
-              <Jazzicon diameter={24} seed={jsNumberForAddress(stateWallet?.account)} />{' '}
-              <span style={{ color: '#787B8E', marginLeft: 5 }}>{shortenAddress(stateWallet?.account)}</span>{' '}
-            </DivFlex>
-          }
-          iconComponent={<img src={images.moreIcon} style={{ width: 14, marginTop: 10 }} />}
-          containerStyle={{ border: 'none' }}
-          modalTitle="Select Account"
-          modalContent={overlayDropdownSetting}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            navigator.clipboard.writeText(stateWallet?.account);
-            toast.success(<Toast type="success" content="Copied!" />);
-          }}
-        />
-      </HeaderWallet>
-      <DivFlex justifyContent="space-between" padding="20px">
-        <SecondaryLabel>net worth</SecondaryLabel>
-        <SecondaryLabel color="black">$200.00</SecondaryLabel>
-      </DivFlex>
-      <DivBalance justifyContent="center" flexDirection="column" alignItems="center" padding="20px">
-        <SecondaryLabel>account balance</SecondaryLabel>
-        <PrimaryLabel>$ 851.23</PrimaryLabel>
-        <DivFlex gap="5%" style={{ width: '100%', marginTop: 30 }}>
-          <Button
-            onClick={() => {}}
-            label={
-              <DivFlex justifyContent="center">
-                <img src={images.wallet.arrowSend} style={{ width: 16, marginRight: 10 }} />
-                <span>Send</span>
-              </DivFlex>
-            }
-            size="full"
-          />
-          <Button
-            onClick={() => openModal({ title: 'Receive tokens', content: <ReceiveModal /> })}
-            label={
-              <DivFlex justifyContent="center">
-                <img src={images.wallet.arrowSend} style={{ width: 16, marginRight: 10, transform: 'scale(1, -1)' }} />
-                <span>Receive</span>
-              </DivFlex>
-            }
-            type="secondary"
-            size="full"
-          />
-        </DivFlex>
-      </DivBalance>
-    </div>
-  );
-
-  /**
-  return (
     <Div>
       <Account>
         <DivHeaderAccount>
-          <DivFlex marginLeft="6px">
-            <DropdownModal title="Mainnet" modalTitle="Networks" modalContent={<span>ciao</span>} />
-            <Dropdown overlayDropdown={overlayDropdownSetting} placement="right" ref={walletDropdownRef} trianglePosition="44px" translate="-58%">
-              <FlexWrapper>
-                <DivChild marginRight="10px" fontSize="13px">
-                  <Jazzicon diameter={24} seed={jsNumberForAddress(stateWallet?.account)} /> {shortenAddress(stateWallet?.account)}
-                </DivChild>
-                <Div
-                  marginRight="10px"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    navigator.clipboard.writeText(stateWallet?.account);
-                    toast.success(<Toast type="success" content="Copied!" />);
-                  }}
-                >
-                  <Image width="12px" cursor="pointer" src={images.wallet.copyGray} alt="copy-gray" />
-                </Div>
-                <Image width="12px" cursor="pointer" src={images.wallet.iconDropDown} alt="dropdown-icon" />
-              </FlexWrapper>
-            </Dropdown>
-          </DivFlex>
+          <DivHeader>
+            <LableAccount>Account Name</LableAccount>
+            <DivFlex marginLeft="6px">
+              <Dropdown overlayDropdown={overlayDropdownSetting} placement="right" ref={walletDropdownRef} trianglePosition="44px" translate="-58%">
+                <FlexWrapper>
+                  <DivChild marginRight="10px" fontSize="13px">
+                    {shortenAddress(stateWallet?.account)}
+                  </DivChild>
+                  <Div
+                    marginRight="10px"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      navigator.clipboard.writeText(stateWallet?.account);
+                      toast.success(<Toast type="success" content="Copied!" />);
+                    }}
+                  >
+                    <Image width="12px" cursor="pointer" src={images.wallet.copyGray} alt="copy-gray" />
+                  </Div>
+                  <Image width="12px" cursor="pointer" src={images.wallet.iconDropDown} alt="dropdown-icon" />
+                </FlexWrapper>
+              </Dropdown>
+            </DivFlex>
+          </DivHeader>
+          <DivChildChain>
+            <DivChild marginBottom="20px" marginTop="20px">
+              <Dropdown placement="left" translate="-58%" trianglePosition="50px" overlayDropdown={<ChainDropdown />}>
+                <TitleSelectChain>
+                  <DivFlex justifyContent="center" alignItems="center">
+                    <DivChild marginRight="5px" color="#461A57" fontSize="12px">{`Chain ID ${stateWallet?.chainId}`}</DivChild>
+                    <Image alt="dropdown" src={images.wallet.arrayDropdownPurple} />
+                  </DivFlex>
+                </TitleSelectChain>
+              </Dropdown>
+            </DivChild>
+            <LoadMore>
+              <LoadMoreDropdown
+                stateWallet={stateWallet}
+                networkId={selectedNetwork?.networkId}
+                explorer={selectedNetwork?.explorer}
+                passwordHash={passwordHash}
+              />
+            </LoadMore>
+          </DivChildChain>
         </DivHeaderAccount>
         <LinearBackground>
           <DivChildKadena>
@@ -572,7 +616,7 @@ const Wallet = () => {
               </DivChild>
             </DivWrapper>
             <DivWrapper background="white" marginLeft="10px">
-              <DivChild onClick={() => openModal({ title: 'Receive tokens', content: <ReceiveModal /> })}>
+              <DivChild onClick={() => setShowReceiveModal(true)}>
                 <DivFlex justifyContent="center">
                   <Div marginRight="10px">
                     <Image src={images.wallet.iconReceive} alt="download" />
@@ -627,8 +671,9 @@ const Wallet = () => {
           </AddMoreToken>
         </WrapAssets>
       </DivChild>
+      <ModalCustom isOpen={false} title="Confirm Send Transaction" closeOnOverlayClick={false} />
+      <ReceiveModal />
     </Div>
   );
-*/
 };
 export default Wallet;

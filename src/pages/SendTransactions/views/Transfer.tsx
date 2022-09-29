@@ -577,7 +577,7 @@ const Transfer = (props: Props) => {
           {destinationAccount.domain ? (
             <>
               <TransferButton>
-                <Button type={BUTTON_TYPE.DISABLE} size={BUTTON_SIZE.FULL} label="Reject" onClick={() => window.close()} />
+                <Button type="disabled" label="Reject" onClick={() => window.close()} />
               </TransferButton>
               <TransferButton>
                 <ButtonSend form="send-transaction">Next</ButtonSend>

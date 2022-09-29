@@ -355,10 +355,10 @@ const PopupConfirm = (props: Props) => {
       )}
       <Footer>
         <ButtonWrapper>
-          <Button label="Reject" type={BUTTON_TYPE.DISABLE} onClick={() => onClose()} size={BUTTON_SIZE.FULL} />
+          <Button label="Reject" type="disabled" onClick={() => onClose()} />
         </ButtonWrapper>
         <ButtonWrapper>
-          <Button label="Confirm" onClick={onSend} size={BUTTON_SIZE.FULL} />
+          <Button label="Confirm" onClick={onSend} />
         </ButtonWrapper>
       </Footer>
     </PageConfirm>

@@ -14,7 +14,7 @@ export const TitleLock = styled.div`
   font-size: 16px;
   color: ${(props) => (props.isDefault ? '#461A57' : '#461A57')};
   margin: 0;
-  @media screen and (max-width: 480px){
+  @media screen and (max-width: 480px) {
     width: 200px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -27,12 +27,11 @@ export const BodyModal = styled.div`
 export const TitleModal = styled.div`
   font-size: 20px;
   font-weight: 700;
-  color: #461A57;
+
   text-align: center;
   margin-bottom: 10px;
 `;
 export const DescriptionModal = styled.div`
-  color: #461A57;
   font-weight: normal;
   font-size: 16px;
   margin-top: 10px;

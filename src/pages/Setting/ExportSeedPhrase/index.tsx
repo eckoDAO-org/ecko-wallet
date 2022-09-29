@@ -25,7 +25,7 @@ const Body = styled.div`
 `;
 const Wrapper = styled.div`
   padding: 0 20px;
-  color: #461a57;
+
   font-size: 16px;
   word-break: break-word;
 `;
@@ -38,14 +38,12 @@ const SPWrapper = styled.div`
   box-sizing: border-box;
   margin: 30px 0;
   text-align: center;
-  background: linear-gradient(90deg, rgba(230, 254, 254, 0.9) 0%, rgba(253, 246, 230, 0.9) 100%);
 `;
 const SPBlackDrop = styled.div`
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(90deg, rgba(230, 254, 254, 0.9) 0%, rgba(253, 246, 230, 0.9) 100%);
   display: flex;
   flex-direction: column;
   border-radius: 8px;
@@ -61,7 +59,6 @@ const Title = styled.div`
   text-align: left;
   text-align: center;
   margin: 40px 0;
-  color: #461a57;
 `;
 const Text = styled.div`
   margin-bottom: ${(props) => (props.isLast ? '0' : '30px')};
@@ -70,7 +67,7 @@ const SPDropText = styled.div`
   text-align: center;
   margin-top: 12px;
   font-weight: 700;
-  color: #461a57;
+
   padding: 0 15px;
   line-height: 19px;
 `;
@@ -86,7 +83,7 @@ const SPContent = styled.div`
   background: #eee6f3;
   padding: 18px 15px;
   margin-top: 20px;
-  color: #461a57;
+
   font-size: 16px;
   border: 1px solid #461a57;
   border-radius: 8px;
@@ -215,17 +212,17 @@ const ExportSeedPhrase = () => {
               {isErrorVerify && <InputError marginTop="0">Invalid Passwords.</InputError>}
             </DivError>
             <CustomButton>
-              <Button onClick={handleVerifyPassword} isDisabled={!passwordInput} label="Verify" size={BUTTON_SIZE.FULL} />
+              <Button onClick={handleVerifyPassword} isDisabled={!passwordInput} label="Verify" />
             </CustomButton>
           </>
         ) : (
           <>
             <Footer>
               <ButtonWrapper>
-                <Button onClick={onCopy} label="Copy" type={BUTTON_TYPE.DISABLE} size={BUTTON_SIZE.FULL} />
+                <Button onClick={onCopy} label="Copy" type="disabled" />
               </ButtonWrapper>
               <ButtonWrapper>
-                <Button onClick={onDownload} label="Download" size={BUTTON_SIZE.FULL} />
+                <Button onClick={onDownload} label="Download" />
               </ButtonWrapper>
             </Footer>
           </>

@@ -117,7 +117,7 @@ const AddContact = (props: Props) => {
       </BodyContent>
       <Footer>
         <ButtonWrapper>
-          <Button label="Cancel" type={BUTTON_TYPE.DISABLE} onClick={() => onClose(false)} size={BUTTON_SIZE.FULL} />
+          <Button label="Cancel" type="disabled" onClick={() => onClose(false)} />
         </ButtonWrapper>
         <ButtonWrapper>
           <ButtonAdd disabled={!isValue} form="contact-form">

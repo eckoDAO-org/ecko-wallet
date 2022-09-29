@@ -77,7 +77,7 @@ export const ButtonScanner = styled.div`
 `;
 export const SelectLabel = styled.div`
   font-size: 15px;
-  color: #461a57;
+
   margin: 10px 20px;
 `;
 
@@ -100,13 +100,11 @@ export const ItemAvailable = styled.div`
 
 export const LabelMax = styled.div`
   font-weight: bold;
-  color: #461a57;
+
   cursor: pointer;
 `;
 
-export const Label = styled.div`
-  color: #461a57;
-`;
+export const Label = styled.div``;
 export const Item = styled.div`
   display: flex;
   align-items: center;
@@ -117,7 +115,6 @@ export const Error = styled.span`
 `;
 
 export const FormSend = styled.div`
-  color: #461a57;
   position: relative;
 `;
 
@@ -145,7 +142,6 @@ export const LabelInputLimit = styled.div`
   padding: 0 79px 0 0;
 `;
 export const LabelInputPayer = styled.div`
-  color: #461a57;
   width: 14%;
   text-align: initial;
   padding: 0 42px 0 0;
@@ -162,7 +158,7 @@ export const Warning = styled.div`
   padding: ${(props) => (props.isContact ? '10px' : '20px 15px')};
   margin-top: ${(props) => (props.isContact ? '' : '50px')};
   cursor: ${(props) => (props.isContact ? 'pointer' : 'default')};
-  color: #461a57;
+
   font-size: 14px;
   border: 1px solid #461a57;
   border-radius: 8px;
@@ -325,11 +321,11 @@ export const TitleModal = styled.div`
   text-align: center;
   font-size: 20x;
   font-weight: 700;
-  color: #461a57;
+
   margin-bottom: 15px;
 `;
 export const DivChild = styled.div`
   margin-top: 20px;
-  color: #461a57;
+
   text-align: center;
 `;

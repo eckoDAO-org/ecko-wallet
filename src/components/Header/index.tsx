@@ -21,7 +21,6 @@ const DivHeader = styled.div`
   position: sticky;
   top: 0;
   z-index: 2;
-  background: linear-gradient(90deg, #e6fefe 0%, #fdf6e6 100%);
 `;
 const Logo = styled.img``;
 
@@ -36,7 +35,6 @@ const ImageWrapper = styled.div`
   align-items: center;
 `;
 const Hr = styled.div`
-  background: linear-gradient(90deg, #d2ab72 0%, #b66e84 35.42%, #b2579b 64.06%, #9ee9e4 99.48%);
   height: 2px;
 `;
 const Div = styled.div`
@@ -208,56 +206,7 @@ const Header = () => {
     </Div>
   );
 
-  return (
-    <>
-      {showHeader && (
-        <DivHeader>
-          <WrapHeader>
-            <ImageWrapper
-              onClick={() => {
-                history.push('/');
-                setActiveTab(ACTIVE_TAB.HOME);
-              }}
-            >
-              <Logo alt="logo" src={images.xWalletLogo} />
-            </ImageWrapper>
-            <OptionHeader>
-              {passwordHash && isLoggedIn && showSettingAndSelectNetworks && (
-                <Dropdown
-                  ref={refSelectNetwork}
-                  placement="left"
-                  translate="-55%"
-                  trianglePosition="50px"
-                  overlayDropdown={overlayDropdownOptionNetwork}
-                >
-                  <NetWorkSelect>
-                    <NetWorkName Width="60px" OverFlow="hidden" TextOverflow="ellipsis" WhiteSpace="nowrap" fontSize="14px" color="#461A57">
-                      {selectedNetwork?.name}
-                    </NetWorkName>
-                    <DivImage paddingBottom="2px">
-                      <Image src={images.wallet.arrayDropdownPurple} />
-                    </DivImage>
-                  </NetWorkSelect>
-                </Dropdown>
-              )}
-              {/* {passwordHash && isLoggedIn && showSettingAndSelectNetworks && (
-            <DivChild marginLeft="15px">
-              <Dropdown
-                overlayDropdown={overlayDropdownSetting}
-                placement="left"
-                ref={childRef}
-              >
-                <ImgSetting src={images.setting} />
-              </Dropdown>
-            </DivChild>
-            )} */}
-            </OptionHeader>
-          </WrapHeader>
-          <Hr />
-        </DivHeader>
-      )}
-    </>
-  );
+  return <></>;
 };
 
 export default Header;

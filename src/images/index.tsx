@@ -28,6 +28,7 @@ import lockImg from './lock-seed-phrase.svg';
 import toastFail from './toast-fail.svg';
 import toastSuccess from './toast-success.svg';
 import moreWhite from './more-white.png';
+import moreIcon from './more-icon.svg';
 import checkbox from './checkbox.png';
 import logoDapps from './logo-dapps.svg';
 import connectedDapps from './connected-dapps.svg';
@@ -49,6 +50,7 @@ import connectedSites from './connected-sites.svg';
 import viewExplorer from './view-explorer.svg';
 import exportKey from './export-private-key.svg';
 import removeWallet from './remove-wallet.svg';
+import arrowSend from './arrow-send.svg';
 import arrowDownGray from './arrow-down-gray.svg';
 import directionBlack from './direction-black.svg';
 import addGray from './add-gray.svg';
@@ -57,6 +59,7 @@ import txSubmitGray from './tx-submit-gray.svg';
 import checkedGreen from './checked-green.svg';
 import qrcode from './qrcode.svg';
 import arrayDropdownBack from './arrow-dropdown-black.svg';
+import arrayDropdown from './arrow-dropdown.svg';
 import eye from './eye.svg';
 import eyeHidden from './eye-hidden.svg';
 import successToast from './success-toast.svg';
@@ -121,12 +124,14 @@ const wallet = {
   exportKey,
   removeWallet,
   arrowDownGray,
+  arrowSend,
   directionBlack,
   addGray,
   checkedGray,
   txSubmitGray,
   checkedGreen,
   arrayDropdownBack,
+  arrayDropdown,
   iconFlux,
   checkedViolet,
   kdaIcon,
@@ -139,16 +144,16 @@ const wallet = {
   iconDropDown,
   iconCreate,
   tokens: {
-    token: iconKadenaToken,
-    kdx: iconKdx,
-    hype: iconHype,
-    flux: iconFlux,
-    kdl: iconKdl,
-    babena: iconBabena,
-    anedak: iconAnedak,
-    mok: iconMok,
-    usdc: iconUsdc,
-    skdx: iconSkdx,
+    coin: iconKadenaToken,
+    'kaddex.kdx': iconKdx,
+    'hypercent.prod-hype-coin': iconHype,
+    'runonflux.flux': iconFlux,
+    'kdlaunch.token': iconKdl,
+    'free.babena': iconBabena,
+    'free.anedak': iconAnedak,
+    'mok.token': iconMok,
+    'lago.kwUSDC': iconUsdc,
+    'kaddex.skdx': iconSkdx,
   },
 };
 const initPage = {
@@ -198,6 +203,7 @@ const images = {
   add,
   close,
   moreWhite,
+  moreIcon,
   checkbox,
   logo,
   settings,

@@ -55,14 +55,11 @@ const SLabel = styled.div`
 `;
 const Label = styled.span``;
 const Term = styled.span`
-  color: #461a57;
   font-weight: bold;
   padding-left: 5px;
   a {
-    color: #461a57;
     text-decoration: none;
     :hover {
-      color: #461a57;
     }
   }
 `;
@@ -96,7 +93,7 @@ const InitSeedPhrase = () => {
         <CheckBox isChecked={isChecked} onChange={(value) => setIsChecked(value)} label={getCheckboxLabel()} />
       </DivBody>
       <ButtonWrapper>
-        <Button onClick={() => goToCreatePassword(false)} isDisabled={!isChecked} size={BUTTON_SIZE.FULL} label="Create New Wallet" />
+        <Button onClick={() => goToCreatePassword(false)} isDisabled={!isChecked} label="Create New Wallet" />
         <Restore onClick={() => goToCreatePassword(true)} isDisabled={!isChecked}>
           Restore from recovery phrase
         </Restore>

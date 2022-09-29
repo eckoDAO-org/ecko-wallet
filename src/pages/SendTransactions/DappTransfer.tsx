@@ -50,7 +50,7 @@ const NotFoundImage = styled.img`
 `;
 const NotFoundDescription = styled.div`
   font-size: 18px;
-  color: #461a57;
+
   text-align: center;
   word-break: break-word;
   margin-bottom: 222px;
@@ -80,7 +80,6 @@ export const PageSendTransaction = styled.div`
   bottom: 0;
   margin-bottom: 14px;
   overflow-y: scroll;
-  background: linear-gradient(90deg, #e6fefe 0%, #fdf6e6 100%);
   overflow-x: hidden;
   &::-webkit-scrollbar {
     width: 2px;
@@ -162,7 +161,7 @@ const DappTransfer = () => {
                 <NotFound>
                   <NotFoundImage src={images.transfer.accountNotFound} />
                   <NotFoundDescription>Destination account not found</NotFoundDescription>
-                  <Button size={BUTTON_SIZE.FULL} label="Close" onClick={() => window.close()} />
+                  <Button label="Close" onClick={() => window.close()} />
                 </NotFound>
               )}
             </FormSend>

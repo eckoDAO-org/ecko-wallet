@@ -31,7 +31,6 @@ const Wrapper = styled.div`
   bottom: 0;
   right: 0;
   z-index: 2;
-  background: linear-gradient(90deg, #e6fefe 0%, #fdf6e6 100%);
   font-size: 14px;
   overflow-y: scroll;
   overflow-x: hidden;
@@ -71,7 +70,6 @@ const Div = styled.div`
   word-break: break-word;
 `;
 const FooterWrapper = styled(Footer)`
-  background: linear-gradient(90deg, rgba(230, 254, 254) 0%, rgba(253, 246, 230) 100%);
   padding: 20px;
   position: fixed;
   bottom: 0;
@@ -95,7 +93,6 @@ const AccountName = styled.span`
 `;
 const Brick = styled.div`
   height: 20px;
-  background: linear-gradient(90deg, #d2ab72 0%, #b66e84 35.42%, #b2579b 64.06%, #9ee9e4 99.48%);
   transform: matrix(1, 0, 0, -1, 0, 0);
 `;
 const DappDescription = styled.div`
@@ -113,7 +110,7 @@ const ConnectInfo = styled.div`
 const ConnectDescription = styled.div`
   font-size: 16px;
   font-weight: 400;
-  color: #461a57;
+
   line-height: 25px;
   text-align: center;
 `;
@@ -368,7 +365,7 @@ const ConnectedDapp = () => {
             This site is requesting access to view your current account address. Always make sure you trust the sites you interact with.
           </ConnectDescription>
           <ConnectFooterWrapper>
-            <Button label="Close" onClick={onClose} size={BUTTON_SIZE.FULL} />
+            <Button label="Close" onClick={onClose} />
           </ConnectFooterWrapper>
         </CompleteWrapper>
       ) : (
@@ -383,10 +380,10 @@ const ConnectedDapp = () => {
               <ContentWrapper>{data.map((item) => renderCheckbox(item))}</ContentWrapper>
               <FooterWrapper>
                 <ButtonWrapper>
-                  <Button label="Cancel" type={BUTTON_TYPE.DISABLE} onClick={onReject} size={BUTTON_SIZE.FULL} />
+                  <Button label="Cancel" type="disabled" onClick={onReject} />
                 </ButtonWrapper>
                 <ButtonWrapper>
-                  <Button label="Save" onClick={onSave} size={BUTTON_SIZE.FULL} isDisabled={disabledBtn} />
+                  <Button label="Save" onClick={onSave} isDisabled={disabledBtn} />
                 </ButtonWrapper>
               </FooterWrapper>
             </>

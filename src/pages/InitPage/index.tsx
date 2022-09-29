@@ -24,7 +24,6 @@ const TextContent = styled.div`
   margin-bottom: 5px;
 `;
 const TextFooter = styled.div`
-  color: #461a57;
   text-align: center;
   font-weight: 700;
 `;

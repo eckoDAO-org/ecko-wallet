@@ -68,7 +68,7 @@ const HomePage = () => {
         </DivImage>
       </Wrapper>
       <DivChildButon>
-        <Button onClick={goToTermsCondition} size={BUTTON_SIZE.FULL} label="Start Now" />
+        <Button onClick={goToTermsCondition} label="Start Now" />
       </DivChildButon>
     </Div>
   );

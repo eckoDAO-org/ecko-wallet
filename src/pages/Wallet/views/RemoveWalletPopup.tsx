@@ -182,7 +182,7 @@ const RemoveWalletPopup = (props: Props) => {
       </form>
       <DivChild>
         <ActionButton>
-          <Button label="Cancel" onClick={onClose} type={BUTTON_TYPE.DISABLE} size={BUTTON_SIZE.FULL} />
+          <Button label="Cancel" onClick={onClose} type="disabled" />
           <RemoveButton form="validate-password-form" disabled={!passwordInput}>
             Remove
           </RemoveButton>

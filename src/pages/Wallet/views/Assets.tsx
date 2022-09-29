@@ -49,7 +49,7 @@ const DivText = styled.div`
   display: inline-block;
   border-radius: 18px;
   border: 1px solid #461a57;
-  color: #461a57;
+
   font-size: 12px;
   padding: 11px 24px;
   cursor: pointer;

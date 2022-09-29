@@ -52,7 +52,7 @@ const Warning = styled.div`
   text-align: left;
   background: #eee6f3;
   padding: 20px 15px;
-  color: #461a57;
+
   margin-bottom: 25px;
   font-size: 16px;
 `;

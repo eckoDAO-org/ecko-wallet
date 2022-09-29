@@ -28,7 +28,7 @@ const TabHeader = styled.div`
   ${(props) =>
     props.isActive
       ? 'color: #FFFFFF;font-weight: bold;font-size: 12px; border: 1px solid #461A57; font-weight: 700; background: #461A57; border-radius: 10px;'
-      : 'color: #461A57; font-weight: 700; font-size: 12px;'};
+      : ' font-weight: 700; font-size: 12px;'};
   cursor: pointer;
   height: 36px;
   line-height: 36px;

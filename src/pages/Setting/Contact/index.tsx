@@ -96,7 +96,7 @@ const PageContact = (props: Props) => {
         )}
         <Wrapper>{getTabContent()}</Wrapper>
         <FooterWrapper>
-          <Button size={BUTTON_SIZE.FULL} label="Add New Contact" onClick={() => openContact(false)} />
+          <Button label="Add New Contact" onClick={() => openContact(false)} />
         </FooterWrapper>
       </Body>
     </SettingBody>

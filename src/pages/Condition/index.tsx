@@ -80,7 +80,7 @@ const Condition = () => {
         </DivBody>
       </Body>
       <Footer>
-        <Button onClick={onNext} label="Next" size={BUTTON_SIZE.FULL} />
+        <Button onClick={onNext} label="Next" size="full" />
       </Footer>
     </ConditionWrapper>
   );

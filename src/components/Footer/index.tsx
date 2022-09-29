@@ -61,7 +61,6 @@ const Wrapper = styled.div`
   width: inherit;
 `;
 const Hr = styled.div`
-  background: linear-gradient(90deg, #d2ab72 0%, #b66e84 35.42%, #b2579b 64.06%, #9ee9e4 99.48%);
   height: 2px;
 `;
 

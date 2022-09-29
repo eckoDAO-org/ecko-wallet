@@ -25,7 +25,7 @@ const CLabel = styled.span`
 `;
 const Wrapper = styled.div`
   padding: 0 20px;
-  color: #461a57;
+
   font-size: 16px;
   word-break: break-word;
 `;
@@ -38,14 +38,12 @@ const SPWrapper = styled.div`
   box-sizing: border-box;
   margin-top: 30px;
   text-align: center;
-  background: linear-gradient(90deg, rgba(230, 254, 254, 0.9) 0%, rgba(253, 246, 230, 0.9) 100%);
 `;
 const SPBlackDrop = styled.div`
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(90deg, rgba(230, 254, 254, 0.9) 0%, rgba(253, 246, 230, 0.9) 100%);
   display: flex;
   flex-direction: column;
   border-radius: 8px;
@@ -104,7 +102,7 @@ const SInput = styled.input`
   border-radius: 8px;
   margin: 10px 0 25px 0;
   outline: none;
-  color: #461a57;
+
   font-family: 'Play', sans-serif;
   background: none;
 `;
@@ -283,7 +281,7 @@ const SeedPhrase = () => {
         />
       </CheckboxWrapper>
       <Footer>
-        <Button onClick={onNext} isDisabled={!isChecked} label="Continue" size={BUTTON_SIZE.FULL} />
+        <Button onClick={onNext} isDisabled={!isChecked} label="Continue" />
       </Footer>
     </>
   );
@@ -305,10 +303,10 @@ const SeedPhrase = () => {
         <Text isLast>Warning: Never disclose your Secret Recovery Phrase. Anyone with this phrase can take your wallet forever.</Text>
       </SPContent>
       <CustomButton>
-        <Button onClick={onDownload} label="Download" size={BUTTON_SIZE.FULL} />
+        <Button onClick={onDownload} label="Download" />
       </CustomButton>
       <Footer>
-        <Button onClick={onNext} isDisabled={isHiddenSP} label="Continue" size={BUTTON_SIZE.FULL} />
+        <Button onClick={onNext} isDisabled={isHiddenSP} label="Continue" />
       </Footer>
     </>
   );
@@ -319,7 +317,7 @@ const SeedPhrase = () => {
       <Description>Please confirm your recovery phrase by typing the words in the correct order.</Description>
       {renderVerifySP()}
       <Footer>
-        <Button onClick={onNext} isDisabled={!enable} label="Continue" size={BUTTON_SIZE.FULL} />
+        <Button onClick={onNext} isDisabled={!enable} label="Continue" />
       </Footer>
     </>
   );

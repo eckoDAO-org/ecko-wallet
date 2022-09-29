@@ -5,14 +5,16 @@ import { ToastContainer } from 'react-toastify';
 import store from './stores';
 import 'react-toastify/dist/ReactToastify.css';
 import AppContainer from './AppContainer';
+import { ModalProvider, ModalConsumer } from './contexts/ModalContext';
 import { CrossChainProvider } from './contexts/CrossChainContext';
 import { TxSettingsProvider } from './contexts/TxSettingsContext';
+import ModalCustom from './components/Modal/ModalCustom';
 
 const AppWrapper = styled.div`
   display: block;
-  font-family: 'Play', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   display: flex;
-  color: #461a57;
+
   height: 100%;
   @media screen and (max-width: 1024px) {
     background: none;
@@ -50,11 +52,20 @@ const App = () => (
   <Provider store={store}>
     <AppWrapper>
       <Content>
-        <TxSettingsProvider>
-          <CrossChainProvider>
-            <AppContainer />
-          </CrossChainProvider>
-        </TxSettingsProvider>
+        <ModalProvider>
+          <ModalConsumer>
+            {({ isOpen, title, content, closeModal }) => (
+              <ModalCustom isOpen={isOpen || false} title={title} onCloseModal={closeModal}>
+                {content}
+              </ModalCustom>
+            )}
+          </ModalConsumer>
+          <TxSettingsProvider>
+            <CrossChainProvider>
+              <AppContainer />
+            </CrossChainProvider>
+          </TxSettingsProvider>
+        </ModalProvider>
       </Content>
     </AppWrapper>
     <ToastWrapper>

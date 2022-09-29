@@ -14,7 +14,6 @@ interface Props {
 const customStyles = {
   control: (provided) => ({
     ...provided,
-    background: 'linear-gradient(90deg, #E6FEFE 0%, #FDF6E6 100%)',
     borderColor: '#c4c4c4',
     borderRadius: '4px',
     minHeight: '44px',
@@ -22,7 +21,6 @@ const customStyles = {
   }),
   option: (provided) => ({
     ...provided,
-    background: 'linear-gradient(90deg, #E6FEFE 0%, #FDF6E6 100%)',
     color: '#461A57',
     '&:hover': {
       background: '#999999',
@@ -77,10 +75,8 @@ const SDivRoot = styled.div`
   }
   .css-8mmkcg {
     margin-right: 8px;
-    color: #461a57;
   }
   .css-qc6sy-singleValue {
-    color: #461a57;
   }
   .css-417lad-placeholder {
     color: #a187ab;

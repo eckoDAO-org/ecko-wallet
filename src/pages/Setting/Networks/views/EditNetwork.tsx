@@ -295,7 +295,7 @@ const EditNetwork = (props: Props) => {
         {isEdit && network.id ? (
           <>
             <ButtonWrapper>
-              <Button label="Remove" type={BUTTON_TYPE.REMOVE} onClick={() => setModalRemoveNetwork(true)} size={BUTTON_SIZE.FULL} />
+              <Button label="Remove" type="remove" onClick={() => setModalRemoveNetwork(true)} />
             </ButtonWrapper>
             {isModalRemoveNetwork && (
               <ModalCustom isOpen={isModalRemoveNetwork} showCloseIcon={false} closeOnOverlayClick>
@@ -314,7 +314,7 @@ const EditNetwork = (props: Props) => {
               </ModalCustom>
             )}
             <ButtonWrapper>
-              <Button label="Cancel" type={BUTTON_TYPE.DISABLE} onClick={onBack} size={BUTTON_SIZE.FULL} />
+              <Button label="Cancel" type="disabled" onClick={onBack} />
             </ButtonWrapper>
             <ButtonWrapper>
               <ButtonAdd form="save-network">Save</ButtonAdd>
@@ -323,7 +323,7 @@ const EditNetwork = (props: Props) => {
         ) : (
           <>
             <ButtonWrapper>
-              <Button label="Cancel" type={BUTTON_TYPE.DISABLE} onClick={onBack} size={BUTTON_SIZE.FULL} />
+              <Button label="Cancel" type="disabled" onClick={onBack} />
             </ButtonWrapper>
             <ButtonWrapper>
               <ButtonAdd form="save-network">Save</ButtonAdd>

@@ -37,7 +37,6 @@ const Container = styled.div`
   width: 1000px;
   box-shadow: 0 0 7px 7px rgb(0 0 0 / 8%);
   min-height: 100vh;
-  background: linear-gradient(90deg, #e6fefe 0%, #fdf6e6 100%);
   @media screen and (max-width: 1024px) {
     margin-bottom: 0;
     width: 100%;

@@ -74,14 +74,14 @@ const Body = styled.div`
 `;
 const DivChild = styled.div`
   margin-top: 20px;
-  color: #461a57;
+
   text-align: center;
 `;
 const TitleModal = styled.div`
   text-align: center;
   font-size: 20px;
   font-weight: 700;
-  color: #461a57;
+
   margin-bottom: 15px;
 `;
 const ImportAccount = () => {

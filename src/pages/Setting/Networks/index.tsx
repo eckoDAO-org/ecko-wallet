@@ -88,7 +88,7 @@ const PageNetworks = () => {
         {isNormal && (
           <Content>
             <Footer>
-              <Button label="Add New Network" onClick={addNewNetwork} size={BUTTON_SIZE.FULL} />
+              <Button label="Add New Network" onClick={addNewNetwork} />
             </Footer>
           </Content>
         )}

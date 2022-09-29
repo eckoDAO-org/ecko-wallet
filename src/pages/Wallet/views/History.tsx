@@ -8,7 +8,6 @@ import { useSelector } from 'react-redux';
 import { setBalance } from 'src/stores/wallet';
 import { fetchLocal, getBalanceFromChainwebApiResponse } from '../../../utils/chainweb';
 import TabWallet from './TabContent';
-import ReceiveModal from './ReceiveModal';
 
 const Div = styled.div`
   margin: auto 0;
@@ -32,7 +31,6 @@ const DivChild = styled.div`
 const History = () => {
   const rootState = useSelector((state) => state);
   const { selectedNetwork } = rootState.extensions;
-  const [isShowReceiveModal, setShowReceiveModal] = useState(false);
   const stateWallet = useCurrentWallet();
 
   useEffect(() => {
@@ -64,7 +62,6 @@ const History = () => {
         <TabWallet />
       </DivChild>
       <ModalCustom isOpen={false} title="Confirm Send Transaction" closeOnOverlayClick={false} />
-      <ReceiveModal isOpen={isShowReceiveModal} title="Receive" onCloseModal={() => setShowReceiveModal(false)} closeOnOverlayClick={false} />
     </Div>
   );
 };

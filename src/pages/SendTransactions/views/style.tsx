@@ -87,14 +87,13 @@ export const DivChildBreak = styled.div`
   font-weight: normal;
   font-size: 16px;
   line-height: 25px;
-  color: #461a57;
 `;
 
 export const DivChildRight = styled.div`
   font-weight: normal;
   font-size: 16px;
   line-height: 25px;
-  color: #461a57;
+
   word-break: break-all;
 `;
 
@@ -103,7 +102,6 @@ export const TransactionInfo = styled.div`
 `;
 
 export const TitleConfirm = styled.div`
-  color: #461a57;
   text-align: center;
   padding: 40px 0;
   font-weight: 700;
@@ -133,9 +131,7 @@ export const BodyConfirm = styled.div`
   margin: 0 auto;
 `;
 
-export const LabelConfirm = styled.div`
-  color: #461a57;
-`;
+export const LabelConfirm = styled.div``;
 
 export const ButtonAdd = styled.button`
   width: 100%;
@@ -153,7 +149,7 @@ export const ButtonAdd = styled.button`
 
 export const LabelBold = styled.div`
   font-weight: bold;
-  color: #461a57;
+
   ${(props) => (props.isRight ? 'margin-left: auto' : '')}
 `;
 
@@ -204,13 +200,13 @@ export const EstimateGas = styled.div`
 export const GasFeeTitle = styled.div`
   font-size: 16px;
   line-height: 25px;
-  color: #461a57;
+
   font-weight: 700;
   margin-bottom: 10px;
 `;
 export const GasFeeBox = styled.div`
   background: #f2f2f2;
-  color: #461a57;
+
   padding: 10px 13px;
 `;
 export const GasFeeValue = styled.div`
@@ -263,7 +259,6 @@ export const SpaceDiv = styled.div`
 `;
 export const TransferHr = styled.hr`
   height: 2px;
-  background: linear-gradient(90deg, #d2ab72 0%, #b66e84 35.42%, #b2579b 64.06%, #9ee9e4 99.48%);
   transform: matrix(1, 0, 0, -1, 0, 0);
   border: none;
 `;
@@ -271,7 +266,6 @@ export const TransferHr = styled.hr`
 export const TransferDetails = styled.div`
   display: flex;
   justify-content: space-between;
-  color: #461a57;
 `;
 
 export const ImageSpace = styled.span`

@@ -17,7 +17,7 @@ export const BUTTON_SIZE = {
 
 export const BUTTON_TYPE = {
   ACTIVE: 'active',
-  DISABLE: 'disable',
+  DISABLE: 'disabled',
   TRANSPARENT: 'transparent',
   REMOVE: 'remove',
 };

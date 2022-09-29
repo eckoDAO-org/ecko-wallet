@@ -12,7 +12,7 @@ const Wrapper = styled.div`
     visibility: hidden;
     width: 300px;
     font-weight: 400;
-    background-color: #461a57;
+    background-
     color: #fff;
     text-align: center;
     border-radius: 4px;

@@ -38,7 +38,6 @@ const ActionButton = styled(DivFlex)`
 `;
 const Hr = styled.hr`
   height: 2px;
-  background: linear-gradient(90deg, #d2ab72 0%, #b66e84 35.42%, #b2579b 64.06%, #9ee9e4 99.48%);
   transform: matrix(1, 0, 0, -1, 0, 0);
   border: none;
 `;
@@ -140,8 +139,8 @@ const FinishTransfer = () => {
             )}
             <DivChild>
               <ActionButton marginTop="200px">
-                <Button label="Close" onClick={() => setIsOpenFinishTransferModal(false)} type={BUTTON_TYPE.DISABLE} size={BUTTON_SIZE.FULL} />
-                {/* <Button label="Finish" onClick={finishTransfer} size={BUTTON_SIZE.FULL} /> */}
+                <Button label="Close" onClick={() => setIsOpenFinishTransferModal(false)} type="disabled" />
+                {/* <Button label="Finish" onClick={finishTransfer}  /> */}
               </ActionButton>
             </DivChild>
           </Div>

@@ -35,7 +35,7 @@ const Title = styled.div`
   font-weight: 700;
   font-size: 24px;
   line-height: 25px;
-  color: #461a57;
+
   text-align: left;
   margin-bottom: 50px;
   text-align: center;

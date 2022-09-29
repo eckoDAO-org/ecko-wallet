@@ -314,7 +314,7 @@ const PopupAddContact = (props: Props) => {
           {isContactInfo ? (
             <>
               <ButtonWrapper>
-                <Button label="Delete" type={BUTTON_TYPE.DISABLE} onClick={() => setRemoveContactModal(true)} size={BUTTON_SIZE.FULL} />
+                <Button label="Delete" type="disabled" onClick={() => setRemoveContactModal(true)} />
                 {isRemoveContactModal && (
                   <ModalCustom isOpen={isRemoveContactModal} showCloseIcon={false}>
                     <BodyModal>
@@ -334,7 +334,6 @@ const PopupAddContact = (props: Props) => {
               </ButtonWrapper>
               <ButtonWrapper>
                 <Button
-                  size={BUTTON_SIZE.FULL}
                   label="Edit"
                   onClick={() => {
                     setIsContactInfo(false);
@@ -345,7 +344,7 @@ const PopupAddContact = (props: Props) => {
           ) : (
             <DivChildFlex>
               <ButtonWrapper>
-                <Button label="Cancel" type={BUTTON_TYPE.DISABLE} onClick={() => onClose(false)} size={BUTTON_SIZE.FULL} />
+                <Button label="Cancel" type="disabled" onClick={() => onClose(false)} />
               </ButtonWrapper>
               <ButtonWrapper>
                 <ButtonAdd form="contact-form">Save</ButtonAdd>
