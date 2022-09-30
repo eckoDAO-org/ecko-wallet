@@ -30,6 +30,7 @@ export const DropdownModal = ({
   iconComponent,
   iconSrc,
   containerStyle,
+  iconContainerStyle,
   onClick,
   onClickIcon,
 }: DropdownModalProps) => {
@@ -43,7 +44,7 @@ export const DropdownModal = ({
     <DropdownContainer onClick={onClick || onOpenModal} style={containerStyle}>
       <span style={{ padding: '3px 10px' }}>{title}</span>
       <div
-        style={{ padding: '2px 10px' }}
+        style={{ padding: '2px 10px', ...iconContainerStyle }}
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -68,6 +69,7 @@ interface DropdownModalProps {
   iconComponent?: React.ReactNode;
   iconSrc?: string;
   containerStyle?: React.CSSProperties;
+  iconContainerStyle?: React.CSSProperties;
   onClick?: React.MouseEventHandler;
   onClickIcon?: React.MouseEventHandler;
 }

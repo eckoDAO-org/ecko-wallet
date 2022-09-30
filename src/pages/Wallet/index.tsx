@@ -3,9 +3,13 @@ import { useHistory, useLocation } from 'react-router-dom';
 import moment from 'moment';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import images from 'src/images';
+import { ReactComponent as SearchIconSVG } from 'src/images/search.svg';
+import { ReactComponent as AddIconSVG } from 'src/images/add-round.svg';
 import styled from 'styled-components';
 import Button from 'src/components/Buttons';
+import { DivFlex, PrimaryLabel, SecondaryLabel } from 'src/components';
 import { DropdownModal } from 'src/components/DropdownModal';
+import { IconButton } from 'src/components/IconButton';
 import { roundNumber, shortenAddress, BigNumberConverter, humanReadableNumber } from 'src/utils';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import useLocalStorage from 'src/hooks/useLocalStorage';
@@ -22,6 +26,7 @@ import { decryptKey, encryptKey } from 'src/utils/security';
 import { fetchListLocal, getKeyPairsFromSeedPhrase } from '../../utils/chainweb';
 import ReceiveModal from './views/ReceiveModal';
 import { IFungibleToken } from '../ImportToken';
+import { TokenElement } from './components/TokenElement';
 
 export interface IFungibleTokenBalance {
   contractAddress: string;
@@ -51,45 +56,30 @@ const DivChild = styled.div`
   font-weight: ${(props) => props.fontWeight};
 `;
 
-export const DivFlex = styled.div`
-  display: flex;
-  justify-content: ${(props) => props.justifyContent};
-  flex-direction: ${(props) => props.flexDirection || 'row'};
-  padding: ${(props) => props.padding};
-  margin-bottom: ${(props) => props.marginBottom};
-  margin-left: ${(props) => props.marginLeft};
-  align-items: ${(props) => props.alignItems};
-  margin: ${(props) => props.margin};
-  margin-top: ${(props) => props.marginTop};
-  gap: ${(props) => props.gap}; ;
-`;
-
 const DivBalance = styled(DivFlex)`
   box-shadow: 0px 167px 67px rgba(36, 8, 43, 0.01), 0px 94px 57px rgba(36, 8, 43, 0.03), 0px 42px 42px rgba(36, 8, 43, 0.06),
     0px 10px 23px rgba(36, 8, 43, 0.06), 0px 0px 0px rgba(36, 8, 43, 0.07);
   border-bottom-left-radius: 25px;
   border-bottom-right-radius: 25px;
+  padding-bottom: 24px;
 `;
 
 const HeaderWallet = styled(DivFlex)`
-  padding: 22px;
+  padding: 20px;
   border-bottom: 1px solid #dfdfed;
 `;
 
-const PrimaryLabel = styled.span`
-  text-transform: uppercase;
-  color: ${($props) => $props.color || '#000000'};
-  font-weight: 500;
-  font-size: 52px;
-  line-height: 63px;
+const DivAsset = styled.div`
+  padding: 35px 20px;
+  margin-bottom: 40px;
 `;
-
-const SecondaryLabel = styled.span`
-  text-transform: uppercase;
-  color: ${($props) => $props.color || '#787b8e'};
-  font-weight: 600;
-  font-size: 12px;
-  line-height: 20px;
+const DivAssetList = styled.div`
+  .token-element {
+    border-top: 1px solid #dfdfed;
+  }
+  .token-element:first-child {
+    border-top: none;
+  }
 `;
 
 const Image = styled.img<{ size: string; top: string; width: string }>`
@@ -105,13 +95,6 @@ const WalletImage = styled.img`
   height: ${(props) => (props.isChecked ? '12px' : '24px')};
 `;
 
-const LinearBackground = styled.div`
-  padding-top: 15px;
-`;
-const FlexWrapper = styled.div`
-  display: flex;
-  align-items: center;
-`;
 const WalletOption = styled.div`
   padding: 20px 20px 10px 15px;
   border-top: 1px solid #ffffff80;
@@ -183,6 +166,7 @@ const Wallet = () => {
   const { balance, wallets } = rootState?.wallet;
   const [usdPrices, setUsdPrices] = useState<any[]>([]);
   const [balances, setBalances] = useState<any[]>([]);
+  console.log('🚀 !!! ~ balances', balances);
   const [allChainBalance, setAllChainBalance] = useState(0);
   const [fungibleTokens, , getFungibleTokensAsync] = useLocalStorage<IFungibleToken[]>('fungibleTokens', [
     { contractAddress: 'kaddex.kdx', symbol: 'kdx' },
@@ -218,12 +202,12 @@ const Wallet = () => {
       console.log('🚀 !!! ~ allRes', allRes);
       const allChainBalances = allRes.map((chainBalance) => chainBalance?.result?.data);
       setBalances(allChainBalances);
-      console.log('🚀 !!! ~ balances', balances);
       setBalance(allChainBalances[chainId]?.coin ?? 0);
     });
   };
 
-  const getTokenTotalBalance = (contractAddress: string): number => balances?.reduce((prev, curr) => prev + (curr[contractAddress] || 0), 0);
+  const getTokenTotalBalance = (contractAddress: string): number =>
+    balances?.reduce((prev, curr) => prev + ((curr && curr[contractAddress]) || 0), 0);
 
   useEffect(() => {
     if (stateWallet?.account) {
@@ -400,7 +384,7 @@ const Wallet = () => {
           const asset = lastCandle?.pairName?.split('/')[0];
           return {
             symbol: asset?.toLowerCase(),
-            usdPrice: lastCandle.usdPrice?.close ?? lastCandle.price?.close,
+            usdPrice: lastCandle?.usdPrice?.close || lastCandle?.price?.close || 0,
           };
         });
         setUsdPrices(tokenPrices);
@@ -424,37 +408,10 @@ const Wallet = () => {
     const usdPrice = usdPrices.find((t) => t.symbol === tokenSymbol)?.usdPrice;
     return BigNumberConverter(Number(tokenBalance) * Number(usdPrice)) || 0;
   };
+  const totalUSD =
+    fungibleTokens?.reduce((prev, curr) => prev + getUsdPrice(curr.contractAddress, getTokenTotalBalance(curr.contractAddress) || 0), 0) ?? 0;
+  const accountBalance = totalUSD + getUsdPrice('kda', getTokenTotalBalance('coin') || 0);
 
-  const TokenChild = (props: any) => {
-    const { value, src, valueUSD, tokenType, nameToken, containerStyle, onClick } = props;
-    return (
-      <Div marginBottom="10px" onClick={onClick} style={containerStyle}>
-        <DivChildKadena>
-          <Transaction>
-            <DivFlex alignItems="center">
-              <ImageBorder size="50px" src={src} alt="logo" />
-              <DivChild marginLeft="15px">
-                <Div fontSize="16px" fontWeight="700" color="#461A57">
-                  {tokenType}
-                </Div>
-                <Div fontSize="14px" color="#461A57" marginTop="5px">
-                  {nameToken}
-                </Div>
-              </DivChild>
-            </DivFlex>
-            <DivChild>
-              <Div fontSize="16px" fontWeight="700" color="#461A57" textAlign="right">
-                {value}
-              </Div>
-              <Div fontSize="14px" color="#461A57" marginTop="10px" textAlign="right">
-                {valueUSD && `$${roundNumber(valueUSD, 2)}`}
-              </Div>
-            </DivChild>
-          </Transaction>
-        </DivChildKadena>
-      </Div>
-    );
-  };
   return (
     <div>
       <HeaderWallet justifyContent="space-between">
@@ -467,6 +424,7 @@ const Wallet = () => {
             </DivFlex>
           }
           iconComponent={<img src={images.moreIcon} style={{ width: 14, marginTop: 10 }} />}
+          iconContainerStyle={{ padding: 0 }}
           containerStyle={{ border: 'none' }}
           modalTitle="Select Account"
           modalContent={overlayDropdownSetting}
@@ -484,7 +442,7 @@ const Wallet = () => {
       </DivFlex>
       <DivBalance justifyContent="center" flexDirection="column" alignItems="center" padding="20px">
         <SecondaryLabel>account balance</SecondaryLabel>
-        <PrimaryLabel>$ 851.23</PrimaryLabel>
+        <PrimaryLabel>$ {humanReadableNumber(accountBalance, 2)}</PrimaryLabel>
         <DivFlex gap="5%" style={{ width: '100%', marginTop: 30 }}>
           <Button
             onClick={() => {}}
@@ -509,6 +467,44 @@ const Wallet = () => {
           />
         </DivFlex>
       </DivBalance>
+      <DivAsset>
+        <DivFlex justifyContent="space-between">
+          <SecondaryLabel style={{ paddingTop: 10 }}>Assets</SecondaryLabel>
+          <DivFlex>
+            <IconButton onClick={() => {}} svgComponent={<SearchIconSVG />} />
+            <IconButton onClick={() => history.push('/import-token')} svgComponent={<AddIconSVG />} style={{ marginLeft: 5 }} />
+          </DivFlex>
+        </DivFlex>
+        <DivAssetList>
+          <TokenElement
+            balance={getTokenTotalBalance('coin')}
+            name="KDA"
+            usdBalance={roundNumber(getUsdPrice('kda', getTokenTotalBalance('coin')), 2)}
+            logo={images.wallet.tokens.coin}
+          />
+          <TokenElement
+            balance={getTokenTotalBalance('kaddex.kdx')}
+            name="KDX"
+            usdBalance={roundNumber(getUsdPrice('kaddex.kdx', getTokenTotalBalance('kaddex.kdx')), 2)}
+            logo={images.wallet.tokens['kaddex.kdx']}
+            // onClick={() => history.push('/transfer?coin=kdx')}
+          />
+          {fungibleTokens
+            ?.filter((fT) => fT.contractAddress !== 'kaddex.kdx')
+            ?.map((fT) => {
+              const tokenBalance = getTokenTotalBalance(fT.contractAddress);
+              return (
+                <TokenElement
+                  balance={tokenBalance || 0}
+                  name={fT.symbol?.toUpperCase()}
+                  usdBalance={roundNumber(getUsdPrice(fT.contractAddress, tokenBalance || 0), 2)}
+                  logo={images.wallet.tokens[fT.contractAddress] || images.wallet.tokens.coin}
+                  // onClick={() => history.push(`/token-menu?coin=${fT.symbol}`)}
+                />
+              );
+            })}
+        </DivAssetList>
+      </DivAsset>
     </div>
   );
 

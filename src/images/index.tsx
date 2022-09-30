@@ -74,6 +74,9 @@ import iconBabena from './babena-logo.svg';
 import iconAnedak from './anedak-logo.svg';
 import iconSkdx from './skdx-logo.png';
 import iconMok from './mok-logo.png';
+import iconKapy from './kapy-logo.svg';
+import iconJde from './jodie-logo.svg';
+import iconKwbtc from './kwbtc-logo.svg';
 import iconUsdc from './usdc-logo.png';
 import checkedViolet from './checked-violet.svg';
 import violetAdd from './violet-add.svg';
@@ -154,6 +157,9 @@ const wallet = {
     'mok.token': iconMok,
     'lago.kwUSDC': iconUsdc,
     'kaddex.skdx': iconSkdx,
+    'free.jodie-token': iconJde,
+    'lago.kwBTC': iconKwbtc,
+    'free.kapybara-token': iconKapy,
   },
 };
 const initPage = {
