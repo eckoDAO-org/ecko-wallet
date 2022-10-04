@@ -38,3 +38,11 @@
     opacity: 1;
   }
 }
+
+.path-fill-white {
+  svg {
+    path {
+      fill: white !important;
+    }
+  }
+}

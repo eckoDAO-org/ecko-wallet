@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import images from 'src/images';
 import {
   defaultNetworks,
   hideFetching,
@@ -32,59 +31,65 @@ import {
   setLocalSelectedNetwork,
   setLocalSelectedWallet,
 } from 'src/utils/storage';
+import { ReactComponent as XWalletLogoBar } from 'src/images/x-wallet-icon.svg';
+import { ReactComponent as HistoryIcon } from 'src/images/history-icon.svg';
+import { ReactComponent as GearIcon } from 'src/images/gear-icon.svg';
+import { ReactComponent as NFTIcon } from 'src/images/nft-icon.svg';
 import { convertContacts, convertNetworks, convertRecent, revertNetworks } from 'src/utils';
 import { ACTIVE_TAB } from 'src/utils/constant';
+import { DivFlex, SecondaryLabel } from '..';
 
-const WrapHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 15px 15px;
-`;
-const DivFooter = styled.div`
-  font-size: 1.5em;
-  position: relative;
-  position: sticky;
-  bottom: 0;
-  z-index: 2;
-  background: #ffffff;
-`;
-const ImgSetting = styled.img`
-  width: 25px;
-`;
-const Logo = styled.img`
-  cursor: pointer;
-`;
 const Wrapper = styled.div`
   display: ${(props) => (props.isFooter ? 'block' : 'none')};
   position: fixed;
   bottom: 0;
   width: inherit;
-`;
-const Hr = styled.div`
-  height: 2px;
+  background: white;
 `;
 
-const Image = styled.img<{ size: string; top: string; width: string }>`
-  height: ${($props) => $props.size};
-  width: ${($props) => ($props.width ? $props.width : $props.size)};
-  margin: auto;
+const ActionBarElement = styled.div`
+  padding: 10px;
   cursor: pointer;
-`;
-
-const SettingWrapper = styled.div`
   display: flex;
-  cursor: pointer;
-  visibility: ${(props) => (props.isShow ? 'visible' : 'hidden')};
-`;
-
-const DivImage = styled.div`
-  margin-left: ${(props) => props.marginLeft};
-  margin: auto 0;
-  display: flex;
-`;
-
-const OptionHeader = styled.div`
-  display: flex;
+  flex: 1;
+  flex-direction: column;
+  text-align: center;
+  font-size: 8px;
+  font-weight: 700;
+  span {
+    font-size: 10px;
+  }
+  span:first-child {
+    margin-bottom: 3px;
+  }
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+  &.active {
+    border-top: 2px solid #ffa900;
+    margin-top: -2px;
+    span {
+      color: #404a8d !important;
+    }
+    &:not(.xLogo) {
+      svg {
+        path {
+          fill: #404a8d;
+        }
+      }
+    }
+  }
+  &.disabled {
+    span {
+      color: #dadada !important;
+    }
+    svg {
+      path {
+        fill: #dadada;
+      }
+    }
+  }
 `;
 
 const Footer = () => {
@@ -340,24 +345,36 @@ const Footer = () => {
 
   return (
     <Wrapper isFooter={isFooter}>
-      <DivFooter>
-        <Hr />
-        <WrapHeader>
-          <DivImage onClick={setIconHomeActive}>
-            <Logo alt="logo-home" src={activeTab === ACTIVE_TAB.HOME ? images.iconHomeActive : images.iconHome} />
-          </DivImage>
-          <DivImage>
-            <DivImage onClick={setIconHistoryActive}>
-              <Image alt="icon-history" src={activeTab === ACTIVE_TAB.HISTORY ? images.iconHistoryActive : images.iconHistory} />
-            </DivImage>
-          </DivImage>
-          <OptionHeader>
-            <SettingWrapper isShow={passwordHash && isLoggedIn && showSettingAndSelectNetworks} onClick={setIconSettingActive}>
-              <ImgSetting alt="icon-setting" src={activeTab === ACTIVE_TAB.SETTINGS ? images.iconSettingActive : images.setting} />
-            </SettingWrapper>
-          </OptionHeader>
-        </WrapHeader>
-      </DivFooter>
+      <DivFlex justifyContent="space-between" style={{ borderTop: '1px solid #DFDFED' }}>
+        <ActionBarElement className={['xLogo', activeTab === ACTIVE_TAB.HOME && 'active']} onClick={setIconHomeActive}>
+          <span>
+            <XWalletLogoBar />
+          </span>
+          <SecondaryLabel>wallet</SecondaryLabel>
+        </ActionBarElement>
+        <ActionBarElement className={activeTab === ACTIVE_TAB.HISTORY && 'active'} onClick={setIconHistoryActive}>
+          <span>
+            <HistoryIcon />
+          </span>
+          <SecondaryLabel>history</SecondaryLabel>
+        </ActionBarElement>
+        <ActionBarElement className="disabled">
+          <span>
+            <NFTIcon />
+          </span>
+          <SecondaryLabel>nft</SecondaryLabel>
+        </ActionBarElement>
+        <ActionBarElement
+          className={activeTab === ACTIVE_TAB.SETTINGS && 'active'}
+          isShow={passwordHash && isLoggedIn && showSettingAndSelectNetworks}
+          onClick={setIconSettingActive}
+        >
+          <span>
+            <GearIcon />
+          </span>
+          <SecondaryLabel>settings</SecondaryLabel>
+        </ActionBarElement>
+      </DivFlex>
     </Wrapper>
   );
 };

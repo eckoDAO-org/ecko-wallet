@@ -25,7 +25,7 @@ export const PrimaryLabel = styled.span`
   text-transform: uppercase;
   color: ${($props) => $props.color || '#000000'};
   font-weight: ${($props) => $props.fontWeight || '500'};
-  font-size: ${($props) => $props.fontSize || '52'}px;
+  font-size: ${($props) => $props.fontSize || '45'}px;
   line-height: 63px;
 `;
 

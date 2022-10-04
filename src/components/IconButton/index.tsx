@@ -22,14 +22,16 @@ export const IconButton = ({
   svgComponent,
   fill,
   style,
+  className,
   onClick,
 }: {
   svgComponent: React.ReactNode;
+  className?: string;
   fill?: string;
   style?: React.CSSProperties;
   onClick: React.MouseEventHandler;
 }) => (
-  <Button onClick={onClick} fill={fill} style={style}>
+  <Button className={className} onClick={onClick} fill={fill} style={style}>
     {svgComponent}
   </Button>
 );

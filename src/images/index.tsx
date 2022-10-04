@@ -92,7 +92,10 @@ import iconHome from './icon-home.svg';
 import iconHistory from './history-icon.svg';
 import iconHistoryActive from './icon-history-active.svg';
 import iconSettingActive from './icon-setting-active.svg';
-import iconHomeActive from './icon-home-active.svg';
+import iconHomeActive from './x-wallet-icon.svg';
+import iconHomeDisabled from './x-wallet-icon-disabled.svg';
+import iconNft from './nft-icon.svg';
+import iconGear from './gear-icon.svg';
 import arrayDropdownPurple from './arrow-down-purple.svg';
 import iconMorePurple from './more-purple.svg';
 import iconDropDown from './icon-dropdown.svg';
@@ -225,6 +228,7 @@ const images = {
   iconHistoryActive,
   iconSettingActive,
   iconHomeActive,
+  iconHomeDisabled,
   xWalletIcon,
   xWalletLogo,
   xWalletLogoSquare,

@@ -88,3 +88,22 @@ export const pollRequestKey = async (reqKey, network) => {
   } while (attempts > 0);
   return { success: false };
 };
+
+export const fetchTokenList = (url, networkId, chainId) => {
+  const code = `(let
+    ((all-tokens
+       (lambda (contract:object)
+         (let*
+           ((module-name (at 'name contract))
+            (interfaces (if (contains 'interfaces contract) (at 'interfaces contract) (if (contains 'interface contract) (at 'interface contract) [])))
+            (is-implementing-fungible-v2 (contains "fungible-v2" interfaces))
+           )
+         (if is-implementing-fungible-v2 module-name "")
+         )
+       )
+     )
+    )
+    (filter (!= "") (map (all-tokens) (map (describe-module) (list-modules))))
+  )`;
+  return fetchListLocal(code, url, networkId, chainId, CONFIG.GAS_PRICE, 150000);
+};

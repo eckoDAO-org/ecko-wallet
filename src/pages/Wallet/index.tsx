@@ -19,7 +19,7 @@ import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
 import { ModalContext } from 'src/contexts/ModalContext';
 import { TxSettingsContext } from 'src/contexts/TxSettingsContext';
-import { ESTIMATE_KDA_TO_USD_API, KADDEX_ANALYTICS_API } from 'src/utils/config';
+import { KADDEX_ANALYTICS_API } from 'src/utils/config';
 import { CHAIN_COUNT } from 'src/utils/constant';
 import { getLocalPassword, getLocalSeedPhrase, getLocalWallets, setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
 import { decryptKey, encryptKey } from 'src/utils/security';
@@ -27,12 +27,19 @@ import { fetchListLocal, getKeyPairsFromSeedPhrase } from '../../utils/chainweb'
 import ReceiveModal from './views/ReceiveModal';
 import { IFungibleToken } from '../ImportToken';
 import { TokenElement } from './components/TokenElement';
+import { TokenChainBalance } from './components/TokenChainBalance';
+import { AssetsList } from './components/AssetsList';
 
 export interface IFungibleTokenBalance {
   contractAddress: string;
   symbol: string;
   chainBalance: number;
   allChainBalance: number;
+}
+
+interface ChainDistribution {
+  chainId: number;
+  balance: number;
 }
 
 const Div = styled.div`
@@ -70,8 +77,8 @@ const HeaderWallet = styled(DivFlex)`
 `;
 
 const DivAsset = styled.div`
-  padding: 35px 20px;
-  margin-bottom: 40px;
+  padding: 20px;
+  margin-bottom: 60px;
 `;
 const DivAssetList = styled.div`
   .token-element {
@@ -99,22 +106,7 @@ const WalletOption = styled.div`
   padding: 20px 20px 10px 15px;
   border-top: 1px solid #ffffff80;
 `;
-const DivChildKadena = styled.div`
-  border: 1px solid #461a57;
-  border-radius: 8px;
-  margin: 0 20px;
-`;
-const Transaction = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 10px;
-`;
-const ImageBorder = styled(Image)`
-  border-radius: 50%;
-`;
-const Tokens = styled.div`
-  margin-bottom: 20px;
-`;
+
 const ImportAccountWrapper = styled.div`
   display: flex;
   cursor: pointer;
@@ -163,11 +155,11 @@ const Wallet = () => {
   const { openModal } = useContext(ModalContext);
   const { selectedNetwork, passwordHash } = rootState.extensions;
   const location = useLocation().pathname;
-  const { balance, wallets } = rootState?.wallet;
+  const { wallets } = rootState?.wallet;
   const [usdPrices, setUsdPrices] = useState<any[]>([]);
+  console.log('🚀 !!! ~ usdPrices', usdPrices);
   const [balances, setBalances] = useState<any[]>([]);
   console.log('🚀 !!! ~ balances', balances);
-  const [allChainBalance, setAllChainBalance] = useState(0);
   const [fungibleTokens, , getFungibleTokensAsync] = useLocalStorage<IFungibleToken[]>('fungibleTokens', [
     { contractAddress: 'kaddex.kdx', symbol: 'kdx' },
   ]);
@@ -199,7 +191,6 @@ const Wallet = () => {
       promiseList.push(promise);
     });
     Promise.all(promiseList).then((allRes) => {
-      console.log('🚀 !!! ~ allRes', allRes);
       const allChainBalances = allRes.map((chainBalance) => chainBalance?.result?.data);
       setBalances(allChainBalances);
       setBalance(allChainBalances[chainId]?.coin ?? 0);
@@ -383,25 +374,12 @@ const Wallet = () => {
           const lastCandle = candleAnalytics?.pop();
           const asset = lastCandle?.pairName?.split('/')[0];
           return {
-            symbol: asset?.toLowerCase(),
+            symbol: asset?.toLowerCase() === 'kda' ? 'coin' : asset?.toLowerCase(),
             usdPrice: lastCandle?.usdPrice?.close || lastCandle?.price?.close || 0,
           };
         });
         setUsdPrices(tokenPrices);
       });
-    fetch(`${ESTIMATE_KDA_TO_USD_API}kadena`)
-      .then((res) => res.json())
-      .then(
-        (result) => {
-          setUsdPrices(
-            Object.keys(result).map((token) => ({
-              symbol: token,
-              usdPrice: result[token].usd,
-            })),
-          );
-        },
-        () => {},
-      );
   };
 
   const getUsdPrice = (tokenSymbol, tokenBalance): number => {
@@ -410,8 +388,17 @@ const Wallet = () => {
   };
   const totalUSD =
     fungibleTokens?.reduce((prev, curr) => prev + getUsdPrice(curr.contractAddress, getTokenTotalBalance(curr.contractAddress) || 0), 0) ?? 0;
-  const accountBalance = totalUSD + getUsdPrice('kda', getTokenTotalBalance('coin') || 0);
+  const accountBalance = totalUSD + getUsdPrice('coin', getTokenTotalBalance('coin') || 0);
 
+  const getTokenChainDistribution = (contractAddress: string): ChainDistribution[] =>
+    balances?.map((b: any, i) => ({ chainId: i, balance: b[contractAddress] }));
+
+  const renderChainDistribution = (symbol: string, contractAddress: string) =>
+    getTokenChainDistribution(contractAddress)
+      .filter((cD) => cD.balance > 0)
+      .map((cD) => (
+        <TokenChainBalance name={symbol} chainId={cD.chainId} balance={cD.balance} usdBalance={getUsdPrice(contractAddress, cD.balance)} />
+      ));
   return (
     <div>
       <HeaderWallet justifyContent="space-between">
@@ -438,7 +425,7 @@ const Wallet = () => {
       </HeaderWallet>
       <DivFlex justifyContent="space-between" padding="20px">
         <SecondaryLabel>net worth</SecondaryLabel>
-        <SecondaryLabel color="black">$200.00</SecondaryLabel>
+        <SecondaryLabel color="black">$???.00</SecondaryLabel>
       </DivFlex>
       <DivBalance justifyContent="center" flexDirection="column" alignItems="center" padding="20px">
         <SecondaryLabel>account balance</SecondaryLabel>
@@ -471,7 +458,7 @@ const Wallet = () => {
         <DivFlex justifyContent="space-between">
           <SecondaryLabel style={{ paddingTop: 10 }}>Assets</SecondaryLabel>
           <DivFlex>
-            <IconButton onClick={() => {}} svgComponent={<SearchIconSVG />} />
+            <IconButton onClick={() => openModal({ title: 'Token list', content: <AssetsList /> })} svgComponent={<SearchIconSVG />} />
             <IconButton onClick={() => history.push('/import-token')} svgComponent={<AddIconSVG />} style={{ marginLeft: 5 }} />
           </DivFlex>
         </DivFlex>
@@ -479,14 +466,16 @@ const Wallet = () => {
           <TokenElement
             balance={getTokenTotalBalance('coin')}
             name="KDA"
-            usdBalance={roundNumber(getUsdPrice('kda', getTokenTotalBalance('coin')), 2)}
+            usdBalance={roundNumber(getUsdPrice('coin', getTokenTotalBalance('coin')), 2)}
             logo={images.wallet.tokens.coin}
+            onClick={() => openModal({ title: 'KDA Chain Distribution', content: renderChainDistribution('kda', 'coin') })}
           />
           <TokenElement
             balance={getTokenTotalBalance('kaddex.kdx')}
             name="KDX"
             usdBalance={roundNumber(getUsdPrice('kaddex.kdx', getTokenTotalBalance('kaddex.kdx')), 2)}
             logo={images.wallet.tokens['kaddex.kdx']}
+            onClick={() => openModal({ title: 'KDX Chain Distribution', content: renderChainDistribution('kdx', 'kaddex.kdx') })}
             // onClick={() => history.push('/transfer?coin=kdx')}
           />
           {fungibleTokens
@@ -499,6 +488,12 @@ const Wallet = () => {
                   name={fT.symbol?.toUpperCase()}
                   usdBalance={roundNumber(getUsdPrice(fT.contractAddress, tokenBalance || 0), 2)}
                   logo={images.wallet.tokens[fT.contractAddress] || images.wallet.tokens.coin}
+                  onClick={() => {
+                    openModal({
+                      title: `${fT.symbol?.toUpperCase()} Chain Distribution`,
+                      content: renderChainDistribution(fT.symbol, fT.contractAddress),
+                    });
+                  }}
                   // onClick={() => history.push(`/token-menu?coin=${fT.symbol}`)}
                 />
               );
@@ -507,124 +502,5 @@ const Wallet = () => {
       </DivAsset>
     </div>
   );
-
-  /**
-  return (
-    <Div>
-      <Account>
-        <DivHeaderAccount>
-          <DivFlex marginLeft="6px">
-            <DropdownModal title="Mainnet" modalTitle="Networks" modalContent={<span>ciao</span>} />
-            <Dropdown overlayDropdown={overlayDropdownSetting} placement="right" ref={walletDropdownRef} trianglePosition="44px" translate="-58%">
-              <FlexWrapper>
-                <DivChild marginRight="10px" fontSize="13px">
-                  <Jazzicon diameter={24} seed={jsNumberForAddress(stateWallet?.account)} /> {shortenAddress(stateWallet?.account)}
-                </DivChild>
-                <Div
-                  marginRight="10px"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    navigator.clipboard.writeText(stateWallet?.account);
-                    toast.success(<Toast type="success" content="Copied!" />);
-                  }}
-                >
-                  <Image width="12px" cursor="pointer" src={images.wallet.copyGray} alt="copy-gray" />
-                </Div>
-                <Image width="12px" cursor="pointer" src={images.wallet.iconDropDown} alt="dropdown-icon" />
-              </FlexWrapper>
-            </Dropdown>
-          </DivFlex>
-        </DivHeaderAccount>
-        <LinearBackground>
-          <DivChildKadena>
-            <DivFlex alignItems="center" justifyContent="space-between" margin="10px">
-              <DivChild>
-                <Image src={images.wallet.logoWalletKadena} size={50} width={50} alt="logo" />
-              </DivChild>
-              <DivChild>
-                <Div fontSize="16px" fontWeight="700" color="#461A57" textAlign="right">{`${humanReadableNumber(balance ?? 0, 5)} KDA`}</Div>
-                <Div fontSize="12px" fontWeight="700" color="#461A57" textAlign="right">{`${roundNumber(allChainBalance ?? 0, 5)} KDA`}</Div>
-                <Div fontSize="14px" color="#461A57" marginTop="10px" textAlign="right">
-                  {`${roundNumber(getUsdPrice('kda', balance ?? 0), 2)} USD`}
-                </Div>
-                <Div fontSize="10px" color="#461A57" marginTop="1px" textAlign="right">
-                  {`${roundNumber(getUsdPrice('kda', allChainBalance ?? 0), 2)} USD`}
-                </Div>
-              </DivChild>
-            </DivFlex>
-          </DivChildKadena>
-          <DivFlex alignItems="center" margin="20px" gap="10px">
-            <DivWrapper background="#461A57" marginRight="10px">
-              <DivChild onClick={() => history.push('/transfer?coin=kda')}>
-                <DivFlex justifyContent="center">
-                  <Div marginRight="10px">
-                    <Image src={images.wallet.iconSend} alt="send" />
-                  </Div>
-                  <Div fontSize="12px" color="#FFFFFF" fontWeight="700">
-                    Send
-                  </Div>
-                </DivFlex>
-              </DivChild>
-            </DivWrapper>
-            <DivWrapper background="white" marginLeft="10px">
-              <DivChild onClick={() => openModal({ title: 'Receive tokens', content: <ReceiveModal /> })}>
-                <DivFlex justifyContent="center">
-                  <Div marginRight="10px">
-                    <Image src={images.wallet.iconReceive} alt="download" />
-                  </Div>
-                  <Div fontSize="12px" color="#461A57" fontWeight="700">
-                    Receive
-                  </Div>
-                </DivFlex>
-              </DivChild>
-            </DivWrapper>
-          </DivFlex>
-        </LinearBackground>
-      </Account>
-      <Hr />
-      <DivChild marginTop="15px" marginBottom="80px">
-        <WrapAssets>
-          <Tokens>
-            <TokenChild
-              value={humanReadableNumber(getTokenTotalBalance('coin') ?? 0, 5)}
-              tokenType="KDA"
-              nameToken="Kadena"
-              valueUSD={roundNumber(getUsdPrice('kda', getTokenTotalBalance('coin')), 2)}
-              src={images.wallet.tokens.coin}
-            />
-            <TokenChild
-              value={humanReadableNumber(getTokenTotalBalance('kaddex.kdx') ?? 0 ?? 0, 5)}
-              tokenType="KDX"
-              nameToken="Kaddex"
-              valueUSD={roundNumber(getUsdPrice('kaddex.kdx', getTokenTotalBalance('kaddex.kdx') ?? 0 ?? 0), 2)}
-              src={images.wallet.tokens['kaddex.kdx']}
-              containerStyle={{ cursor: 'pointer' }}
-              onClick={() => history.push('/transfer?coin=kdx')}
-            />
-            {fungibleTokens
-              ?.filter((fT) => fT.contractAddress !== 'kaddex.kdx')
-              ?.map((fT) => {
-                const tokenBalance = getTokenTotalBalance(fT.contractAddress);
-                return (
-                  <TokenChild
-                    value={humanReadableNumber(tokenBalance ?? 0, 5) ?? 0}
-                    tokenType={fT.symbol?.toUpperCase()}
-                    valueUSD={getUsdPrice(fT.contractAddress, tokenBalance || 0)}
-                    src={images.wallet.tokens[fT.contractAddress] || images.wallet.tokens.coin}
-                    containerStyle={{ cursor: 'pointer' }}
-                    onClick={() => history.push(`/token-menu?coin=${fT.symbol}`)}
-                  />
-                );
-              })}
-          </Tokens>
-          <AddMoreToken>
-            <DivText onClick={() => history.push('/import-token')}>Add more tokens</DivText>
-          </AddMoreToken>
-        </WrapAssets>
-      </DivChild>
-    </Div>
-  );
-*/
 };
 export default Wallet;
