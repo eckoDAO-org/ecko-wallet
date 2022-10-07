@@ -56,6 +56,7 @@ export const AccountBalanceProvider = ({ children }: any) => {
   const fetchAllBalances = async (account: string) => {
     const promiseList: any[] = [];
     for (let i = 0; i < CHAIN_COUNT; i += 1) {
+      console.log(`FETCHING BALANCE FOR ACCOUNT ${account}`);
       // TODO: fetch token list from BE
       const availableChainTokens = CHAIN_AVAILABLE_TOKENS_FIXTURE[i];
       const filteredAvailableFt = fungibleTokens?.filter((t) => availableChainTokens.includes(t.contractAddress));
@@ -132,7 +133,7 @@ export const AccountBalanceProvider = ({ children }: any) => {
       }
       Promise.all(promises).then(() => setIsLoadingBalances(false));
     }
-  }, [selectedAccount]);
+  }, [selectedAccount, fungibleTokens?.length]);
 
   return (
     <AccountBalanceContext.Provider

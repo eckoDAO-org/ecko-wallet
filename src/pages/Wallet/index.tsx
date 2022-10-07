@@ -155,6 +155,7 @@ const Wallet = () => {
   const location = useLocation().pathname;
   const { wallets } = rootState?.wallet;
   const [fungibleTokens] = useLocalStorage<IFungibleToken[]>(LOCAL_KEY_FUNGIBLE_TOKENS, [{ contractAddress: 'kaddex.kdx', symbol: 'kdx' }]);
+
   const stateWallet = useCurrentWallet();
   const walletDropdownRef = useRef();
 
@@ -362,12 +363,12 @@ const Wallet = () => {
       <DivFlex justifyContent="space-between" padding="20px">
         <SecondaryLabel>net worth</SecondaryLabel>
         <SecondaryLabel color="black">
-          {isLoadingBalances ? <Spinner size={10} color="black" weight={2} /> : `$ ${humanReadableNumber(getAllChainUsdBalance(), 2)}`}
+          {isLoadingBalances ? <Spinner size={10} color="black" weight={2} /> : `$ ${roundNumber(getAllChainUsdBalance(), 2)}`}
         </SecondaryLabel>
       </DivFlex>
       <DivBalance justifyContent="center" flexDirection="column" alignItems="center" padding="20px">
         <SecondaryLabel>account balance</SecondaryLabel>
-        <PrimaryLabel>$ {humanReadableNumber(getAccountBalance(stateWallet?.account), 2)}</PrimaryLabel>
+        <PrimaryLabel>$ {roundNumber(getAccountBalance(stateWallet?.account), 2)}</PrimaryLabel>
         <DivFlex gap="5%" style={{ width: '100%', marginTop: 30 }}>
           <Button
             onClick={() => {}}
