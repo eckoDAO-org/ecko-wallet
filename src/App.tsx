@@ -8,6 +8,7 @@ import AppContainer from './AppContainer';
 import { ModalProvider, ModalConsumer } from './contexts/ModalContext';
 import { CrossChainProvider } from './contexts/CrossChainContext';
 import { TxSettingsProvider } from './contexts/TxSettingsContext';
+import { AccountBalanceProvider } from './contexts/AccountBalanceContext';
 import ModalCustom from './components/Modal/ModalCustom';
 
 const AppWrapper = styled.div`
@@ -61,9 +62,11 @@ const App = () => (
             )}
           </ModalConsumer>
           <TxSettingsProvider>
-            <CrossChainProvider>
-              <AppContainer />
-            </CrossChainProvider>
+            <AccountBalanceProvider>
+              <CrossChainProvider>
+                <AppContainer />
+              </CrossChainProvider>
+            </AccountBalanceProvider>
           </TxSettingsProvider>
         </ModalProvider>
       </Content>

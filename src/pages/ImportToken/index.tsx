@@ -14,6 +14,8 @@ import { hideLoading, showLoading } from 'src/stores/extensions';
 import { KNOWN_TOKENS } from 'src/utils/constant';
 import { TxSettingsContext } from 'src/contexts/TxSettingsContext';
 
+export const LOCAL_KEY_FUNGIBLE_TOKENS = 'fungibleTokens';
+
 export interface IFungibleToken {
   contractAddress: string;
   symbol: string;
@@ -72,7 +74,7 @@ const ImportToken = () => {
   const rootState = useSelector((state) => state);
   const { selectedNetwork } = rootState.extensions;
   const history = useHistory();
-  const [fungibleTokens, setFungibleTokens] = useLocalStorage<IFungibleToken[]>('fungibleTokens', []);
+  const [fungibleTokens, setFungibleTokens] = useLocalStorage<IFungibleToken[]>(LOCAL_KEY_FUNGIBLE_TOKENS, []);
   const { data: txSettings } = useContext(TxSettingsContext);
 
   const params = new URLSearchParams(search);

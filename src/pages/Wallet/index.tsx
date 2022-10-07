@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import moment from 'moment';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import images from 'src/images';
 import { ReactComponent as SearchIconSVG } from 'src/images/search.svg';
 import { ReactComponent as AddIconSVG } from 'src/images/add-round.svg';
 import styled from 'styled-components';
 import Button from 'src/components/Buttons';
+import Spinner from 'src/components/Spinner';
 import { DivFlex, PrimaryLabel, SecondaryLabel } from 'src/components';
 import { DropdownModal } from 'src/components/DropdownModal';
 import { IconButton } from 'src/components/IconButton';
@@ -18,14 +18,12 @@ import { setBalance, setCurrentWallet, setWallets } from 'src/stores/wallet';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
 import { ModalContext } from 'src/contexts/ModalContext';
-import { TxSettingsContext } from 'src/contexts/TxSettingsContext';
-import { KADDEX_ANALYTICS_API } from 'src/utils/config';
-import { CHAIN_COUNT } from 'src/utils/constant';
+import { AccountBalanceContext } from 'src/contexts/AccountBalanceContext';
 import { getLocalPassword, getLocalSeedPhrase, getLocalWallets, setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
 import { decryptKey, encryptKey } from 'src/utils/security';
-import { fetchListLocal, getKeyPairsFromSeedPhrase } from '../../utils/chainweb';
+import { getKeyPairsFromSeedPhrase } from '../../utils/chainweb';
 import ReceiveModal from './views/ReceiveModal';
-import { IFungibleToken } from '../ImportToken';
+import { IFungibleToken, LOCAL_KEY_FUNGIBLE_TOKENS } from '../ImportToken';
 import { TokenElement } from './components/TokenElement';
 import { TokenChainBalance } from './components/TokenChainBalance';
 import { AssetsList } from './components/AssetsList';
@@ -151,64 +149,19 @@ const TitleSetting = styled.div`
 const Wallet = () => {
   const history = useHistory();
   const rootState = useSelector((state) => state);
-  const { data: txSettings } = useContext(TxSettingsContext);
   const { openModal } = useContext(ModalContext);
+  const { isLoadingBalances, selectedAccountBalance, allAccountsBalance, usdPrices } = useContext(AccountBalanceContext);
   const { selectedNetwork, passwordHash } = rootState.extensions;
   const location = useLocation().pathname;
   const { wallets } = rootState?.wallet;
-  const [usdPrices, setUsdPrices] = useState<any[]>([]);
-  console.log('🚀 !!! ~ usdPrices', usdPrices);
-  const [balances, setBalances] = useState<any[]>([]);
-  console.log('🚀 !!! ~ balances', balances);
-  const [fungibleTokens, , getFungibleTokensAsync] = useLocalStorage<IFungibleToken[]>('fungibleTokens', [
-    { contractAddress: 'kaddex.kdx', symbol: 'kdx' },
-  ]);
+  const [fungibleTokens] = useLocalStorage<IFungibleToken[]>(LOCAL_KEY_FUNGIBLE_TOKENS, [{ contractAddress: 'kaddex.kdx', symbol: 'kdx' }]);
   const stateWallet = useCurrentWallet();
-  const { account, chainId } = stateWallet;
   const walletDropdownRef = useRef();
 
-  const fetchAllBalances = (fts: IFungibleToken[] | null = fungibleTokens) => {
-    const promiseList: any[] = [];
-    [...Array(CHAIN_COUNT).keys()].forEach((i) => {
-      const pactCode = `
-      (
-        let* (
-              (coin-balance (try 0.0 (coin.get-balance "${account}")))
-              ${fts
-                ?.map((ft) => `(${ft.contractAddress.replace(/\./g, '')} (try 0.0 (${ft.contractAddress}.get-balance "${account}")))`)
-                .join('\n')}              
-             )
-        {"coin": coin-balance, ${fts?.map((ft) => `"${ft.contractAddress}": ${ft.contractAddress.replace(/\./g, '')}`)}}
-      )`;
-      const promise = fetchListLocal(
-        pactCode,
-        selectedNetwork.url,
-        selectedNetwork.networkId,
-        i.toString(),
-        txSettings?.gasPrice,
-        txSettings?.gasLimit,
-      );
-      promiseList.push(promise);
-    });
-    Promise.all(promiseList).then((allRes) => {
-      const allChainBalances = allRes.map((chainBalance) => chainBalance?.result?.data);
-      setBalances(allChainBalances);
-      setBalance(allChainBalances[chainId]?.coin ?? 0);
-    });
+  const getTokenTotalBalance = (contractAddress: string, account: string): number => {
+    const accountChainBalance = allAccountsBalance && allAccountsBalance[account];
+    return accountChainBalance?.reduce((prev, curr) => prev + ((curr && curr[contractAddress]) || 0), 0) || 0;
   };
-
-  const getTokenTotalBalance = (contractAddress: string): number =>
-    balances?.reduce((prev, curr) => prev + ((curr && curr[contractAddress]) || 0), 0);
-
-  useEffect(() => {
-    if (stateWallet?.account) {
-      getFungibleTokensAsync().then((fts) => {
-        console.log('🚀 !!! ~ fts', fts);
-        fetchAllBalances(fts);
-        updateUsdPrices(fts);
-      });
-    }
-  }, [stateWallet?.account]);
 
   const checkSelectedWallet = (wallet) => wallet.account === stateWallet.account;
 
@@ -350,48 +303,31 @@ const Wallet = () => {
     </Div>
   );
 
-  const updateUsdPrices = (fts: IFungibleToken[] | null = fungibleTokens) => {
-    const promises: Promise<Response>[] = [
-      fetch(
-        `${KADDEX_ANALYTICS_API}?dateStart=${moment().subtract(3, 'days').format('YYYY-MM-DD')}&dateEnd=${moment().format(
-          'YYYY-MM-DD',
-        )}&currency=USDT&asset=KDA`,
-      ),
-    ];
-    fts?.forEach((tok) => {
-      promises.push(
-        fetch(
-          `${KADDEX_ANALYTICS_API}?dateStart=${moment().subtract(3, 'days').format('YYYY-MM-DD')}&dateEnd=${moment().format(
-            'YYYY-MM-DD',
-          )}&currency=coin&asset=${tok?.contractAddress}`,
-        ),
-      );
-    });
-    Promise.all(promises)
-      .then((results) => Promise.all(results.map((r) => r.json())))
-      .then((candlesData) => {
-        const tokenPrices = candlesData.map((candleAnalytics) => {
-          const lastCandle = candleAnalytics?.pop();
-          const asset = lastCandle?.pairName?.split('/')[0];
-          return {
-            symbol: asset?.toLowerCase() === 'kda' ? 'coin' : asset?.toLowerCase(),
-            usdPrice: lastCandle?.usdPrice?.close || lastCandle?.price?.close || 0,
-          };
-        });
-        setUsdPrices(tokenPrices);
-      });
-  };
-
   const getUsdPrice = (tokenSymbol, tokenBalance): number => {
-    const usdPrice = usdPrices.find((t) => t.symbol === tokenSymbol)?.usdPrice;
+    const usdPrice = usdPrices[tokenSymbol] || 0;
     return BigNumberConverter(Number(tokenBalance) * Number(usdPrice)) || 0;
   };
-  const totalUSD =
-    fungibleTokens?.reduce((prev, curr) => prev + getUsdPrice(curr.contractAddress, getTokenTotalBalance(curr.contractAddress) || 0), 0) ?? 0;
-  const accountBalance = totalUSD + getUsdPrice('coin', getTokenTotalBalance('coin') || 0);
+
+  const getAccountBalance = (account: string) => {
+    const totalTokenUSD =
+      fungibleTokens?.reduce((prev, curr) => prev + getUsdPrice(curr.contractAddress, getTokenTotalBalance(curr.contractAddress, account) || 0), 0) ??
+      0;
+
+    return totalTokenUSD + getUsdPrice('coin', getTokenTotalBalance('coin', account) || 0);
+  };
 
   const getTokenChainDistribution = (contractAddress: string): ChainDistribution[] =>
-    balances?.map((b: any, i) => ({ chainId: i, balance: b[contractAddress] }));
+    selectedAccountBalance?.map((b: any, i) => ({ chainId: i, balance: b[contractAddress] || 0 })) ?? [];
+
+  const getAllChainUsdBalance = () => {
+    let totalUSDBalance = 0;
+    allAccountsBalance &&
+      Object.keys(allAccountsBalance).forEach((account) => {
+        totalUSDBalance += getAccountBalance(account);
+      });
+
+    return totalUSDBalance;
+  };
 
   const renderChainDistribution = (symbol: string, contractAddress: string) =>
     getTokenChainDistribution(contractAddress)
@@ -425,11 +361,13 @@ const Wallet = () => {
       </HeaderWallet>
       <DivFlex justifyContent="space-between" padding="20px">
         <SecondaryLabel>net worth</SecondaryLabel>
-        <SecondaryLabel color="black">$???.00</SecondaryLabel>
+        <SecondaryLabel color="black">
+          {isLoadingBalances ? <Spinner size={10} color="black" weight={2} /> : `$ ${humanReadableNumber(getAllChainUsdBalance(), 2)}`}
+        </SecondaryLabel>
       </DivFlex>
       <DivBalance justifyContent="center" flexDirection="column" alignItems="center" padding="20px">
         <SecondaryLabel>account balance</SecondaryLabel>
-        <PrimaryLabel>$ {humanReadableNumber(accountBalance, 2)}</PrimaryLabel>
+        <PrimaryLabel>$ {humanReadableNumber(getAccountBalance(stateWallet?.account), 2)}</PrimaryLabel>
         <DivFlex gap="5%" style={{ width: '100%', marginTop: 30 }}>
           <Button
             onClick={() => {}}
@@ -464,16 +402,16 @@ const Wallet = () => {
         </DivFlex>
         <DivAssetList>
           <TokenElement
-            balance={getTokenTotalBalance('coin')}
+            balance={getTokenTotalBalance('coin', stateWallet?.account)}
             name="KDA"
-            usdBalance={roundNumber(getUsdPrice('coin', getTokenTotalBalance('coin')), 2)}
+            usdBalance={roundNumber(getUsdPrice('coin', getTokenTotalBalance('coin', stateWallet?.account)), 2)}
             logo={images.wallet.tokens.coin}
             onClick={() => openModal({ title: 'KDA Chain Distribution', content: renderChainDistribution('kda', 'coin') })}
           />
           <TokenElement
-            balance={getTokenTotalBalance('kaddex.kdx')}
+            balance={getTokenTotalBalance('kaddex.kdx', stateWallet?.account)}
             name="KDX"
-            usdBalance={roundNumber(getUsdPrice('kaddex.kdx', getTokenTotalBalance('kaddex.kdx')), 2)}
+            usdBalance={roundNumber(getUsdPrice('kaddex.kdx', getTokenTotalBalance('kaddex.kdx', stateWallet?.account)), 2)}
             logo={images.wallet.tokens['kaddex.kdx']}
             onClick={() => openModal({ title: 'KDX Chain Distribution', content: renderChainDistribution('kdx', 'kaddex.kdx') })}
             // onClick={() => history.push('/transfer?coin=kdx')}
@@ -481,7 +419,7 @@ const Wallet = () => {
           {fungibleTokens
             ?.filter((fT) => fT.contractAddress !== 'kaddex.kdx')
             ?.map((fT) => {
-              const tokenBalance = getTokenTotalBalance(fT.contractAddress);
+              const tokenBalance = getTokenTotalBalance(fT.contractAddress, stateWallet?.account);
               return (
                 <TokenElement
                   balance={tokenBalance || 0}

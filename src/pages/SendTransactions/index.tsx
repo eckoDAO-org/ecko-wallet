@@ -8,7 +8,7 @@ import { ACTIVE_TAB } from 'src/utils/constant';
 import { PageSendTransaction, Title, Body, TransactionWrapper, FormSend, SelectWrapper } from './styles';
 import Transfer from './views/Transfer';
 import SelectReceiver from './views/SelectReceiver';
-import { IFungibleToken } from '../ImportToken';
+import { IFungibleToken, LOCAL_KEY_FUNGIBLE_TOKENS } from '../ImportToken';
 
 const Wrapper = styled(TransactionWrapper)`
   padding: 0;
@@ -20,7 +20,7 @@ const Header = styled.div`
 const SendTransactions = () => {
   const history = useHistory();
   const { search } = useLocation();
-  const [fungibleTokens] = useLocalStorage<IFungibleToken[]>('fungibleTokens', []);
+  const [fungibleTokens] = useLocalStorage<IFungibleToken[]>(LOCAL_KEY_FUNGIBLE_TOKENS, []);
   const [step, setStep] = useState(0);
   const [destinationAccount, setDestinationAccount] = useState();
 

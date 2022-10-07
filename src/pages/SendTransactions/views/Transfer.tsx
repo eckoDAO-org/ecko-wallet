@@ -16,7 +16,7 @@ import { CONFIG, ESTIMATE_KDA_TO_USD_API, GAS_CONFIGS, NUMBER_DECIMAL_AFTER_DOT 
 import { get } from 'lodash';
 import images from 'src/images';
 import { BigNumberConverter, shortenAddress } from 'src/utils';
-import { IFungibleToken } from 'src/pages/ImportToken';
+import { IFungibleToken, LOCAL_KEY_FUNGIBLE_TOKENS } from 'src/pages/ImportToken';
 import Button from 'src/components/Buttons';
 import Tooltip from 'src/components/Tooltip';
 import {
@@ -127,7 +127,7 @@ const Transfer = (props: Props) => {
   const { data: txSettings } = useContext(TxSettingsContext);
   const [wallet, setWallet] = useState(defaultWallet);
   const [selectedGas, setSelectedGas] = useState({ ...GAS_CONFIGS.NORMAL });
-  const [fungibleTokens] = useLocalStorage<IFungibleToken[]>('fungibleTokens', []);
+  const [fungibleTokens] = useLocalStorage<IFungibleToken[]>(LOCAL_KEY_FUNGIBLE_TOKENS, []);
   const [amount, setAmount] = useState('');
   const [isNewContact, setIsNewContact] = useState(true);
   const [aliasContact, setAliasContact] = useState('');
