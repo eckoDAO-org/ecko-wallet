@@ -46,7 +46,6 @@ export const ActionButton = styled.div`
 export const ButtonModal = styled.button`
   height: 36px;
   width: 100%;
-  font-family: 'Play', sans-serif;
   background: ${(props) => props.background};
   border: ${(props) => (props.border ? props.border : 'none')};
   color: ${(props) => props.color};

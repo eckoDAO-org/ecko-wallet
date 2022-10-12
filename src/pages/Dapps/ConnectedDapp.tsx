@@ -380,7 +380,7 @@ const ConnectedDapp = () => {
               <ContentWrapper>{data.map((item) => renderCheckbox(item))}</ContentWrapper>
               <FooterWrapper>
                 <ButtonWrapper>
-                  <Button label="Cancel" type="disabled" onClick={onReject} />
+                  <Button label="Cancel" variant="disabled" onClick={onReject} />
                 </ButtonWrapper>
                 <ButtonWrapper>
                   <Button label="Save" onClick={onSave} isDisabled={disabledBtn} />

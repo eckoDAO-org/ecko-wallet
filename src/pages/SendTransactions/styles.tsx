@@ -3,7 +3,6 @@ import styled from 'styled-components';
 export const Body = styled.div`
   height: auto;
   width: 100%;
-  font-family: 'Play', sans-serif;
   font-size: 16px;
   line-height: 25px;
 `;
@@ -36,7 +35,6 @@ export const WarningText = styled.div`
 export const ButtonImport = styled.button`
   width: 100%;
   height: 44px;
-  font-family: 'Play', sans-serif;
   background: #461a57;
   border-radius: 10px;
   border: none;
@@ -172,7 +170,6 @@ export const ButtonSend = styled.button`
   width: 100%;
   height: 44px;
   background: #461a57;
-  font-family: 'Play', sans-serif;
   border-radius: 10px;
   border: none;
   font-weight: 700;

@@ -182,7 +182,7 @@ const DappSignIn = () => {
         </ConnectDescription>
         <FooterWrapper>
           <ButtonWrapper>
-            <Button label="Reject" type="disabled" onClick={onReject} />
+            <Button label="Reject" variant="disabled" onClick={onReject} />
           </ButtonWrapper>
           <ButtonWrapper>
             <Button label="Save" onClick={onSave} />

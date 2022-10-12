@@ -27,6 +27,7 @@ export const DropdownModal = ({
   title,
   modalTitle,
   modalContent,
+  modalFooter,
   iconComponent,
   iconSrc,
   containerStyle,
@@ -37,7 +38,7 @@ export const DropdownModal = ({
   const { openModal } = useContext(ModalContext);
 
   const onOpenModal = () => {
-    openModal({ title: modalTitle, content: modalContent });
+    openModal({ title: modalTitle, content: modalContent, footer: modalFooter });
   };
 
   return (
@@ -66,6 +67,7 @@ interface DropdownModalProps {
   title: React.ReactNode;
   modalTitle: React.ReactNode;
   modalContent: React.ReactNode;
+  modalFooter?: React.ReactNode;
   iconComponent?: React.ReactNode;
   iconSrc?: string;
   containerStyle?: React.CSSProperties;

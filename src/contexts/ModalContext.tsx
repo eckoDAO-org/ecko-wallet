@@ -4,6 +4,7 @@ interface ModalProps {
   isOpen?: boolean;
   title: React.ReactNode;
   content: React.ReactNode;
+  footer?: React.ReactNode;
   closeOnOverlayClick?: boolean;
 }
 
@@ -16,6 +17,7 @@ const initialState = {
   isOpen: false,
   title: null,
   content: null,
+  footer: null,
   closeOnOverlayClick: true,
 };
 
@@ -29,11 +31,11 @@ export const ModalProvider = ({ children }: any) => {
   const [state, setState] = useState<ModalProps>(initialState);
 
   const openModal = (settings: ModalProps) => {
-    setState((prev) => ({ ...prev, ...settings, isOpen: true }));
+    setState((prev) => ({ ...prev, ...settings, isOpen: true, footer: settings.footer || null }));
   };
 
   const closeModal = () => {
-    setState((prev) => ({ ...prev, isOpen: false }));
+    setState((prev) => ({ ...prev, isOpen: false, footer: null }));
   };
 
   return (

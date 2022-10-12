@@ -124,6 +124,7 @@ const Footer = () => {
       (window as any)?.chrome?.runtime?.onMessage?.removeListener(handleMessage);
     };
   }, [selectedNetwork.networkId]);
+
   const handleMessage = async (request) => {
     if (request.action === 'sync_data') {
       const { hash } = window.location;
@@ -350,19 +351,19 @@ const Footer = () => {
           <span>
             <XWalletLogoBar />
           </span>
-          <SecondaryLabel>wallet</SecondaryLabel>
+          <SecondaryLabel>WALLET</SecondaryLabel>
         </ActionBarElement>
         <ActionBarElement className={activeTab === ACTIVE_TAB.HISTORY && 'active'} onClick={setIconHistoryActive}>
           <span>
             <HistoryIcon />
           </span>
-          <SecondaryLabel>history</SecondaryLabel>
+          <SecondaryLabel>HISTORY</SecondaryLabel>
         </ActionBarElement>
         <ActionBarElement className="disabled">
           <span>
             <NFTIcon />
           </span>
-          <SecondaryLabel>nft</SecondaryLabel>
+          <SecondaryLabel>NFT</SecondaryLabel>
         </ActionBarElement>
         <ActionBarElement
           className={activeTab === ACTIVE_TAB.SETTINGS && 'active'}
@@ -372,7 +373,7 @@ const Footer = () => {
           <span>
             <GearIcon />
           </span>
-          <SecondaryLabel>settings</SecondaryLabel>
+          <SecondaryLabel>SETTINGS</SecondaryLabel>
         </ActionBarElement>
       </DivFlex>
     </Wrapper>

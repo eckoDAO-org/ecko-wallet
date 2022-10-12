@@ -61,7 +61,6 @@ const ButtonDiv = styled.button`
   height: 44px;
   background: #461a57;
   border-radius: 10px;
-  font-family: 'Play', sans-serif;
   font-weight: 700;
   border: none;
   color: #ffffff;

@@ -139,7 +139,7 @@ const FinishTransfer = () => {
             )}
             <DivChild>
               <ActionButton marginTop="200px">
-                <Button label="Close" onClick={() => setIsOpenFinishTransferModal(false)} type="disabled" />
+                <Button label="Close" onClick={() => setIsOpenFinishTransferModal(false)} variant="disabled" />
                 {/* <Button label="Finish" onClick={finishTransfer}  /> */}
               </ActionButton>
             </DivChild>

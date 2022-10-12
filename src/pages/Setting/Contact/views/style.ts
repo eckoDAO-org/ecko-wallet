@@ -37,7 +37,6 @@ export const ButtonImport = styled.button`
   background: #461a57;
   border-radius: 10px;
   border: none;
-  font-family: 'Play', sans-serif;
   color: #ffffff;
   font-size: 16px;
   cursor: pointer;
@@ -81,7 +80,6 @@ export const ButtonEdit = styled.button`
   height: 44px;
   background: #461a57;
   border-radius: 10px;
-  font-family: 'Play', sans-serif;
   border: none;
   font-weight: 700;
   color: #ffffff;
@@ -97,7 +95,6 @@ export const ButtonEditContact = styled.button`
   border-radius: 10px;
   border: none;
   font-weight: 700;
-  font-family: 'Play', sans-serif;
   color: #606a73;
   font-size: 16px;
   margin: 0 auto;
@@ -111,7 +108,6 @@ export const ButtonCancel = styled.button`
   border-radius: 10px;
   border: none;
   color: #606a73;
-  font-family: 'Play', sans-serif;
   font-size: 16px;
   cursor: pointer;
 `;
@@ -158,7 +154,6 @@ export const ButtonDelete = styled.button`
   cursor: pointer;
   border: none;
   background: none;
-  font-family: 'Play', sans-serif;
 `;
 
 export const ImgDelete = styled.img`

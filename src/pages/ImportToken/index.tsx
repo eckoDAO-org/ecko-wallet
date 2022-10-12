@@ -52,7 +52,6 @@ const ButtonSubmit = styled.button`
   height: 44px;
   background: #461a57;
   border-radius: 10px;
-  font-family: 'Play', sans-serif;
   border: none;
   font-weight: 700;
   color: #ffffff;

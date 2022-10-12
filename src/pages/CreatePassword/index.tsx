@@ -21,7 +21,6 @@ const CreateButton = styled.button`
   width: 100%;
   height: 44px;
   border-radius: 10px;
-  font-family: 'Play', sans-serif;
   background: ${(props) => (props.disabled ? 'white' : '#461A57')};
   color: ${(props) => (props.disabled ? '#461A57' : '#ffffff')};
   font-size: 16px;

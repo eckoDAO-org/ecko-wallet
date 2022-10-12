@@ -34,7 +34,6 @@ const ConditionWrapper = styled.div`
 const Body = styled.div`
   height: 100%;
   width: 100%;
-  font-family: 'Play', sans-serif;
   margin-top: 30px;
 `;
 const TextRight = styled.div`

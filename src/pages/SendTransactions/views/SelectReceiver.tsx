@@ -400,7 +400,7 @@ const SelectReceiver = (props: Props) => {
           </form>
           <ButtonWrapper>
             <TransferButton>
-              <Button type="disabled" label="Cancel" onClick={() => setIsOpenConfirmModal(false)} />
+              <Button variant="disabled" label="Cancel" onClick={() => setIsOpenConfirmModal(false)} />
             </TransferButton>
             <TransferButton>
               <ButtonImport form="create-account-form">Continue</ButtonImport>

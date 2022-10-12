@@ -103,7 +103,6 @@ const SInput = styled.input`
   margin: 10px 0 25px 0;
   outline: none;
 
-  font-family: 'Play', sans-serif;
   background: none;
 `;
 const SPContent = styled.div`

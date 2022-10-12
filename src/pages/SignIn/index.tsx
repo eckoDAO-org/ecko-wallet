@@ -19,7 +19,6 @@ const Wrapper = styled.form`
 const Body = styled.div`
   height: auto;
   width: 100%;
-  font-family: 'Play', sans-serif;
   font-size: 16px;
   margin-top: 40px;
 `;
@@ -56,7 +55,6 @@ const SignInButton = styled.button`
   background: #461a57;
   color: white;
   font-weight: 700;
-  font-family: 'Play', sans-serif;
 `;
 const DivImage = styled.div`
   font-size: ${(props) => props.fontSize};

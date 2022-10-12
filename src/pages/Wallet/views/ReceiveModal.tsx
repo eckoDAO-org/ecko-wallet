@@ -1,58 +1,76 @@
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import images from 'src/images';
-import { BaseTextInput } from 'src/baseComponent';
 import QRCode from 'qrcode.react';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
-import BaseInfoDisable from 'src/components/BaseInfoDisable/BaseInfoDisable';
+import { DivFlex, SecondaryLabel } from 'src/components';
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 
-const ReceiveContent = styled.div`
-  padding: 20px 0;
+const Label = styled.span`
+  font-weight: 500;
+  font-size: 14px;
+  color: #000000;
+  word-break: break-word;
 `;
-const Item = styled.div`
-  margin-bottom: 30px;
-`;
-const Text = styled.div`
-  text-align: center;
 
-  margin-bottom: 20px;
-  font-weight: 700;
-  font-size: 16px;
+const Icon = styled.img`
+  cursor: pointer;
 `;
-const DivChild = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
+const ReceiveTitle = styled(SecondaryLabel)`
+  font-size: 10px;
 `;
+const ReceiveSection = styled.div`
+  border-top: 1px solid #dfdfed;
+  padding: 24px;
+`;
+
 const ReceiveModal = () => {
-  const { chainId, account } = useSelector((state) => state?.wallet);
+  const { chainId, account, publicKey } = useSelector((state) => state?.wallet);
+
+  const onCopy = (str: string) => {
+    navigator.clipboard.writeText(str);
+    toast.success(<Toast type="success" content="Copied!" />);
+  };
 
   return (
-    <ReceiveContent>
-      <Item>
-        <BaseTextInput inputProps={{ readOnly: true, value: chainId }} title="Chain ID" height="auto" />
-      </Item>
-      <Item>
-        <BaseInfoDisable
-          title="Your Account Name"
-          label={account}
-          image={{
-            width: '12px',
-            height: '12px',
-            src: images.wallet.copyGray,
-            callback: () => {
-              navigator.clipboard.writeText(account);
-              toast.success(<Toast type="success" content="Copied!" />);
-            },
-          }}
-        />
-      </Item>
-      <Text>QR Code</Text>
-      <DivChild>
+    <>
+      <DivFlex alignItems="center" justifyContent="center" style={{ paddingBottom: 30 }}>
         <QRCode id="receive" value={account} size={200} level="H" />
-      </DivChild>
-    </ReceiveContent>
+      </DivFlex>
+      <ReceiveSection>
+        <DivFlex justifyContent="space-between" alignItems="center" style={{ marginBottom: 20 }}>
+          <ReceiveTitle fontSize={10}>YOUR ACCOUNT NAME</ReceiveTitle>
+          <Icon src={images.wallet.copyGray} onClick={() => onCopy(account)} />
+        </DivFlex>
+        <DivFlex justifyContent="flex-start" alignItems="flex-start">
+          <Jazzicon diameter={24} seed={jsNumberForAddress(account)} paperStyles={{ marginRight: 5, minWidth: 24 }} />
+          <Label>{account}</Label>
+        </DivFlex>
+      </ReceiveSection>
+      <ReceiveSection>
+        <DivFlex justifyContent="space-between" alignItems="center" style={{ marginBottom: 20 }}>
+          <ReceiveTitle uppercase fontSize={10}>
+            your public key
+          </ReceiveTitle>
+          <Icon src={images.wallet.copyGray} onClick={() => onCopy(publicKey)} />
+        </DivFlex>
+        <DivFlex justifyContent="flex-start" alignItems="flex-start">
+          <Label>{publicKey}</Label>
+        </DivFlex>
+      </ReceiveSection>
+      <ReceiveSection>
+        <DivFlex style={{ marginBottom: 20 }}>
+          <ReceiveTitle fontSize={10} uppercase>
+            chain id
+          </ReceiveTitle>
+        </DivFlex>
+        <DivFlex justifyContent="flex-start" alignItems="flex-start">
+          <Label>{chainId}</Label>
+        </DivFlex>
+      </ReceiveSection>
+    </>
   );
 };
 

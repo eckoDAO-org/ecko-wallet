@@ -55,7 +55,6 @@ const Footer = styled.div`
 const ButtonImport = styled.button`
   width: 100%;
   height: 44px;
-  font-family: 'Play', sans-serif;
   background: #461a57;
   border-radius: 10px;
   border: none;

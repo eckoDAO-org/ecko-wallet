@@ -2,7 +2,6 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Switch, Redirect, Route } from 'react-router-dom';
-import Header from './components/Header';
 import Footer from './components/Footer';
 import CreatePassword from './pages/CreatePassword';
 import HomePage from './pages/Home';
@@ -49,7 +48,6 @@ const AppContainer = () => {
   const { isLoading } = rootState.extensions;
   return (
     <Container>
-      <Header />
       <Switch>
         <PrivateRoute isFirstInstall path="/create-password" component={CreatePassword} />
         <PrivateRoute isFirstInstall path="/home-page" component={HomePage} />

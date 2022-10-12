@@ -219,7 +219,7 @@ const ExportSeedPhrase = () => {
           <>
             <Footer>
               <ButtonWrapper>
-                <Button onClick={onCopy} label="Copy" type="disabled" />
+                <Button onClick={onCopy} label="Copy" variant="disabled" />
               </ButtonWrapper>
               <ButtonWrapper>
                 <Button onClick={onDownload} label="Download" />

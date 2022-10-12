@@ -34,7 +34,6 @@ const ButtonAdd = styled.button`
   height: 44px;
   background: #461a57;
   border-radius: 20px;
-  font-family: 'Play', sans-serif;
   border: none;
   color: #ffffff;
   margin: 0 auto;

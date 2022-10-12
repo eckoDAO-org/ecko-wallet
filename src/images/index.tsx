@@ -65,6 +65,8 @@ import eyeHidden from './eye-hidden.svg';
 import successToast from './success-toast.svg';
 import failToast from './fail-toast.svg';
 import closeWhite from './close-white.svg';
+import radioChecked from './radio-checked.svg';
+import radioUnchecked from './radio-unchecked.svg';
 import settingWhite from './setting-white.svg';
 import iconFlux from './flux-icon.png';
 import iconKdl from './kdl-logo.svg';
@@ -96,6 +98,9 @@ import iconHomeActive from './x-wallet-icon.svg';
 import iconHomeDisabled from './x-wallet-icon-disabled.svg';
 import iconNft from './nft-icon.svg';
 import iconGear from './gear-icon.svg';
+import iconTrash from './trash-icon.svg';
+import iconShare from './share-icon.svg';
+import iconEdit from './icon-edit.svg';
 import arrayDropdownPurple from './arrow-down-purple.svg';
 import iconMorePurple from './more-purple.svg';
 import iconDropDown from './icon-dropdown.svg';
@@ -192,6 +197,11 @@ const settings = {
   lockWhite,
   trashViolet,
   lockImg,
+  iconGear,
+  iconNft,
+  iconEdit,
+  iconTrash,
+  iconShare,
 };
 const toast = {
   toastSuccess,
@@ -214,6 +224,8 @@ const images = {
   moreWhite,
   moreIcon,
   checkbox,
+  radioChecked,
+  radioUnchecked,
   logo,
   settings,
   logoDapps,

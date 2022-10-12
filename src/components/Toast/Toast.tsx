@@ -4,7 +4,6 @@ import styled from 'styled-components';
 const ToastWrapper = styled.div`
   color: white;
   position: relative;
-  font-family: 'Play', sans-serif;
 `;
 const ToastLabel = styled.div`
   font-weight: 700;

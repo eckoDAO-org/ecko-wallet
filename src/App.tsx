@@ -15,7 +15,6 @@ const AppWrapper = styled.div`
   display: block;
   font-family: 'Montserrat', sans-serif;
   display: flex;
-
   height: 100%;
   @media screen and (max-width: 1024px) {
     background: none;
@@ -55,8 +54,8 @@ const App = () => (
       <Content>
         <ModalProvider>
           <ModalConsumer>
-            {({ isOpen, title, content, closeModal }) => (
-              <ModalCustom isOpen={isOpen || false} title={title} onCloseModal={closeModal}>
+            {({ isOpen, title, content, footer, closeModal }) => (
+              <ModalCustom isOpen={isOpen || false} title={title} footer={footer} onCloseModal={closeModal}>
                 {content}
               </ModalCustom>
             )}

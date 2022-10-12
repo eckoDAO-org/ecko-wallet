@@ -3,7 +3,6 @@ import styled from 'styled-components';
 export const Body = styled.div`
   height: auto;
   width: 100%;
-  font-family: 'Play', sans-serif;
   font-size: 16px;
 `;
 
@@ -138,7 +137,6 @@ export const ButtonAdd = styled.button`
   height: 44px;
   border-radius: 10px;
   border: 1px solid #461a57;
-  font-family: 'Play', sans-serif;
   background: ${(props) => (props.disabled ? 'white' : '#461A57')};
   cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
   font-weight: 700;
@@ -175,7 +173,6 @@ export const ButtonDiv = styled.button`
   height: 44px;
   background: #f2f2f2;
   border-radius: 20px;
-  font-family: 'Play', sans-serif;
   border: none;
   color: #606a73;
   font-size: 16px;
@@ -187,7 +184,6 @@ export const ButtonConfirm = styled.button`
   height: 44px;
   border-radius: 20px;
   background: #461a57;
-  font-family: 'Play', sans-serif;
   border: none;
   color: #ffffff;
   left: 10%;
