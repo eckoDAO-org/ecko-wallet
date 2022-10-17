@@ -1,24 +1,68 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import { ActionList } from 'src/components/ActionList';
+import { useModalContext } from 'src/contexts/ModalContext';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
-import { fetchTokenList } from 'src/utils/chainweb';
+import { getTokenList } from 'src/utils/chainweb';
+import { BaseTextInput } from 'src/baseComponent';
+import images from 'src/images';
+
+const Wrapper = styled.div`
+  padding: 20px;
+  min-height: 40vh;
+`;
 
 export const AssetsList = () => {
+  const history = useHistory();
   const rootState = useSelector((state) => state);
   const { selectedNetwork } = rootState.extensions;
-  console.log('🚀 !!! ~ selectedNetwork', selectedNetwork);
   const { chainId } = useCurrentWallet();
-  console.log('🚀 !!! ~ chainId', chainId);
+
+  const { closeModal } = useModalContext();
+
+  const [tokens, setTokens] = useState<string[]>([]);
+  const [search, setSearch] = useState<string>('');
+
   useEffect(() => {
     if (selectedNetwork && selectedNetwork.url) {
-      fetchTokenList(selectedNetwork.url, selectedNetwork.networkId, chainId)
-        .then((res) => {
-          console.log('🚀 !!! ~ res', res);
-        })
-        .catch((err) => {
-          console.log('🚀 !!! ~ err', err);
-        });
+      const allTokens = getTokenList(selectedNetwork.url, selectedNetwork.networkId);
+      setTokens([...allTokens]);
     }
   }, [selectedNetwork, chainId]);
-  return <div>assets</div>;
+  return (
+    <Wrapper>
+      <div style={{ marginBottom: 10 }}>
+        <BaseTextInput
+          title=""
+          inputProps={{
+            placeholder: 'Search',
+            value: search,
+          }}
+          height="auto"
+          image={{
+            width: '20px',
+            height: '20px',
+            src: images.search,
+            callback: () => {},
+          }}
+          onChange={(e) => {
+            setSearch(e.target.value);
+          }}
+        />
+      </div>
+      <ActionList
+        actions={tokens
+          .filter((t) => !search || t.includes(search))
+          .map((t) => ({
+            label: t,
+            onClick: () => {
+              closeModal();
+              history.push(`/import-token?suggest=${t}`);
+            },
+          }))}
+      />
+    </Wrapper>
+  );
 };

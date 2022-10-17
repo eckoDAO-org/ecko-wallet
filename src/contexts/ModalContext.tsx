@@ -1,4 +1,4 @@
-import React, { useState, createContext } from 'react';
+import React, { useState, createContext, useContext } from 'react';
 
 interface ModalProps {
   isOpen?: boolean;
@@ -55,3 +55,7 @@ export const ModalConsumer = ModalContext.Consumer;
 
 export const withModalContext = (Component) => (props) =>
   <ModalConsumer>{(providerProps) => <Component {...props} modalContextProps={providerProps} />}</ModalConsumer>;
+
+export function useModalContext() {
+  return useContext(ModalContext);
+}

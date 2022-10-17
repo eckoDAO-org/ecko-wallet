@@ -28,6 +28,7 @@ import { DivFlex } from '..';
 import { RadioSelection } from '../RadioSelection';
 import Toast from '../Toast/Toast';
 import { ActionList } from '../ActionList';
+import { DropdownRadioModal } from '../DropdownRadioModal';
 
 const HeaderWallet = styled(DivFlex)`
   padding: 20px;
@@ -40,11 +41,10 @@ export const Header = ({ hideAccounts }: { hideAccounts?: boolean }) => {
   const rootState = useSelector((state) => state);
   const stateWallet = useCurrentWallet();
   // TODO: sometimes undefined on switching network (check for the same networkId)
-  console.log(`🚀 !!! ~ stateWallet.account`, stateWallet?.account);
   const { openModal, closeModal } = useContext(ModalContext);
 
   const { selectedNetwork, passwordHash, networks } = rootState.extensions;
-  console.log(`🚀 !!! ~ networks`, networks);
+  console.log(`🚀 !!! ~ selectedNetwork`, selectedNetwork);
   const { wallets } = rootState?.wallet;
 
   const checkWallet = (pub) => {
@@ -162,18 +162,11 @@ export const Header = ({ hideAccounts }: { hideAccounts?: boolean }) => {
 
   return (
     <HeaderWallet justifyContent="space-between">
-      <DropdownModal
-        title={selectedNetwork?.name}
+      <DropdownRadioModal
         modalTitle="Select Network"
-        modalContent={
-          <div style={{ padding: '1rem' }}>
-            <RadioSelection
-              value={selectedNetwork.id}
-              options={networks.map((n) => ({ label: n.name, value: n.id }))}
-              onChange={(networkId) => handleSelectNetwork(networkId)}
-            />
-          </div>
-        }
+        value={selectedNetwork && { value: selectedNetwork.id, label: selectedNetwork.name }}
+        options={networks.map((n) => ({ label: n.name, value: n.id }))}
+        onChange={(network) => handleSelectNetwork(network?.value)}
         modalFooter={
           <ActionList
             actions={[

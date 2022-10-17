@@ -6,7 +6,7 @@ import { IFungibleToken, LOCAL_KEY_FUNGIBLE_TOKENS } from 'src/pages/ImportToken
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import { fetchListLocal, fetchTokenList } from 'src/utils/chainweb';
 import { KADDEX_ANALYTICS_API } from 'src/utils/config';
-import { CHAIN_AVAILABLE_TOKENS_FIXTURE, CHAIN_COUNT } from 'src/utils/constant';
+import { CHAIN_COUNT } from 'src/utils/constant';
 import { TxSettingsContext } from './TxSettingsContext';
 
 interface TokenBalance {
@@ -31,15 +31,10 @@ export const AccountBalanceContext = createContext<AccountBalanceContextProps>({
   isLoadingBalances: false,
 });
 
-interface ChainAvailableTokens {
-  [chainId: number]: string[];
-}
-
 export const AccountBalanceProvider = ({ children }: any) => {
   const [isLoadingBalances, setIsLoadingBalances] = useState<boolean>(false);
   const [accountsBalanceState, setAccountBalanceState] = useState<AccountBalanceProps>();
   const [usdPrices, setUsdPrices] = useState<TokenBalance>({});
-  const [chainAvailableTokens, setChainAvailableTokens] = useState<ChainAvailableTokens>();
 
   const {
     wallet: { wallets },
@@ -55,10 +50,10 @@ export const AccountBalanceProvider = ({ children }: any) => {
 
   const fetchAllBalances = async (account: string) => {
     const promiseList: any[] = [];
+    // TODO: fetch token list from BE
+    const allChainAvailableTokens = fetchTokenList();
     for (let i = 0; i < CHAIN_COUNT; i += 1) {
-      console.log(`FETCHING BALANCE FOR ACCOUNT ${account}`);
-      // TODO: fetch token list from BE
-      const availableChainTokens = CHAIN_AVAILABLE_TOKENS_FIXTURE[i];
+      const availableChainTokens = allChainAvailableTokens[i];
       const filteredAvailableFt = fungibleTokens?.filter((t) => availableChainTokens.includes(t.contractAddress));
       const pactCode = `
       (
@@ -91,7 +86,7 @@ export const AccountBalanceProvider = ({ children }: any) => {
   const updateUsdPrices = () => {
     const promises: Promise<Response>[] = [
       fetch(
-        `${KADDEX_ANALYTICS_API}?dateStart=${moment().subtract(3, 'days').format('YYYY-MM-DD')}&dateEnd=${moment().format(
+        `${KADDEX_ANALYTICS_API}/candles?dateStart=${moment().subtract(3, 'days').format('YYYY-MM-DD')}&dateEnd=${moment().format(
           'YYYY-MM-DD',
         )}&currency=USDT&asset=KDA`,
       ),
@@ -99,7 +94,7 @@ export const AccountBalanceProvider = ({ children }: any) => {
     fungibleTokens?.forEach((tok) => {
       promises.push(
         fetch(
-          `${KADDEX_ANALYTICS_API}?dateStart=${moment().subtract(3, 'days').format('YYYY-MM-DD')}&dateEnd=${moment().format(
+          `${KADDEX_ANALYTICS_API}/candles?dateStart=${moment().subtract(3, 'days').format('YYYY-MM-DD')}&dateEnd=${moment().format(
             'YYYY-MM-DD',
           )}&currency=coin&asset=${tok?.contractAddress}`,
         ),
@@ -150,3 +145,7 @@ export const AccountBalanceProvider = ({ children }: any) => {
 };
 
 export const AccountBalanceConsumer = AccountBalanceContext.Consumer;
+
+export function useAccountBalanceContext() {
+  return useContext(AccountBalanceContext);
+}

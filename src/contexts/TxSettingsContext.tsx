@@ -1,4 +1,4 @@
-import { createContext, useEffect } from 'react';
+import { createContext, useContext, useEffect } from 'react';
 import Pact from 'pact-lang-api';
 import { get } from 'lodash';
 import { useSelector } from 'react-redux';
@@ -56,3 +56,7 @@ export const TxSettingsProvider = ({ children }: any) => {
 };
 
 export const TxSettingsConsumer = TxSettingsContext.Consumer;
+
+export function useModalContext() {
+  return useContext(TxSettingsContext);
+}

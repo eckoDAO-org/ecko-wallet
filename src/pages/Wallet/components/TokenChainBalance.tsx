@@ -1,5 +1,6 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
+import { useModalContext } from 'src/contexts/ModalContext';
 import { IconButton } from 'src/components/IconButton';
 import { ReactComponent as ArrowSendIcon } from 'src/images/arrow-send.svg';
 import { DivFlex, CommonLabel } from 'src/components';
@@ -8,8 +9,14 @@ import { TokenElementProps } from './TokenElement';
 
 export const TokenChainBalance = ({ name, balance, usdBalance, chainId }: TokenElementProps) => {
   const history = useHistory();
+  const { closeModal } = useModalContext();
+
+  const onSendToken = () => {
+    closeModal();
+    history.push(`/transfer?coin=${name}&chainId=${chainId}`);
+  };
   return (
-    <DivFlex justifyContent="space-between" style={{ padding: '10px 0', cursor: 'pointer' }} onClick={() => history.push(`/token-menu?coin=${name}`)}>
+    <DivFlex justifyContent="space-between" style={{ padding: '10px 0', cursor: 'pointer' }} onClick={onSendToken}>
       <DivFlex flexDirection="column">
         <CommonLabel fontSize="14px" fontWeight={700}>
           {humanReadableNumber(balance, 5)} {name}
@@ -22,9 +29,9 @@ export const TokenChainBalance = ({ name, balance, usdBalance, chainId }: TokenE
         </CommonLabel>
         <IconButton
           className="path-fill-white"
-          onClick={() => {}}
+          onClick={onSendToken}
           svgComponent={<ArrowSendIcon />}
-          style={{ backgroundColor: '#20264E', marginLeft: 5 }}
+          style={{ backgroundColor: '#20264E', marginLeft: 5, cursor: 'pointer' }}
         />
       </DivFlex>
     </DivFlex>

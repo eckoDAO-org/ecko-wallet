@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from 'react';
 import { hideLoading, showLoading } from 'src/stores/extensions';
 import { fetchListLocal } from 'src/utils/chainweb';
-import { BaseSelect, BaseTextInput, InputError } from 'src/baseComponent';
+import { BaseSelect, BaseTextInput, BaseModalSelect, InputError } from 'src/baseComponent';
 import { useSelector } from 'react-redux';
 import { Controller, useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
@@ -15,9 +15,7 @@ import Tabs from 'src/components/Tabs';
 import ModalCustom from 'src/components/Modal/ModalCustom';
 import { shortenAddress } from 'src/utils';
 import { get } from 'lodash';
-
 import useChainIdOptions from 'src/hooks/useChainIdOptions';
-import { BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
 import Button from 'src/components/Buttons';
 import {
   ReceiverInput,
@@ -253,7 +251,6 @@ const SelectReceiver = (props: Props) => {
           <InputWrapper>
             <BaseTextInput
               inputProps={{
-                placeholder: 'Input account name',
                 ...register('accountName', {
                   required: {
                     value: true,
@@ -293,17 +290,8 @@ const SelectReceiver = (props: Props) => {
                   message: 'This field is required.',
                 },
               }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <BaseSelect
-                  selectProps={{
-                    onChange,
-                    onBlur,
-                    value,
-                  }}
-                  options={optionsChain}
-                  title="Chain ID"
-                  height="auto"
-                />
+              render={({ field: { onChange, value } }) => (
+                <BaseModalSelect value={value} onChange={onChange} options={optionsChain} title="Chain ID" />
               )}
             />
             {errors.chainId && <InputError>{errors.chainId.message}</InputError>}

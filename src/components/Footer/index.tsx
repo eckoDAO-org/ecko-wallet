@@ -351,19 +351,19 @@ const Footer = () => {
           <span>
             <XWalletLogoBar />
           </span>
-          <SecondaryLabel>WALLET</SecondaryLabel>
+          <SecondaryLabel fontWeight={700}>WALLET</SecondaryLabel>
         </ActionBarElement>
         <ActionBarElement className={activeTab === ACTIVE_TAB.HISTORY && 'active'} onClick={setIconHistoryActive}>
           <span>
             <HistoryIcon />
           </span>
-          <SecondaryLabel>HISTORY</SecondaryLabel>
+          <SecondaryLabel fontWeight={700}>HISTORY</SecondaryLabel>
         </ActionBarElement>
         <ActionBarElement className="disabled">
           <span>
             <NFTIcon />
           </span>
-          <SecondaryLabel>NFT</SecondaryLabel>
+          <SecondaryLabel fontWeight={700}>NFT</SecondaryLabel>
         </ActionBarElement>
         <ActionBarElement
           className={activeTab === ACTIVE_TAB.SETTINGS && 'active'}
@@ -373,7 +373,7 @@ const Footer = () => {
           <span>
             <GearIcon />
           </span>
-          <SecondaryLabel>SETTINGS</SecondaryLabel>
+          <SecondaryLabel fontWeight={700}>SETTINGS</SecondaryLabel>
         </ActionBarElement>
       </DivFlex>
     </Wrapper>

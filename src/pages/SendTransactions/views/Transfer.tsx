@@ -11,7 +11,7 @@ import useLocalStorage from 'src/hooks/useLocalStorage';
 import Toast from 'src/components/Toast/Toast';
 import { TxSettingsContext } from 'src/contexts/TxSettingsContext';
 import { Controller, useForm } from 'react-hook-form';
-import { BUTTON_SIZE, BUTTON_TYPE, GAS_PAYER } from 'src/utils/constant';
+import { GAS_PAYER } from 'src/utils/constant';
 import { CONFIG, ESTIMATE_KDA_TO_USD_API, GAS_CONFIGS, NUMBER_DECIMAL_AFTER_DOT } from 'src/utils/config';
 import { get } from 'lodash';
 import images from 'src/images';
@@ -56,6 +56,7 @@ import {
 import AddContact from './AddContact';
 
 type Props = {
+  chainId: any;
   destinationAccount: any;
   fungibleToken: IFungibleToken | null;
 };
@@ -123,7 +124,7 @@ const defaultWallet: Wallet = {
   secretKey: '',
 };
 const Transfer = (props: Props) => {
-  const { destinationAccount, fungibleToken } = props;
+  const { destinationAccount, fungibleToken, chainId } = props;
   const { data: txSettings } = useContext(TxSettingsContext);
   const [wallet, setWallet] = useState(defaultWallet);
   const [selectedGas, setSelectedGas] = useState({ ...GAS_CONFIGS.NORMAL });
@@ -181,7 +182,7 @@ const Transfer = (props: Props) => {
   };
 
   const initData = () => {
-    const { account, chainId, publicKey, secretKey } = rootState.wallet;
+    const { account, publicKey, secretKey } = rootState.wallet;
     const pactCodeCoin = `(coin.details "${account}")`;
     const pactCodeToken = `(${fungibleToken?.contractAddress}.details "${account}")`;
     showLoading();
@@ -210,7 +211,7 @@ const Transfer = (props: Props) => {
   };
 
   const onNext = () => {
-    if (destinationAccount?.accountName === rootState.wallet.account && destinationAccount?.chainId === rootState.wallet.chainId) {
+    if (destinationAccount?.accountName === rootState.wallet.account && destinationAccount?.chainId === chainId) {
       toast.error(<Toast type="fail" content="Can not send to yourself" />);
     } else {
       setIsOpenTransferModal(true);
@@ -320,7 +321,7 @@ const Transfer = (props: Props) => {
   );
   const info = {
     sender: rootState.wallet.account,
-    senderChainId: rootState.wallet.chainId,
+    senderChainId: chainId,
     receiver: destinationAccount.accountName,
     receiverChainId: destinationAccount.chainId,
   };

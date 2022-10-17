@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { memo, useState } from 'react';
 import images from 'src/images';
+import { SecondaryLabel } from 'src/components';
 
 type ImageProps = {
   width: string;
@@ -28,18 +29,18 @@ const BaseTextInput = memo(
     let styles = {
       border: '1px solid #c4c4c4',
       background: 'none',
-      color: '#461A57',
+      color: '#000000',
     };
     if (readOnly) {
       styles = {
         border: 'none',
         background: 'none',
-        color: '#461A57',
+        color: '#787B8E',
       };
     }
     return (
       <SDivRoot height={height} isFlex={isFlex}>
-        <SText isFlex={isFlex}>{title}</SText>
+        <SLabel uppercase>{title}</SLabel>
         <InputWrapper isFlex={isFlex} readOnly={readOnly}>
           {typeInput === 'password' ? (
             <>
@@ -104,7 +105,7 @@ const InputWrapper = styled.div`
   border: ${(props) => props.border};
   border-radius: 4px;
   ${(props) => (props.isFlex ? 'flex-grow: 1' : '')};
-  background: ${(props) => (props.readOnly ? '#ECECF5' : '#ECECF5')};
+  background: ${(props) => (props.readOnly ? '#ECECF5' : '#F6F6FA')};
 `;
 const ImageWrapper = styled.div`
   height: 34px;
@@ -123,22 +124,12 @@ const SImage = styled.img`
   width: ${(props) => props.height};
   cursor: pointer;
 `;
-const SText = styled.title`
-  font-family: 'Montserrat';
-  font-style: normal;
-  font-weight: 700;
-  font-size: 10px;
-  line-height: 12px;
-  display: flex;
-  align-items: center;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-bottom: ${(props) => (props.isFlex ? '0' : '10px')};
-  ${(props) => (props.isFlex ? 'width: 31%' : '')};
-  ${(props) => (props.isFlex ? 'align-self: center' : '')};
 
+export const SLabel = styled(SecondaryLabel)`
+  line-height: 30px;
   font-weight: 700;
 `;
+
 const SInput = styled.input`
   width: 100%;
   background: ${(props) => props.background};
@@ -151,7 +142,9 @@ const SInput = styled.input`
   outline: none;
   border: none;
   &::placeholder {
-    color: ##787b8e;
+    color: #787b8e;
+    font-weight: 500;
+    font-size: 16px;
   }
 `;
 

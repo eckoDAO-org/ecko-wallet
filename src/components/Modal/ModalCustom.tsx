@@ -74,6 +74,7 @@ const CloseIcon = styled.img`
   position: absolute;
   right: 25px;
   width: 12px;
+  cursor: pointer;
 `;
 
 const ModalCustom = (props: Props) => {

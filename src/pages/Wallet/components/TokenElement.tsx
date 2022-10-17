@@ -11,7 +11,7 @@ export const TokenElement = ({ logo, name, balance, usdBalance, onClick }: Token
         {humanReadableNumber(balance, 5)} {name}
       </CommonLabel>
     </DivFlex>
-    <CommonLabel fontWeight={700} fontSize="12px" color="#787b8e" lineHeight="40px">
+    <CommonLabel fontWeight={500} fontSize="12px" color="#787b8e" lineHeight="40px">
       {humanReadableNumber(usdBalance, 2)} USD
     </CommonLabel>
   </DivFlex>

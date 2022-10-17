@@ -13,6 +13,8 @@ import { fetchListLocal } from 'src/utils/chainweb';
 import { hideLoading, showLoading } from 'src/stores/extensions';
 import { KNOWN_TOKENS } from 'src/utils/constant';
 import { TxSettingsContext } from 'src/contexts/TxSettingsContext';
+import Button from 'src/components/Buttons';
+import { NavigationHeader } from 'src/components/NavigationHeader';
 
 export const LOCAL_KEY_FUNGIBLE_TOKENS = 'fungibleTokens';
 
@@ -23,16 +25,6 @@ export interface IFungibleToken {
 
 const ImportTokenWrapper = styled.div`
   padding: 0 20px;
-`;
-const Title = styled.div`
-  font-style: normal;
-  font-weight: 700;
-  font-size: 24px;
-  display: flex;
-  line-height: 25px;
-  text-align: left;
-  width: fit-content;
-  padding-top: 22px;
 `;
 const Body = styled.div`
   height: auto;
@@ -47,18 +39,7 @@ const DivBody = styled.div`
   margin-top: 20px;
   flex-wrap: wrap;
 `;
-const ButtonSubmit = styled.button`
-  width: 100%;
-  height: 44px;
-  background: #461a57;
-  border-radius: 10px;
-  border: none;
-  font-weight: 700;
-  color: #ffffff;
-  font-size: 16px;
-  margin: auto;
-  cursor: pointer;
-`;
+const ButtonSubmit = styled(Button)``;
 const Footer = styled.div`
   width: 100%;
   text-align: center;
@@ -78,6 +59,7 @@ const ImportToken = () => {
 
   const params = new URLSearchParams(search);
   const coin = params.get('coin');
+  const suggest = params.get('suggest');
   const token = fungibleTokens?.find((ft) => ft.symbol === coin);
 
   const checkTokenExists = async (contractAddress: string) => {
@@ -116,6 +98,12 @@ const ImportToken = () => {
     }
   }, [token]);
 
+  useEffect(() => {
+    if (suggest) {
+      setValue('contractAddress', suggest);
+    }
+  }, []);
+
   const onImport = async (fT: IFungibleToken) => {
     const alreadyExists = fungibleTokens?.find((fungToken) => fungToken.contractAddress === fT.contractAddress);
     if (!token && alreadyExists) {
@@ -143,10 +131,9 @@ const ImportToken = () => {
   };
   return (
     <ImportTokenWrapper>
-      <Back title="Back" onBack={() => history.push('/')} />
+      <NavigationHeader title="Import Tokens" />
       <Body>
         <form onSubmit={handleSubmit(onImport)} id="import-token-form">
-          <Title>Import Tokens</Title>
           <DivBody>
             <BaseTextInput
               inputProps={{
@@ -203,7 +190,7 @@ const ImportToken = () => {
         </form>
       </Body>
       <Footer>
-        <ButtonSubmit form="import-token-form">{`${token ? 'Edit' : 'Add'} Custom Token`}</ButtonSubmit>
+        <ButtonSubmit variant="primary" size="full" form="import-token-form" label={`${token ? 'Edit' : 'Add'} Token`} />
       </Footer>
     </ImportTokenWrapper>
   );

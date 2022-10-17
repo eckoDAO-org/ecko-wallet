@@ -9,6 +9,7 @@ import Spinner from 'src/components/Spinner';
 import { Header } from 'src/components/Header';
 import { DivFlex, PrimaryLabel, SecondaryLabel } from 'src/components';
 import { IconButton } from 'src/components/IconButton';
+import { ActionList } from 'src/components/ActionList';
 import { roundNumber, BigNumberConverter } from 'src/utils';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import useLocalStorage from 'src/hooks/useLocalStorage';
@@ -92,12 +93,21 @@ const Wallet = () => {
     return totalUSDBalance;
   };
 
-  const renderChainDistribution = (symbol: string, contractAddress: string) =>
-    getTokenChainDistribution(contractAddress)
-      .filter((cD) => cD.balance > 0)
-      .map((cD) => (
-        <TokenChainBalance name={symbol} chainId={cD.chainId} balance={cD.balance} usdBalance={getUsdPrice(contractAddress, cD.balance)} />
-      ));
+  const renderChainDistribution = (symbol: string, contractAddress: string) => (
+    <div style={{ padding: 20 }}>
+      {getTokenChainDistribution(contractAddress)
+        .filter((cD) => cD.balance > 0)
+        .map((cD) => (
+          <TokenChainBalance name={symbol} chainId={cD.chainId} balance={cD.balance} usdBalance={getUsdPrice(contractAddress, cD.balance)} />
+        ))}
+      <ActionList
+        actions={[
+          { src: images.settings.iconTrash, label: 'Remove token', onClick: () => {} },
+          { src: images.settings.iconEdit, label: 'Edit token', onClick: () => {} },
+        ]}
+      />
+    </div>
+  );
 
   return (
     <div>
@@ -157,7 +167,6 @@ const Wallet = () => {
             usdBalance={roundNumber(getUsdPrice('kaddex.kdx', getTokenTotalBalance('kaddex.kdx', stateWallet?.account)), 2)}
             logo={images.wallet.tokens['kaddex.kdx']}
             onClick={() => openModal({ title: 'KDX Chain Distribution', content: renderChainDistribution('kdx', 'kaddex.kdx') })}
-            // onClick={() => history.push('/transfer?coin=kdx')}
           />
           {fungibleTokens
             ?.filter((fT) => fT.contractAddress !== 'kaddex.kdx')
@@ -175,7 +184,6 @@ const Wallet = () => {
                       content: renderChainDistribution(fT.symbol, fT.contractAddress),
                     });
                   }}
-                  // onClick={() => history.push(`/token-menu?coin=${fT.symbol}`)}
                 />
               );
             })}

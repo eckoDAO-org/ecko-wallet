@@ -25,7 +25,6 @@ import { useHistory } from 'react-router-dom';
 import { useWindowResizeMobile } from 'src/hooks/useWindowResizeMobile';
 import { hideLoading, setContacts, showLoading } from 'src/stores/extensions';
 import { fetchLocal } from 'src/utils/chainweb';
-import { BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
 import { getLocalContacts, setLocalContacts } from 'src/utils/storage';
 import { useSelector } from 'react-redux';
 import ModalCustom from 'src/components/Modal/ModalCustom';

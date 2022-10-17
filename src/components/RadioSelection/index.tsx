@@ -9,13 +9,13 @@ export const RadioSelection = ({ options, value, onChange }: RadioSelectionProps
   </DivFlex>
 );
 
-interface RadioSelectionOption {
+export interface SelectionOption {
   label: string;
   value: any;
 }
 
 interface RadioSelectionProps {
   value: any;
-  options: RadioSelectionOption[];
+  options: SelectionOption[];
   onChange: (value: any) => any;
 }

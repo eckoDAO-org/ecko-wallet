@@ -26,6 +26,8 @@ const SendTransactions = () => {
 
   const params = new URLSearchParams(search);
   const coin = params.get('coin');
+  const chainId = params.get('chainId');
+
   const token = fungibleTokens?.find((ft) => ft.symbol === coin);
 
   const goBack = () => {
@@ -52,7 +54,13 @@ const SendTransactions = () => {
             <SelectWrapper isHide={step !== 0}>
               <SelectReceiver goToTransfer={goToTransfer} />
             </SelectWrapper>
-            {step > 0 && <Transfer destinationAccount={destinationAccount} fungibleToken={token || { symbol: 'kda', contractAddress: 'coin' }} />}
+            {step > 0 && (
+              <Transfer
+                chainId={chainId}
+                destinationAccount={destinationAccount}
+                fungibleToken={token || { symbol: 'kda', contractAddress: 'coin' }}
+              />
+            )}
           </FormSend>
         </Body>
       </Wrapper>

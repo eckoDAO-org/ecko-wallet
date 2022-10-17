@@ -241,3 +241,7 @@ export const CrossChainProvider = ({ children }: any) => {
 };
 
 export const CrossChainConsumer = CrossChainContext.Consumer;
+
+export function useModalContext() {
+  return useContext(CrossChainContext);
+}

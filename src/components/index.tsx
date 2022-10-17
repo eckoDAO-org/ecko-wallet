@@ -17,7 +17,7 @@ export const CommonLabel = styled.span`
   text-transform: ${(props) => props.uppercase && 'uppercase'};
   color: ${($props) => $props.color || '#000000'};
   font-weight: ${($props) => $props.fontWeight};
-  font-size: ${($props) => $props.fontSize};
+  font-size: ${($props) => $props.fontSize}px;
   line-height: ${($props) => $props.lineHeight};
 `;
 
