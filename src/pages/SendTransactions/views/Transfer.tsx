@@ -56,7 +56,7 @@ import {
 import AddContact from './AddContact';
 
 type Props = {
-  chainId: any;
+  sourceChainId: any;
   destinationAccount: any;
   fungibleToken: IFungibleToken | null;
 };
@@ -124,7 +124,7 @@ const defaultWallet: Wallet = {
   secretKey: '',
 };
 const Transfer = (props: Props) => {
-  const { destinationAccount, fungibleToken, chainId } = props;
+  const { destinationAccount, fungibleToken, sourceChainId } = props;
   const { data: txSettings } = useContext(TxSettingsContext);
   const [wallet, setWallet] = useState(defaultWallet);
   const [selectedGas, setSelectedGas] = useState({ ...GAS_CONFIGS.NORMAL });
@@ -186,9 +186,9 @@ const Transfer = (props: Props) => {
     const pactCodeCoin = `(coin.details "${account}")`;
     const pactCodeToken = `(${fungibleToken?.contractAddress}.details "${account}")`;
     showLoading();
-    fetchLocal(pactCodeCoin, selectedNetwork.url, selectedNetwork.networkId, chainId)
+    fetchLocal(pactCodeCoin, selectedNetwork.url, selectedNetwork.networkId, sourceChainId)
       .then((resCoin) => {
-        fetchLocal(pactCodeToken, selectedNetwork.url, selectedNetwork.networkId, chainId).then((resToken) => {
+        fetchLocal(pactCodeToken, selectedNetwork.url, selectedNetwork.networkId, sourceChainId).then((resToken) => {
           hideLoading();
           const status = get(resToken, 'result.status');
           if (status === 'success') {
@@ -200,7 +200,7 @@ const Transfer = (props: Props) => {
               tokenBalance,
               publicKey,
               secretKey,
-              chainId,
+              chainId: sourceChainId,
             });
           }
         });
@@ -211,7 +211,7 @@ const Transfer = (props: Props) => {
   };
 
   const onNext = () => {
-    if (destinationAccount?.accountName === rootState.wallet.account && destinationAccount?.chainId === chainId) {
+    if (destinationAccount?.accountName === rootState.wallet.account && destinationAccount?.chainId === sourceChainId) {
       toast.error(<Toast type="fail" content="Can not send to yourself" />);
     } else {
       setIsOpenTransferModal(true);
@@ -321,7 +321,7 @@ const Transfer = (props: Props) => {
   );
   const info = {
     sender: rootState.wallet.account,
-    senderChainId: chainId,
+    senderChainId: sourceChainId,
     receiver: destinationAccount.accountName,
     receiverChainId: destinationAccount.chainId,
   };

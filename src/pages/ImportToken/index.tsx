@@ -2,7 +2,6 @@ import { useEffect, useContext } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import Back from 'src/components/Back';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
 import { useForm } from 'react-hook-form';
@@ -60,7 +59,7 @@ const ImportToken = () => {
   const params = new URLSearchParams(search);
   const coin = params.get('coin');
   const suggest = params.get('suggest');
-  const token = fungibleTokens?.find((ft) => ft.symbol === coin);
+  const token = fungibleTokens?.find((ft) => ft.contractAddress === coin);
 
   const checkTokenExists = async (contractAddress: string) => {
     showLoading();

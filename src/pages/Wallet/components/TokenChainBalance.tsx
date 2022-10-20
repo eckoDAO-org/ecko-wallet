@@ -7,13 +7,13 @@ import { DivFlex, CommonLabel } from 'src/components';
 import { humanReadableNumber } from 'src/utils';
 import { TokenElementProps } from './TokenElement';
 
-export const TokenChainBalance = ({ name, balance, usdBalance, chainId }: TokenElementProps) => {
+export const TokenChainBalance = ({ name, contractAddress, balance, usdBalance, chainId }: TokenElementProps) => {
   const history = useHistory();
   const { closeModal } = useModalContext();
 
   const onSendToken = () => {
     closeModal();
-    history.push(`/transfer?coin=${name}&chainId=${chainId}`);
+    history.push(`/transfer?coin=${contractAddress}&chainId=${chainId}`);
   };
   return (
     <DivFlex justifyContent="space-between" style={{ padding: '10px 0', cursor: 'pointer' }} onClick={onSendToken}>

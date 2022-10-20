@@ -186,11 +186,6 @@ export const Footer = styled.div`
   gap: 10px;
 `;
 
-export const ReceiverInput = styled.div`
-  position: relative;
-  margin: 0 20px 20px 20px;
-`;
-
 export const Content = styled.div``;
 export const ChainLeft = styled.div`
   width: 60px;

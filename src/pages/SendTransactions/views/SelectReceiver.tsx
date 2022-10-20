@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { hideLoading, showLoading } from 'src/stores/extensions';
 import { fetchListLocal } from 'src/utils/chainweb';
 import { BaseSelect, BaseTextInput, BaseModalSelect, InputError } from 'src/baseComponent';
@@ -8,34 +8,25 @@ import { useHistory } from 'react-router-dom';
 import QrReader from 'react-qr-reader';
 import images from 'src/images';
 import { toast } from 'react-toastify';
+import { SInput, SLabel } from 'src/baseComponent/BaseTextInput';
+import { JazzAccount } from 'src/components/JazzAccount';
+import { useAccountBalanceContext } from 'src/contexts/AccountBalanceContext';
 import { TxSettingsContext } from 'src/contexts/TxSettingsContext';
 import { useWindowResizeMobile } from 'src/hooks/useWindowResizeMobile';
 import Toast from 'src/components/Toast/Toast';
-import Tabs from 'src/components/Tabs';
 import ModalCustom from 'src/components/Modal/ModalCustom';
-import { shortenAddress } from 'src/utils';
 import { get } from 'lodash';
+import { DivBottomShadow, SecondaryLabel, StickyFooter } from 'src/components';
 import useChainIdOptions from 'src/hooks/useChainIdOptions';
 import Button from 'src/components/Buttons';
-import {
-  ReceiverInput,
-  Content,
-  ContactWrapper,
-  ContactItem,
-  ContactTitle,
-  Arrow,
-  BodyModal,
-  TitleModal,
-  DivChild,
-  ButtonWrapper,
-  ButtonImport,
-  InputWrapper,
-  WarningText,
-} from '../styles';
-import { NoData, TransferButton, KeyWrapper, KeyItemWrapper, KeyRemove, KeyTitle } from './style';
+import { IFungibleToken } from 'src/pages/ImportToken';
+import { Content, BodyModal, TitleModal, DivChild, ButtonWrapper, ButtonImport, InputWrapper, WarningText } from '../styles';
+import { TransferButton, KeyWrapper, KeyItemWrapper, KeyRemove, KeyTitle } from './style';
 
 type Props = {
   goToTransfer: any;
+  sourceChainId: any;
+  fungibleToken: IFungibleToken | null;
 };
 
 const predList = [
@@ -49,8 +40,7 @@ const predList = [
   },
 ];
 
-const SelectReceiver = (props: Props) => {
-  const { goToTransfer } = props;
+const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) => {
   const [isMobile] = useWindowResizeMobile(420);
   const [isSearching, setIsSearching] = useState(false);
   const [isScanSearching, setIsScanSearching] = useState(false);
@@ -63,6 +53,21 @@ const SelectReceiver = (props: Props) => {
   const history = useHistory();
   const optionsChain = useChainIdOptions();
   const { data: txSettings } = useContext(TxSettingsContext);
+  const { selectedAccountBalance } = useAccountBalanceContext();
+
+  const getSourceChainBalance = (chainId: number) => {
+    if (selectedAccountBalance) {
+      return selectedAccountBalance[chainId] && selectedAccountBalance[chainId][fungibleToken?.contractAddress as any];
+    }
+    return 0;
+  };
+
+  const [selectedChainBalance, setSelectedChainBalance] = useState(0);
+
+  useEffect(() => {
+    setSelectedChainBalance(getSourceChainBalance(sourceChainId));
+  }, [fungibleToken?.contractAddress]);
+
   const {
     register,
     handleSubmit,
@@ -72,21 +77,25 @@ const SelectReceiver = (props: Props) => {
     clearErrors,
     getValues,
     setError,
-  } = useForm();
-
-  useEffect(() => {
-    setValue('accountName', '');
-    setValue('chainId', { value: null, label: null });
-  }, []);
+  } = useForm({
+    defaultValues: {
+      accountName: '',
+      chainId: { value: null, label: null },
+      sourceChainId: !Number.isNaN(sourceChainId) ? { value: Number(sourceChainId), label: `Chain ${sourceChainId}` } : { label: null, value: null },
+      pred: { label: null, value: null },
+      publicKey: '',
+    },
+  });
 
   const onNext = () => {
     const receiver: string = getValues('accountName');
-    const chainId = getValues('chainId').value;
+    const chainId: any = getValues('chainId')?.value;
+    const sourceChainIdValue: any = getValues('sourceChainId')?.value;
     if (chainId === null) {
-      setError('chainId', { type: 'required', message: 'Please select the Chain ID' });
+      setError('chainId', { type: 'required', message: 'Please select the Target Chain ID' });
       return;
     }
-    const isDuplicated = receiver === wallet?.account && chainId.toString() === wallet?.chainId.toString();
+    const isDuplicated = receiver === wallet?.account && chainId.toString() === sourceChainIdValue.toString();
     if (isDuplicated) {
       toast.error(<Toast type="fail" content="Can not send to yourself" />);
     } else {
@@ -107,7 +116,7 @@ const SelectReceiver = (props: Props) => {
               pred,
               keys,
             };
-            goToTransferAccount(destinationAccount);
+            goToTransferAccount(destinationAccount, sourceChainIdValue);
           } else if (receiver.startsWith('k:')) {
             const destinationAccount = {
               accountName: receiver,
@@ -115,7 +124,7 @@ const SelectReceiver = (props: Props) => {
               pred: predList[0].value,
               keys: [receiver.substring(2)],
             };
-            goToTransferAccount(destinationAccount);
+            goToTransferAccount(destinationAccount, sourceChainIdValue);
           } else {
             setAccount({
               accountName: receiver,
@@ -132,8 +141,8 @@ const SelectReceiver = (props: Props) => {
     }
   };
 
-  const goToTransferAccount = (data) => {
-    goToTransfer(data);
+  const goToTransferAccount = (destAccount, sourceChainIdValue) => {
+    goToTransfer(destAccount, sourceChainIdValue);
     if (isOpenConfirmModal) {
       setIsOpenConfirmModal(false);
     }
@@ -167,14 +176,6 @@ const SelectReceiver = (props: Props) => {
     setPKeys(newKeys);
   };
 
-  const checkAfterTransfer = (data) => {
-    if (data?.accountName === wallet?.account && data?.chainId?.toString() === wallet?.chainId?.toString()) {
-      toast.error(<Toast type="fail" content="Can not send to yourself" />);
-    } else {
-      goToTransfer(data);
-    }
-  };
-
   const renderKeys = () => (
     <KeyWrapper>
       <KeyTitle>Keys:</KeyTitle>
@@ -188,39 +189,17 @@ const SelectReceiver = (props: Props) => {
   );
 
   const getTabContent = (data) =>
-    data.length ? (
-      data.map((contact: any, key) => (
-        <ContactWrapper
+    data
+      .filter((value, index, self) => index === self.findIndex((t) => t.accountName === value.accountName))
+      .map((contact: any) => (
+        <JazzAccount
+          account={contact.accountName}
           onClick={() => {
             setValue('accountName', contact.accountName);
-            setValue('chainId', { value: contact.chainId, label: contact.chainId });
-            if (contact.keys) {
-              checkAfterTransfer({
-                accountName: contact.accountName,
-                chainId: contact.chainId,
-                pred: contact.pred,
-                keys: contact.keys,
-              });
-            }
           }}
-          key={`${contact.accountName}-${contact.chainId}`}
-        >
-          <ContactItem isFirst={key === 0}>
-            {contact.aliasName && <ContactTitle>{contact.aliasName}</ContactTitle>}
-            {shortenAddress(contact.accountName)}
-            <br />
-            {`Chain ${contact.chainId}`}
-          </ContactItem>
-          <Arrow src={images.wallet.view} />
-        </ContactWrapper>
-      ))
-    ) : (
-      <NoData>No data</NoData>
-    );
-  const tabs = [
-    { title: 'Recent', id: 0, content: getTabContent(recent) },
-    { title: 'Contact book', id: 1, content: getTabContent(contacts) },
-  ];
+        />
+      ));
+
   const onCreateAccount = () => {
     if (errors.publicKey) return;
     const pred = getValues('pred').value;
@@ -242,72 +221,117 @@ const SelectReceiver = (props: Props) => {
     const newAccount = { ...account, pred, keys };
     setValue('publicKey', '');
     setPKeys([]);
-    goToTransferAccount(newAccount);
+    goToTransferAccount(newAccount, getValues('sourceChainId') && getValues('sourceChainId').value);
   };
+
   return (
     <>
-      <ReceiverInput>
-        <form onSubmit={handleSubmit(onNext)} id="input-account-form">
-          <InputWrapper>
-            <BaseTextInput
-              inputProps={{
-                ...register('accountName', {
+      <div>
+        <form>
+          <DivBottomShadow justifyContent="center" flexDirection="column" padding="20px" margin="0 -20px">
+            <InputWrapper>
+              <Controller
+                control={control}
+                name="sourceChainId"
+                rules={{
                   required: {
                     value: true,
                     message: 'This field is required.',
                   },
-                  validate: {
-                    required: (val) => val.trim().length > 0 || 'Invalid data',
+                }}
+                render={({ field: { onChange, value } }) => (
+                  <BaseModalSelect
+                    value={value}
+                    onChange={(chain) => {
+                      setSelectedChainBalance(getSourceChainBalance(chain.value));
+                      onChange(chain);
+                    }}
+                    options={optionsChain}
+                    title="Source Chain ID"
+                  />
+                )}
+              />
+              {errors.sourceChainId && <InputError>{(errors.sourceChainId as any).message}</InputError>}
+            </InputWrapper>
+            <InputWrapper>
+              <SLabel uppercase>Chain balance</SLabel>
+              <SInput value={selectedChainBalance} />
+            </InputWrapper>
+            <InputWrapper style={{ borderTop: '1px solid #DFDFED', paddingTop: 10, marginTop: 30 }}>
+              <BaseTextInput
+                inputProps={{
+                  ...register('accountName', {
+                    required: {
+                      value: true,
+                      message: 'This field is required.',
+                    },
+                    validate: {
+                      required: (val) => val.trim().length > 0 || 'Invalid data',
+                    },
+                    maxLength: {
+                      value: 1000,
+                      message: 'Destination account should be maximum 1000 characters.',
+                    },
+                  }),
+                }}
+                title="Destination Account"
+                height="auto"
+                image={{
+                  width: '20px',
+                  height: '20px',
+                  src: images.initPage.qrcode,
+                  callback: () => setIsScanSearching(true),
+                }}
+                onChange={(e) => {
+                  clearErrors('accountName');
+                  setValue('accountName', e.target.value);
+                }}
+              />
+              {errors.accountName && <InputError>{errors.accountName.message}</InputError>}
+            </InputWrapper>
+            <InputWrapper>
+              <Controller
+                control={control}
+                name="chainId"
+                rules={{
+                  required: {
+                    value: true,
+                    message: 'This field is required.',
                   },
-                  maxLength: {
-                    value: 1000,
-                    message: 'Destination account should be maximum 1000 characters.',
-                  },
-                }),
-              }}
-              title="Destination Account"
-              height="auto"
-              image={{
-                width: '20px',
-                height: '20px',
-                src: images.initPage.qrcode,
-                callback: () => setIsScanSearching(true),
-              }}
-              onChange={(e) => {
-                clearErrors('accountName');
-                setValue('accountName', e.target.value);
-              }}
-            />
-            {errors.accountName && <InputError>{errors.accountName.message}</InputError>}
-          </InputWrapper>
-          <InputWrapper>
-            <Controller
-              control={control}
-              name="chainId"
-              rules={{
-                required: {
-                  value: true,
-                  message: 'This field is required.',
-                },
-              }}
-              render={({ field: { onChange, value } }) => (
-                <BaseModalSelect value={value} onChange={onChange} options={optionsChain} title="Chain ID" />
-              )}
-            />
-            {errors.chainId && <InputError>{errors.chainId.message}</InputError>}
-          </InputWrapper>
+                }}
+                render={({ field: { onChange, value } }) => (
+                  <BaseModalSelect value={value} onChange={onChange} options={optionsChain} title="Target Chain ID" />
+                )}
+              />
+              {errors.chainId && <InputError>{(errors.chainId as any).message}</InputError>}
+            </InputWrapper>
+          </DivBottomShadow>
         </form>
-        <ButtonWrapper>
-          <ButtonImport form="input-account-form">Continue</ButtonImport>
-        </ButtonWrapper>
-      </ReceiverInput>
+      </div>
       {isSearching ? (
         <Content />
       ) : (
-        <Content>
-          <Tabs>{tabs}</Tabs>
+        <Content style={{ margin: '30px 0 70px 0' }}>
+          <div>
+            {recent.length > 0 && (
+              <div>
+                <SecondaryLabel>RECENT</SecondaryLabel>
+                {getTabContent(recent)}
+              </div>
+            )}
+            {contacts.length > 0 && (
+              <div>
+                <SecondaryLabel>CONTACTS</SecondaryLabel>
+                {getTabContent(contacts)}
+              </div>
+            )}
+          </div>
         </Content>
       )}
+      <StickyFooter>
+        <Button onClick={handleSubmit(onNext)} label="Continue" size="full" style={{ width: '90%' }} />
+      </StickyFooter>
+
       {isScanSearching && (
         <ModalCustom isOpen={isScanSearching} onCloseModal={() => setIsScanSearching(false)}>
           <BodyModal>
@@ -383,7 +407,7 @@ const SelectReceiver = (props: Props) => {
                   />
                 )}
               />
-              {errors.pred && !getValues('pred') && <InputError>{errors.pred.message}</InputError>}
+              {errors.pred && !getValues('pred') && <InputError>{errors.pred}</InputError>}
             </InputWrapper>
           </form>
           <ButtonWrapper>

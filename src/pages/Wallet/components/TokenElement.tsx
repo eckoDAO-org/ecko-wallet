@@ -19,6 +19,7 @@ export const TokenElement = ({ logo, name, balance, usdBalance, onClick }: Token
 
 export interface TokenElementProps {
   name: string;
+  contractAddress?: string;
   balance: number;
   usdBalance: number;
   logo?: string;

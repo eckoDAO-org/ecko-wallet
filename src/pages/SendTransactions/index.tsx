@@ -1,19 +1,16 @@
 import { useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import Back from 'src/components/Back';
+import { NavigationHeader } from 'src/components/NavigationHeader';
 import useLocalStorage from 'src/hooks/useLocalStorage';
 import { setActiveTab } from 'src/stores/extensions';
 import { ACTIVE_TAB } from 'src/utils/constant';
-import { PageSendTransaction, Title, Body, TransactionWrapper, FormSend, SelectWrapper } from './styles';
+import { Body, FormSend, SelectWrapper } from './styles';
 import Transfer from './views/Transfer';
 import SelectReceiver from './views/SelectReceiver';
 import { IFungibleToken, LOCAL_KEY_FUNGIBLE_TOKENS } from '../ImportToken';
 
-const Wrapper = styled(TransactionWrapper)`
-  padding: 0;
-`;
-const Header = styled.div`
+const Wrapper = styled.div`
   padding: 0 20px;
 `;
 
@@ -23,12 +20,13 @@ const SendTransactions = () => {
   const [fungibleTokens] = useLocalStorage<IFungibleToken[]>(LOCAL_KEY_FUNGIBLE_TOKENS, []);
   const [step, setStep] = useState(0);
   const [destinationAccount, setDestinationAccount] = useState();
+  const [sourceChainId, setSourceChainId] = useState('');
 
   const params = new URLSearchParams(search);
   const coin = params.get('coin');
   const chainId = params.get('chainId');
 
-  const token = fungibleTokens?.find((ft) => ft.symbol === coin);
+  const token: IFungibleToken = fungibleTokens?.find((ft) => ft.contractAddress === coin) || { symbol: 'kda', contractAddress: 'coin' };
 
   const goBack = () => {
     if (step > 0) {
@@ -38,33 +36,29 @@ const SendTransactions = () => {
       setActiveTab(ACTIVE_TAB.HOME);
     }
   };
-  const goToTransfer = (account) => {
+  const goToTransfer = (account, sourceChainIdValue) => {
     setDestinationAccount(account);
+    setSourceChainId(sourceChainIdValue);
     setStep(1);
   };
   return (
-    <PageSendTransaction>
-      <Wrapper>
-        <Header>
-          <Back title="Back" onBack={goBack} />
-          <Title isSendTitle>Send Transaction</Title>
-        </Header>
-        <Body>
-          <FormSend>
-            <SelectWrapper isHide={step !== 0}>
-              <SelectReceiver goToTransfer={goToTransfer} />
-            </SelectWrapper>
-            {step > 0 && (
-              <Transfer
-                chainId={chainId}
-                destinationAccount={destinationAccount}
-                fungibleToken={token || { symbol: 'kda', contractAddress: 'coin' }}
-              />
-            )}
-          </FormSend>
-        </Body>
-      </Wrapper>
-    </PageSendTransaction>
+    <Wrapper>
+      <NavigationHeader title={`Send ${token?.symbol?.toUpperCase()} Transaction`} onBack={goBack} />
+      <Body>
+        <FormSend>
+          <SelectWrapper isHide={step !== 0}>
+            <SelectReceiver sourceChainId={chainId} goToTransfer={goToTransfer} fungibleToken={token || { symbol: 'kda', contractAddress: 'coin' }} />
+          </SelectWrapper>
+          {step > 0 && (
+            <Transfer
+              sourceChainId={sourceChainId}
+              destinationAccount={destinationAccount}
+              fungibleToken={token || { symbol: 'kda', contractAddress: 'coin' }}
+            />
+          )}
+        </FormSend>
+      </Body>
+    </Wrapper>
   );
 };
 

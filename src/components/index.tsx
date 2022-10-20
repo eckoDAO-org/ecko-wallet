@@ -36,3 +36,21 @@ export const SecondaryLabel = styled.span`
   font-size: ${($props) => $props.fontSize || '12'}px;
   line-height: 20px;
 `;
+
+export const StickyFooter = styled(DivFlex)`
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  padding: 10px 0px;
+  width: 100%;
+  background: white;
+  justify-content: center;
+`;
+
+export const DivBottomShadow = styled(DivFlex)`
+  box-shadow: 0px 167px 67px rgba(36, 8, 43, 0.01), 0px 94px 57px rgba(36, 8, 43, 0.03), 0px 42px 42px rgba(36, 8, 43, 0.06),
+    0px 10px 23px rgba(36, 8, 43, 0.06), 0px 0px 0px rgba(36, 8, 43, 0.07);
+  border-bottom-left-radius: 25px;
+  border-bottom-right-radius: 25px;
+  padding-bottom: 24px;
+`;

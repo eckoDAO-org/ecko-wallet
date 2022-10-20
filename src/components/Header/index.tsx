@@ -25,7 +25,6 @@ import {
 import RemoveWalletPopup from 'src/pages/Wallet/views/RemoveWalletPopup';
 import { DropdownModal } from '../DropdownModal';
 import { DivFlex } from '..';
-import { RadioSelection } from '../RadioSelection';
 import Toast from '../Toast/Toast';
 import { ActionList } from '../ActionList';
 import { DropdownRadioModal } from '../DropdownRadioModal';
@@ -44,7 +43,6 @@ export const Header = ({ hideAccounts }: { hideAccounts?: boolean }) => {
   const { openModal, closeModal } = useContext(ModalContext);
 
   const { selectedNetwork, passwordHash, networks } = rootState.extensions;
-  console.log(`🚀 !!! ~ selectedNetwork`, selectedNetwork);
   const { wallets } = rootState?.wallet;
 
   const checkWallet = (pub) => {

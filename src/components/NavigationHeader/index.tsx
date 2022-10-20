@@ -15,10 +15,10 @@ const NavigatorIcon = styled.div`
   cursor: pointer;
 `;
 
-export const NavigationHeader = ({ title, back }: { title: string; back?: string }) => {
+export const NavigationHeader = ({ title, back, onBack }: { title: string; back?: string; onBack?: any }) => {
   const history = useHistory();
   return (
-    <NavigatorWrapper justifyContent="space-between" alignItems="center" onClick={() => history.push(back || '/')}>
+    <NavigatorWrapper justifyContent="space-between" alignItems="center" onClick={onBack || (() => history.push(back || '/'))}>
       <NavigatorIcon>
         <img src={images.wallet.arrowDownBlack} />
       </NavigatorIcon>

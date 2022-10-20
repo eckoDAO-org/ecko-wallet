@@ -130,7 +130,7 @@ export const SLabel = styled(SecondaryLabel)`
   font-weight: 700;
 `;
 
-const SInput = styled.input`
+export const SInput = styled.input`
   width: 100%;
   background: ${(props) => props.background};
   color: ${(props) => props.color};

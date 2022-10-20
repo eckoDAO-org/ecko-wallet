@@ -11,6 +11,7 @@ import { useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { CrossChainContext } from 'src/contexts/CrossChainContext';
+import { DivFlex } from 'src/components';
 
 const DivChild = styled.div`
   font-size: ${(props) => props.fontSize};
@@ -20,12 +21,6 @@ const DivChild = styled.div`
   margin-right: ${(props) => props.marginRight};
   margin-bottom: ${(props) => props.marginBottom};
   font-weight: ${(props) => props.fontWeight};
-`;
-const DivFlex = styled.div`
-  display: flex;
-  justify-content: ${(props) => props.justifyContent};
-  margin-bottom: ${(props) => props.marginBottom};
-  cursor: ${(props) => props.cursor};
 `;
 
 const RemoveWalletContent = styled.div`

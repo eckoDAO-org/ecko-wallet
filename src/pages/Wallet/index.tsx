@@ -1,4 +1,3 @@
-import { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import images from 'src/images';
 import { ReactComponent as SearchIconSVG } from 'src/images/search.svg';
@@ -7,14 +6,17 @@ import styled from 'styled-components';
 import Button from 'src/components/Buttons';
 import Spinner from 'src/components/Spinner';
 import { Header } from 'src/components/Header';
-import { DivFlex, PrimaryLabel, SecondaryLabel } from 'src/components';
+import { toast } from 'react-toastify';
+import Toast from 'src/components/Toast/Toast';
+import { DivBottomShadow, DivFlex, PrimaryLabel, SecondaryLabel } from 'src/components';
+import { ConfirmModal } from 'src/components/ConfirmModal';
 import { IconButton } from 'src/components/IconButton';
 import { ActionList } from 'src/components/ActionList';
 import { roundNumber, BigNumberConverter } from 'src/utils';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import useLocalStorage from 'src/hooks/useLocalStorage';
-import { ModalContext } from 'src/contexts/ModalContext';
-import { AccountBalanceContext } from 'src/contexts/AccountBalanceContext';
+import { useModalContext } from 'src/contexts/ModalContext';
+import { useAccountBalanceContext } from 'src/contexts/AccountBalanceContext';
 import ReceiveModal from './views/ReceiveModal';
 import { IFungibleToken, LOCAL_KEY_FUNGIBLE_TOKENS } from '../ImportToken';
 import { TokenElement } from './components/TokenElement';
@@ -33,14 +35,6 @@ interface ChainDistribution {
   balance: number;
 }
 
-const DivBalance = styled(DivFlex)`
-  box-shadow: 0px 167px 67px rgba(36, 8, 43, 0.01), 0px 94px 57px rgba(36, 8, 43, 0.03), 0px 42px 42px rgba(36, 8, 43, 0.06),
-    0px 10px 23px rgba(36, 8, 43, 0.06), 0px 0px 0px rgba(36, 8, 43, 0.07);
-  border-bottom-left-radius: 25px;
-  border-bottom-right-radius: 25px;
-  padding-bottom: 24px;
-`;
-
 const DivAsset = styled.div`
   padding: 20px;
   margin-bottom: 60px;
@@ -56,9 +50,11 @@ const DivAssetList = styled.div`
 
 const Wallet = () => {
   const history = useHistory();
-  const { openModal } = useContext(ModalContext);
-  const { isLoadingBalances, selectedAccountBalance, allAccountsBalance, usdPrices } = useContext(AccountBalanceContext);
-  const [fungibleTokens] = useLocalStorage<IFungibleToken[]>(LOCAL_KEY_FUNGIBLE_TOKENS, [{ contractAddress: 'kaddex.kdx', symbol: 'kdx' }]);
+  const { openModal, closeModal } = useModalContext();
+  const { isLoadingBalances, selectedAccountBalance, allAccountsBalance, usdPrices } = useAccountBalanceContext();
+  const [fungibleTokens, setFungibleTokens] = useLocalStorage<IFungibleToken[]>(LOCAL_KEY_FUNGIBLE_TOKENS, [
+    { contractAddress: 'kaddex.kdx', symbol: 'kdx' },
+  ]);
 
   const stateWallet = useCurrentWallet();
 
@@ -93,19 +89,55 @@ const Wallet = () => {
     return totalUSDBalance;
   };
 
+  const handleRemoveToken = (contractAddress) => {
+    const newFungibleTokens = fungibleTokens?.filter((ft) => ft.contractAddress !== contractAddress) ?? [];
+    setFungibleTokens([...newFungibleTokens]);
+    toast.success(<Toast type="success" content="Token successfully removed" />);
+    closeModal();
+  };
+
   const renderChainDistribution = (symbol: string, contractAddress: string) => (
     <div style={{ padding: 20 }}>
       {getTokenChainDistribution(contractAddress)
         .filter((cD) => cD.balance > 0)
         .map((cD) => (
-          <TokenChainBalance name={symbol} chainId={cD.chainId} balance={cD.balance} usdBalance={getUsdPrice(contractAddress, cD.balance)} />
+          <TokenChainBalance
+            name={symbol}
+            contractAddress={contractAddress}
+            chainId={cD.chainId}
+            balance={cD.balance}
+            usdBalance={getUsdPrice(contractAddress, cD.balance)}
+          />
         ))}
-      <ActionList
-        actions={[
-          { src: images.settings.iconTrash, label: 'Remove token', onClick: () => {} },
-          { src: images.settings.iconEdit, label: 'Edit token', onClick: () => {} },
-        ]}
-      />
+      {['coin', 'kaddex.kdx'].every((add) => add !== contractAddress) && (
+        <ActionList
+          actions={[
+            {
+              src: images.settings.iconTrash,
+              label: 'Remove token',
+              onClick: () =>
+                openModal({
+                  title: `Remove ${symbol.toUpperCase()} token`,
+                  content: (
+                    <ConfirmModal
+                      text={`Are you sure you want remove ${symbol.toUpperCase()} token?`}
+                      onClose={closeModal}
+                      onConfirm={() => handleRemoveToken(contractAddress)}
+                    />
+                  ),
+                }),
+            },
+            {
+              src: images.settings.iconEdit,
+              label: 'Edit token',
+              onClick: () => {
+                closeModal();
+                history.push(`/import-token?coin=${contractAddress}`);
+              },
+            },
+          ]}
+        />
+      )}
     </div>
   );
 
@@ -118,7 +150,7 @@ const Wallet = () => {
           {isLoadingBalances ? <Spinner size={10} color="black" weight={2} /> : `$ ${roundNumber(getAllChainUsdBalance(), 2)}`}
         </SecondaryLabel>
       </DivFlex>
-      <DivBalance justifyContent="center" flexDirection="column" alignItems="center" padding="20px">
+      <DivBottomShadow justifyContent="center" flexDirection="column" alignItems="center" padding="20px">
         <SecondaryLabel>ACCOUNT BALANCE</SecondaryLabel>
         <PrimaryLabel>$ {roundNumber(getAccountBalance(stateWallet?.account), 2)}</PrimaryLabel>
         <DivFlex gap="5%" style={{ width: '100%', marginTop: 30 }}>
@@ -144,7 +176,7 @@ const Wallet = () => {
             size="full"
           />
         </DivFlex>
-      </DivBalance>
+      </DivBottomShadow>
       <DivAsset>
         <DivFlex justifyContent="space-between">
           <SecondaryLabel style={{ paddingTop: 10 }}>ASSETS</SecondaryLabel>

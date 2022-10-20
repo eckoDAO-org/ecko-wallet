@@ -156,7 +156,7 @@ const DappTransfer = () => {
                     <Title isSendTitle>Send Transaction</Title>
                   </Padding>
                   {/* TODO: check DAPP TRANSFER API (chainId param required) */}
-                  <Transfer chainId={0} destinationAccount={destinationAccount} fungibleToken={{ symbol: 'kda', contractAddress: 'coin' }} />
+                  <Transfer sourceChainId={0} destinationAccount={destinationAccount} fungibleToken={{ symbol: 'kda', contractAddress: 'coin' }} />
                 </>
               ) : (
                 <NotFound>
