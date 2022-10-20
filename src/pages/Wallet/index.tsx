@@ -155,7 +155,7 @@ const Wallet = () => {
         <PrimaryLabel>$ {roundNumber(getAccountBalance(stateWallet?.account), 2)}</PrimaryLabel>
         <DivFlex gap="5%" style={{ width: '100%', marginTop: 30 }}>
           <Button
-            onClick={() => history.push('/transfer?coin=kda')}
+            onClick={() => history.push('/transfer?coin=kda&chainId=0')}
             label={
               <DivFlex justifyContent="center">
                 <img src={images.wallet.arrowSend} style={{ width: 16, marginRight: 10 }} />

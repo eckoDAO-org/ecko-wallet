@@ -1,12 +1,5 @@
-import { createContext, useContext, useEffect } from 'react';
-import Pact from 'pact-lang-api';
-import { get } from 'lodash';
-import { useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
-import Toast from 'src/components/Toast/Toast';
-import { fetchSend, getApiUrl, pollRequestKey } from 'src/utils/chainweb';
+import { createContext, useContext } from 'react';
 import useLocalStorage from 'src/hooks/useLocalStorage';
-import { getTimestamp } from 'src/utils';
 import { CONFIG } from 'src/utils/config';
 
 export interface TxSettingsContextData {
@@ -20,6 +13,7 @@ export interface TxSettingsContextData {
 
 interface TxSettingsContextValue {
   data: TxSettingsContextData | null;
+  // eslint-disable-next-line no-unused-vars
   setTxSettings: (value: any) => any;
   getTxSettingsAsync: () => Promise<TxSettingsContextData>;
 }
@@ -57,6 +51,6 @@ export const TxSettingsProvider = ({ children }: any) => {
 
 export const TxSettingsConsumer = TxSettingsContext.Consumer;
 
-export function useModalContext() {
+export function useTxSettingsContext() {
   return useContext(TxSettingsContext);
 }

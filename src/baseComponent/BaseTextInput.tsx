@@ -1,5 +1,5 @@
+import React, { memo, useState } from 'react';
 import styled from 'styled-components';
-import { memo, useState } from 'react';
 import images from 'src/images';
 import { SecondaryLabel } from 'src/components';
 
@@ -21,9 +21,23 @@ type Props = {
   onWheel?: any;
   onBlur?: any;
   typeInput?: String;
+  wrapperStyle?: React.CSSProperties;
 };
 const BaseTextInput = memo(
-  ({ title, inputProps = {}, typeInput, image, height = '44px', isFlex, onChange, numberOptions, onKeyPress, onWheel, onBlur }: Props) => {
+  ({
+    title,
+    inputProps = {},
+    typeInput,
+    image,
+    height = '44px',
+    isFlex,
+    onChange,
+    numberOptions,
+    onKeyPress,
+    onWheel,
+    onBlur,
+    wrapperStyle,
+  }: Props) => {
     const [type, setType] = useState('password');
     const { readOnly } = inputProps;
     let styles = {
@@ -41,7 +55,7 @@ const BaseTextInput = memo(
     return (
       <SDivRoot height={height} isFlex={isFlex}>
         <SLabel uppercase>{title}</SLabel>
-        <InputWrapper isFlex={isFlex} readOnly={readOnly}>
+        <InputWrapper isFlex={isFlex} readOnly={readOnly} style={wrapperStyle}>
           {typeInput === 'password' ? (
             <>
               <SInput

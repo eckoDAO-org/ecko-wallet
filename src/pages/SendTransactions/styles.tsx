@@ -152,16 +152,21 @@ export const FormItem = styled.div`
 export const Warning = styled.div`
   margin-bottom: 24px;
   text-align: ${(props) => (props.isContact ? 'left' : 'center')};
-  background: #eee6f3;
-  padding: ${(props) => (props.isContact ? '10px' : '20px 15px')};
-  margin-top: ${(props) => (props.isContact ? '' : '50px')};
+  background: #fff7e6;
+  color: #ce8900;
+  padding: 10px;
   cursor: ${(props) => (props.isContact ? 'pointer' : 'default')};
-
-  font-size: 14px;
-  border: 1px solid #461a57;
-  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 10px;
   display: flex;
   align-items: center;
+  svg {
+    margin-right: 10px;
+    path {
+      fill: #ffa900;
+    }
+  }
 `;
 export const SelectWrapper = styled.div`
   display: ${(props) => (props.isHide ? 'none' : 'block')};
@@ -233,14 +238,6 @@ export const ListChainWrapper = styled.div`
   padding: 5px 20px;
 `;
 
-export const TransferWrapper = styled.div`
-  padding: 5px 20px;
-`;
-
-export const GasOptions = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
 export const GasOptionsWrapper = styled.div`
   margin-top: 20px;
 `;
@@ -248,15 +245,14 @@ export const ErrorWrapper = styled.div`
   margin-top: 10px;
 `;
 export const GasItem = styled.div`
-  width: 31%;
-  height: 30px;
+  height: 50px;
   border-radius: 10px;
-  border: 1px solid #461a57;
-  background: ${(props) => (props.isActive ? '#461A57' : 'white')};
-  color: ${(props) => (props.isActive ? 'white' : '#461A57')};
-  font-weight: bold;
-  font-size: 14px;
+  background: ${(props) => (props.isActive ? '#20264E' : '#ECECF5')};
+  color: ${(props) => (props.isActive ? 'white' : '#20264E')};
+  font-size: 16px;
+  font-weight: 500;
   display: flex;
+  flex: 1;
   align-items: center;
   justify-content: center;
   cursor: pointer;

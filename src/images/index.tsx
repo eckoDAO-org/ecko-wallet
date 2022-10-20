@@ -20,6 +20,8 @@ import logoName from './logo-name.svg';
 import trashPink from './trash-pink.png';
 import view from './view.svg';
 import arrowRight from './arrow-right.png';
+import arrowTransfer from './arrow-transfer.svg';
+import iconAlert from './icon-alert.svg';
 import loadMore from './load-more.svg';
 import qrCode from './frame.png';
 import add from './add.png';
@@ -122,6 +124,8 @@ const wallet = {
   qrCode,
   iconBuni,
   arrowRight,
+  arrowTransfer,
+  iconAlert,
   iconTRYB,
   iconPending,
   iconSuccess,

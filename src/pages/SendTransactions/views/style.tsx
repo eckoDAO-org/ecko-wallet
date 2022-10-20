@@ -1,3 +1,4 @@
+import { DivFlex } from 'src/components';
 import styled from 'styled-components';
 
 export const Body = styled.div`
@@ -241,10 +242,11 @@ export const TooltipImage = styled.img`
   margin-left: 10px;
 `;
 export const TransferImage = styled.img<{ size: string; top: string; width: string }>`
-  height: ${($props) => $props.size};
-  width: ${($props) => ($props.width ? $props.width : $props.size)};
-  margin: auto;
-  padding: 0 9%;
+  padding: 4px;
+  width: 25px;
+  height: 25px;
+  border: 1px solid #dfdfed;
+  border-radius: 50px;
 `;
 export const TransferName = styled.div`
   font-weight: 700;
@@ -278,11 +280,27 @@ export const ImageWrapper = styled.div`
   width: 30px;
   height: 30px;
 `;
-export const AmountWrapper = styled.div`
-  display: flex;
-  align-items: center;
-`;
+
 export const Balance = styled.div`
   margin-left: auto;
   font-weight: 400;
+`;
+
+export const AccountTransferDetail = styled(DivFlex)`
+  border-bottom: 1px solid rgb(223, 223, 237);
+  border-top: 1px solid rgb(223, 223, 237);
+  margin: 0 -20px 20px -20px;
+  padding: 0 20px;
+`;
+
+export const AmountWrapper = styled(DivFlex)`
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+  }
+  input[type='number'] {
+    -moz-appearance: textfield; /* Firefox */
+  }
 `;

@@ -4,7 +4,7 @@ import { BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
 
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: 'normal' | 'full';
-  variant?: 'primary' | 'secondary' | 'disabled' | 'transparent' | 'remove';
+  variant?: 'primary' | 'secondary' | 'grey' | 'disabled' | 'transparent' | 'remove';
   label: React.ReactNode;
   onClick?: any;
   isDisabled?: boolean;
@@ -63,6 +63,12 @@ const Button = (props: Props) => {
   } else if (variant === 'secondary') {
     buttonType = {
       color: '#20264E',
+      background: '#ECECF5',
+      border: 'none',
+    };
+  } else if (variant === 'grey') {
+    buttonType = {
+      color: '#787B8E',
       background: '#ECECF5',
       border: 'none',
     };

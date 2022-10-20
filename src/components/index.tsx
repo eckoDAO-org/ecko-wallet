@@ -10,7 +10,7 @@ export const DivFlex = styled.div`
   align-items: ${(props) => props.alignItems};
   margin: ${(props) => props.margin};
   margin-top: ${(props) => props.marginTop};
-  gap: ${(props) => props.gap}; ;
+  gap: ${(props) => props.gap};
 `;
 
 export const CommonLabel = styled.span`
@@ -32,7 +32,7 @@ export const PrimaryLabel = styled.span`
 export const SecondaryLabel = styled.span`
   text-transform: ${(props) => props.uppercase && 'uppercase'};
   color: ${($props) => $props.color || '#787b8e'};
-  font-weight: 600;
+  font-weight: ${($props) => $props.fontWeight || '600'};
   font-size: ${($props) => $props.fontSize || '12'}px;
   line-height: 20px;
 `;

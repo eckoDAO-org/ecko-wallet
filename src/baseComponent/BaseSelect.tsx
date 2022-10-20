@@ -87,7 +87,7 @@ const SDivRoot = styled.div`
   }
 `;
 
-const SText = styled.title`
+export const SText = styled.title`
   display: block;
   width: ${(props) => (props.isFlex ? '31%' : '100%')};
   font-size: 16px;
