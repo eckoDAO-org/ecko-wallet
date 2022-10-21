@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BaseTextInput } from 'src/baseComponent';
 import { useSelector } from 'react-redux';
 import { hideLoading, showLoading } from 'src/stores/extensions';
@@ -7,7 +7,7 @@ import { ReactComponent as AlertIconSVG } from 'src/images/icon-alert.svg';
 import { fetchLocal, getBalanceFromChainwebApiResponse } from 'src/utils/chainweb';
 import { getLocalContacts, getExistContacts } from 'src/utils/storage';
 import ModalCustom from 'src/components/Modal/ModalCustom';
-import { CommonLabel, DivBottomShadow, DivFlex, PrimaryLabel, SecondaryLabel, StickyFooter } from 'src/components';
+import { CommonLabel, DivBottomShadow, DivFlex, PaddedBodyStickyFooter, PrimaryLabel, SecondaryLabel, StickyFooter } from 'src/components';
 import { JazzAccount } from 'src/components/JazzAccount';
 import { SInput } from 'src/baseComponent/BaseTextInput';
 import PopupConfirm from 'src/pages/SendTransactions/views/PopupConfirm';
@@ -24,69 +24,14 @@ import { IFungibleToken } from 'src/pages/ImportToken';
 import Button from 'src/components/Buttons';
 import AddContact from './AddContact';
 import { ButtonSend, Warning, Footer, Error, GasItem, ErrorWrapper } from '../styles';
-import {
-  TransferButton,
-  SendTransaction,
-  TransferItem,
-  TransferName,
-  TransferDetails,
-  AccountDetails,
-  ImageSpace,
-  TransactionImage,
-  TransferImage,
-  AmountWrapper,
-  AccountTransferDetail,
-} from './style';
+import { TransferButton, TransferImage, AmountWrapper, AccountTransferDetail } from './style';
 
 type Props = {
   sourceChainId: any;
   destinationAccount: any;
   fungibleToken: IFungibleToken | null;
 };
-export const renderTransactionInfo = (info) => (
-  <SendTransaction>
-    <TransferItem isTop>
-      <TransferName>Sender Account</TransferName>
-      <TransferDetails>
-        <AccountDetails>
-          {shortenAddress(info.sender)}
-          <ImageSpace>
-            <TransactionImage
-              cursor="pointer"
-              src={images.wallet.copyGray}
-              alt="copy-gray"
-              onClick={() => {
-                navigator.clipboard.writeText(info.sender);
-                toast.success(<Toast type="success" content="Copied!" />);
-              }}
-            />
-          </ImageSpace>
-        </AccountDetails>
-        <span>{`Chain ID ${info.senderChainId}`}</span>
-      </TransferDetails>
-    </TransferItem>
-    <TransferItem>
-      <TransferName>Destination Account</TransferName>
-      <TransferDetails>
-        <AccountDetails>
-          {shortenAddress(info.receiver)}
-          <ImageSpace>
-            <TransactionImage
-              cursor="pointer"
-              src={images.wallet.copyGray}
-              alt="copy-gray"
-              onClick={() => {
-                navigator.clipboard.writeText(info.receiver);
-                toast.success(<Toast type="success" content="Copied!" />);
-              }}
-            />
-          </ImageSpace>
-        </AccountDetails>
-        <span>{`Chain ID ${info.receiverChainId}`}</span>
-      </TransferDetails>
-    </TransferItem>
-  </SendTransaction>
-);
+
 interface Wallet {
   accountName: string;
   coinBalance: number;
@@ -103,6 +48,42 @@ const defaultWallet: Wallet = {
   chainId: '0',
   secretKey: '',
 };
+
+interface TransactionInfo {
+  sender: string;
+  senderChainId: string;
+  receiver: string;
+  receiverChainId: string;
+}
+
+export const renderTransactionInfo = (info: TransactionInfo, containerStyle?: React.CSSProperties) => (
+  <AccountTransferDetail justifyContent="space-between" alignItems="center" style={containerStyle}>
+    <div>
+      <JazzAccount
+        account={info.sender}
+        renderAccount={(acc) => (
+          <DivFlex flexDirection="column">
+            <span style={{ fontWeight: 500, fontSize: 12 }}>{shortenAddress(acc)}</span>
+            <SecondaryLabel uppercase>chain {info.senderChainId}</SecondaryLabel>
+          </DivFlex>
+        )}
+      />
+    </div>
+    <TransferImage src={images.wallet.arrowTransfer} />
+    <div>
+      <JazzAccount
+        account={info.receiver}
+        renderAccount={(acc) => (
+          <DivFlex flexDirection="column">
+            <span style={{ fontWeight: 500, fontSize: 12 }}>{shortenAddress(acc)}</span>
+            <SecondaryLabel uppercase>chain {info.receiverChainId}</SecondaryLabel>
+          </DivFlex>
+        )}
+      />
+    </div>
+  </AccountTransferDetail>
+);
+
 const Transfer = (props: Props) => {
   const { destinationAccount, fungibleToken, sourceChainId } = props;
   const { data: txSettings } = useTxSettingsContext();
@@ -279,8 +260,13 @@ const Transfer = (props: Props) => {
     setValue('amount', amountCustom);
   };
 
+  const estimateUSDAmount =
+    fungibleToken?.contractAddress && Object.prototype.hasOwnProperty.call(usdPrices, fungibleToken?.contractAddress)
+      ? humanReadableNumber((usdPrices[fungibleToken?.contractAddress as any] || 0) * Number(amount))
+      : null;
+
   return (
-    <div>
+    <PaddedBodyStickyFooter paddingBottom={50}>
       <AccountTransferDetail justifyContent="space-between" alignItems="center">
         <div>
           <JazzAccount
@@ -373,8 +359,10 @@ const Transfer = (props: Props) => {
               type="number"
               value={amount}
               style={{
+                flex: 1,
                 fontSize: 45,
                 fontWeight: 500,
+                padding: '0px 5px 0px 13px',
               }}
               onWheel={(event) => event.currentTarget.blur()}
               {...register('amount', {
@@ -403,7 +391,8 @@ const Transfer = (props: Props) => {
               onChange={changeAmount}
             />
           )}
-          <PrimaryLabel uppercase>{fungibleToken?.symbol}</PrimaryLabel>
+          {/** TODO: make dynamic length text <TextScaling /> */}
+          <PrimaryLabel uppercase>{fungibleToken?.symbol?.substring(0, 3)}</PrimaryLabel>
         </AmountWrapper>
         {errors.amount && errors.amount.type === 'required' && (
           <ErrorWrapper>
@@ -428,7 +417,7 @@ const Transfer = (props: Props) => {
         )}
         <DivFlex justifyContent="space-between" alignItems="center" margin="20px 0">
           <CommonLabel fontSize={12} fontWeight={600}>
-            {humanReadableNumber((usdPrices[fungibleToken?.contractAddress as any] || 0) * Number(amount))} USD
+            {estimateUSDAmount && `${estimateUSDAmount} USD`}
           </CommonLabel>
           <SecondaryLabel fontSize={12} fontWeight={600}>
             {`Balance: ${BigNumberConverter(wallet?.tokenBalance)} ${fungibleToken?.symbol.toUpperCase()}`}
@@ -449,7 +438,7 @@ const Transfer = (props: Props) => {
           transaction parameters
         </SecondaryLabel>
         {/* gas option */}
-        <DivFlex justifyContent="space-evenly" margin="10px 0" gap="5px">
+        <DivFlex justifyContent="space-evenly" margin="10px 0" gap="10px">
           {Object.keys(GAS_CONFIGS).map((config) => {
             const gas = GAS_CONFIGS[config];
             return (
@@ -594,6 +583,7 @@ const Transfer = (props: Props) => {
             onClose={onCloseTransfer}
             aliasContact={aliasContact}
             fungibleToken={fungibleToken}
+            estimateUSDAmount={estimateUSDAmount}
             kdaUSDPrice={usdPrices?.coin}
           />
         </ModalCustom>
@@ -608,7 +598,7 @@ const Transfer = (props: Props) => {
           <AddContact onClose={onCloseAddContact} contact={destinationAccount} networkId={selectedNetwork.networkId} />
         </ModalCustom>
       )}
-    </div>
+    </PaddedBodyStickyFooter>
   );
 };
 

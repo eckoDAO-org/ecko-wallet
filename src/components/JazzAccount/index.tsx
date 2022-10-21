@@ -18,6 +18,7 @@ export const JazzAccount = ({
 }: {
   account: string;
   diameter?: number;
+  // eslint-disable-next-line no-unused-vars
   renderAccount?: (acc: string) => React.ReactNode;
   isSelected?: boolean;
   onClick?: any;

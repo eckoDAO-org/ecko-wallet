@@ -47,6 +47,10 @@ export const StickyFooter = styled(DivFlex)`
   justify-content: center;
 `;
 
+export const PaddedBodyStickyFooter = styled.div`
+  padding-bottom: ${(props) => `${props.paddingBottom}px` || '50px'};
+`;
+
 export const DivBottomShadow = styled(DivFlex)`
   box-shadow: 0px 167px 67px rgba(36, 8, 43, 0.01), 0px 94px 57px rgba(36, 8, 43, 0.03), 0px 42px 42px rgba(36, 8, 43, 0.06),
     0px 10px 23px rgba(36, 8, 43, 0.06), 0px 0px 0px rgba(36, 8, 43, 0.07);

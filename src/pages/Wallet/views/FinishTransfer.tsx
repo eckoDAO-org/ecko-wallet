@@ -6,7 +6,6 @@ import images from 'src/images';
 import { CrossChainContext } from 'src/contexts/CrossChainContext';
 import ModalCustom from 'src/components/Modal/ModalCustom';
 import BigNumber from 'bignumber.js';
-import { BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
 import Button from 'src/components/Buttons';
 import { renderTransactionInfo } from 'src/pages/SendTransactions/views/Transfer';
 import FinishTransferItem from './FinishTransferItem';
@@ -93,17 +92,9 @@ const FinishTransfer = () => {
   return (
     <Div>
       {filterCrossChain && filterCrossChain.length ? (
-        <>
-          {/* <HeaderTitle>
-              <DivFlex>
-                <DivChild color="#461A57" fontSize="16px" marginRight="15px">Date</DivChild>
-              </DivFlex>
-              <DivChild color="#461A57" fontSize="16px">Quantity</DivChild>
-            </HeaderTitle> */}
-          <DivChild>
-            <DivScroll>{renderItem(filterCrossChain)}</DivScroll>
-          </DivChild>
-        </>
+        <DivChild>
+          <DivScroll>{renderItem(filterCrossChain)}</DivScroll>
+        </DivChild>
       ) : (
         <NoData>You have no transactions</NoData>
       )}

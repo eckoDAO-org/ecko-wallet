@@ -105,10 +105,12 @@ export const AccountBalanceProvider = ({ children }: any) => {
       .then((candlesData) => {
         const usdPricesData = {};
         candlesData.forEach((candleAnalytics) => {
-          const lastCandle = candleAnalytics?.pop();
-          const asset = lastCandle?.pairName?.split('/')[0];
-          usdPricesData[asset?.toLowerCase() === 'kda' ? 'coin' : asset?.toLowerCase()] =
-            lastCandle?.usdPrice?.close || lastCandle?.price?.close || 0;
+          if (candleAnalytics.length) {
+            const lastCandle = candleAnalytics?.pop();
+            const asset = lastCandle?.pairName?.split('/')[0];
+            usdPricesData[asset?.toLowerCase() === 'kda' ? 'coin' : asset?.toLowerCase()] =
+              lastCandle?.usdPrice?.close || lastCandle?.price?.close || 0;
+          }
         });
         setUsdPrices(usdPricesData);
       });

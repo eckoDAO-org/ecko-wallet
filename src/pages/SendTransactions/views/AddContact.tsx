@@ -5,7 +5,6 @@ import { setContacts } from 'src/stores/extensions';
 import { convertContacts } from 'src/utils';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
-import { BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
 import { getLocalContacts, setLocalContacts } from 'src/utils/storage';
 import { useState } from 'react';
 import images from 'src/images';

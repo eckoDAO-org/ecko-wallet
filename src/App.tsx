@@ -29,18 +29,16 @@ const Content = styled.div`
   flex: 1 0 auto;
 `;
 const ToastWrapper = styled.div`
-  .Toastify__toast-theme--colored.Toastify__toast--success {
-    background: #45b95e;
+  .Toastify__toast-theme--light.Toastify__toast--success {
+    border-left: 4px solid #25d366;
     border-radius: 4px;
-    border-bottom: 4px solid rgba(0, 0, 0, 0.2);
-    width: 95%;
+    width: 90%;
     margin: 10px auto;
   }
-  .Toastify__toast-theme--colored.Toastify__toast--error {
-    background: #ffa69f;
+  .Toastify__toast-theme--light.Toastify__toast--error {
+    border-left: 4px solid #e74c3c;
     border-radius: 4px;
-    border-bottom: 4px solid rgba(0, 0, 0, 0.2);
-    width: 95%;
+    width: 90%;
     margin: 10px auto;
   }
   .Toastify__toast-container {
@@ -82,7 +80,7 @@ const App = () => (
         closeButton={false}
         pauseOnFocusLoss
         draggable
-        theme="colored"
+        theme="light"
         pauseOnHover
       />
     </ToastWrapper>

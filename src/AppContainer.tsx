@@ -77,7 +77,7 @@ const AppContainer = () => {
         <Redirect to="/" />
       </Switch>
       <Footer />
-      {isLoading && <Loading type="spin" color="#461A57" />}
+      {isLoading && <Loading type="spin" color="#20264E" />}
     </Container>
   );
 };

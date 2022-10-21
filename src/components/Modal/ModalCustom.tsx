@@ -33,13 +33,6 @@ const Overlay = styled.div`
   }
 `;
 
-const Img = styled.img`
-  width: 10px;
-  height: 10px;
-  &:focus-visible {
-    outline: none !important;
-  }
-`;
 const DivBody = styled.div`
   margin-bottom: 30;
   overflow-x: hidden;
