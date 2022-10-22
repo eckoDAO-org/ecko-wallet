@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import images from 'src/images';
-import { get } from 'lodash';
+import moment from 'moment';
+import { get, groupBy } from 'lodash';
 import Pact from 'pact-lang-api';
 import { useSelector } from 'react-redux';
+import { SecondaryLabel } from 'src/components';
 import { getApiUrl } from 'src/utils/chainweb';
 import { setLocalActivities, getLocalActivities } from 'src/utils/storage';
 import PopupDetailTransaction from './PopupDetailTransaction';
@@ -21,15 +22,7 @@ const DivChild = styled.div`
 const DivScroll = styled.div`
   display: block;
 `;
-// const HeaderTitle = styled.div`
-//   padding: 14px;
-//   display: flex;
-//   justify-content: space-between;
-//   background: #f2f2f2;
-// `;
-// const DivFlex = styled.div`
-//   display: flex;
-// `;
+
 const NoData = styled.div`
   text-align: center;
   font-size: 13px;
@@ -43,6 +36,14 @@ const NoData = styled.div`
   }
 `;
 
+const DayLabel = styled(SecondaryLabel)`
+  display: block;
+  margin-top: 24px;
+  padding: 0 24px;
+  font-size: 12px;
+  font-weight: 700;
+`;
+
 const Activities = () => {
   const [isShowDetailTxPopup, setShowDetailTxPopup] = useState(false);
   const [activityDetails, setActivityDetails] = useState<any>({});
@@ -50,6 +51,8 @@ const Activities = () => {
   const { account, chainId } = rootState.wallet;
   const { selectedNetwork } = rootState.extensions;
   const [list, setList] = useState<any[]>([]);
+  const grouped = groupBy(list, (activity) => moment(activity.createdTime).calendar().split(' ')[0]);
+
   const [isLoadData, setIsLoadData] = useState(true);
 
   useEffect(() => {
@@ -120,38 +123,94 @@ const Activities = () => {
     <Div>
       {list && list.length ? (
         <>
-          {/* <HeaderTitle>
-            <DivFlex>
-              <DivChild color="#461A57" fontSize="16px" marginRight="15px">Date</DivChild>
-            </DivFlex>
-            <DivChild color="#461A57" fontSize="16px">Quantity</DivChild>
-          </HeaderTitle> */}
           <DivChild>
             <DivScroll>
-              {list.map((item) => {
-                if (!item || !item.receiverChainId) return null;
-                const iconUrl = images.wallet.iconPending;
-                return (
-                  <Div
-                    onClick={() => {
-                      setShowDetailTxPopup(true);
-                      setActivityDetails(item);
-                    }}
-                    key={item.createdTime}
-                  >
-                    <FinishTransferItem
-                      src={iconUrl}
-                      createdTime={item.createdTime}
-                      chainId={item.receiverChainId}
-                      value={item.amount}
-                      tokenType={item.symbol?.toUpperCase() ?? 'KDA'}
-                      receiver={item.receiver}
-                      domain={item.domain}
-                      status={item.status}
-                    />
-                  </Div>
-                );
-              })}
+              {grouped?.Today && (
+                <>
+                  <DayLabel uppercase>Today</DayLabel>
+                  {grouped?.Today.map((item) => {
+                    if (!item || !item.receiverChainId) return null;
+                    return (
+                      <Div
+                        style={{ padding: '0px 24px' }}
+                        onClick={() => {
+                          setShowDetailTxPopup(true);
+                          setActivityDetails(item);
+                        }}
+                        key={item.createdTime}
+                      >
+                        <FinishTransferItem
+                          createdTime={item.createdTime}
+                          chainId={item.receiverChainId}
+                          value={item.amount}
+                          tokenType={item.symbol?.toUpperCase() ?? 'KDA'}
+                          receiver={item.receiver}
+                          domain={item.domain}
+                          status={item.status}
+                        />
+                      </Div>
+                    );
+                  })}
+                </>
+              )}
+              {grouped?.Yesterday && (
+                <>
+                  <DayLabel uppercase>Yesterday</DayLabel>
+                  {grouped?.Yesterday.map((item) => {
+                    if (!item || !item.receiverChainId) return null;
+                    return (
+                      <Div
+                        style={{ padding: '0px 24px' }}
+                        onClick={() => {
+                          setShowDetailTxPopup(true);
+                          setActivityDetails(item);
+                        }}
+                        key={item.createdTime}
+                      >
+                        <FinishTransferItem
+                          createdTime={item.createdTime}
+                          chainId={item.receiverChainId}
+                          value={item.amount}
+                          tokenType={item.symbol?.toUpperCase() ?? 'KDA'}
+                          receiver={item.receiver}
+                          domain={item.domain}
+                          status={item.status}
+                        />
+                      </Div>
+                    );
+                  })}
+                </>
+              )}
+              {Object.keys(grouped)
+                .filter((key) => key !== 'Today' && key !== 'Yesterday')
+                .map((date) => (
+                  <>
+                    <DayLabel uppercase>{moment(date).format('DD/MM/YYYY')}</DayLabel>
+                    {grouped[date].map((item) => {
+                      if (!item || !item.receiverChainId) return null;
+                      return (
+                        <Div
+                          style={{ padding: '0px 24px' }}
+                          onClick={() => {
+                            setShowDetailTxPopup(true);
+                            setActivityDetails(item);
+                          }}
+                          key={item.createdTime}
+                        >
+                          <FinishTransferItem
+                            createdTime={item.createdTime}
+                            chainId={item.receiverChainId}
+                            value={item.amount}
+                            tokenType={item.symbol?.toUpperCase() ?? 'KDA'}
+                            receiver={item.receiver}
+                            domain={item.domain}
+                            status={item.status}
+                          />
+                        </Div>
+                      );
+                    })}
+                  </>
+                ))}
             </DivScroll>
           </DivChild>
         </>

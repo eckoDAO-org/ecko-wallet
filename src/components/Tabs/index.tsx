@@ -14,7 +14,7 @@ const Wrapper = styled.div`
 `;
 const Header = styled.div`
   display: flex;
-  border: 1px solid #461a57;
+  background: #ececf5;
   box-sizing: border-box;
   border-radius: 10px;
   margin: 20px;
@@ -25,13 +25,13 @@ const Header = styled.div`
 const TabHeader = styled.div`
   width: ${(props) => props.width}%;
   text-align: center;
-  ${(props) =>
-    props.isActive
-      ? 'color: #FFFFFF;font-weight: bold;font-size: 12px; border: 1px solid #461A57; font-weight: 700; background: #461A57; border-radius: 10px;'
-      : ' font-weight: 700; font-size: 12px;'};
+  font-weight: 500;
+  font-size: 14px;
+  border-radius: 10px;
+  ${(props) => (props.isActive ? 'color: #FFFFFF; border: 1px solid #20264E; background: #20264E;' : 'color: #20264E')};
   cursor: pointer;
-  height: 36px;
-  line-height: 36px;
+  height: 50px;
+  line-height: 50px;
 `;
 const Tabs = (props: Props) => {
   const { children = [] } = props;

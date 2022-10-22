@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import styled from 'styled-components';
 import ModalCustom from 'src/components/Modal/ModalCustom';
 import { hideLoading, showLoading } from 'src/stores/extensions';

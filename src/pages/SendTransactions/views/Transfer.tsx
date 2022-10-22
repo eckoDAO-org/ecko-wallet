@@ -415,7 +415,7 @@ const Transfer = (props: Props) => {
             </DivFlex>
           </ErrorWrapper>
         )}
-        <DivFlex justifyContent="space-between" alignItems="center" margin="20px 0">
+        <DivFlex justifyContent="space-between" alignItems="center" margin="0px">
           <CommonLabel fontSize={12} fontWeight={600}>
             {estimateUSDAmount && `${estimateUSDAmount} USD`}
           </CommonLabel>

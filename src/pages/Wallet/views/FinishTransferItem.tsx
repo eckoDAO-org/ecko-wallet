@@ -1,109 +1,48 @@
-import { useEffect } from 'react';
 import styled from 'styled-components';
-import { convertTowCharacters, shortenAddress } from 'src/utils';
+import { ReactComponent as ArrowSendIcon } from 'src/images/arrow-send.svg';
+import { shortenAddress } from 'src/utils';
+import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
+import moment from 'moment';
 
-const Div = styled.div`
-  border: 1px solid #461a57;
-  box-sizing: border-box;
-  border-radius: 10px;
-  padding: 10px;
-  margin-bottom: 10px;
-  margin-right: ${(props) => props.marginRight};
-  margin-left: ${(props) => props.marginLeft};
-`;
-const Activity = styled.div`
+const RoundedArrow = styled.div`
+  box-shadow: 0px 167px 67px rgba(36, 8, 43, 0.01), 0px 94px 57px rgba(36, 8, 43, 0.03), 0px 42px 42px rgba(36, 8, 43, 0.06),
+    0px 10px 23px rgba(36, 8, 43, 0.06), 0px 0px 0px rgba(36, 8, 43, 0.07);
+  border-radius: 30px;
+  width: 41px;
+  height: 41px;
   display: flex;
-  justify-content: space-between;
-`;
-const DivFlex = styled.div`
-  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 5px;
+  svg {
+    path {
+      fill: #ff6058;
+    }
+  }
 `;
 
-const DivChild = styled.div`
-  margin-right: ${(props) => props.marginRight};
-  color: ${(props) => props.color};
-  font-size: ${(props) => props.fontSize};
-  margin-left: ${(props) => props.marginLeft};
-  margin-top: ${(props) => props.marginTop};
-  margin-bottom: ${(props) => props.marginBottom};
-  text-align: ${(props) => props.textAlign};
+const ActivityElement = styled(DivFlex)`
+  border-bottom: 1px solid #dfdfed;
 `;
-const Image = styled.img<{ size: string; top: string; width: string }>`
-  height: ${($props) => $props.size};
-  width: ${($props) => ($props.width ? $props.width : $props.size)};
-  margin: auto;
-`;
-const DivCenter = styled.div`
-  margin: auto 0;
-`;
-const Span = styled.span`
-  margin-right: ${(props) => props.marginRight};
-  color: ${(props) => props.color};
-  font-size: ${(props) => props.fontSize};
-  word-break: break-word;
-  font-weight: ${(props) => props.fontWeight};
-`;
+
 const FinishTransferItem = (props: any) => {
-  const { src, createdTime, chainId, value, tokenType, receiver, status, domain } = props;
-  useEffect(() => {}, []);
-  const newTime = new Date(createdTime);
-  const year = newTime.getFullYear();
-  const month = convertTowCharacters(newTime.getMonth() + 1);
-  const day = convertTowCharacters(newTime.getDate());
-  const hours = convertTowCharacters(newTime.getHours());
-  const minutes = convertTowCharacters(newTime.getMinutes());
-  const seconds = convertTowCharacters(newTime.getSeconds());
-  const dateString = `${year}/${month}/${day} - ${hours}:${minutes}:${seconds}`;
+  const { createdTime, value, tokenType, receiver } = props;
+
   return (
-    <Div marginLeft="20px" marginRight="20px">
-      <Activity>
-        <DivFlex>
-          <DivCenter>
-            <Image size="24px" width="24px" src={src} alt="logo" />
-          </DivCenter>
-          <DivChild marginLeft="20px">
-            <DivChild marginBottom="5px">
-              <Span color="#461A57" fontSize="14px" marginRight="5px">
-                {dateString}
-              </Span>
-            </DivChild>
-            <DivChild>
-              {domain ? (
-                <Span fontSize="13px" color="#461A57" fontWeight="700">{`${domain}${status !== 'success' ? ' - ' : ''}`}</Span>
-              ) : (
-                <>
-                  <Span fontSize="13px" color="#461A57" fontWeight="700">
-                    {`${shortenAddress(receiver)} - `}
-                  </Span>
-                  <Span fontSize="13px" color="#461A57" fontWeight="700">{`Chain ${chainId}${status !== 'success' ? ' - ' : ''}`}</Span>
-                </>
-              )}
-              {status === 'pending' && (
-                <Span color="#eca822" fontSize="10px" fontWeight="700">
-                  Pending
-                </Span>
-              )}
-              {status === 'failure' && (
-                <Span color="#f44336" fontSize="10px" fontWeight="700">
-                  Failed
-                </Span>
-              )}
-              {status === 'finishing' && (
-                <Span color="#eca822" fontSize="10px" fontWeight="700">
-                  Finishing
-                </Span>
-              )}
-            </DivChild>
-          </DivChild>
+    <ActivityElement justifyContent="space-between" alignItems="center" padding="10px 0px">
+      <DivFlex alignItems="center">
+        <RoundedArrow margin="0px 5px 0px 0px">
+          <ArrowSendIcon />
+        </RoundedArrow>
+        <DivFlex flexDirection="column" justifyContent="flex-start">
+          <CommonLabel fontWeight={700}>{`${shortenAddress(receiver)}`}</CommonLabel>
+          <SecondaryLabel>{moment(createdTime).format('DD/MM/YYYY HH:mm')}</SecondaryLabel>
         </DivFlex>
-        <DivChild>
-          <DivChild fontSize="14px" color="#461A57" marginBottom="5px">{`-${value}`}</DivChild>
-          <DivChild fontSize="14px" color="#461A57" textAlign="right">
-            {tokenType}
-          </DivChild>
-        </DivChild>
-      </Activity>
-    </Div>
+      </DivFlex>
+      <CommonLabel fontWeight={500} color="#FF6058" fontSize={12}>
+        - {value} {tokenType}
+      </CommonLabel>
+    </ActivityElement>
   );
 };
 
