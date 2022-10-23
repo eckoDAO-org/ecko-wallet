@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import ReactJson from 'react-json-view';
 import { getLocalSelectedNetwork, getLocalSignedCmd } from 'src/utils/storage';
 import Button from 'src/components/Buttons';
-import { BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
+import { DivFlex, SecondaryLabel } from 'src/components';
 import { updateSignedCmdMessage } from 'src/utils/message';
 import { Footer } from '../SendTransactions/styles';
 import { ButtonWrapper } from '../SendTransactions/views/style';
@@ -110,7 +110,7 @@ const SignedCmd = () => {
     <Wrapper>
       <Logo src={images.xWalletIcon} alt="logo" />
       <DappDescription>{domain}</DappDescription>
-      <DappTitle>Get signed command</DappTitle>
+      <SecondaryLabel uppercase>Get signed command</SecondaryLabel>
       <ContentWrapper>
         <ReactJson
           src={newCmd}
@@ -124,14 +124,10 @@ const SignedCmd = () => {
           collapseStringsAfterLength={false}
         />
       </ContentWrapper>
-      <FooterWrapper>
-        <ButtonWrapper>
-          <Button label="Reject" variant="disabled" onClick={onClose} />
-        </ButtonWrapper>
-        <ButtonWrapper>
-          <Button label="Confirm" onClick={onSave} />
-        </ButtonWrapper>
-      </FooterWrapper>
+      <DivFlex gap="10px">
+        <Button size="full" label="Reject" variant="disabled" onClick={onClose} />
+        <Button size="full" label="Confirm" onClick={onSave} />
+      </DivFlex>
     </Wrapper>
   );
 };

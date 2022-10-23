@@ -14,13 +14,11 @@ import {
 } from 'src/utils/storage';
 import { updateConnectMessage } from 'src/utils/message';
 import { decryptKey } from 'src/utils/security';
-import CheckBox from 'src/baseComponent/CheckBox';
 import { shortenAddress } from 'src/utils';
+import { DivFlex, SecondaryLabel } from 'src/components';
 import Button from 'src/components/Buttons';
-import { BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
+import { Radio } from 'src/components/Radio';
 import { setCurrentWallet, setWallets } from 'src/stores/wallet';
-import { Footer } from '../SendTransactions/styles';
-import { ButtonWrapper } from '../SendTransactions/views/style';
 
 const Wrapper = styled.div`
   display: flex;
@@ -69,12 +67,6 @@ const Div = styled.div`
   text-align: center;
   word-break: break-word;
 `;
-const FooterWrapper = styled(Footer)`
-  padding: 20px;
-  position: fixed;
-  bottom: 0;
-  width: 90%;
-`;
 const ContentWrapper = styled.div`
   padding: 20px 20px 75px 20px;
 `;
@@ -106,13 +98,6 @@ const ConnectInfo = styled.div`
   line-height: 25px;
   text-align: center;
   word-break: break-word;
-`;
-const ConnectDescription = styled.div`
-  font-size: 16px;
-  font-weight: 400;
-
-  line-height: 25px;
-  text-align: center;
 `;
 const DappTitle = styled.div`
   text-align: center;
@@ -335,10 +320,10 @@ const ConnectedDapp = () => {
 
   const renderCheckbox = (item) => (
     <CheckboxWrapper>
-      <CheckBox
+      <Radio
         key={`${item.chainId}-${item.account}`}
         isChecked={item.isSelected}
-        onChange={(value) => onSelectChange(item, value)}
+        onClick={() => onSelectChange(item, !item.isSelected)}
         label={getCheckboxLabel(item)}
       />
     </CheckboxWrapper>
@@ -361,11 +346,13 @@ const ConnectedDapp = () => {
             <Div>X Wallet extension</Div>
           </ConnectItem>
           <ConnectInfo>{`${domain} would like to connect to your account`}</ConnectInfo>
-          <ConnectDescription>
-            This site is requesting access to view your current account address. Always make sure you trust the sites you interact with.
-          </ConnectDescription>
+          <div>
+            <SecondaryLabel>
+              This site is requesting access to view your current account address. Always make sure you trust the sites you interact with.
+            </SecondaryLabel>
+          </div>
           <ConnectFooterWrapper>
-            <Button label="Close" onClick={onClose} />
+            <Button size="full" label="Close" onClick={onClose} />
           </ConnectFooterWrapper>
         </CompleteWrapper>
       ) : (
@@ -378,14 +365,10 @@ const ConnectedDapp = () => {
           {data.length > 0 ? (
             <>
               <ContentWrapper>{data.map((item) => renderCheckbox(item))}</ContentWrapper>
-              <FooterWrapper>
-                <ButtonWrapper>
-                  <Button label="Cancel" variant="disabled" onClick={onReject} />
-                </ButtonWrapper>
-                <ButtonWrapper>
-                  <Button label="Save" onClick={onSave} isDisabled={disabledBtn} />
-                </ButtonWrapper>
-              </FooterWrapper>
+              <DivFlex padding="0 24px">
+                <Button size="full" label="Cancel" variant="disabled" onClick={onReject} />
+                <Button size="full" label="Save" onClick={onSave} isDisabled={disabledBtn} />
+              </DivFlex>
             </>
           ) : (
             <NoData>No imported wallets in this network</NoData>
