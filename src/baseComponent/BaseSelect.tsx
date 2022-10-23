@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import Select from 'react-select';
 import { memo } from 'react';
+import { SLabel } from './BaseTextInput';
 
 interface Props {
   title: any;
@@ -21,7 +22,7 @@ const customStyles = {
   }),
   option: (provided) => ({
     ...provided,
-    color: '#461A57',
+    color: '#20264E',
     '&:hover': {
       background: '#999999',
     },
@@ -29,7 +30,7 @@ const customStyles = {
   valueContainer: (provided) => ({
     ...provided,
     height: '44px',
-    color: '#461A57',
+    color: '#20264E',
   }),
 
   input: (provided) => ({
@@ -58,7 +59,7 @@ const customStyles = {
 const BaseSelect = memo(
   ({ title, options = [], defaultValue, selectProps = {}, height = '44px', isFlex, placeholder = 'Select Chain ID' }: Props) => (
     <SDivRoot height={height} isFlex={isFlex}>
-      <SText isFlex={isFlex}>{title}</SText>
+      <SLabel uppercase>{title}</SLabel>
       <Select options={options} {...selectProps} defaultValue={defaultValue} placeholder={placeholder} styles={customStyles} isSearchable={false} />
     </SDivRoot>
   ),
@@ -79,7 +80,7 @@ const SDivRoot = styled.div`
   .css-qc6sy-singleValue {
   }
   .css-417lad-placeholder {
-    color: #a187ab;
+    color: #20264e;
     grid-area: 1 / 1 / 2 / 3;
     margin-left: 2px;
     margin-right: 2px;

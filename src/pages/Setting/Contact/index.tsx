@@ -2,20 +2,16 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { convertContacts, shortenAddress } from 'src/utils';
+import { shortenAddress } from 'src/utils';
 import { useModalContext } from 'src/contexts/ModalContext';
 import Button from 'src/components/Buttons';
-import { toast } from 'react-toastify';
 import { NavigationHeader } from 'src/components/NavigationHeader';
 import { JazzAccount } from 'src/components/JazzAccount';
-import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
-import Toast from 'src/components/Toast/Toast';
-import { getLocalContacts, setLocalContacts } from 'src/utils/storage';
-import { setContacts } from 'src/stores/extensions';
+import { CommonLabel, DivFlex, SecondaryLabel, StickyFooter } from 'src/components';
 import { TitleMessage } from './style';
-import { FooterWrapper } from '../style';
 import { Body } from '../../SendTransactions/styles';
-import PopupAddContact from './views/PopupAddContact';
+import ContactForm from './views/ContactForm';
+import { ContactInfo } from './views/ContactInfo';
 
 const Wrapper = styled.div`
   padding: 0 20px;
@@ -26,30 +22,11 @@ const AccountRow = styled.div`
   cursor: pointer;
 `;
 
-type Props = {
-  setRemoveContactModal: boolean;
-};
-const PageContact = (props: Props) => {
-  const { setRemoveContactModal } = props;
+const PageContact = () => {
   const { contacts, selectedNetwork } = useSelector((state) => state.extensions);
   const history = useHistory();
 
   const { openModal } = useModalContext();
-  const handleRemoveContact = (contact) => {
-    getLocalContacts(
-      selectedNetwork.networkId,
-      (data) => {
-        const newContacts = data;
-        // TODO: delete from all chain? loop?
-        delete newContacts[`${contact.chainId}`][`${contact.accountName}`];
-        setLocalContacts(selectedNetwork.networkId, newContacts);
-        setContacts(convertContacts(newContacts));
-        setRemoveContactModal;
-        toast.success(<Toast type="success" content="Remove contact successfully" />);
-      },
-      () => {},
-    );
-  };
 
   const onClickAccount = (contact) =>
     openModal({
@@ -58,16 +35,14 @@ const PageContact = (props: Props) => {
           {contact.aliasName}
         </CommonLabel>
       ),
-      content: (
-        <PopupAddContact isEdit networkId={selectedNetwork.networkId} contact={contact} handleRemoveContact={() => handleRemoveContact(contact)} />
-      ),
+      content: <ContactInfo contact={contact} />,
       roundIcon: <Jazzicon diameter={80} seed={jsNumberForAddress(contact.accountName)} paperStyles={{ border: '6px solid white' }} />,
     });
 
   const onAddAccount = () =>
     openModal({
       title: 'New account',
-      content: <PopupAddContact isEdit={false} networkId={selectedNetwork.networkId} contact={{}} handleRemoveContact={handleRemoveContact} />,
+      content: <ContactForm networkId={selectedNetwork.networkId} />,
     });
 
   const goBack = () => {
@@ -77,34 +52,37 @@ const PageContact = (props: Props) => {
   const getTabContent = () =>
     contacts.length ? (
       contacts
-        .filter((value, index, self) => index === self.findIndex((t) => t.accountName === value.accountName))
-        .map((contact: any) => (
-          <AccountRow onClick={() => onClickAccount(contact)}>
-            <JazzAccount
-              key={contact.aliasName}
-              account={contact.accountName}
-              renderAccount={(acc) => (
-                <DivFlex flexDirection="column">
-                  <CommonLabel color="#20264E" fontWeight={700} fontSize={14}>
-                    {contact.aliasName}
-                  </CommonLabel>
-                  <SecondaryLabel fontWeight={500}>{shortenAddress(acc)}</SecondaryLabel>
-                </DivFlex>
-              )}
-            />
-          </AccountRow>
-        ))
+        .filter((value, index, self) => index === self.findIndex((t) => t?.accountName === value?.accountName))
+        .map(
+          (contact: any) =>
+            contact?.accountName && (
+              <AccountRow onClick={() => onClickAccount(contact)}>
+                <JazzAccount
+                  key={contact.aliasName}
+                  account={contact.accountName}
+                  renderAccount={(acc) => (
+                    <DivFlex flexDirection="column">
+                      <CommonLabel color="#20264E" fontWeight={700} fontSize={14}>
+                        {contact.aliasName}
+                      </CommonLabel>
+                      <SecondaryLabel fontWeight={500}>{shortenAddress(acc)}</SecondaryLabel>
+                    </DivFlex>
+                  )}
+                />
+              </AccountRow>
+            ),
+        )
     ) : (
       <TitleMessage>No data</TitleMessage>
     );
   return (
     <Wrapper>
       <NavigationHeader title="Contacts" onBack={goBack} />
-      <Body>
+      <Body style={{ marginBottom: 50 }}>
         {getTabContent()}
-        <FooterWrapper>
-          <Button size="full" label="Add New Contact" onClick={onAddAccount} />
-        </FooterWrapper>
+        <StickyFooter>
+          <Button size="full" label="Add New Contact" onClick={onAddAccount} style={{ width: '90%' }} />
+        </StickyFooter>
       </Body>
     </Wrapper>
   );
