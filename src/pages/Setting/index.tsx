@@ -65,13 +65,6 @@ const PageSetting = () => {
       isHidden: secretKey?.length !== 256,
     },
     {
-      title: 'Export Recovery Phrase',
-      img: <KeyIcon />,
-      description: 'Protect your wallet.... ',
-      onClick: () => history.push('/export-seed-phrase'),
-      isHidden: secretKey?.length !== 256,
-    },
-    {
       title: 'Expand View',
       img: <ExpandView />,
       description: 'Open X Wallet in a new window',

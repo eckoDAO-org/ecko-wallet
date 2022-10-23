@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { useState } from 'react';
 import images from 'src/images';
 import Button from 'src/components/Buttons';
-import { CommonLabel, DivFlex } from 'src/components';
+import { CommonLabel, DivFlex, StickyFooter } from 'src/components';
 import { ReactComponent as IconNetwork } from 'src/images/icon-network.svg';
 import { NavigationHeader } from 'src/components/NavigationHeader';
 import { ContactBody } from '../Contact/style';
@@ -90,11 +90,9 @@ const PageNetworks = () => {
         {isView && <ViewNetwork network={network} />}
         <ContactBody>{isNormal && renderNormalMode()}</ContactBody>
         {isNormal && (
-          <Content>
-            <Footer>
-              <Button size="full" label="Add New Network" onClick={addNewNetwork} />
-            </Footer>
-          </Content>
+          <StickyFooter>
+            <Button size="full" label="Add New Network" onClick={addNewNetwork} style={{ width: '90%' }} />
+          </StickyFooter>
         )}
       </Body>
     </SettingBody>
