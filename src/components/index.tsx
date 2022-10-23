@@ -19,6 +19,7 @@ export const CommonLabel = styled.span`
   font-weight: ${($props) => $props.fontWeight};
   font-size: ${($props) => $props.fontSize}px;
   line-height: ${($props) => $props.lineHeight};
+  word-break: ${($props) => $props.wordBreak};
 `;
 
 export const PrimaryLabel = styled.span`

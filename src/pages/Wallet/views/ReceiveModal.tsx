@@ -14,14 +14,14 @@ const Label = styled.span`
   word-break: break-word;
 `;
 
-const Icon = styled.img`
+export const Icon = styled.img`
   cursor: pointer;
 `;
 
-const ReceiveTitle = styled(SecondaryLabel)`
+export const ReceiveTitle = styled(SecondaryLabel)`
   font-size: 10px;
 `;
-const ReceiveSection = styled.div`
+export const ReceiveSection = styled.div`
   border-top: 1px solid #dfdfed;
   padding: 24px;
 `;

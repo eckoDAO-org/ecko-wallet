@@ -14,9 +14,10 @@ import { useAccountBalanceContext } from 'src/contexts/AccountBalanceContext';
 import { TxSettingsContext } from 'src/contexts/TxSettingsContext';
 import { useWindowResizeMobile } from 'src/hooks/useWindowResizeMobile';
 import Toast from 'src/components/Toast/Toast';
+import { shortenAddress } from 'src/utils';
 import ModalCustom from 'src/components/Modal/ModalCustom';
 import { get } from 'lodash';
-import { DivBottomShadow, SecondaryLabel, StickyFooter } from 'src/components';
+import { CommonLabel, DivBottomShadow, DivFlex, SecondaryLabel, StickyFooter } from 'src/components';
 import useChainIdOptions from 'src/hooks/useChainIdOptions';
 import Button from 'src/components/Buttons';
 import { IFungibleToken } from 'src/pages/ImportToken';
@@ -194,9 +195,18 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
       .map((contact: any) => (
         <JazzAccount
           account={contact.accountName}
-          onClick={() => {
-            setValue('accountName', contact.accountName);
-          }}
+          renderAccount={
+            contact.aliasName &&
+            ((acc) => (
+              <DivFlex flexDirection="column">
+                <CommonLabel color="#20264E" fontWeight={700} fontSize={14}>
+                  {contact.aliasName}
+                </CommonLabel>
+                <SecondaryLabel fontWeight={500}>{shortenAddress(acc)}</SecondaryLabel>
+              </DivFlex>
+            ))
+          }
+          onClick={() => setValue('accountName', contact.accountName)}
         />
       ));
 

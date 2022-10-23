@@ -61,6 +61,8 @@ const TitleHeader = styled.div`
   padding: 27px 0px;
   border-bottom: 1px solid #dfdfed;
   word-break: break-word;
+  position: relative;
+  ${(props) => props.roundIcon && 'padding-top: 60px'}
 `;
 
 const CloseIcon = styled.img`
@@ -70,6 +72,14 @@ const CloseIcon = styled.img`
   cursor: pointer;
 `;
 
+const RoundIcon = styled.div`
+  height: 50px;
+  border-radius: 50px;
+  position: absolute;
+  width: 100%;
+  top: -40px;
+`;
+
 const ModalCustom = (props: Props) => {
   const { isOpen, onCloseModal, closeOnOverlayClick, title, showCloseIcon, roundIcon, children, footer } = props;
 
@@ -77,7 +87,8 @@ const ModalCustom = (props: Props) => {
     <>
       <Modal className={isOpen && 'show'} closeOnOverlayClick={closeOnOverlayClick} showCloseIcon={showCloseIcon}>
         {title && (
-          <TitleHeader>
+          <TitleHeader roundIcon={roundIcon}>
+            {roundIcon && <RoundIcon>{roundIcon}</RoundIcon>}
             {title}
             <CloseIcon src={images.close} alt="close" onClick={onCloseModal} />
           </TitleHeader>

@@ -48,11 +48,7 @@ export const ItemWrapper = styled.div`
   margin-top: 15px;
 `;
 export const InfoWrapper = styled.div`
-  margin-top: 20px;
-  width: 370px;
-  @media screen and (max-width: 480px) {
-    width: 100%;
-  }
+  padding: 24px;
 `;
 export const DivChildLeft = styled.div`
   /* padding: 10px 0; */

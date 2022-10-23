@@ -6,6 +6,7 @@ import { get } from 'lodash';
 import Button from 'src/components/Buttons';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
+import { useModalContext } from 'src/contexts/ModalContext';
 import useChainIdOptions from 'src/hooks/useChainIdOptions';
 import images from 'src/images';
 import { Footer } from 'src/pages/SendTransactions/styles';
@@ -28,12 +29,15 @@ import { fetchLocal } from 'src/utils/chainweb';
 import { getLocalContacts, setLocalContacts } from 'src/utils/storage';
 import { useSelector } from 'react-redux';
 import ModalCustom from 'src/components/Modal/ModalCustom';
+import { ActionList } from 'src/components/ActionList';
 import QrReader from 'react-qr-reader';
-import { BodyModal, TitleModal, DivChild, DivError, DivChildButton, DivChildFlex, ItemWrapperContact, SelectChainConatact } from './style';
-import { ActionButton, ButtonModal, DescriptionModal } from '../../Networks/style';
+import { Icon, ReceiveSection, ReceiveTitle } from 'src/pages/Wallet/views/ReceiveModal';
+import { CommonLabel, DivFlex } from 'src/components';
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
+import { BodyModal, TitleModal, DivChild, DivError, DivChildButton, ItemWrapperContact, SelectChainConatact } from './style';
+import { ActionButton, DescriptionModal } from '../../Networks/style';
 
 type Props = {
-  onClose: any;
   contact: any;
   networkId: any;
   isEdit: boolean;
@@ -41,7 +45,8 @@ type Props = {
 };
 
 const PopupAddContact = (props: Props) => {
-  const { onClose, contact, networkId, isEdit, handleRemoveContact } = props;
+  const { contact, networkId, isEdit, handleRemoveContact } = props;
+  const { closeModal } = useModalContext();
   const {
     register,
     handleSubmit,
@@ -61,6 +66,7 @@ const PopupAddContact = (props: Props) => {
   const history = useHistory();
   const optionsChain = useChainIdOptions();
   const finishAddContact = (addContact) => {
+    console.log(`🚀 !!! ~ addContact`, addContact);
     const aliasName = getValues('alias').trim();
     const newContact = {
       aliasName,
@@ -77,7 +83,7 @@ const PopupAddContact = (props: Props) => {
         contacts[`${addContact.chainId}`][`${addContact.accountName}`] = newContact;
         setLocalContacts(networkId, contacts);
         setContacts(convertContacts(contacts));
-        onClose(aliasName);
+        closeModal();
         toast.success(<Toast type="success" content="Add contact successfully" />);
       },
       () => {
@@ -87,7 +93,8 @@ const PopupAddContact = (props: Props) => {
         setLocalContacts(networkId, contacts);
         setContacts(convertContacts(contacts));
         toast.success(<Toast type="success" content="Add contact successfully" />);
-        onClose(aliasName);
+        setIsContactInfo(true);
+        closeModal();
       },
     );
   };
@@ -134,48 +141,52 @@ const PopupAddContact = (props: Props) => {
   return (
     <PageConfirm>
       {isContactInfo ? (
-        <InfoWrapper>
-          <TransactionInfo>
-            <DivChildLeft>Name</DivChildLeft>
-            <DivChildRight>{contact.aliasName}</DivChildRight>
-          </TransactionInfo>
-          <TransactionInfo>
-            <DivChildLeft>Account name</DivChildLeft>
-            <DivChildRight>{contact.accountName}</DivChildRight>
-          </TransactionInfo>
-          <TransactionInfo>
-            <DivChildLeft>Chain ID</DivChildLeft>
-            <DivChildRight>{contact.chainId}</DivChildRight>
-          </TransactionInfo>
-          {contact.keys ? (
-            <TransactionInfo>
-              <DivChildLeft>Receiver Keyset</DivChildLeft>
-              <DivChildBreak>
-                {'{'}
-                <br />
-                {`"pred": "${contact.pred}",`}
-                <br />
-                &quot;keys&quot;: [
-                <br />
-                {contact.keys?.map((ct, key) => (
-                  <span key={ct}>
-                    {`"${ct}"`}
-                    {key !== contact.keys.length - 1 && (
-                      <>
-                        ,
-                        <br />
-                      </>
-                    )}
-                  </span>
-                )) ?? ''}
-                <br />
-                ]
-                <br />
-                {'}'}
-              </DivChildBreak>
-            </TransactionInfo>
-          ) : null}
-        </InfoWrapper>
+        <>
+          <div style={{ padding: 24 }}>
+            <DivFlex justifyContent="space-between" alignItems="center" style={{ marginBottom: 20 }}>
+              <ReceiveTitle fontWeight={700} fontSize={10}>
+                ACCOUNT NAME
+              </ReceiveTitle>
+              <Icon src={images.wallet.copyGray} onClick={() => copyToClipboard(contact.accountName)} />
+            </DivFlex>
+            <DivFlex justifyContent="flex-start" alignItems="flex-start">
+              <Jazzicon diameter={24} seed={jsNumberForAddress(contact.accountName)} paperStyles={{ marginRight: 5, minWidth: 24 }} />
+              <CommonLabel wordBreak="break-word">{contact.accountName}</CommonLabel>
+            </DivFlex>
+          </div>
+          <ReceiveSection>
+            <DivFlex style={{ marginBottom: 20 }}>
+              <ReceiveTitle fontSize={10} uppercase>
+                chain id
+              </ReceiveTitle>
+            </DivFlex>
+            <DivFlex justifyContent="flex-start" alignItems="flex-start">
+              <CommonLabel>0</CommonLabel>
+            </DivFlex>
+          </ReceiveSection>
+          {isContactInfo && (
+            <ReceiveSection flexDirection="column" padding="0 24px">
+              <ActionList
+                actions={[
+                  { label: 'Edit Contact', src: images.settings.iconEdit, onClick: () => setIsContactInfo(false) },
+                  { label: 'Delete', src: images.settings.iconTrash, onClick: () => setRemoveContactModal(true) },
+                ]}
+              />
+              {isRemoveContactModal && (
+                <ModalCustom isOpen={isRemoveContactModal} showCloseIcon={false}>
+                  <BodyModal>
+                    <TitleModal>Remove Contact?</TitleModal>
+                    <DescriptionModal>Are you sure you want to remove?</DescriptionModal>
+                    <ActionButton>
+                      <Button label="Cancel" variant="disabled" onClick={() => setRemoveContactModal(false)} />
+                      <Button label="Remove" variant="remove" onClick={handleRemoveContact} />
+                    </ActionButton>
+                  </BodyModal>
+                </ModalCustom>
+              )}
+            </ReceiveSection>
+          )}
+        </>
       ) : (
         <InfoWrapper>
           <form onSubmit={handleSubmit(checkAddContact)} id="contact-form">
@@ -309,48 +320,20 @@ const PopupAddContact = (props: Props) => {
         </InfoWrapper>
       )}
       <DivChildButton>
-        <Footer>
-          {isContactInfo ? (
-            <>
-              <ButtonWrapper>
-                <Button label="Delete" variant="disabled" onClick={() => setRemoveContactModal(true)} />
-                {isRemoveContactModal && (
-                  <ModalCustom isOpen={isRemoveContactModal} showCloseIcon={false}>
-                    <BodyModal>
-                      <TitleModal>Remove Contact?</TitleModal>
-                      <DescriptionModal>Are you sure you want to remove?</DescriptionModal>
-                      <ActionButton>
-                        <ButtonModal background="#ffffff" color="#461A57" border="1px solid #461A57" onClick={() => setRemoveContactModal(false)}>
-                          Cancel
-                        </ButtonModal>
-                        <ButtonModal background="#461A57" color="#ffffff" onClick={handleRemoveContact}>
-                          Remove
-                        </ButtonModal>
-                      </ActionButton>
-                    </BodyModal>
-                  </ModalCustom>
-                )}
-              </ButtonWrapper>
-              <ButtonWrapper>
-                <Button
-                  label="Edit"
-                  onClick={() => {
-                    setIsContactInfo(false);
-                  }}
-                />
-              </ButtonWrapper>
-            </>
-          ) : (
-            <DivChildFlex>
-              <ButtonWrapper>
-                <Button label="Cancel" variant="disabled" onClick={() => onClose(false)} />
-              </ButtonWrapper>
-              <ButtonWrapper>
-                <ButtonAdd form="contact-form">Save</ButtonAdd>
-              </ButtonWrapper>
-            </DivChildFlex>
-          )}
-        </Footer>
+        {!isContactInfo && (
+          <DivFlex justifyContent="space-between" alignItems="center" gap="10px" padding="10px">
+            <Button
+              label="Cancel"
+              size="full"
+              variant="disabled"
+              onClick={() => {
+                setIsContactInfo(true);
+                closeModal();
+              }}
+            />
+            <Button type="submit" label="Save" size="full" form="contact-form" />
+          </DivFlex>
+        )}
       </DivChildButton>
     </PageConfirm>
   );

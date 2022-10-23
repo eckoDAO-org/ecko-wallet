@@ -52,8 +52,8 @@ const App = () => (
       <Content>
         <ModalProvider>
           <ModalConsumer>
-            {({ isOpen, title, content, footer, closeModal }) => (
-              <ModalCustom isOpen={isOpen || false} title={title} footer={footer} onCloseModal={closeModal}>
+            {({ isOpen, title, content, footer, closeModal, roundIcon }) => (
+              <ModalCustom isOpen={isOpen || false} title={title} footer={footer} onCloseModal={closeModal} roundIcon={roundIcon}>
                 {content}
               </ModalCustom>
             )}
