@@ -4,7 +4,7 @@ import { BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
 
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: 'normal' | 'full';
-  variant?: 'primary' | 'secondary' | 'grey' | 'disabled' | 'transparent' | 'remove';
+  variant?: 'primary' | 'secondary' | 'grey' | 'disabled' | 'transparent' | 'remove' | 'inverted';
   label: React.ReactNode;
   onClick?: any;
   isDisabled?: boolean;

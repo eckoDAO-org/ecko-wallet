@@ -21,6 +21,7 @@ import trashPink from './trash-pink.png';
 import view from './view.svg';
 import arrowRight from './arrow-right.png';
 import arrowTransfer from './arrow-transfer.svg';
+import startUser from './start-user.svg';
 import iconAlert from './icon-alert.svg';
 import loadMore from './load-more.svg';
 import qrCode from './frame.png';
@@ -84,7 +85,7 @@ import iconKapy from './kapy-logo.svg';
 import iconJde from './jodie-logo.svg';
 import iconKwbtc from './kwbtc-logo.svg';
 import iconUsdc from './usdc-logo.png';
-import checkedViolet from './checked-violet.svg';
+import checkedV from './checked-v.svg';
 import violetAdd from './violet-add.svg';
 import trashViolet from './trash-violet.svg';
 import kdaIcon from './kda-icons.svg';
@@ -113,7 +114,7 @@ import iconMorePurple from './more-purple.svg';
 import iconDropDown from './icon-dropdown.svg';
 import iconCreate from './icon-create.svg';
 import xWalletLogo from './x-wallet.svg';
-import xWalletLogoSquare from './x-wallet-square.svg';
+import xWalletLogoSquare from './x-wallet-footer.svg';
 import xWalletIcon from './x-wallet-icon.png';
 
 const wallet = {
@@ -129,6 +130,7 @@ const wallet = {
   iconBuni,
   arrowRight,
   arrowTransfer,
+  startUser,
   iconAlert,
   iconTRYB,
   iconPending,
@@ -153,7 +155,7 @@ const wallet = {
   arrayDropdownBack,
   arrayDropdown,
   iconFlux,
-  checkedViolet,
+  checkedV,
   kdaIcon,
   iconSend,
   iconReceive,

@@ -91,7 +91,7 @@ const PageNetworks = () => {
         <ContactBody>{isNormal && renderNormalMode()}</ContactBody>
         {isNormal && (
           <StickyFooter>
-            <Button size="full" label="Add New Network" onClick={addNewNetwork} style={{ width: '90%' }} />
+            <Button size="full" label="Add New Network" onClick={addNewNetwork} style={{ width: '90%', maxWidth: 890 }} />
           </StickyFooter>
         )}
       </Body>

@@ -571,7 +571,7 @@ const Transfer = (props: Props) => {
             </>
           ) : (
             <StickyFooter>
-              <Button form="send-transaction" label="Next" size="full" style={{ width: '90%' }} />
+              <Button form="send-transaction" label="Next" size="full" style={{ width: '90%', maxWidth: 890 }} />
             </StickyFooter>
           )}
         </Footer>

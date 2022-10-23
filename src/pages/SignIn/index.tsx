@@ -2,6 +2,8 @@ import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import bcrypt from 'bcryptjs';
 import images from 'src/images';
+import Button from 'src/components/Buttons';
+import { CommonLabel, DivFlex } from 'src/components';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -9,57 +11,14 @@ import { setActiveTab, setExpiredTime } from 'src/stores/extensions';
 import { getLocalSelectedWallet, setLocalExpiredTime } from 'src/utils/storage';
 import { ACTIVE_TAB } from 'src/utils/constant';
 import { DivError } from '../Setting/Contact/views/style';
+import { WelcomeBackground } from '../InitSeedPhrase';
 
-const CreatePasswordWrapper = styled.div`
-  padding: 0 20px;
-`;
-const Wrapper = styled.form`
-  display: block;
-`;
-const Body = styled.div`
-  height: auto;
-  width: 100%;
-  font-size: 16px;
-  margin-top: 40px;
-`;
-const DivBody = styled.div`
-  width: 100%;
-  text-align: left;
-  font-size: 16px;
-  line-height: 40px;
-  display: flex;
-  align-items: center;
-`;
-const Title = styled.div`
-  font-weight: 700;
-  font-size: 24px;
-  line-height: 25px;
-
-  text-align: left;
-  margin-bottom: 50px;
-  text-align: center;
-`;
-const Footer = styled.div`
-  width: 100%;
-  height: 3em;
-  margin-top: 50px;
-`;
-
-const SignInButton = styled.button`
-  width: 100%;
-  height: 44px;
-  border-radius: 10px;
-  font-size: 16px;
-  cursor: pointer;
-  border: none;
-  background: #461a57;
-  color: white;
-  font-weight: 700;
-`;
 const DivImage = styled.div`
   font-size: ${(props) => props.fontSize};
   color: ${(props) => props.color};
   display: flex;
+  align-items: center;
+  flex-direction: column;
   justify-content: center;
   margin-top: 30px;
   margin-bottom: 30px;
@@ -114,14 +73,16 @@ const SignIn = () => {
   };
   const history = useHistory();
   return (
-    <CreatePasswordWrapper>
-      <Body>
+    <WelcomeBackground>
+      <DivFlex flexDirection="column" style={{ height: '100vh', padding: '0 24px' }} justifyContent="center" gap="45px">
         <DivImage marginBottom="30px" marginTop="30px">
           <Image src={images.xWalletLogoSquare} size={200} width={200} alt="logo" />
+          <CommonLabel color="#fff" fontSize={24} fontWeight={500}>
+            Login to your account
+          </CommonLabel>
         </DivImage>
-        <Title>Welcome</Title>
-        <Wrapper onSubmit={handleSubmit(handleSignIn)} id="sign-in-form">
-          <DivBody>
+        <form onSubmit={handleSubmit(handleSignIn)} id="sign-in-form">
+          <DivFlex flexDirection="column">
             <BaseTextInput
               inputProps={{
                 type: 'password',
@@ -140,6 +101,11 @@ const SignIn = () => {
                     message: 'Password should be maximum 256 characters.',
                   },
                 }),
+                style: { color: '#fff' },
+              }}
+              wrapperStyle={{
+                background: 'linear-gradient(114.43deg, #293445 5.17%, #292A45 65.62%)',
+                borderRadius: 25,
               }}
               typeInput="password"
               title="Password"
@@ -149,14 +115,12 @@ const SignIn = () => {
                 setValue('password', e.target.value);
               }}
             />
-          </DivBody>
-          <DivError>{errors.password && <InputError marginTop="0">{errors.password.message}</InputError>}</DivError>
-        </Wrapper>
-      </Body>
-      <Footer>
-        <SignInButton form="sign-in-form">Sign In</SignInButton>
-      </Footer>
-    </CreatePasswordWrapper>
+            <DivError>{errors.password && <InputError marginTop="0">{errors.password.message}</InputError>}</DivError>
+          </DivFlex>
+          <Button type="submit" size="full" form="sign-in-form" label="Sign In" style={{ marginTop: 80 }} />
+        </form>
+      </DivFlex>
+    </WelcomeBackground>
   );
 };
 

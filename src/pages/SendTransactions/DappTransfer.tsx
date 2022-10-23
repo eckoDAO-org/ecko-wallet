@@ -7,7 +7,6 @@ import { fetchLocal } from 'src/utils/chainweb';
 import { hideLoading, showLoading } from 'src/stores/extensions';
 import images from 'src/images';
 import Button from 'src/components/Buttons';
-import { BUTTON_SIZE } from 'src/utils/constant';
 import Transfer from './views/Transfer';
 import { Body, TransactionWrapper, FormSend } from './styles';
 

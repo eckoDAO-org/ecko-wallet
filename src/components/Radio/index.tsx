@@ -1,4 +1,4 @@
-import { CSSProperties } from 'react';
+import React, { CSSProperties } from 'react';
 import images from 'src/images';
 import styled from 'styled-components';
 import { DivFlex } from '..';
@@ -24,7 +24,7 @@ export const Radio = ({ isChecked, label, style, onClick }: RadioProps) => (
 
 interface RadioProps {
   isChecked?: boolean;
-  label: string;
+  label: React.ReactNode;
   onClick?: any;
   style?: CSSProperties;
 }

@@ -342,7 +342,7 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
         </Content>
       )}
       <StickyFooter>
-        <Button onClick={handleSubmit(onNext)} label="Continue" size="full" style={{ width: '90%' }} />
+        <Button onClick={handleSubmit(onNext)} label="Continue" size="full" style={{ width: '90%', maxWidth: 890 }} />
       </StickyFooter>
 
       {isScanSearching && (

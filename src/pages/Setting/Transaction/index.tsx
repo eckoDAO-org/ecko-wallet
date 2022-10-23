@@ -166,7 +166,7 @@ const PageTransaction = () => {
             </DivBodyNetwork>
           </form>
           <StickyFooter>
-            <DivFlex gap="10px" style={{ width: '90%' }}>
+            <DivFlex gap="10px" style={{ width: '90%', maxWidth: 890 }}>
               <Button size="full" label="Restore default" variant="disabled" onClick={restoreDefault} />
               <Button size="full" label="Save" variant="primary" form="save-network" type="submit" />
             </DivFlex>

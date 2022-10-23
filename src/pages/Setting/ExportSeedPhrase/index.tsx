@@ -27,7 +27,7 @@ const Wrapper = styled.div`
   word-break: break-word;
 `;
 
-const SPWrapper = styled.div`
+export const SPWrapper = styled.div`
   padding: 16px;
   font-size: 16px;
   position: relative;

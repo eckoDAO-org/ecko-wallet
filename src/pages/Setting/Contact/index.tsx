@@ -81,7 +81,7 @@ const PageContact = () => {
       <Body style={{ marginBottom: 50 }}>
         {getTabContent()}
         <StickyFooter>
-          <Button size="full" label="Add New Contact" onClick={onAddAccount} style={{ width: '90%' }} />
+          <Button size="full" label="Add New Contact" onClick={onAddAccount} style={{ width: '90%', maxWidth: 890 }} />
         </StickyFooter>
       </Body>
     </Wrapper>

@@ -1,14 +1,9 @@
 import { useHistory } from 'react-router-dom';
+import { DivFlex, SecondaryLabel, StickyFooter } from 'src/components';
 import images from 'src/images';
-import { BUTTON_SIZE } from 'src/utils/constant';
 import styled from 'styled-components';
 import Button from '../../components/Buttons';
 
-const DivTitle = styled.div`
-  font-weight: 700;
-  font-size: 24px;
-  text-align: center;
-`;
 const Image = styled.img<{ size: string; top: string; width: string }>`
   height: ${($props) => $props.size};
   width: ${($props) => ($props.width ? $props.width : $props.size)};
@@ -16,12 +11,7 @@ const Image = styled.img<{ size: string; top: string; width: string }>`
   cursor: ${(props) => props.cursor};
   margin-top: ${(props) => props.marginTop};
 `;
-const DivContent = styled.div`
-  text-align: center;
-  font-size: 16px;
-  line-height: 25px;
-  margin-top: 20px;
-`;
+
 const Wrapper = styled.div`
   text-align: center;
   height: 80%;
@@ -34,22 +24,22 @@ const Wrapper = styled.div`
     margin-top: 100px;
   }
 `;
-const Div = styled.div`
+export const StartBackground = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   height: 100%;
-`;
-const DivChildButon = styled.div`
-  margin: 90px 20px 0;
-  @media screen and (max-width: 480px) {
-    margin: 70px 20px 0;
-  }
+  background-image: url('/image/background-init.svg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
 `;
 const DivImage = styled.div`
   font-size: ${(props) => props.fontSize};
   color: ${(props) => props.color};
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
   font-weight: ${(props) => props.fontWeight};
   margin-top: ${(props) => props.marginTop};
@@ -61,16 +51,17 @@ const HomePage = () => {
     history.push('/term-condition');
   };
   return (
-    <Div>
+    <StartBackground>
       <Wrapper>
         <DivImage marginBottom="120px">
           <Image src={images.xWalletLogoSquare} size={200} width={200} alt="logo" />
+          <SecondaryLabel>The evolution of DeFi on Kadena</SecondaryLabel>
         </DivImage>
       </Wrapper>
-      <DivChildButon>
-        <Button onClick={goToTermsCondition} label="Start Now" />
-      </DivChildButon>
-    </Div>
+      <StickyFooter style={{ background: 'transparent', padding: '20px 0px' }}>
+        <Button size="full" variant="disabled" onClick={goToTermsCondition} label="Start Now" style={{ width: '90%', maxWidth: 890 }} />
+      </StickyFooter>
+    </StartBackground>
   );
 };
 export default HomePage;
