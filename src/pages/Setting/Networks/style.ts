@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 export const ImageLock = styled.img`
   margin-right: 18px;
+  width: 12px;
 `;
 export const DeleteImage = styled.img`
   margin-left: auto;

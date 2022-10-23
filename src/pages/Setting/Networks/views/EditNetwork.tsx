@@ -1,13 +1,12 @@
 /* eslint-disable no-console */
 import { useState } from 'react';
-import { ButtonAdd, ButtonWrapper } from 'src/pages/SendTransactions/views/style';
 import Button from 'src/components/Buttons';
-import { BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 import Toast from 'src/components/Toast/Toast';
+import { DivFlex } from 'src/components';
 import { convertNetworks, getTimestamp } from 'src/utils';
 import { getLocalNetworks, setLocalNetworks } from 'src/utils/storage';
 import { setNetworks } from 'src/stores/extensions';
@@ -15,7 +14,7 @@ import ModalCustom from 'src/components/Modal/ModalCustom';
 import { Content } from '../../style';
 import { ErrorWrapper, Footer } from '../../../SendTransactions/styles';
 import { DivBodyNetwork } from './style';
-import { ActionButton, BodyModal, ButtonModal, DescriptionModal, TitleModal } from '../style';
+import { BodyModal, DescriptionModal, TitleModal } from '../style';
 import { DivError } from '../../Contact/views/style';
 
 type Props = {
@@ -294,41 +293,27 @@ const EditNetwork = (props: Props) => {
       <Footer>
         {isEdit && network.id ? (
           <>
-            <ButtonWrapper>
-              <Button label="Remove" variant="remove" onClick={() => setModalRemoveNetwork(true)} />
-            </ButtonWrapper>
+            <DivFlex gap="10px">
+              <Button size="full" label="Remove" variant="remove" onClick={() => setModalRemoveNetwork(true)} />
+              <Button size="full" label="Save" variant="primary" form="save-network" />
+            </DivFlex>
             {isModalRemoveNetwork && (
               <ModalCustom isOpen={isModalRemoveNetwork} showCloseIcon={false} closeOnOverlayClick>
                 <BodyModal>
                   <TitleModal>Remove Network?</TitleModal>
-                  <DescriptionModal>Are you sure you want to remove?</DescriptionModal>
-                  <ActionButton>
-                    <ButtonModal background="#ffffff" color="#461A57" border="1px solid #461A57" onClick={() => setModalRemoveNetwork(false)}>
-                      Cancel
-                    </ButtonModal>
-                    <ButtonModal background="#461A57" color="#ffffff" onClick={deleteNetwork}>
-                      Remove
-                    </ButtonModal>
-                  </ActionButton>
+                  <DescriptionModal>Are you sure you want to remove this network?</DescriptionModal>
+                  <DivFlex padding="24px" gap="10px">
+                    <Button size="full" label="Cancel" variant="disabled" onClick={() => setModalRemoveNetwork(false)} />
+                    <Button size="full" label="Confirm" variant="primary" onClick={deleteNetwork} />
+                  </DivFlex>
                 </BodyModal>
               </ModalCustom>
             )}
-            <ButtonWrapper>
-              <Button label="Cancel" variant="disabled" onClick={onBack} />
-            </ButtonWrapper>
-            <ButtonWrapper>
-              <ButtonAdd form="save-network">Save</ButtonAdd>
-            </ButtonWrapper>
           </>
         ) : (
-          <>
-            <ButtonWrapper>
-              <Button label="Cancel" variant="disabled" onClick={onBack} />
-            </ButtonWrapper>
-            <ButtonWrapper>
-              <ButtonAdd form="save-network">Save</ButtonAdd>
-            </ButtonWrapper>
-          </>
+          <DivFlex>
+            <Button size="full" label="Save" variant="primary" form="save-network" />
+          </DivFlex>
         )}
       </Footer>
     </Content>

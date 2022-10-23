@@ -43,7 +43,7 @@ export const ButtonBack = styled.div`
 `;
 
 export const DivContent = styled.div`
-  border-bottom: 1px solid #461a57;
+  border-bottom: 1px solid #dfdfed;
   padding: 16px 20px 12px 20px;
   cursor: pointer;
   display: flex;

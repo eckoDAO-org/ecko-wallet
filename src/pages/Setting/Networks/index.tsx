@@ -1,13 +1,14 @@
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import Back from 'src/components/Back';
 import { useState } from 'react';
 import images from 'src/images';
 import Button from 'src/components/Buttons';
-import { BUTTON_SIZE } from 'src/utils/constant';
+import { CommonLabel, DivFlex } from 'src/components';
+import { ReactComponent as IconNetwork } from 'src/images/icon-network.svg';
+import { NavigationHeader } from 'src/components/NavigationHeader';
 import { ContactBody } from '../Contact/style';
-import { ImageLock, TitleLock } from './style';
-import { ButtonBack, DivContent, ImageNetworks, SettingBody, TitleHeader, LockWrapper, Content } from '../style';
+import { ImageLock } from './style';
+import { ImageNetworks, SettingBody, Content } from '../style';
 import { Body, Footer } from '../../SendTransactions/styles';
 import EditNetwork from './views/EditNetwork';
 import ViewNetwork from './views/ViewNetwork';
@@ -60,35 +61,38 @@ const PageNetworks = () => {
 
   const renderNormalMode = () =>
     networks.map((item) => (
-      <DivContent key={item.id} onClick={() => openMode(item.isDefault, item)}>
-        <TitleLock isDefault={item.isDefault}>{item.name}</TitleLock>
-        <LockWrapper>
-          {item.isDefault && <ImageLock src={images.settings.lock} alt="lock" />}
-          <ImageNetworks isDefault={item.isDefault} src={images.wallet.view} alt="view" />
-        </LockWrapper>
-      </DivContent>
+      <DivFlex
+        key={item.id}
+        onClick={() => openMode(item.isDefault, item)}
+        justifyContent="space-between"
+        alignItems="center"
+        padding="10px 24px"
+        style={{ cursor: 'pointer' }}
+      >
+        <DivFlex alignItems="center" gap="5px">
+          <IconNetwork />
+          <CommonLabel color="#20264E">{item.name}</CommonLabel>
+        </DivFlex>
+        <DivFlex>
+          {item.isDefault && <ImageLock src={images.settings.iconLockMini} alt="lock" />}
+          <ImageNetworks src={images.wallet.view} alt="view" />
+        </DivFlex>
+      </DivFlex>
     ));
 
   return (
     <SettingBody>
-      <ButtonBack>
-        <Back title="Back" onBack={goBack} />
-      </ButtonBack>
+      <div style={{ padding: '0 24px' }}>
+        <NavigationHeader title={isNormal ? 'Networks' : 'Network'} onBack={goBack} />
+      </div>
       <Body>
-        {isNormal ? (
-          <>
-            <TitleHeader>Networks</TitleHeader>
-          </>
-        ) : (
-          <TitleHeader>Network</TitleHeader>
-        )}
         {isEdit && <EditNetwork network={network} onBack={goBack} isEdit onClickPopup={handleClickPopup} />}
         {isView && <ViewNetwork network={network} />}
         <ContactBody>{isNormal && renderNormalMode()}</ContactBody>
         {isNormal && (
           <Content>
             <Footer>
-              <Button label="Add New Network" onClick={addNewNetwork} />
+              <Button size="full" label="Add New Network" onClick={addNewNetwork} />
             </Footer>
           </Content>
         )}

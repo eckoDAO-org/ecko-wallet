@@ -185,10 +185,7 @@ export const ButtonSend = styled.button`
 `;
 
 export const Footer = styled.div`
-  display: flex;
-  justify-content: space-between;
   margin-top: 50px;
-  gap: 10px;
 `;
 
 export const Content = styled.div``;
