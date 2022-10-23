@@ -1,9 +1,7 @@
 import { useHistory } from 'react-router-dom';
 import images from 'src/images';
 import styled from 'styled-components';
-import Back from 'src/components/Back';
 import Button from 'src/components/Buttons';
-import { BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import bcrypt from 'bcryptjs';
@@ -12,93 +10,57 @@ import Toast from 'src/components/Toast/Toast';
 import { getLocalSeedPhrase } from 'src/utils/storage';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import { decryptKey } from 'src/utils/security';
+import { ReactComponent as AlertIcon } from 'src/images/icon-alert.svg';
+import { NavigationHeader } from 'src/components/NavigationHeader';
+import { DivFlex, SecondaryLabel } from 'src/components';
+import { Warning } from 'src/pages/SendTransactions/styles';
+import { ActionList } from 'src/components/ActionList';
 
-const Footer = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
-const ButtonWrapper = styled.div`
-  width: 48%;
-`;
 const Body = styled.div`
   height: 170px;
 `;
+
 const Wrapper = styled.div`
   padding: 0 20px;
 
   font-size: 16px;
   word-break: break-word;
 `;
+
 const SPWrapper = styled.div`
   padding: 16px;
   font-size: 16px;
   position: relative;
-  border: 1px solid #461a57;
-  border-radius: 8px;
+  box-shadow: 0px 167px 67px rgba(36, 8, 43, 0.01), 0px 94px 57px rgba(36, 8, 43, 0.03), 0px 42px 42px rgba(36, 8, 43, 0.06),
+    0px 10px 23px rgba(36, 8, 43, 0.06), 0px 0px 0px rgba(36, 8, 43, 0.07);
+  border-radius: 25px;
   box-sizing: border-box;
   margin: 30px 0;
   text-align: center;
 `;
-const SPBlackDrop = styled.div`
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  border-radius: 8px;
-  align-items: center;
-  position: absolute;
-  cursor: pointer;
-  justify-content: center;
-`;
-const Title = styled.div`
-  font-weight: 700;
-  font-size: 24px;
-  line-height: 28px;
-  text-align: left;
-  text-align: center;
-  margin: 40px 0;
-`;
-const Text = styled.div`
-  margin-bottom: ${(props) => (props.isLast ? '0' : '30px')};
-`;
-const SPDropText = styled.div`
-  text-align: center;
-  margin-top: 12px;
-  font-weight: 700;
 
-  padding: 0 15px;
-  line-height: 19px;
-`;
 const LockImage = styled.img`
   width: 28px;
   height: 35px;
 `;
+
 const CustomButton = styled.div`
   margin-top: 20px;
 `;
-const SPContent = styled.div`
-  text-align: center;
-  background: #eee6f3;
-  padding: 18px 15px;
-  margin-top: 20px;
 
-  font-size: 16px;
-  border: 1px solid #461a57;
-  border-radius: 8px;
-  align-items: center;
-`;
 const SPText = styled.div`
   ${(props) => (props.isBlur ? 'filter: blur(4px);' : '')};
-  font-weight: 700;
-  line-height: 40px;
+  font-weight: 400;
+  line-height: 48px;
+  font-family: monospace;
   font-size: 24px;
 `;
+
 const DivError = styled.div`
   margin-top: 10px;
 `;
 const defaultText = '***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****';
+
 const ExportSeedPhrase = () => {
   const history = useHistory();
   const rootState = useSelector((state) => state);
@@ -181,17 +143,27 @@ const ExportSeedPhrase = () => {
   };
   return (
     <Wrapper>
-      <Back title="Back" onBack={goBack} />
-      <Title>Export Secret Recovery Phrase</Title>
-      <SPWrapper>
-        <SPText isBlur={isHiddenSP}>{sP ? encryptText(sP) : defaultText}</SPText>
-        {isHiddenSP && (
-          <SPBlackDrop>
-            <LockImage src={images.settings.lockImg} alt="lock" />
-            <SPDropText>Input password to show Secret Recovery Phrase</SPDropText>
-          </SPBlackDrop>
-        )}
-      </SPWrapper>
+      <NavigationHeader title="Export Recovery Phrase" onBack={goBack} />
+      {!isHiddenSP && (
+        <SPWrapper>
+          <SPText>{sP ? encryptText(sP) : defaultText}</SPText>
+          <DivFlex flexDirection="column" alignItems="center" marginTop="30px" paddingTop="30px" style={{ borderTop: '1px solid #DFDFED' }}>
+            <SecondaryLabel fontWeight={500} fontSize={14}>
+              Your Secret Recovery Phrase makes it easy to back up and restore your account.
+            </SecondaryLabel>
+            <Warning style={{ textAlign: 'start', marginTop: 30 }}>
+              <AlertIcon style={{ minWidth: 22 }} />
+              Never disclose your Secret Recovery Phrase. Anyone with this phrase cane take your wallet forever.
+            </Warning>
+          </DivFlex>
+        </SPWrapper>
+      )}
+      {isHiddenSP && (
+        <DivFlex flexDirection="column" justifyContent="center" alignItems="center" padding="50px 0px">
+          <LockImage src={images.settings.iconLockOpen} alt="lock" />
+          <SecondaryLabel fontWeight={500}>Enter your password to continue</SecondaryLabel>
+        </DivFlex>
+      )}
       <Body>
         {isHiddenSP ? (
           <>
@@ -212,26 +184,24 @@ const ExportSeedPhrase = () => {
               {isErrorVerify && <InputError marginTop="0">Invalid Passwords.</InputError>}
             </DivError>
             <CustomButton>
-              <Button onClick={handleVerifyPassword} isDisabled={!passwordInput} label="Verify" />
+              <Button size="full" variant="primary" onClick={handleVerifyPassword} isDisabled={!passwordInput} label="Continue" />
             </CustomButton>
           </>
         ) : (
-          <>
-            <Footer>
-              <ButtonWrapper>
-                <Button onClick={onCopy} label="Copy" variant="disabled" />
-              </ButtonWrapper>
-              <ButtonWrapper>
-                <Button onClick={onDownload} label="Download" />
-              </ButtonWrapper>
-            </Footer>
-          </>
+          <div>
+            <ActionList
+              actions={[
+                {
+                  label: 'Copy Keyphrase',
+                  src: images.wallet.copyGray,
+                  onClick: onCopy,
+                },
+                { label: 'Download', src: images.settings.iconDownload, onClick: onDownload },
+              ]}
+            />
+          </div>
         )}
       </Body>
-      <SPContent>
-        <Text>Your Secret Recovery Phrase makes it easy to back up and restore your account.</Text>
-        <Text isLast>Warning: Never disclose your Secret Recovery Phrase. Anyone with this phrase can take your wallet forever.</Text>
-      </SPContent>
     </Wrapper>
   );
 };

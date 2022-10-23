@@ -27,6 +27,7 @@ import qrCode from './frame.png';
 import add from './add.png';
 import logo from './logo.svg';
 import lockImg from './lock-seed-phrase.svg';
+import iconLockOpen from './icon-lock-open.svg';
 import toastFail from './toast-fail.svg';
 import toastSuccess from './toast-success.svg';
 import moreWhite from './more-white.png';
@@ -106,6 +107,7 @@ import iconGear from './gear-icon.svg';
 import iconTrash from './trash-icon.svg';
 import iconShare from './share-icon.svg';
 import iconEdit from './icon-edit.svg';
+import iconDownload from './icon-download.svg';
 import arrayDropdownPurple from './arrow-down-purple.svg';
 import iconMorePurple from './more-purple.svg';
 import iconDropDown from './icon-dropdown.svg';
@@ -204,9 +206,11 @@ const settings = {
   lockWhite,
   trashViolet,
   lockImg,
+  iconLockOpen,
   iconGear,
   iconNft,
   iconEdit,
+  iconDownload,
   iconTrash,
   iconShare,
   iconLockMini,
