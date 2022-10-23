@@ -20,7 +20,7 @@ const PageAbout = () => {
           <TitleHeaderAbout>{text}</TitleHeaderAbout>
           <AboutBody>
             <ContentAbout>
-              <TitleAbout>X Wallet v1.4.0</TitleAbout>
+              <TitleAbout>X Wallet v2.0.0</TitleAbout>
               <TitleVersion>The evolution of DeFi on Kadena</TitleVersion>
             </ContentAbout>
             <ContentAbout>

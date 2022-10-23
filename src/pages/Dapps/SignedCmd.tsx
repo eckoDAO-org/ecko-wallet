@@ -124,7 +124,7 @@ const SignedCmd = () => {
           collapseStringsAfterLength={false}
         />
       </ContentWrapper>
-      <DivFlex gap="10px">
+      <DivFlex gap="10px" padding="24px">
         <Button size="full" label="Reject" variant="disabled" onClick={onClose} />
         <Button size="full" label="Confirm" onClick={onSave} />
       </DivFlex>
