@@ -1,19 +1,18 @@
 /* eslint-disable no-console */
 import { useContext, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { ButtonAdd } from 'src/pages/SendTransactions/views/style';
 import Button from 'src/components/Buttons';
 import { TxSettingsContextData, TxSettingsContext } from 'src/contexts/TxSettingsContext';
-import { BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import BigNumber from 'bignumber.js';
-import Back from 'src/components/Back';
+import { DivFlex, StickyFooter } from 'src/components';
+import { NavigationHeader } from 'src/components/NavigationHeader';
 import Toast from 'src/components/Toast/Toast';
 import { CONFIG } from 'src/utils/config';
 import { ErrorWrapper } from 'src/pages/SendTransactions/styles';
-import { ButtonBack, Content, SettingBody, TitleHeader } from '../style';
+import { Content, SettingBody } from '../style';
 import { DivBodyNetwork } from '../Networks/views/style';
 import { Body, DivError } from '../Contact/views/style';
 
@@ -66,11 +65,10 @@ const PageTransaction = () => {
   const onErrors = () => {};
   return (
     <SettingBody>
-      <ButtonBack>
-        <Back title="Back" onBack={() => history.push('/setting')} />
-      </ButtonBack>
+      <div style={{ padding: '0 24px' }}>
+        <NavigationHeader title="Transaction Settings" onBack={() => history.push('/setting')} />
+      </div>
       <Body>
-        <TitleHeader>Transaction Settings</TitleHeader>
         <Content>
           <form onSubmit={handleSubmit(onSave, onErrors)} id="save-network">
             <DivBodyNetwork>
@@ -167,15 +165,12 @@ const PageTransaction = () => {
               )}
             </DivBodyNetwork>
           </form>
-          <div>
-            <Button label="Restore default" type={BUTTON_TYPE.DISABLE} onClick={restoreDefault} size={BUTTON_SIZE.FULL} />
-          </div>
-          <div style={{ display: 'flex', margin: '10px 0', gap: 10 }}>
-            <Button label="Cancel" type={BUTTON_TYPE.DISABLE} onClick={() => reset(getDefaultData())} size={BUTTON_SIZE.FULL} />
-            <ButtonAdd form="save-network" type="submit">
-              Save
-            </ButtonAdd>
-          </div>
+          <StickyFooter>
+            <DivFlex gap="10px" style={{ width: '90%', maxWidth: 890 }}>
+              <Button size="full" label="Restore default" variant="disabled" onClick={restoreDefault} />
+              <Button size="full" label="Save" variant="primary" form="save-network" type="submit" />
+            </DivFlex>
+          </StickyFooter>
         </Content>
       </Body>
     </SettingBody>

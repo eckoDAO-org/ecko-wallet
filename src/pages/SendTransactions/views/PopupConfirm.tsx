@@ -1,38 +1,22 @@
 import Button from 'src/components/Buttons';
 import Pact from 'pact-lang-api';
-import { ACTIVE_TAB, BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
+import { ACTIVE_TAB } from 'src/utils/constant';
 import { useHistory } from 'react-router-dom';
-import { convertRecent, getTimestamp } from 'src/utils';
+import { convertRecent, getTimestamp, humanReadableNumber } from 'src/utils';
 import { getApiUrl, getSignatureFromHash, fetchLocal, pollRequestKey } from 'src/utils/chainweb';
 import { CONFIG } from 'src/utils/config';
 import { getFloatPrecision } from 'src/utils/numbers';
 import { toast } from 'react-toastify';
-import BigNumber from 'bignumber.js';
 import Toast from 'src/components/Toast/Toast';
 import { CrossChainContext } from 'src/contexts/CrossChainContext';
 import { setActiveTab, setRecent } from 'src/stores/extensions';
 import { getLocalActivities, getLocalRecent, setLocalActivities, setLocalRecent } from 'src/utils/storage';
 import { updateSendDapp } from 'src/utils/message';
-import images from 'src/images';
 import { useContext, useState } from 'react';
 import SpokesLoading from 'src/components/Loading/Spokes';
-import Tooltip from 'src/components/Tooltip';
+import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import { IFungibleToken } from 'src/pages/ImportToken';
-import {
-  PageConfirm,
-  BodyContent,
-  ButtonWrapper,
-  LabelConfirm,
-  FormItemConfirm,
-  LabelBold,
-  TooltipImage,
-  GasFee,
-  GasFeeText,
-  LoadingTitle,
-  SpinnerWrapper,
-  TransferHr,
-} from './style';
-import { Footer, TransactionTitle } from '../styles';
+import { LoadingTitle, SpinnerWrapper } from './style';
 import { renderTransactionInfo } from './Transfer';
 
 type Props = {
@@ -40,11 +24,12 @@ type Props = {
   onClose: any;
   aliasContact: string;
   fungibleToken: IFungibleToken | null;
+  estimateUSDAmount?: string | null;
   kdaUSDPrice?: number;
 };
 
 const PopupConfirm = (props: Props) => {
-  const { configs, onClose, aliasContact, fungibleToken, kdaUSDPrice } = props;
+  const { configs, onClose, aliasContact, fungibleToken, kdaUSDPrice, estimateUSDAmount } = props;
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const { setCrossChainRequest, getCrossChainRequestsAsync } = useContext(CrossChainContext);
@@ -71,8 +56,6 @@ const PopupConfirm = (props: Props) => {
   const validAmount = parseFloat(amount);
   const validGasPrice = parseFloat(gasPrice);
   const validGasLimit = parseFloat(gasLimit);
-
-  const total = validAmount + validGasPrice * validGasLimit;
 
   const getCmd = async () => {
     const decimals = getFloatPrecision(Number.parseFloat(amount)) || 2;
@@ -293,75 +276,69 @@ const PopupConfirm = (props: Props) => {
   };
   if (isLoading) {
     return (
-      <PageConfirm>
+      <div>
         <LoadingTitle isTop>Please don’t close this view</LoadingTitle>
         <SpinnerWrapper>
           <SpokesLoading />
         </SpinnerWrapper>
         <LoadingTitle>You will be redirected when the transaction ends</LoadingTitle>
-      </PageConfirm>
+      </div>
     );
   }
-  const isKDA = fungibleToken?.symbol.toUpperCase() === 'KDA';
 
   return (
-    <PageConfirm>
-      <BodyContent>
-        {renderTransactionInfo(info)}
-        <TransactionTitle>Transaction</TransactionTitle>
-        <FormItemConfirm>
-          <LabelConfirm>Amount</LabelConfirm>
-          <LabelBold isRight>{`${validAmount} ${fungibleToken?.symbol.toUpperCase()}`}</LabelBold>
-        </FormItemConfirm>
-        {isKDA && kdaUSDPrice && (
-          <GasFee>
-            <LabelConfirm>Amount $</LabelConfirm>
-            <GasFeeText>{`~${(validAmount * kdaUSDPrice).toFixed(2)} USD`}</GasFeeText>
-          </GasFee>
+    <div style={{ padding: '0 20px 20px 20px' }}>
+      {renderTransactionInfo(info, { borderTop: ' none', margin: '0px -20px 20px', paddingBottom: 10 })}
+      <div style={{ textAlign: 'center' }}>
+        <DivFlex margin="10px 0px" justifyContent="space-between" alignItems="flex-start">
+          <SecondaryLabel uppercase fontSize={16}>
+            amount
+          </SecondaryLabel>
+          <DivFlex flexDirection="column" alignItems="flex-end">
+            <SecondaryLabel uppercase fontSize={16}>
+              {amount} {fungibleToken?.symbol}
+            </SecondaryLabel>
+            <CommonLabel fontSize={12} fontWeight={600} lineHeight="8px">
+              {estimateUSDAmount && `${estimateUSDAmount} USD`}
+            </CommonLabel>
+          </DivFlex>
+        </DivFlex>
+        <DivFlex margin="10px 0 0 0" justifyContent="space-between" alignItems="center">
+          <SecondaryLabel uppercase>gas limit</SecondaryLabel>
+          <SecondaryLabel uppercase>{gasLimit}</SecondaryLabel>
+        </DivFlex>
+        <DivFlex margin="1px 0px" justifyContent="space-between" alignItems="flex-start">
+          <SecondaryLabel uppercase>gas price</SecondaryLabel>
+          <DivFlex flexDirection="column" alignItems="flex-end">
+            <SecondaryLabel uppercase>{gasPrice} KDA</SecondaryLabel>
+            <CommonLabel fontSize={12} fontWeight={600} lineHeight="8px">
+              {kdaUSDPrice ? humanReadableNumber(gasPrice * kdaUSDPrice) : '--'} USD
+            </CommonLabel>
+          </DivFlex>
+        </DivFlex>
+        <DivFlex margin="10px 0px" justifyContent="space-between" alignItems="flex-start">
+          <SecondaryLabel uppercase>gas fee</SecondaryLabel>
+          <DivFlex flexDirection="column" alignItems="flex-end">
+            <SecondaryLabel uppercase>{gasPrice * gasLimit} KDA</SecondaryLabel>
+            <CommonLabel fontSize={12} fontWeight={600} lineHeight="8px">
+              {kdaUSDPrice ? humanReadableNumber(gasPrice * gasLimit * kdaUSDPrice) : '--'} USD
+            </CommonLabel>
+          </DivFlex>
+        </DivFlex>
+        {estimateUSDAmount && (
+          <DivFlex margin="10px 0px" justifyContent="space-between" alignItems="center">
+            <CommonLabel fontWeight={600} uppercase>
+              total
+            </CommonLabel>
+            <CommonLabel fontWeight={600}>{humanReadableNumber(Number(estimateUSDAmount) + Number(estimateFee))} USD</CommonLabel>
+          </DivFlex>
         )}
-        <FormItemConfirm>
-          <LabelConfirm>Gas Limit</LabelConfirm>
-          <Tooltip tooltipText="Gas limit is the maximum amount of units of gas you are willing to spend.">
-            <TooltipImage src={images.transfer.info} alt="info" />
-          </Tooltip>
-          <LabelBold isRight>{`${gasLimit}`}</LabelBold>
-        </FormItemConfirm>
-        <FormItemConfirm>
-          <LabelConfirm>Gas Price</LabelConfirm>
-          <Tooltip tooltipText="Gas price specifies the amount of Kadena you are willing to pay for each unit of gas.">
-            <TooltipImage src={images.transfer.info} alt="info" />
-          </Tooltip>
-          <LabelBold isRight>{`${gasPrice} KDA`}</LabelBold>
-        </FormItemConfirm>
-        <GasFee>
-          <LabelConfirm>Gas Fee $</LabelConfirm>
-          <GasFeeText>{`${estimateFee} USD`}</GasFeeText>
-        </GasFee>
-      </BodyContent>
-      <TransferHr />
-      {fungibleToken?.contractAddress === 'coin' && (
-        <BodyContent>
-          <FormItemConfirm>
-            <LabelBold>Total</LabelBold>
-            <LabelBold isRight>{`${new BigNumber(total).decimalPlaces(12).toString()} KDA`}</LabelBold>
-          </FormItemConfirm>
-          {isKDA && kdaUSDPrice && (
-            <GasFee>
-              <LabelConfirm>Total $ </LabelConfirm>
-              <GasFeeText>{`~${(Number(new BigNumber(total).decimalPlaces(2)) * kdaUSDPrice).toFixed(2)} USD`}</GasFeeText>
-            </GasFee>
-          )}
-        </BodyContent>
-      )}
-      <Footer>
-        <ButtonWrapper>
-          <Button label="Reject" type={BUTTON_TYPE.DISABLE} onClick={() => onClose()} size={BUTTON_SIZE.FULL} />
-        </ButtonWrapper>
-        <ButtonWrapper>
-          <Button label="Confirm" onClick={onSend} size={BUTTON_SIZE.FULL} />
-        </ButtonWrapper>
-      </Footer>
-    </PageConfirm>
+      </div>
+      <DivFlex margin="30px 0" gap="5px">
+        <Button label="Cancel" size="full" variant="secondary" onClick={() => onClose()} />
+        <Button label="Confirm" size="full" onClick={onSend} />
+      </DivFlex>
+    </div>
   );
 };
 

@@ -11,11 +11,11 @@ import images from '../../images';
 import { BoxContent } from '../Setting/Contact/style';
 import { BodyModal, TitleModal } from '../Setting/Contact/views/style';
 import { ActionButton, ButtonModal, DescriptionModal } from '../Setting/Networks/style';
-import { IFungibleToken } from '../ImportToken';
+import { IFungibleToken, LOCAL_KEY_FUNGIBLE_TOKENS } from '../ImportToken';
 
 const TokenMenu = () => {
   const [isRemovingToken, setIsRemovingToken] = useState(false);
-  const [fungibleTokens, setFungibleTokens] = useLocalStorage<IFungibleToken[]>('fungibleTokens', []);
+  const [fungibleTokens, setFungibleTokens] = useLocalStorage<IFungibleToken[]>(LOCAL_KEY_FUNGIBLE_TOKENS, []);
   const history = useHistory();
   const { search } = useLocation();
   const params = new URLSearchParams(search);

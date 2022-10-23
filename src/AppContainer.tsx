@@ -2,7 +2,6 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Switch, Redirect, Route } from 'react-router-dom';
-import Header from './components/Header';
 import Footer from './components/Footer';
 import CreatePassword from './pages/CreatePassword';
 import HomePage from './pages/Home';
@@ -37,7 +36,6 @@ const Container = styled.div`
   width: 1000px;
   box-shadow: 0 0 7px 7px rgb(0 0 0 / 8%);
   min-height: 100vh;
-  background: linear-gradient(90deg, #e6fefe 0%, #fdf6e6 100%);
   @media screen and (max-width: 1024px) {
     margin-bottom: 0;
     width: 100%;
@@ -50,7 +48,6 @@ const AppContainer = () => {
   const { isLoading } = rootState.extensions;
   return (
     <Container>
-      <Header />
       <Switch>
         <PrivateRoute isFirstInstall path="/create-password" component={CreatePassword} />
         <PrivateRoute isFirstInstall path="/home-page" component={HomePage} />
@@ -80,7 +77,7 @@ const AppContainer = () => {
         <Redirect to="/" />
       </Switch>
       <Footer />
-      {isLoading && <Loading type="spin" color="#461A57" />}
+      {isLoading && <Loading type="spin" color="#20264E" />}
     </Container>
   );
 };

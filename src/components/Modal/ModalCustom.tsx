@@ -1,89 +1,115 @@
+import React from 'react';
 import 'react-responsive-modal/styles.css';
-import { Modal } from 'react-responsive-modal';
 import styled from 'styled-components';
-import { useWindowResizeMobile } from 'src/hooks/useWindowResizeMobile';
 import images from 'src/images';
 
-const Div = styled.div`
-  font-size: 16px;
-  color: #461a57;
-  word-break: break-word;
-`;
-const Img = styled.img`
-  margin-top: 5px;
-`;
-const TitleHeader = styled.div`
-  text-align: center;
-  font-size: 16px;
-  font-weight: 700;
-  color: #461a57;
-  margin-bottom: 15px;
+const Modal = styled.div`
+  position: fixed;
+  bottom: -150vh;
+  background-color: #fff;
+  border-top-left-radius: 25px;
+  border-top-right-radius: 25px;
+  width: 100%;
+  box-shadow: 0 0 4px 0px rgba(0, 0, 0, 0.15);
+  left: 0;
+  z-index: 10;
+  transition: all 0.3s ease-out;
+  &.show {
+    bottom: 0;
+  }
 `;
 
-const Hr = styled.hr`
-  height: 2px;
-  background: linear-gradient(90deg, #d2ab72 0%, #b66e84 35.42%, #b2579b 64.06%, #9ee9e4 99.48%);
-  transform: matrix(1, 0, 0, -1, 0, 0);
-  border: none;
-  width: 120%;
-  margin-left: -1.2rem;
+const Overlay = styled.div`
+  background-color: rgba(0, 0, 0, 0.55);
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  position: fixed;
+  display: none;
+  z-index: 5;
+  &.show {
+    display: block;
+  }
 `;
-const ModalWrapper = styled.div`
-  .react-responsive-modal-containerCenter::-webkit-scrollbar {
+
+const DivBody = styled.div`
+  margin-bottom: 30;
+  overflow-x: hidden;
+  overflow-y: auto;
+  &::-webkit-scrollbar {
     width: 2px;
   }
-
-  .react-responsive-modal-containerCenter::-webkit-scrollbar-track {
+  &::-webkit-scrollbar-track {
     background: rgb(226, 226, 226);
   }
 
-  .react-responsive-modal-containerCenter::-webkit-scrollbar-thumb {
-    background-color: rgb(54, 54, 54);
+  &::-webkit-scrollbar-thumb {
+    background-color: rgb(186, 186, 186);
     border-radius: 2px;
   }
 `;
+const DivFooter = styled.div`
+  border-top: 1px solid #dfdfed;
+  padding: 1rem;
+`;
+const TitleHeader = styled.div`
+  text-align: center;
+  font-weight: 700;
+  margin-bottom: 15px;
+  font-size: 16px;
+  padding: 27px 0px;
+  border-bottom: 1px solid #dfdfed;
+  word-break: break-word;
+  position: relative;
+  ${(props) => props.roundIcon && 'padding-top: 60px'}
+`;
+
+const CloseIcon = styled.img`
+  position: absolute;
+  right: 25px;
+  width: 12px;
+  cursor: pointer;
+`;
+
+const RoundIcon = styled.div`
+  height: 50px;
+  border-radius: 50px;
+  position: absolute;
+  width: 100%;
+  top: -40px;
+`;
 
 const ModalCustom = (props: Props) => {
-  const { isOpen, onCloseModal, closeOnOverlayClick, title, showCloseIcon, children } = props;
-  const [isMobile] = useWindowResizeMobile(420);
+  const { isOpen, onCloseModal, closeOnOverlayClick, title, showCloseIcon, roundIcon, children, footer } = props;
+
   return (
-    <ModalWrapper>
-      <Modal
-        open={isOpen}
-        onClose={onCloseModal}
-        closeIcon={<Img src={images.close} alt="close" />}
-        center
-        styles={{
-          modal: {
-            minWidth: isMobile ? '260px' : '350px',
-            minHeight: '200px',
-            fontFamily: 'Play',
-            background: 'linear-gradient(90deg, #E6FEFE 0%, #FDF6E6 100%)',
-            overflowX: 'hidden',
-          },
-        }}
-        closeOnOverlayClick={closeOnOverlayClick}
-        showCloseIcon={showCloseIcon}
-      >
+    <>
+      <Modal className={isOpen && 'show'} closeOnOverlayClick={closeOnOverlayClick} showCloseIcon={showCloseIcon}>
         {title && (
-          <>
-            <Div>
-              <TitleHeader>{title}</TitleHeader>
-            </Div>
-            <Hr />
-          </>
+          <TitleHeader roundIcon={roundIcon}>
+            {roundIcon && <RoundIcon>{roundIcon}</RoundIcon>}
+            {title}
+            <CloseIcon src={images.close} alt="close" onClick={onCloseModal} />
+          </TitleHeader>
         )}
-        <Div>{children}</Div>
+        <DivBody style={{ maxHeight: window.innerHeight * 0.6 }}>
+          <div>{children}</div>
+          <div>{footer && <DivFooter>{footer}</DivFooter>}</div>
+        </DivBody>
       </Modal>
-    </ModalWrapper>
+      <Overlay className={isOpen ? 'show' : ''} onClick={onCloseModal} />
+    </>
   );
 };
 type Props = {
   isOpen: boolean;
   onCloseModal?: any;
   closeOnOverlayClick?: boolean;
-  title?: string;
+  title?: React.ReactNode;
+  roundIcon?: React.ReactNode;
   showCloseIcon?: boolean;
-  children?: any;
+  children?: React.ReactNode;
+  footer?: React.ReactNode;
 };
 export default ModalCustom;

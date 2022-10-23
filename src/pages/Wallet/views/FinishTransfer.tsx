@@ -6,7 +6,6 @@ import images from 'src/images';
 import { CrossChainContext } from 'src/contexts/CrossChainContext';
 import ModalCustom from 'src/components/Modal/ModalCustom';
 import BigNumber from 'bignumber.js';
-import { BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
 import Button from 'src/components/Buttons';
 import { renderTransactionInfo } from 'src/pages/SendTransactions/views/Transfer';
 import FinishTransferItem from './FinishTransferItem';
@@ -38,7 +37,6 @@ const ActionButton = styled(DivFlex)`
 `;
 const Hr = styled.hr`
   height: 2px;
-  background: linear-gradient(90deg, #d2ab72 0%, #b66e84 35.42%, #b2579b 64.06%, #9ee9e4 99.48%);
   transform: matrix(1, 0, 0, -1, 0, 0);
   border: none;
 `;
@@ -69,6 +67,7 @@ const FinishTransfer = () => {
   const renderItem = (filterCrossChain) =>
     filterCrossChain.map((request: any) => (
       <Div
+        style={{ padding: '0px 24px' }}
         onClick={() => {
           if (request.status !== 'pending') {
             openFinishModal(request);
@@ -94,17 +93,9 @@ const FinishTransfer = () => {
   return (
     <Div>
       {filterCrossChain && filterCrossChain.length ? (
-        <>
-          {/* <HeaderTitle>
-              <DivFlex>
-                <DivChild color="#461A57" fontSize="16px" marginRight="15px">Date</DivChild>
-              </DivFlex>
-              <DivChild color="#461A57" fontSize="16px">Quantity</DivChild>
-            </HeaderTitle> */}
-          <DivChild>
-            <DivScroll>{renderItem(filterCrossChain)}</DivScroll>
-          </DivChild>
-        </>
+        <DivChild>
+          <DivScroll>{renderItem(filterCrossChain)}</DivScroll>
+        </DivChild>
       ) : (
         <NoData>You have no transactions</NoData>
       )}
@@ -116,8 +107,8 @@ const FinishTransfer = () => {
           closeOnOverlayClick={false}
         >
           <Div>
-            <DivChild marginTop="20px" color="#461A57">
-              {renderTransactionInfo(transferDetails)}
+            <DivChild style={{ padding: '0 20px 20px 20px' }}>
+              {renderTransactionInfo(transferDetails, { borderTop: ' none', margin: '0px -20px 20px', paddingBottom: 10 })}
               <TransactionInfo>
                 <DivChild fontWeight="700">Amount</DivChild>
                 <DivChild fontWeight="700">{`${transferDetails?.amount} ${transferDetails.symbol?.toUpperCase() || 'KDA'}`}</DivChild>
@@ -125,12 +116,12 @@ const FinishTransfer = () => {
             </DivChild>
             <Hr />
             {transferDetails.symbol === 'kda' && (
-              <TransactionInfo marginTop="20px">
+              <TransactionInfo style={{ padding: 24 }}>
                 <DivChild fontWeight="700">Total</DivChild>
                 <DivChild fontWeight="700">
                   {transferDetails.status !== 'pending'
                     ? `${new BigNumber(
-                        parseFloat(transferDetails?.amount) + parseFloat(transferDetails?.gasFee) * parseFloat(transferDetails?.gasPrice),
+                        parseFloat(transferDetails?.amount) + parseFloat(transferDetails?.gasFee || 0) * parseFloat(transferDetails?.gasPrice || 0),
                       )
                         .decimalPlaces(12)
                         .toString()} KDA`
@@ -138,10 +129,10 @@ const FinishTransfer = () => {
                 </DivChild>
               </TransactionInfo>
             )}
-            <DivChild>
-              <ActionButton marginTop="200px">
-                <Button label="Close" onClick={() => setIsOpenFinishTransferModal(false)} type={BUTTON_TYPE.DISABLE} size={BUTTON_SIZE.FULL} />
-                {/* <Button label="Finish" onClick={finishTransfer} size={BUTTON_SIZE.FULL} /> */}
+            <DivChild style={{ padding: 24 }}>
+              <ActionButton marginTop="100px">
+                <Button size="full" label="Close" onClick={() => setIsOpenFinishTransferModal(false)} variant="disabled" />
+                {/* <Button label="Finish" onClick={finishTransfer}  /> */}
               </ActionButton>
             </DivChild>
           </Div>

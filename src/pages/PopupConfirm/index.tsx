@@ -15,7 +15,7 @@ const TitileConfirm = styled.h1`
   font-weight: bold;
   font-size: 25px;
   line-height: 29px;
-  color: #461a57;
+
   text-align: center;
 `;
 const DesConfirm = styled.h1`
@@ -23,7 +23,6 @@ const DesConfirm = styled.h1`
   font-size: 16px;
   line-height: 19px;
   text-align: center;
-  color: #461a57;
 `;
 
 const PopupConfirmDelete = () => {

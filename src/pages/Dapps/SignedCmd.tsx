@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import ReactJson from 'react-json-view';
 import { getLocalSelectedNetwork, getLocalSignedCmd } from 'src/utils/storage';
 import Button from 'src/components/Buttons';
-import { BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
+import { DivFlex, SecondaryLabel } from 'src/components';
 import { updateSignedCmdMessage } from 'src/utils/message';
 import { Footer } from '../SendTransactions/styles';
 import { ButtonWrapper } from '../SendTransactions/views/style';
@@ -18,7 +18,6 @@ const Wrapper = styled.div`
   bottom: 0;
   right: 0;
   z-index: 2;
-  background: linear-gradient(90deg, #e6fefe 0%, #fdf6e6 100%);
   font-size: 14px;
   overflow-y: scroll;
   overflow-x: hidden;
@@ -111,7 +110,7 @@ const SignedCmd = () => {
     <Wrapper>
       <Logo src={images.xWalletIcon} alt="logo" />
       <DappDescription>{domain}</DappDescription>
-      <DappTitle>Get signed command</DappTitle>
+      <SecondaryLabel uppercase>Get signed command</SecondaryLabel>
       <ContentWrapper>
         <ReactJson
           src={newCmd}
@@ -125,14 +124,10 @@ const SignedCmd = () => {
           collapseStringsAfterLength={false}
         />
       </ContentWrapper>
-      <FooterWrapper>
-        <ButtonWrapper>
-          <Button label="Reject" type={BUTTON_TYPE.DISABLE} onClick={onClose} size={BUTTON_SIZE.FULL} />
-        </ButtonWrapper>
-        <ButtonWrapper>
-          <Button label="Confirm" onClick={onSave} size={BUTTON_SIZE.FULL} />
-        </ButtonWrapper>
-      </FooterWrapper>
+      <DivFlex gap="10px" padding="24px">
+        <Button size="full" label="Reject" variant="disabled" onClick={onClose} />
+        <Button size="full" label="Confirm" onClick={onSave} />
+      </DivFlex>
     </Wrapper>
   );
 };

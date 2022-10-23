@@ -1,151 +1,144 @@
-/* eslint-disable no-console */
-import { useRef } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useContext } from 'react';
 import styled from 'styled-components';
+import { useSelector } from 'react-redux';
+import { useHistory, useLocation } from 'react-router-dom';
+import { useCurrentWallet } from 'src/stores/wallet/hooks';
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
+import { decryptKey, encryptKey } from 'src/utils/security';
+import { setSelectedNetwork } from 'src/stores/extensions';
+import { toast } from 'react-toastify';
+import { ModalContext } from 'src/contexts/ModalContext';
+import { AccountList } from 'src/pages/Wallet/components/AccountList';
+import { AccountActions } from 'src/pages/Wallet/components/AccountActions';
+import { setBalance, setCurrentWallet, setWallets } from 'src/stores/wallet';
+import { getKeyPairsFromSeedPhrase } from 'src/utils/chainweb';
+import { shortenAddress } from 'src/utils';
 import images from 'src/images';
-import { setActiveTab, setContacts, setRecent, setSelectedNetwork } from 'src/stores/extensions';
-import { setCurrentWallet, setBalance } from 'src/stores/wallet';
-import { setLocalSelectedNetwork, setLocalSelectedWallet } from 'src/utils/storage';
-import { ACTIVE_TAB } from 'src/utils/constant';
-import Dropdown from '../Dropdown';
+import {
+  getLocalPassword,
+  getLocalSeedPhrase,
+  getLocalWallets,
+  setLocalSelectedNetwork,
+  setLocalSelectedWallet,
+  setLocalWallets,
+} from 'src/utils/storage';
+import RemoveWalletPopup from 'src/pages/Wallet/views/RemoveWalletPopup';
+import { DropdownModal } from '../DropdownModal';
+import { DivFlex } from '..';
+import Toast from '../Toast/Toast';
+import { ActionList } from '../ActionList';
+import { DropdownRadioModal } from '../DropdownRadioModal';
 
-const WrapHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 15px 15px;
-`;
-const DivHeader = styled.div`
-  font-size: 1.5em;
-  position: relative;
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  background: linear-gradient(90deg, #e6fefe 0%, #fdf6e6 100%);
-`;
-const Logo = styled.img``;
-
-const LogoImage = styled.img`
-  height: 16px;
-  width: auto;
-  margin-left: 12px;
-`;
-const ImageWrapper = styled.div`
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-`;
-const Hr = styled.div`
-  background: linear-gradient(90deg, #d2ab72 0%, #b66e84 35.42%, #b2579b 64.06%, #9ee9e4 99.48%);
-  height: 2px;
-`;
-const Div = styled.div`
-  padding-bottom: ${(props) => props.paddingBottom};
-  border-bottom: ${(props) => props.borderBottom};
-  font-size: ${(props) => props.fontSize};
-  color: ${(props) => props.color};
-  padding-left: ${(props) => props.paddingLeft};
-  padding-right: ${(props) => props.paddingRight};
-  padding-top: ${(props) => props.paddingTop};
-`;
-const TitleSetting = styled.div`
-  padding: 15px 15px;
-  border-bottom: 1px solid #ffffff80;
-  font-size: 20px;
-  text-align: ${(props) => props.textAlign};
-  font-weight: 700;
-  margin-left: ${(props) => props.marginLeft};
-  display: ${(props) => props.display};
-`;
-const DivChild = styled.div`
-  font-size: ${(props) => props.fontSize};
-  margin: auto 0;
-  margin-right: ${(props) => props.marginRight};
-  margin-left: ${(props) => props.marginLeft};
-  line-height: 24px;
-  color: ${(props) => props.color};
-  width: ${(props) => props.Width};
-  overflow: ${(props) => props.OverFlow};
-  text-overflow: ${(props) => props.TextOverflow};
-  white-space: ${(props) => props.WhiteSpace};
-  font-weight: ${(props) => props.fontWeight};
-  display: ${(props) => props.display};
-`;
-const DivChildImage = styled.div`
-  width: 17%;
-`;
-const DivFlex = styled.div`
-  display: flex;
-  padding-bottom: ${(props) => props.paddingBottom};
-  cursor: pointer;
-  width: ${(props) => (props.width ? props.width : '100%')};
-  margin-bottom: ${(props) => props.marginBottom};
-  justify-content: ${(props) => props.justifyContent};
-  align-items: ${(props) => props.alignItems};
-`;
-const Image = styled.img<{ size: string; top: string; width: string }>`
-  height: ${($props) => $props.size};
-  width: ${($props) => ($props.width ? $props.width : $props.size)};
-  margin: auto;
-`;
-const NetWorkSelect = styled.div`
-  display: flex;
-  gap: 10px;
-  padding: 5px 20px;
-  border-radius: 20px;
-  background: #e2d5e1;
-  border: 1px solid #461a57;
-`;
-const DivImage = styled.div`
-  margin-left: ${(props) => props.marginLeft};
-  margin: auto 0;
-  padding-bottom: ${(props) => props.paddingBottom};
-`;
-const NetWorkName = styled.div`
-  padding-bottom: ${(props) => props.paddingBottom};
-  border-bottom: ${(props) => props.borderBottom};
-  font-size: ${(props) => props.fontSize};
-  color: ${(props) => props.color};
-  margin: auto 0;
-  width: ${(props) => props.Width};
-  overflow: ${(props) => props.OverFlow};
-  text-overflow: ${(props) => props.TextOverflow};
-  white-space: ${(props) => props.WhiteSpace};
-`;
-const OptionHeader = styled.div`
-  display: flex;
-`;
-const NetworkOption = styled.div`
-  padding: 20px 20px 10px 15px;
-  max-height: 105px;
-  overflow-y: auto;
-  &::-webkit-scrollbar {
-    width: 5px;
-  }
-  &::-webkit-scrollbar-track {
-    background: #f1f1f1;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: #7b7b7b9e;
-    border-radius: 2px;
-  }
+const HeaderWallet = styled(DivFlex)`
+  padding: 20px;
+  border-bottom: 1px solid #dfdfed;
 `;
 
-const Header = () => {
-  const rootState = useSelector((state) => state);
-  const { passwordHash, selectedNetwork, networks, expiredTime } = rootState.extensions;
-  const location = useLocation().pathname;
-  const showSettingAndSelectNetworks = !(
-    location.includes('setting') ||
-    location.includes('networks') ||
-    location.includes('contact') ||
-    location.includes('about')
-  );
-  const showHeader = !(location.includes('sign-in') || location.includes('home-page'));
+export const Header = ({ hideAccounts }: { hideAccounts?: boolean }) => {
   const history = useHistory();
-  const refSelectNetwork = useRef();
+  const location = useLocation().pathname;
+  const rootState = useSelector((state) => state);
+  const stateWallet = useCurrentWallet();
+  // TODO: sometimes undefined on switching network (check for the same networkId)
+  const { openModal, closeModal } = useContext(ModalContext);
+
+  const { selectedNetwork, passwordHash, networks } = rootState.extensions;
+  const { wallets } = rootState?.wallet;
+
+  const checkWallet = (pub) => {
+    let result = true;
+    if (wallets && wallets.length) {
+      for (let i = 0; i < wallets.length; i += 1) {
+        if (wallets[i].publicKey === pub) {
+          result = false;
+        }
+      }
+    }
+    return result;
+  };
+
+  const createAccount = (seedPhrase, index) => {
+    const keyPairs = getKeyPairsFromSeedPhrase(seedPhrase, index);
+    const { publicKey, secretKey } = keyPairs;
+    if (checkWallet(publicKey)) {
+      const accountName = `k:${publicKey}`;
+      const wallet = {
+        account: encryptKey(accountName, passwordHash),
+        publicKey: encryptKey(publicKey, passwordHash),
+        secretKey: encryptKey(secretKey, passwordHash),
+        chainId: '0',
+        connectedSites: [],
+      };
+      getLocalWallets(
+        selectedNetwork.networkId,
+        (item) => {
+          const newData = [...item, wallet];
+          setLocalWallets(selectedNetwork.networkId, newData);
+        },
+        () => {
+          setLocalWallets(selectedNetwork.networkId, [wallet]);
+        },
+      );
+      const newStateWallet = {
+        chainId: '0',
+        account: accountName,
+        publicKey,
+        secretKey,
+        connectedSites: [],
+      };
+      const newWallets = stateWallet.wallets ? [...stateWallet.wallets] : [];
+      newWallets.push(newStateWallet);
+      setWallets(newWallets);
+      setLocalSelectedWallet(wallet);
+      setCurrentWallet(newStateWallet);
+      toast.success(<Toast type="success" content="Create account successfully!" />);
+      closeModal();
+    } else {
+      createAccount(seedPhrase, index + 1);
+      closeModal();
+    }
+  };
+
+  const setSelectedLocalWallet = (wallet) => {
+    getLocalPassword(
+      (accountPassword) => {
+        const newWallet = {
+          account: encryptKey(wallet.account, accountPassword),
+          publicKey: encryptKey(wallet.publicKey, accountPassword),
+          secretKey: encryptKey(wallet.secretKey, accountPassword),
+          chainId: wallet.chainId,
+          connectedSites: wallet.connectedSites,
+        };
+        setLocalSelectedWallet(newWallet);
+      },
+      () => {},
+    );
+  };
+
+  const goImportAccount = () => {
+    history.push({
+      pathname: '/import-wallet',
+      state: { from: location },
+    });
+  };
+
+  const onRemoveWallet = () => {
+    openModal({ title: 'Remove wallet', content: <RemoveWalletPopup onClose={() => closeModal()} /> });
+  };
+
+  const onCreateAccount = () => {
+    getLocalSeedPhrase(
+      (hash) => {
+        const plainSeedPhrase = decryptKey(hash, passwordHash);
+        createAccount(plainSeedPhrase, 0);
+      },
+      () => {},
+    );
+  };
+
   const handleSelectNetwork = (id) => {
-    const newSelectedNetwork = networks.find((network) => network.id.toString() === id.toString());
+    closeModal();
+    const newSelectedNetwork = networks.find((network) => network.id.toString() === id);
     setSelectedNetwork(newSelectedNetwork);
     setCurrentWallet({
       chainId: 0,
@@ -163,101 +156,60 @@ const Header = () => {
     });
     setBalance(0);
     setLocalSelectedNetwork(newSelectedNetwork);
-    setContacts([]);
-    setRecent([]);
-    (refSelectNetwork as any).current.hideDropdownContent();
   };
 
-  const isLoggedIn = expiredTime;
-  const overlayDropdownOptionNetwork = (
-    <Div>
-      <TitleSetting display="flex">
-        <DivChildImage />
-        <DivChild>Networks</DivChild>
-      </TitleSetting>
-      {networks.length > 0 && (
-        <NetworkOption>
-          {networks.map((network: any) => {
-            const isSelected = selectedNetwork?.id?.toString() === network?.id?.toString();
-            return (
-              <DivFlex
-                key={network.id}
-                marginBottom="10px"
-                onClick={() => {
-                  if (!isSelected) {
-                    handleSelectNetwork(network?.id);
-                  }
-                }}
-              >
-                <DivChildImage>{isSelected && <Image src={images.checkbox} alt="check-box" />}</DivChildImage>
-                <DivChild
-                  fontSize="16px"
-                  color={isSelected ? '#ffffff' : '#c4c4c4'}
-                  Width="150px"
-                  OverFlow="hidden"
-                  TextOverflow="ellipsis"
-                  WhiteSpace="nowrap"
-                >
-                  {network?.name}
-                </DivChild>
-              </DivFlex>
-            );
-          })}
-        </NetworkOption>
-      )}
-    </Div>
-  );
-
   return (
-    <>
-      {showHeader && (
-        <DivHeader>
-          <WrapHeader>
-            <ImageWrapper
-              onClick={() => {
-                history.push('/');
-                setActiveTab(ACTIVE_TAB.HOME);
+    <HeaderWallet justifyContent="space-between">
+      <DropdownRadioModal
+        modalTitle="Select Network"
+        value={selectedNetwork && { value: selectedNetwork.id, label: selectedNetwork.name }}
+        options={networks.map((n) => ({ label: n.name, value: n.id }))}
+        onChange={(network) => handleSelectNetwork(network?.value)}
+        modalFooter={
+          <ActionList
+            actions={[
+              {
+                src: images.settings.iconGear,
+                label: 'Manage networks',
+                onClick: () => {
+                  closeModal();
+                  history.push('/networks');
+                },
+              },
+            ]}
+          />
+        }
+      />
+      {!hideAccounts && (
+        <DropdownModal
+          title={
+            <DivFlex>
+              <Jazzicon diameter={24} seed={jsNumberForAddress(stateWallet?.account)} />{' '}
+              <span style={{ color: '#787B8E', marginLeft: 5 }}>{shortenAddress(stateWallet?.account)}</span>{' '}
+            </DivFlex>
+          }
+          iconComponent={<img src={images.moreIcon} style={{ width: 14, marginTop: 10 }} />}
+          iconContainerStyle={{ padding: 0 }}
+          containerStyle={{ border: 'none' }}
+          modalTitle="My Wallets"
+          modalContent={
+            <AccountList
+              onSelectWallet={(w) => {
+                setSelectedLocalWallet(w);
+                setCurrentWallet(w);
+                setBalance(0);
               }}
-            >
-              <Logo alt="logo" src={images.xWalletLogo} />
-            </ImageWrapper>
-            <OptionHeader>
-              {passwordHash && isLoggedIn && showSettingAndSelectNetworks && (
-                <Dropdown
-                  ref={refSelectNetwork}
-                  placement="left"
-                  translate="-55%"
-                  trianglePosition="50px"
-                  overlayDropdown={overlayDropdownOptionNetwork}
-                >
-                  <NetWorkSelect>
-                    <NetWorkName Width="60px" OverFlow="hidden" TextOverflow="ellipsis" WhiteSpace="nowrap" fontSize="14px" color="#461A57">
-                      {selectedNetwork?.name}
-                    </NetWorkName>
-                    <DivImage paddingBottom="2px">
-                      <Image src={images.wallet.arrayDropdownPurple} />
-                    </DivImage>
-                  </NetWorkSelect>
-                </Dropdown>
-              )}
-              {/* {passwordHash && isLoggedIn && showSettingAndSelectNetworks && (
-            <DivChild marginLeft="15px">
-              <Dropdown
-                overlayDropdown={overlayDropdownSetting}
-                placement="left"
-                ref={childRef}
-              >
-                <ImgSetting src={images.setting} />
-              </Dropdown>
-            </DivChild>
-            )} */}
-            </OptionHeader>
-          </WrapHeader>
-          <Hr />
-        </DivHeader>
+            />
+          }
+          modalFooter={<AccountActions onCreateAccount={onCreateAccount} onImportAccount={goImportAccount} onRemoveWallet={onRemoveWallet} />}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            navigator.clipboard.writeText(stateWallet?.account);
+            toast.success(<Toast type="success" content="Copied!" />);
+          }}
+        />
       )}
-    </>
+    </HeaderWallet>
   );
 };
-
-export default Header;

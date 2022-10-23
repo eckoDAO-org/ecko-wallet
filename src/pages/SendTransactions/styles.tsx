@@ -3,7 +3,6 @@ import styled from 'styled-components';
 export const Body = styled.div`
   height: auto;
   width: 100%;
-  font-family: 'Play', sans-serif;
   font-size: 16px;
   line-height: 25px;
 `;
@@ -36,7 +35,6 @@ export const WarningText = styled.div`
 export const ButtonImport = styled.button`
   width: 100%;
   height: 44px;
-  font-family: 'Play', sans-serif;
   background: #461a57;
   border-radius: 10px;
   border: none;
@@ -77,7 +75,7 @@ export const ButtonScanner = styled.div`
 `;
 export const SelectLabel = styled.div`
   font-size: 15px;
-  color: #461a57;
+
   margin: 10px 20px;
 `;
 
@@ -100,13 +98,11 @@ export const ItemAvailable = styled.div`
 
 export const LabelMax = styled.div`
   font-weight: bold;
-  color: #461a57;
+
   cursor: pointer;
 `;
 
-export const Label = styled.div`
-  color: #461a57;
-`;
+export const Label = styled.div``;
 export const Item = styled.div`
   display: flex;
   align-items: center;
@@ -117,7 +113,6 @@ export const Error = styled.span`
 `;
 
 export const FormSend = styled.div`
-  color: #461a57;
   position: relative;
 `;
 
@@ -145,7 +140,6 @@ export const LabelInputLimit = styled.div`
   padding: 0 79px 0 0;
 `;
 export const LabelInputPayer = styled.div`
-  color: #461a57;
   width: 14%;
   text-align: initial;
   padding: 0 42px 0 0;
@@ -158,16 +152,21 @@ export const FormItem = styled.div`
 export const Warning = styled.div`
   margin-bottom: 24px;
   text-align: ${(props) => (props.isContact ? 'left' : 'center')};
-  background: #eee6f3;
-  padding: ${(props) => (props.isContact ? '10px' : '20px 15px')};
-  margin-top: ${(props) => (props.isContact ? '' : '50px')};
+  background: #fff7e6;
+  color: #ce8900;
+  padding: 10px;
   cursor: ${(props) => (props.isContact ? 'pointer' : 'default')};
-  color: #461a57;
-  font-size: 14px;
-  border: 1px solid #461a57;
-  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 10px;
   display: flex;
   align-items: center;
+  svg {
+    margin-right: 10px;
+    path {
+      fill: #ffa900;
+    }
+  }
 `;
 export const SelectWrapper = styled.div`
   display: ${(props) => (props.isHide ? 'none' : 'block')};
@@ -176,7 +175,6 @@ export const ButtonSend = styled.button`
   width: 100%;
   height: 44px;
   background: #461a57;
-  font-family: 'Play', sans-serif;
   border-radius: 10px;
   border: none;
   font-weight: 700;
@@ -187,15 +185,7 @@ export const ButtonSend = styled.button`
 `;
 
 export const Footer = styled.div`
-  display: flex;
-  justify-content: space-between;
   margin-top: 50px;
-  gap: 10px;
-`;
-
-export const ReceiverInput = styled.div`
-  position: relative;
-  margin: 0 20px 20px 20px;
 `;
 
 export const Content = styled.div``;
@@ -245,14 +235,6 @@ export const ListChainWrapper = styled.div`
   padding: 5px 20px;
 `;
 
-export const TransferWrapper = styled.div`
-  padding: 5px 20px;
-`;
-
-export const GasOptions = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
 export const GasOptionsWrapper = styled.div`
   margin-top: 20px;
 `;
@@ -260,15 +242,14 @@ export const ErrorWrapper = styled.div`
   margin-top: 10px;
 `;
 export const GasItem = styled.div`
-  width: 31%;
-  height: 30px;
+  height: 50px;
   border-radius: 10px;
-  border: 1px solid #461a57;
-  background: ${(props) => (props.isActive ? '#461A57' : 'white')};
-  color: ${(props) => (props.isActive ? 'white' : '#461A57')};
-  font-weight: bold;
-  font-size: 14px;
+  background: ${(props) => (props.isActive ? '#20264E' : '#ECECF5')};
+  color: ${(props) => (props.isActive ? 'white' : '#20264E')};
+  font-size: 16px;
+  font-weight: 500;
   display: flex;
+  flex: 1;
   align-items: center;
   justify-content: center;
   cursor: pointer;
@@ -325,11 +306,11 @@ export const TitleModal = styled.div`
   text-align: center;
   font-size: 20x;
   font-weight: 700;
-  color: #461a57;
+
   margin-bottom: 15px;
 `;
 export const DivChild = styled.div`
   margin-top: 20px;
-  color: #461a57;
+
   text-align: center;
 `;

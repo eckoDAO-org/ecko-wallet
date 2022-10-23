@@ -5,11 +5,11 @@ import { get } from 'lodash';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import Button from 'src/components/Buttons';
-import { BUTTON_SIZE } from 'src/utils/constant';
 import { renderTransactionInfo } from 'src/pages/SendTransactions/views/Transfer';
+import { DivFlex } from 'src/components';
 
 const DetailTx = styled.div`
-  padding: 15px 0 10px 0;
+  padding: 0 20px 20px 20px;
 `;
 const Item = styled.div`
   display: flex;
@@ -17,27 +17,23 @@ const Item = styled.div`
   margin-bottom: 15px;
 `;
 const DivChild = styled.div`
-  color: #461a57;
   font-size: ${(props) => props.fontSize};
   font-weight: ${(props) => props.fontWeight};
   margin: ${(props) => props.margin};
   padding: ${(props) => props.padding};
 `;
 const CustomDiv = styled(DivChild)`
-  color: #461a57;
   font-weight: bold;
 `;
 const Total = styled.div`
   display: flex;
   justify-content: space-between;
-  color: #461a57;
+  padding: 0px 20px 20px;
   font-weight: 700;
   margin-top: 20px;
-  margin-bottom: 50px;
 `;
 const Hr = styled.hr`
   height: 2px;
-  background: linear-gradient(90deg, #d2ab72 0%, #b66e84 35.42%, #b2579b 64.06%, #9ee9e4 99.48%);
   transform: matrix(1, 0, 0, -1, 0, 0);
   border: none;
 `;
@@ -48,12 +44,13 @@ const Image = styled.img<{ size: string; top: string; width: string }>`
 `;
 const ActivityLog = styled.div`
   margin-top: 20px;
+  padding: 24px;
 `;
 const ActivityDetail = styled.div`
   margin-left: 10px;
 `;
 const DetailItem = styled.div`
-  border-left: ${(props) => props.borderLeft && '1px solid #461A57'};
+  border-left: ${(props) => props.borderLeft && '1px solid #20264e'};
   position: relative;
 `;
 const TxStepText = styled(DivChild)``;
@@ -99,7 +96,7 @@ const PopupDetailTransaction = (props: Props) => {
   return (
     <ModalCustom isOpen={isOpen} onCloseModal={onCloseModal} closeOnOverlayClick={closeOnOverlayClick} title={title} showCloseIcon={showCloseIcon}>
       <DetailTx>
-        {renderTransactionInfo(activityDetails)}
+        {renderTransactionInfo(activityDetails, { borderTop: ' none', margin: '0px -20px 20px', paddingBottom: 10 })}
         <Item>
           <DivChild fontWeight="700">Status</DivChild>
           <CustomDiv fontSize="14px" fontWeight="700">
@@ -126,9 +123,9 @@ const PopupDetailTransaction = (props: Props) => {
           <DivChild>{isPending ? 'Pending' : `${new BigNumber(total).decimalPlaces(12).toString()} KDA`}</DivChild>
         </Total>
       )}
-      <Item>
-        <Button size={BUTTON_SIZE.FULL} onClick={openTransactionDetails} label="View Details" />
-      </Item>
+      <DivFlex justifyContent="center" padding="24px">
+        <Button size="full" onClick={openTransactionDetails} label="View Details" />
+      </DivFlex>
       <ActivityLog>
         <DivChild margin="0 0 10px 0" fontSize="16px" fontWeight={700}>
           Activity Log

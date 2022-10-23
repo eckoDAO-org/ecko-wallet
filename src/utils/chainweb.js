@@ -1,7 +1,8 @@
 /* eslint-disable no-await-in-loop */
 import Pact from 'pact-lang-api';
 import lib from 'cardano-crypto.js/kadena-crypto';
-import { CONFIG } from './config';
+import { CHAIN_AVAILABLE_TOKENS_FIXTURE } from './constant';
+import { CONFIG, KADDEX_ANALYTICS_API } from './config';
 import { getTimestamp } from './index';
 
 export const getApiUrl = (url, networkId, chainId) => `${url}/chainweb/0.0/${networkId}/chain/${chainId}/pact`;
@@ -87,4 +88,35 @@ export const pollRequestKey = async (reqKey, network) => {
     await new Promise((rs) => setTimeout(rs, 5000));
   } while (attempts > 0);
   return { success: false };
+};
+
+export const fetchTokenList = () =>
+  // const code = `(let
+  //   ((all-tokens
+  //      (lambda (contract:object)
+  //        (let*
+  //          ((module-name (at 'name contract))
+  //           (interfaces (if (contains 'interfaces contract) (at 'interfaces contract) (if (contains 'interface contract) (at 'interface contract) [])))
+  //           (is-implementing-fungible-v2 (contains "fungible-v2" interfaces))
+  //          )
+  //        (if is-implementing-fungible-v2 module-name "")
+  //        )
+  //      )
+  //    )
+  //   )
+  //   (filter (!= "") (map (all-tokens) (map (describe-module) (list-modules))))
+  // )`;
+  // return fetchListLocal(code, url, networkId, chainId, CONFIG.GAS_PRICE, 150000);
+  CHAIN_AVAILABLE_TOKENS_FIXTURE;
+
+export const getTokenList = (url, networkId, chainId) => {
+  // fetch(`${KADDEX_ANALYTICS_API}/chain-tokens`)
+  //   .then((results) => Promise.all(results.map((r) => r.json())))
+  //   .then((tokensData) => {
+  const allChainTokens = CHAIN_AVAILABLE_TOKENS_FIXTURE;
+  let uniqueAllChainTokens = [];
+  allChainTokens.forEach((tokens) => {
+    uniqueAllChainTokens = [...new Set([...tokens, ...uniqueAllChainTokens])];
+  });
+  return chainId ? allChainTokens[Number(chainId)] : uniqueAllChainTokens;
 };

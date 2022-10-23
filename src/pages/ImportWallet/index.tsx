@@ -55,7 +55,6 @@ const Footer = styled.div`
 const ButtonImport = styled.button`
   width: 100%;
   height: 44px;
-  font-family: 'Play', sans-serif;
   background: #461a57;
   border-radius: 10px;
   border: none;
@@ -74,14 +73,14 @@ const Body = styled.div`
 `;
 const DivChild = styled.div`
   margin-top: 20px;
-  color: #461a57;
+
   text-align: center;
 `;
 const TitleModal = styled.div`
   text-align: center;
   font-size: 20px;
   font-weight: 700;
-  color: #461a57;
+
   margin-bottom: 15px;
 `;
 const ImportAccount = () => {

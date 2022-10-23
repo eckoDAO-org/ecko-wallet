@@ -5,7 +5,6 @@ export const BodyNetworks = styled.div`
 `;
 
 export const DivNetworks = styled.div`
-  color: #461A57;
   padding: 18px 0;
 `;
 
@@ -44,7 +43,7 @@ export const LableNetworks = styled.p`
   font-weight: normal;
   font-size: 16px;
   line-height: 25px;
-  color: #461A57;
+
   width: 25%;
 `;
 
@@ -69,7 +68,6 @@ export const ImgDeleteAdd = styled.img`
 `;
 
 export const FormNetworks = styled.form`
-  color: #461A57;
   position: relative;
   padding: 40px 0;
 `;
@@ -88,13 +86,13 @@ export const RemoveNetworksContent = styled.div`
 `;
 export const RemoveNetworksText = styled.p`
   font-size: 25px;
-  color: #461A57;
+
   margin-bottom: 20px;
 `;
 
 export const RemoveNetworksDes = styled.p`
   font-size: 16px;
-  color: #461A57;
+
   margin-bottom: 100px;
 `;
 

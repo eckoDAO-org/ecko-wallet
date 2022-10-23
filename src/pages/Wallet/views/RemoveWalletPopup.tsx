@@ -4,7 +4,6 @@ import { BaseTextInput, InputError } from 'src/baseComponent';
 import Button from 'src/components/Buttons';
 import styled from 'styled-components';
 import bcrypt from 'bcryptjs';
-import { BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
 import { setCurrentWallet, setWallets } from 'src/stores/wallet';
 import { setLocalActivities, setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
 import { encryptKey } from 'src/utils/security';
@@ -12,6 +11,7 @@ import { useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { CrossChainContext } from 'src/contexts/CrossChainContext';
+import { DivFlex } from 'src/components';
 
 const DivChild = styled.div`
   font-size: ${(props) => props.fontSize};
@@ -22,19 +22,14 @@ const DivChild = styled.div`
   margin-bottom: ${(props) => props.marginBottom};
   font-weight: ${(props) => props.fontWeight};
 `;
-const DivFlex = styled.div`
-  display: flex;
-  justify-content: ${(props) => props.justifyContent};
-  margin-bottom: ${(props) => props.marginBottom};
-  cursor: ${(props) => props.cursor};
-`;
 
 const RemoveWalletContent = styled.div`
-  padding: 40px 0 20px 0;
+  padding: 20px;
 `;
 const RemoveWalletText = styled(DivChild)`
   text-align: center;
 `;
+
 const DesRemoveWallet = styled.div`
   text-align: center;
   font-size: 16px;
@@ -42,10 +37,12 @@ const DesRemoveWallet = styled.div`
     font-size: 16px;
   }
 `;
+
 const ActionButton = styled(DivFlex)`
   justify-content: space-between;
   gap: 5px;
 `;
+
 const DivBody = styled.div`
   width: 100%;
   text-align: left;
@@ -54,23 +51,12 @@ const DivBody = styled.div`
   align-items: center;
   margin: 30px 0 40px 0;
 `;
-const RemoveButton = styled.button`
-  width: 100%;
-  height: 44px;
-  border-radius: 10px;
-  font-size: 16px;
-  font-family: 'Play', sans-serif;
-  background: ${(props) => (props.disabled ? 'white' : '#461A57')};
-  color: ${(props) => (props.disabled ? '#461A57' : '#ffffff')};
-  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
-  border: 1px solid #461a57;
-  border: none;
-  font-weight: 700;
-`;
+
 const DivError = styled.div`
   margin-top: 10px;
   min-height: 50px;
 `;
+
 const RemoveWalletPopup = (props: Props) => {
   const { onClose } = props;
   const history = useHistory();
@@ -147,9 +133,9 @@ const RemoveWalletPopup = (props: Props) => {
   return (
     <RemoveWalletContent>
       <RemoveWalletText fontSize="24px" fontWeight="700" marginBottom="20px">
-        Remove Wallet?
+        Are you sure to remove this wallet?
       </RemoveWalletText>
-      <DesRemoveWallet>Input password to remove this wallet</DesRemoveWallet>
+      <DesRemoveWallet>Input password to confirm</DesRemoveWallet>
       <form onSubmit={handleSubmit(confirm, onError)} id="validate-password-form">
         <DivBody>
           <BaseTextInput
@@ -182,10 +168,8 @@ const RemoveWalletPopup = (props: Props) => {
       </form>
       <DivChild>
         <ActionButton>
-          <Button label="Cancel" onClick={onClose} type={BUTTON_TYPE.DISABLE} size={BUTTON_SIZE.FULL} />
-          <RemoveButton form="validate-password-form" disabled={!passwordInput}>
-            Remove
-          </RemoveButton>
+          <Button onClick={onClose} label="Cancel" size="full" variant="secondary" />
+          <Button form="validate-password-form" disabled={!passwordInput} label="Remove" size="full" />
         </ActionButton>
       </DivChild>
     </RemoveWalletContent>

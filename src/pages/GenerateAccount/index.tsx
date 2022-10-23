@@ -52,7 +52,7 @@ const Warning = styled.div`
   text-align: left;
   background: #eee6f3;
   padding: 20px 15px;
-  color: #461a57;
+
   margin-bottom: 25px;
   font-size: 16px;
 `;
@@ -61,7 +61,6 @@ const ButtonDiv = styled.button`
   height: 44px;
   background: #461a57;
   border-radius: 10px;
-  font-family: 'Play', sans-serif;
   font-weight: 700;
   border: none;
   color: #ffffff;

@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import images from 'src/images';
 import { useHistory } from 'react-router-dom';
+import { Header } from 'src/components/Header';
 
 const CreateInitPageWrapper = styled.div`
   padding: 0 20px;
@@ -15,7 +16,6 @@ const CreateInitPageWrapper = styled.div`
   }
 `;
 const Body = styled.div`
-  font-family: 'Play', sans-serif;
   font-size: 16px;
 `;
 const TextContent = styled.div`
@@ -24,7 +24,6 @@ const TextContent = styled.div`
   margin-bottom: 5px;
 `;
 const TextFooter = styled.div`
-  color: #461a57;
   text-align: center;
   font-weight: 700;
 `;
@@ -43,16 +42,19 @@ const InitPage = () => {
     history.push('/import-wallet');
   };
   return (
-    <CreateInitPageWrapper>
-      <Body>
-        <TextContent>I have an existing private key.</TextContent>
-        <TextContent>Import your existing private key</TextContent>
-        <DivChild>
-          <Image src={images.initPage.importPrivateKey} alt="icon-import" onClick={goToImport} />
-        </DivChild>
-        <TextFooter>Import</TextFooter>
-      </Body>
-    </CreateInitPageWrapper>
+    <>
+      <Header hideAccounts />
+      <CreateInitPageWrapper>
+        <Body>
+          <TextContent>I have an existing private key.</TextContent>
+          <TextContent>Import your existing private key</TextContent>
+          <DivChild>
+            <Image src={images.initPage.importPrivateKey} alt="icon-import" onClick={goToImport} />
+          </DivChild>
+          <TextFooter>Import</TextFooter>
+        </Body>
+      </CreateInitPageWrapper>
+    </>
   );
 };
 

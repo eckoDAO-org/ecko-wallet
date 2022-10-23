@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import BaseButton from './BaseButton';
 import BaseTextInput from './BaseTextInput';
 import BaseSelect from './BaseSelect';
+import BaseModalSelect from './BaseModalSelect';
 
 const InputError = styled.div`
   color: red;
@@ -13,4 +14,4 @@ const InputError = styled.div`
   }
 `;
 
-export { BaseButton, BaseTextInput, BaseSelect, InputError };
+export { BaseButton, BaseTextInput, BaseSelect, BaseModalSelect, InputError };

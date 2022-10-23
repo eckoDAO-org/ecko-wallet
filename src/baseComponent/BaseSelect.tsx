@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import Select from 'react-select';
 import { memo } from 'react';
+import { SLabel } from './BaseTextInput';
 
 interface Props {
   title: any;
@@ -14,7 +15,6 @@ interface Props {
 const customStyles = {
   control: (provided) => ({
     ...provided,
-    background: 'linear-gradient(90deg, #E6FEFE 0%, #FDF6E6 100%)',
     borderColor: '#c4c4c4',
     borderRadius: '4px',
     minHeight: '44px',
@@ -22,8 +22,7 @@ const customStyles = {
   }),
   option: (provided) => ({
     ...provided,
-    background: 'linear-gradient(90deg, #E6FEFE 0%, #FDF6E6 100%)',
-    color: '#461A57',
+    color: '#20264E',
     '&:hover': {
       background: '#999999',
     },
@@ -31,7 +30,7 @@ const customStyles = {
   valueContainer: (provided) => ({
     ...provided,
     height: '44px',
-    color: '#461A57',
+    color: '#20264E',
   }),
 
   input: (provided) => ({
@@ -60,7 +59,7 @@ const customStyles = {
 const BaseSelect = memo(
   ({ title, options = [], defaultValue, selectProps = {}, height = '44px', isFlex, placeholder = 'Select Chain ID' }: Props) => (
     <SDivRoot height={height} isFlex={isFlex}>
-      <SText isFlex={isFlex}>{title}</SText>
+      <SLabel uppercase>{title}</SLabel>
       <Select options={options} {...selectProps} defaultValue={defaultValue} placeholder={placeholder} styles={customStyles} isSearchable={false} />
     </SDivRoot>
   ),
@@ -77,13 +76,11 @@ const SDivRoot = styled.div`
   }
   .css-8mmkcg {
     margin-right: 8px;
-    color: #461a57;
   }
   .css-qc6sy-singleValue {
-    color: #461a57;
   }
   .css-417lad-placeholder {
-    color: #a187ab;
+    color: #20264e;
     grid-area: 1 / 1 / 2 / 3;
     margin-left: 2px;
     margin-right: 2px;
@@ -91,7 +88,7 @@ const SDivRoot = styled.div`
   }
 `;
 
-const SText = styled.title`
+export const SText = styled.title`
   display: block;
   width: ${(props) => (props.isFlex ? '31%' : '100%')};
   font-size: 16px;

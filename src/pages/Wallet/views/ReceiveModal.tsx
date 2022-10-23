@@ -1,69 +1,77 @@
 import { useSelector } from 'react-redux';
-import ModalCustom from 'src/components/Modal/ModalCustom';
 import styled from 'styled-components';
 import images from 'src/images';
-import { BaseTextInput } from 'src/baseComponent';
 import QRCode from 'qrcode.react';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
-import BaseInfoDisable from 'src/components/BaseInfoDisable/BaseInfoDisable';
+import { DivFlex, SecondaryLabel } from 'src/components';
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 
-const ReceiceContent = styled.div`
-  padding: 20px 0;
+const Label = styled.span`
+  font-weight: 500;
+  font-size: 14px;
+  color: #000000;
+  word-break: break-word;
 `;
-const Item = styled.div`
-  margin-bottom: 30px;
+
+export const Icon = styled.img`
+  cursor: pointer;
 `;
-const Text = styled.div`
-  text-align: center;
-  color: #461a57;
-  margin-bottom: 20px;
-  font-weight: 700;
-  font-size: 16px;
+
+export const ReceiveTitle = styled(SecondaryLabel)`
+  font-size: 10px;
 `;
-const DivChild = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
+export const ReceiveSection = styled.div`
+  border-top: 1px solid #dfdfed;
+  padding: 24px;
 `;
-const ReceiveModal = (props: Props) => {
-  const { isOpen, onCloseModal, closeOnOverlayClick, showCloseIcon, title } = props;
-  const { chainId, account } = useSelector((state) => state?.wallet);
+
+const ReceiveModal = () => {
+  const { chainId, account, publicKey } = useSelector((state) => state?.wallet);
+
+  const onCopy = (str: string) => {
+    navigator.clipboard.writeText(str);
+    toast.success(<Toast type="success" content="Copied!" />);
+  };
 
   return (
-    <ModalCustom isOpen={isOpen} title={title} onCloseModal={onCloseModal} closeOnOverlayClick={closeOnOverlayClick} showCloseIcon={showCloseIcon}>
-      <ReceiceContent>
-        <Item>
-          <BaseTextInput inputProps={{ readOnly: true, value: chainId }} title="Chain ID" height="auto" />
-        </Item>
-        <Item>
-          <BaseInfoDisable
-            title="Your Account Name"
-            label={account}
-            image={{
-              width: '12px',
-              height: '12px',
-              src: images.wallet.copyGray,
-              callback: () => {
-                navigator.clipboard.writeText(account);
-                toast.success(<Toast type="success" content="Copied!" />);
-              },
-            }}
-          />
-        </Item>
-        <Text>QR Code</Text>
-        <DivChild>
-          <QRCode id="receive" value={account} size={200} level="H" />
-        </DivChild>
-      </ReceiceContent>
-    </ModalCustom>
+    <>
+      <DivFlex alignItems="center" justifyContent="center" style={{ paddingBottom: 30 }}>
+        <QRCode id="receive" value={account} size={200} level="H" />
+      </DivFlex>
+      <ReceiveSection>
+        <DivFlex justifyContent="space-between" alignItems="center" style={{ marginBottom: 20 }}>
+          <ReceiveTitle fontSize={10}>YOUR ACCOUNT NAME</ReceiveTitle>
+          <Icon src={images.wallet.copyGray} onClick={() => onCopy(account)} />
+        </DivFlex>
+        <DivFlex justifyContent="flex-start" alignItems="flex-start">
+          <Jazzicon diameter={24} seed={jsNumberForAddress(account)} paperStyles={{ marginRight: 5, minWidth: 24 }} />
+          <Label>{account}</Label>
+        </DivFlex>
+      </ReceiveSection>
+      <ReceiveSection>
+        <DivFlex justifyContent="space-between" alignItems="center" style={{ marginBottom: 20 }}>
+          <ReceiveTitle uppercase fontSize={10}>
+            your public key
+          </ReceiveTitle>
+          <Icon src={images.wallet.copyGray} onClick={() => onCopy(publicKey)} />
+        </DivFlex>
+        <DivFlex justifyContent="flex-start" alignItems="flex-start">
+          <Label>{publicKey}</Label>
+        </DivFlex>
+      </ReceiveSection>
+      <ReceiveSection>
+        <DivFlex style={{ marginBottom: 20 }}>
+          <ReceiveTitle fontSize={10} uppercase>
+            chain id
+          </ReceiveTitle>
+        </DivFlex>
+        <DivFlex justifyContent="flex-start" alignItems="flex-start">
+          <Label>{chainId}</Label>
+        </DivFlex>
+      </ReceiveSection>
+    </>
   );
 };
-type Props = {
-  isOpen: boolean;
-  onCloseModal?: any;
-  closeOnOverlayClick?: boolean;
-  title?: string;
-  showCloseIcon?: boolean;
-};
+
 export default ReceiveModal;
