@@ -37,3 +37,5 @@ export const GAS_CONFIGS = {
     GAS_LIMIT,
   },
 };
+export const XWALLET_SEND_TX_NONCE = 'XWALLET-SEND';
+export const XWALLET_DAPP_SIGN_NONCE = 'XWALLET-DAPP-SIGN';
