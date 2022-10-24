@@ -1,7 +1,6 @@
 import { useHistory } from 'react-router-dom';
 import images from 'src/images';
 import styled from 'styled-components';
-import Back from 'src/components/Back';
 import Button from 'src/components/Buttons';
 import { ReactComponent as AlertIconSVG } from 'src/images/icon-alert.svg';
 import { useEffect, useState } from 'react';
@@ -25,10 +24,14 @@ const Footer = styled.div`
   justify-content: space-between;
 `;
 const Wrapper = styled.div`
-  padding: 0 20px;
+  padding: 0 24px;
   text-align: center;
   font-size: 16px;
   word-break: break-word;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
 `;
 
 const SPBlackDrop = styled.div`
@@ -280,7 +283,7 @@ const SeedPhrase = () => {
           <Text isLast>Warning: Never disclose your Secret Recovery Phrase. Anyone with this phrase can take your wallet forever.</Text>
         </div>
       </Warning>
-      <DivFlex gap="10px">
+      <DivFlex gap="10px" padding="24px 0">
         <Button size="full" variant="primary" onClick={onDownload} label="Download" />
         <Button size="full" onClick={onNext} isDisabled={isHiddenSP} label="Continue" />
       </DivFlex>
