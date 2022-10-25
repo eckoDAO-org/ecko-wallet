@@ -8,7 +8,6 @@ import HomePage from './pages/Home';
 import Condition from './pages/Condition';
 import SignIn from './pages/SignIn';
 import InitPage from './pages/InitPage';
-import GenerateAccount from './pages/GenerateAccount';
 import ImportAccount from './pages/ImportWallet';
 import Wallet from './pages/Wallet';
 import importToken from './pages/ImportToken';
@@ -29,7 +28,6 @@ import SeedPhrase from './pages/SeedPhrase';
 import InitSeedPhrase from './pages/InitSeedPhrase';
 import ExportSeedPhrase from './pages/Setting/ExportSeedPhrase';
 import History from './pages/Wallet/views/History';
-import TokenMenu from './pages/TokenMenu';
 import PageTransaction from './pages/Setting/Transaction';
 
 const Container = styled.div`
@@ -56,7 +54,6 @@ const AppContainer = () => {
         <PrivateRoute isSeedPhrase isSignIn path="/seed-phrase" component={SeedPhrase} />
         <PrivateRoute path="/export-seed-phrase" component={ExportSeedPhrase} />
         <PrivateRoute isSignIn path="/sign-in" component={SignIn} />
-        <PrivateRoute path="/generate-account" component={GenerateAccount} />
         <PrivateRoute path="/import-wallet" component={ImportAccount} />
         <PrivateRoute path="/import-token" component={importToken} />
         <PrivateRoute path="/transfer" component={SendTransactions} />
@@ -71,7 +68,6 @@ const AppContainer = () => {
         <PrivateRoute path="/tx-settings" component={PageTransaction} />
         <PrivateRoute path="/about" component={PageAbout} />
         <PrivateRoute path="/setting" component={PageSetting} />
-        <PrivateRoute path="/token-menu" component={TokenMenu} />
         <PrivateRoute path="/history" component={History} />
         <PrivateRoute isHome path="/" component={Wallet} />
         <Redirect to="/" />

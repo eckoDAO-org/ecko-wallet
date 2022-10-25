@@ -10,18 +10,6 @@ export const DeleteImage = styled.img`
   height: 20px;
   cursor: pointer;
 `;
-export const TitleLock = styled.div`
-  font-weight: 700;
-  font-size: 16px;
-  color: ${(props) => (props.isDefault ? '#461A57' : '#461A57')};
-  margin: 0;
-  @media screen and (max-width: 480px) {
-    width: 200px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-`;
 export const BodyModal = styled.div`
   padding: 30px 0;
 `;

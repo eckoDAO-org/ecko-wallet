@@ -77,7 +77,7 @@ const Wallet = () => {
   };
 
   const getTokenChainDistribution = (contractAddress: string): ChainDistribution[] =>
-    selectedAccountBalance?.map((b: any, i) => ({ chainId: i, balance: b[contractAddress] || 0 })) ?? [];
+    selectedAccountBalance?.map((b: any, i) => ({ chainId: i, balance: (b && b[contractAddress]) || 0 })) ?? [];
 
   const getAllChainUsdBalance = () => {
     let totalUSDBalance = 0;
@@ -144,7 +144,7 @@ const Wallet = () => {
   return (
     <div>
       <Header />
-      <DivFlex justifyContent="space-between" padding="20px">
+      <DivFlex justifyContent="space-between" padding="15px 20px">
         <SecondaryLabel>NET WORTH</SecondaryLabel>
         <SecondaryLabel color="black">
           {isLoadingBalances ? <Spinner size={10} color="black" weight={2} /> : `$ ${roundNumber(getAllChainUsdBalance(), 2)}`}

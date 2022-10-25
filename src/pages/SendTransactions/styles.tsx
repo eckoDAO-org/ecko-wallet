@@ -32,19 +32,6 @@ export const WarningText = styled.div`
   font-weight: 700;
 `;
 
-export const ButtonImport = styled.button`
-  width: 100%;
-  height: 44px;
-  background: #461a57;
-  border-radius: 10px;
-  border: none;
-  font-weight: 700;
-  color: #ffffff;
-  font-size: 16px;
-  margin: auto;
-  cursor: pointer;
-`;
-
 export const Title = styled.div`
   font-weight: 700;
   font-size: ${(props) => (props.isSendTitle ? '24px' : '16px')};
@@ -171,36 +158,11 @@ export const Warning = styled.div`
 export const SelectWrapper = styled.div`
   display: ${(props) => (props.isHide ? 'none' : 'block')};
 `;
-export const ButtonSend = styled.button`
-  width: 100%;
-  height: 44px;
-  background: #461a57;
-  border-radius: 10px;
-  border: none;
-  font-weight: 700;
-  color: #ffffff;
-  font-size: 16px;
-  margin: auto;
-  cursor: pointer;
-`;
 
 export const Footer = styled.div`
   margin-top: 50px;
 `;
 
-export const Content = styled.div``;
-export const ChainLeft = styled.div`
-  width: 60px;
-  text-align: center;
-`;
-export const ChainRight = styled.div`
-  margin-left: auto;
-  ${(props) => (props.isValid ? 'color: #461A57' : 'color: #c4c4c4')};
-  ${(props) => (props.isValid ? 'cursor: pointer' : '')};
-`;
-export const TitleChain = styled.div`
-  margin-left: auto;
-`;
 export const ContactWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -283,20 +245,6 @@ export const Select = styled.select`
   top: 287px;
   border: 1px solid #0000002e;
   box-sizing: border-box;
-`;
-export const SelectGasPrice = styled.select`
-  position: absolute;
-  width: 80px;
-  height: 30px;
-  right: 45px;
-  top: 17px;
-  background: #461a57;
-  border-radius: 15px;
-  border: none;
-  top: 53.4%;
-  :focus-visible {
-    outline: none;
-  }
 `;
 export const BodyModal = styled.div`
   height: auto;

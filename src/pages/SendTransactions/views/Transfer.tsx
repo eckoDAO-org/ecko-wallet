@@ -23,7 +23,7 @@ import { BigNumberConverter, humanReadableNumber, shortenAddress } from 'src/uti
 import { IFungibleToken } from 'src/pages/ImportToken';
 import Button from 'src/components/Buttons';
 import AddContact from './AddContact';
-import { ButtonSend, Warning, Footer, Error, GasItem, ErrorWrapper } from '../styles';
+import { Warning, Footer, Error, GasItem, ErrorWrapper } from '../styles';
 import { TransferButton, TransferImage, AmountWrapper, AccountTransferDetail } from './style';
 
 type Props = {
@@ -566,7 +566,7 @@ const Transfer = (props: Props) => {
                 <Button variant="disabled" label="Reject" onClick={() => window.close()} />
               </TransferButton>
               <TransferButton>
-                <ButtonSend form="send-transaction">Next</ButtonSend>
+                <Button label="Next" form="send-transaction" />
               </TransferButton>
             </>
           ) : (

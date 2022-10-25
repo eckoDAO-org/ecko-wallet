@@ -31,18 +31,6 @@ export const ImgScaner = styled.img`
   cursor: pointer;
 `;
 
-export const ButtonImport = styled.button`
-  width: 40%;
-  height: 44px;
-  background: #461a57;
-  border-radius: 10px;
-  border: none;
-  color: #ffffff;
-  font-size: 16px;
-  cursor: pointer;
-  margin: 0 auto;
-`;
-
 export const DesContact = styled.div`
   word-break: break-all;
   text-align: right;
@@ -62,30 +50,6 @@ export const DesContactName = styled.div`
 
 export const LabelConatact = styled.div`
   min-width: fit-content;
-`;
-
-export const DescriptonAccountName = styled.div`
-  font-weight: normal;
-  font-size: 16px;
-  line-height: 25px;
-  padding: 10px 0 0 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  width: 250px;
-`;
-
-export const ButtonEdit = styled.button`
-  width: 40%;
-  height: 44px;
-  background: #461a57;
-  border-radius: 10px;
-  border: none;
-  font-weight: 700;
-  color: #ffffff;
-  font-size: 16px;
-  margin: 0 auto;
-  cursor: pointer;
 `;
 
 export const ButtonEditContact = styled.button`
@@ -114,11 +78,6 @@ export const ButtonCancel = styled.button`
 
 export const ConditionWrapper = styled.div`
   position: relative;
-`;
-
-export const BodyInforConact = styled.div`
-  display: block;
-  color: #461a57;
 `;
 
 export const BodyInfor = styled.div`

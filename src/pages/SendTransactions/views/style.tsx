@@ -129,19 +129,6 @@ export const BodyConfirm = styled.div`
 
 export const LabelConfirm = styled.div``;
 
-export const ButtonAdd = styled.button`
-  width: 100%;
-  height: 44px;
-  border-radius: 10px;
-  border: 1px solid #461a57;
-  background: ${(props) => (props.disabled ? 'white' : '#461A57')};
-  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
-  font-weight: 700;
-  color: ${(props) => (props.disabled ? '#461A57' : '#ffffff')};
-  font-size: 16px;
-  margin: auto;
-`;
-
 export const LabelBold = styled.div`
   font-weight: bold;
 
@@ -176,16 +163,6 @@ export const ButtonDiv = styled.button`
   margin: 0 20px 0 0;
 `;
 
-export const ButtonConfirm = styled.button`
-  width: 152px;
-  height: 44px;
-  border-radius: 20px;
-  background: #461a57;
-  border: none;
-  color: #ffffff;
-  left: 10%;
-  font-size: 16px;
-`;
 export const EstimateGas = styled.div`
   margin-bottom: 30px;
   margin-top: 20px;
@@ -209,13 +186,6 @@ export const SendTransaction = styled.div`
   font-size: 16px;
   margin: 10px 0 28px 0;
   position: relative;
-`;
-export const TransferItem = styled.div`
-  border: 1px solid #461a57;
-  box-sizing: border-box;
-  border-radius: 8px;
-  padding: 12px;
-  ${(props) => (props.isTop ? 'margin-bottom: 12px' : '')}
 `;
 export const TransactionImage = styled.img`
   height: 14px;
