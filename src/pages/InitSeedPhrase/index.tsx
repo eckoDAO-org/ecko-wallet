@@ -10,7 +10,7 @@ import styled from 'styled-components';
 export const WelcomeBackground = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-evenly;
   height: 100%;
   color: white;
   background-image: url('/image/background-welcome.svg');
@@ -22,12 +22,13 @@ export const WelcomeBackground = styled.div`
 const Image = styled.img`
   width: 140px;
   height: 140px;
-  margin-bottom: 30px;
+  margin-top: 78px;
 `;
 const Div = styled.div`
   display: flex;
   justify-content: center;
-  margin-top: 90px;
+  align-items: center;
+  flex: 1;
 `;
 const DivBody = styled.div`
   width: 100%;
@@ -35,20 +36,18 @@ const DivBody = styled.div`
   line-height: 25px;
   display: flex;
   align-items: center;
-  margin: 60px 10px 0;
   padding: 20px;
+  flex: 0.2;
 `;
-const SLabel = styled.div`
-  font-size: 16px;
-`;
-const Term = styled.span`
+const Term = styled.a`
   font-weight: bold;
-  padding-left: 5px;
-  a {
-    text-decoration: none;
+  text-decoration: none;
     color: #ffffff;
-    :hover {
-    }
+  }
+`;
+const TermsBr = styled.br`
+  @media (min-width: 410px) {
+    display: none;
   }
 `;
 const StartButton = styled(DivFlex)`
@@ -56,7 +55,7 @@ const StartButton = styled(DivFlex)`
   justify-content: center;
   align-items: flex-start;
   border-radius: 25px;
-  padding: 32px 0px;
+  padding: 25px 0px;
   gap: 13px;
   img {
     width: 22px;
@@ -64,15 +63,13 @@ const StartButton = styled(DivFlex)`
 `;
 
 const getCheckboxLabel = () => (
-  <SLabel>
-    <span>I have read and agree to the</span>
-    <br />
-    <Term>
-      <a href={TERM_LINK} target="_blank" rel="noreferrer">
-        Terms of Use
-      </a>
+  <>
+    I have read and agree to the&nbsp;
+    <TermsBr />
+    <Term href={TERM_LINK} target="_blank" rel="noreferrer">
+      Terms of Use
     </Term>
-  </SLabel>
+  </>
 );
 
 const InitSeedPhrase = () => {
@@ -92,7 +89,7 @@ const InitSeedPhrase = () => {
       <DivBody>
         <Radio isChecked={isChecked} label={getCheckboxLabel()} onClick={() => setIsChecked((prev) => !prev)} />
       </DivBody>
-      <div style={{ padding: 30, opacity: isChecked ? 1 : 0.2 }}>
+      <div style={{ padding: 24, opacity: isChecked ? 1 : 0.2, flex: 1 }}>
         <StartButton onClick={() => goToCreatePassword(false)} style={{ cursor: isChecked ? 'pointer' : 'default' }}>
           <img src={images.wallet.startUser} />
           <DivFlex flexDirection="column">

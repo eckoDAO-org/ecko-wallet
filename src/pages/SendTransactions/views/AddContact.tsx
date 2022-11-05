@@ -4,12 +4,12 @@ import Button from 'src/components/Buttons';
 import { setContacts } from 'src/stores/extensions';
 import { convertContacts } from 'src/utils';
 import { toast } from 'react-toastify';
+import { DivFlex } from 'src/components';
 import Toast from 'src/components/Toast/Toast';
 import { getLocalContacts, setLocalContacts } from 'src/utils/storage';
 import { useState } from 'react';
 import images from 'src/images';
-import { Footer } from '../styles';
-import { PageConfirm, BodyContent, ButtonAdd, ButtonWrapper, ItemWrapper } from './style';
+import { PageConfirm, ItemWrapper } from './style';
 
 type Props = {
   onClose: any;
@@ -65,7 +65,7 @@ const AddContact = (props: Props) => {
   };
   return (
     <PageConfirm>
-      <BodyContent>
+      <div style={{ padding: 24 }}>
         <form onSubmit={handleSubmit(addContact)} id="contact-form">
           <ItemWrapper>
             <BaseTextInput
@@ -113,17 +113,11 @@ const AddContact = (props: Props) => {
             <BaseTextInput inputProps={{ readOnly: true, value: contact.chainId }} title="Chain ID" height="auto" />
           </ItemWrapper>
         </form>
-      </BodyContent>
-      <Footer>
-        <ButtonWrapper>
-          <Button label="Cancel" variant="disabled" onClick={() => onClose(false)} />
-        </ButtonWrapper>
-        <ButtonWrapper>
-          <ButtonAdd disabled={!isValue} form="contact-form">
-            Save
-          </ButtonAdd>
-        </ButtonWrapper>
-      </Footer>
+      </div>
+      <DivFlex justifyContent="space-between" padding="24px">
+        <Button size="full" label="Cancel" variant="disabled" onClick={() => onClose(false)} />
+        <Button size="full" label="Save" variant="primary" disabled={!isValue} form="contact-form" />
+      </DivFlex>
     </PageConfirm>
   );
 };

@@ -13,10 +13,6 @@ export const TitleVersion = styled.div`
   padding: 20px 0;
 `;
 
-export const AboutBody = styled.div`
-  color: #461a57;
-`;
-
 export const TitleHeaderAbout = styled.div`
   font-weight: 700;
   font-size: 24px;

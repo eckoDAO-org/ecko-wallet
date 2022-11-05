@@ -6,8 +6,6 @@ import { getLocalSelectedNetwork, getLocalSignedCmd } from 'src/utils/storage';
 import Button from 'src/components/Buttons';
 import { DivFlex, SecondaryLabel } from 'src/components';
 import { updateSignedCmdMessage } from 'src/utils/message';
-import { Footer } from '../SendTransactions/styles';
-import { ButtonWrapper } from '../SendTransactions/views/style';
 
 const Wrapper = styled.div`
   display: flex;
@@ -34,19 +32,6 @@ const Wrapper = styled.div`
     background-color: rgb(54, 54, 54);
     border-radius: 2px;
   }
-`;
-
-const DappTitle = styled.div`
-  text-align: center;
-  font-weight: 700;
-  font-size: 18px;
-`;
-
-const FooterWrapper = styled(Footer)`
-  padding: 0 20px;
-  position: fixed;
-  bottom: 10px;
-  width: 90%;
 `;
 const ContentWrapper = styled.div`
   padding: 20px;
@@ -110,7 +95,9 @@ const SignedCmd = () => {
     <Wrapper>
       <Logo src={images.xWalletIcon} alt="logo" />
       <DappDescription>{domain}</DappDescription>
-      <SecondaryLabel uppercase>Get signed command</SecondaryLabel>
+      <SecondaryLabel style={{ textAlign: 'center' }} uppercase>
+        Get signed command
+      </SecondaryLabel>
       <ContentWrapper>
         <ReactJson
           src={newCmd}

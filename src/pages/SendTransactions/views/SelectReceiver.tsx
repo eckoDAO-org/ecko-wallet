@@ -21,7 +21,7 @@ import { CommonLabel, DivBottomShadow, DivFlex, SecondaryLabel, StickyFooter } f
 import useChainIdOptions from 'src/hooks/useChainIdOptions';
 import Button from 'src/components/Buttons';
 import { IFungibleToken } from 'src/pages/ImportToken';
-import { Content, BodyModal, TitleModal, DivChild, InputWrapper } from '../styles';
+import { BodyModal, TitleModal, DivChild, InputWrapper } from '../styles';
 import { KeyWrapper, KeyItemWrapper, KeyRemove, KeyTitle } from './style';
 
 type Props = {
@@ -322,9 +322,9 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
         </form>
       </div>
       {isSearching ? (
-        <Content />
+        <div />
       ) : (
-        <Content style={{ margin: '30px 0 70px 0' }}>
+        <div style={{ margin: '30px 0 70px 0' }}>
           <div>
             {recent.length > 0 && (
               <div>
@@ -339,7 +339,7 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
               </div>
             )}
           </div>
-        </Content>
+        </div>
       )}
       <StickyFooter>
         <Button onClick={handleSubmit(onNext)} label="Continue" size="full" style={{ width: '90%', maxWidth: 890 }} />
