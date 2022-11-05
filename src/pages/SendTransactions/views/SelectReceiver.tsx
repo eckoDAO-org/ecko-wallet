@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect } from 'react';
 import { hideLoading, showLoading } from 'src/stores/extensions';
-import { fetchListLocal } from 'src/utils/chainweb';
+import { extractDecimal, fetchListLocal } from 'src/utils/chainweb';
 import { BaseSelect, BaseTextInput, BaseModalSelect, InputError } from 'src/baseComponent';
 import { useSelector } from 'react-redux';
 import { Controller, useForm } from 'react-hook-form';
@@ -58,7 +58,7 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
 
   const getSourceChainBalance = (chainId: number) => {
     if (selectedAccountBalance) {
-      return selectedAccountBalance[chainId] && selectedAccountBalance[chainId][fungibleToken?.contractAddress as any];
+      return selectedAccountBalance[chainId] && extractDecimal(selectedAccountBalance[chainId][fungibleToken?.contractAddress as any]);
     }
     return 0;
   };

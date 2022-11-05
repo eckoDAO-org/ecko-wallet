@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { hideLoading, showLoading } from 'src/stores/extensions';
 import { ReactComponent as AddIconSVG } from 'src/images/add-round.svg';
 import { ReactComponent as AlertIconSVG } from 'src/images/icon-alert.svg';
-import { fetchLocal, getBalanceFromChainwebApiResponse } from 'src/utils/chainweb';
+import { fetchListLocal, fetchLocal, getBalanceFromChainwebApiResponse } from 'src/utils/chainweb';
 import { getLocalContacts, getExistContacts } from 'src/utils/storage';
 import ModalCustom from 'src/components/Modal/ModalCustom';
 import { CommonLabel, DivBottomShadow, DivFlex, PaddedBodyStickyFooter, PrimaryLabel, SecondaryLabel, StickyFooter } from 'src/components';
@@ -93,8 +93,27 @@ const Transfer = (props: Props) => {
   const [amount, setAmount] = useState('0.0');
   const [isNewContact, setIsNewContact] = useState(true);
   const [aliasContact, setAliasContact] = useState('');
+  const [isDestinationChainTokenError, setIsDestinationChainTokenError] = useState(false);
   const [isOpenTransferModal, setIsOpenTransferModal] = useState(false);
   const [isOpenAddContactModal, setIsOpenAddContactModal] = useState(false);
+
+  const checkTokenExists = async () => {
+    showLoading();
+    const pactCode = `(${fungibleToken?.contractAddress}.details "${destinationAccount?.accountName}")`;
+    const res = await fetchListLocal(
+      pactCode,
+      selectedNetwork.url,
+      selectedNetwork.networkId,
+      destinationAccount?.chainId,
+      txSettings?.gasPrice,
+      txSettings?.gasLimit,
+    );
+    if (res?.result?.error?.message?.includes('Cannot resolve') || res?.result?.error?.message?.includes('Database error')) {
+      setIsDestinationChainTokenError(true);
+    } else {
+      setIsDestinationChainTokenError(false);
+    }
+  };
 
   useEffect(() => {
     setSelectedGas({
@@ -114,6 +133,7 @@ const Transfer = (props: Props) => {
   const { selectedNetwork } = rootState.extensions;
   useEffect(() => {
     initData();
+    checkTokenExists();
     initContact();
   }, [selectedNetwork.networkId]);
 
@@ -121,7 +141,7 @@ const Transfer = (props: Props) => {
     getLocalContacts(
       selectedNetwork.networkId,
       (data) => {
-        const aliasName = getExistContacts(destinationAccount.accountName, destinationAccount.chainId, data);
+        const aliasName = getExistContacts(destinationAccount.accountName, data);
         if (aliasName && aliasName.length) {
           setIsNewContact(false);
           setAliasContact(aliasName);
@@ -262,7 +282,7 @@ const Transfer = (props: Props) => {
 
   const estimateUSDAmount =
     fungibleToken?.contractAddress && Object.prototype.hasOwnProperty.call(usdPrices, fungibleToken?.contractAddress)
-      ? humanReadableNumber((usdPrices[fungibleToken?.contractAddress as any] || 0) * Number(amount))
+      ? (usdPrices[fungibleToken?.contractAddress as any] || 0) * Number(amount)
       : null;
 
   return (
@@ -417,14 +437,24 @@ const Transfer = (props: Props) => {
         )}
         <DivFlex justifyContent="space-between" alignItems="center" margin="0px">
           <CommonLabel fontSize={12} fontWeight={600}>
-            {estimateUSDAmount && `${estimateUSDAmount} USD`}
+            {estimateUSDAmount && `${humanReadableNumber(estimateUSDAmount)} USD`}
           </CommonLabel>
           <SecondaryLabel fontSize={12} fontWeight={600}>
             {`Balance: ${BigNumberConverter(wallet?.tokenBalance)} ${fungibleToken?.symbol.toUpperCase()}`}
           </SecondaryLabel>
         </DivFlex>
+        {isDestinationChainTokenError && (
+          <Warning type="danger" margin="10px 0">
+            <AlertIconSVG />
+            <div>
+              <span>
+                {fungibleToken?.contractAddress} could not exists on <b>CHAIN {destinationAccount?.chainId}</b>!
+              </span>
+            </div>
+          </Warning>
+        )}
         {isCrossChain && (
-          <Warning>
+          <Warning margin="10px 0">
             <AlertIconSVG />
             <div>
               <span>You are about to do a cross chain transfer</span>

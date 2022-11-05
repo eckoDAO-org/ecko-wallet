@@ -41,8 +41,8 @@ const AddContact = (props: Props) => {
       networkId,
       (data) => {
         const contacts = data;
-        contacts[`${contact.chainId}`] = contacts[`${contact.chainId}`] || {};
-        contacts[`${contact.chainId}`][`${contact.accountName}`] = newContact;
+        contacts[0] = contacts[0] || {};
+        contacts[0][`${contact.accountName}`] = newContact;
         setLocalContacts(networkId, contacts);
         setContacts(convertContacts(contacts));
         onClose(aliasName);
@@ -50,8 +50,8 @@ const AddContact = (props: Props) => {
       },
       () => {
         const contacts = {};
-        contacts[`${contact.chainId}`] = {};
-        contacts[`${contact.chainId}`][`${contact.accountName}`] = newContact;
+        contacts[0] = {};
+        contacts[0][`${contact.accountName}`] = newContact;
         setLocalContacts(networkId, contacts);
         setContacts(convertContacts(contacts));
         onClose(aliasName);
@@ -108,9 +108,6 @@ const AddContact = (props: Props) => {
                 callback: () => copyToClipboard(contact.accountName),
               }}
             />
-          </ItemWrapper>
-          <ItemWrapper>
-            <BaseTextInput inputProps={{ readOnly: true, value: contact.chainId }} title="Chain ID" height="auto" />
           </ItemWrapper>
         </form>
       </div>

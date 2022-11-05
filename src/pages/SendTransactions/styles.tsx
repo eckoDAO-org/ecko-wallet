@@ -139,8 +139,8 @@ export const FormItem = styled.div`
 export const Warning = styled.div`
   margin-bottom: 24px;
   text-align: ${(props) => (props.isContact ? 'left' : 'center')};
-  background: #fff7e6;
-  color: #ce8900;
+  background: ${(props) => (props.type === 'danger' ? '#f4c7c7' : '#fff7e6')};
+  color: ${(props) => (props.type === 'danger' ? '#000000' : '#ce8900')};
   padding: 10px;
   cursor: ${(props) => (props.isContact ? 'pointer' : 'default')};
   font-size: 11px;
@@ -151,9 +151,10 @@ export const Warning = styled.div`
   svg {
     margin-right: 10px;
     path {
-      fill: #ffa900;
+      fill: ${(props) => (props.type === 'danger' ? '#000000' : '#ffa900')};
     }
   }
+  margin: ${(props) => props.margin};
 `;
 export const SelectWrapper = styled.div`
   display: ${(props) => (props.isHide ? 'none' : 'block')};

@@ -144,8 +144,8 @@ export const getLocalContacts = (network, successCallback, failCallback) => {
   });
 };
 
-export const getExistContacts = (accountName, chianId, contacts) => {
-  const findName = get(contacts, `${chianId}.${accountName}`, {});
+export const getExistContacts = (accountName, contacts) => {
+  const findName = get(contacts, `0.${accountName}`, {});
   return get(findName, 'aliasName', '');
 };
 

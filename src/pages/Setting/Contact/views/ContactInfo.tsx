@@ -31,7 +31,7 @@ export const ContactInfo = ({ contact }: any) => {
       (data) => {
         const newContacts = data;
         // TODO: delete from all chain? loop?
-        delete newContacts[`${contact.chainId}`][`${contact.accountName}`];
+        delete newContacts[0][`${contact.accountName}`];
         setLocalContacts(selectedNetwork.networkId, newContacts);
         setContacts(convertContacts(newContacts));
         setIsDeleting(false);

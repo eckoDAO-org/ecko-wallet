@@ -24,7 +24,7 @@ type Props = {
   onClose: any;
   aliasContact: string;
   fungibleToken: IFungibleToken | null;
-  estimateUSDAmount?: string | null;
+  estimateUSDAmount?: number | null;
   kdaUSDPrice?: number;
 };
 
@@ -299,7 +299,7 @@ const PopupConfirm = (props: Props) => {
               {amount} {fungibleToken?.symbol}
             </SecondaryLabel>
             <CommonLabel fontSize={12} fontWeight={600} lineHeight="8px">
-              {estimateUSDAmount && `${estimateUSDAmount} USD`}
+              {estimateUSDAmount && `${humanReadableNumber(estimateUSDAmount)} USD`}
             </CommonLabel>
           </DivFlex>
         </DivFlex>
