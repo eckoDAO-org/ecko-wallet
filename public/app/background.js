@@ -112,7 +112,7 @@ chrome.runtime.onConnect.addListener(async (port) => {
         getSelectedAccount(originTabId);
         break;
       case 'kda_sendKadena':
-        sendKadena(payload.data);
+        sendKadena(payload.data, originTabId);
         break;
       case 'kda_requestSign':
         kdaRequestSign(payload.data, originTabId);
@@ -240,24 +240,24 @@ const kdaRequestSign = async (data, tabId) => {
         });
       }
     } else {
-      checkStatus(data);
+      checkStatus(data, tabId);
     }
   } else {
-    checkStatus(data);
+    checkStatus(data, tabId);
   }
 };
 
-const sendKadena = async (data) => {
+const sendKadena = async (data, tabId) => {
   const isValidNetwork = await verifyNetwork(data.networkId);
   if (isValidNetwork) {
     const isValid = await checkValid(data);
     if (isValid) {
-      showTransactionPopup(data);
+      showTransactionPopup(data, tabId);
     } else {
-      checkStatus(data);
+      checkStatus(data, tabId);
     }
   } else {
-    checkStatus(data);
+    checkStatus(data, tabId);
   }
 };
 
@@ -401,7 +401,20 @@ const checkValid = async (data) => {
  *
  * @param {Object} payload
  */
-const showTransactionPopup = async (data = {}) => {
+const showTransactionPopup = async (data, tabId) => {
+  if (typeof data?.sourceChainId === 'undefined') {
+    const msg = {
+      result: {
+        status: 'fail',
+        message: 'Please set sourceChainId param',
+      },
+      target: 'kda.content',
+      action: 'res_sendKadena',
+      tabId,
+    };
+    sendToConnectedPorts(msg);
+    return;
+  }
   const lastFocused = await getLastFocusedWindow();
 
   const options = {
@@ -416,6 +429,7 @@ const showTransactionPopup = async (data = {}) => {
   const dapps = {
     networkId: data.networkId,
     domain: data.domain,
+    sourceChainId: data.sourceChainId,
     chainId: data.chainId,
     account: data.account,
     amount: data.amount,

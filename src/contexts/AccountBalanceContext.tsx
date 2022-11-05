@@ -2,6 +2,7 @@ import { useState, createContext, useEffect, useContext } from 'react';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
 import useLocalStorage from 'src/hooks/useLocalStorage';
+import { useInterval } from 'src/hooks/useInterval';
 import { IFungibleToken, LOCAL_KEY_FUNGIBLE_TOKENS } from 'src/pages/ImportToken';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import { fetchListLocal, fetchTokenList } from 'src/utils/chainweb';
@@ -35,6 +36,7 @@ export const AccountBalanceProvider = ({ children }: any) => {
   const [isLoadingBalances, setIsLoadingBalances] = useState<boolean>(false);
   const [accountsBalanceState, setAccountBalanceState] = useState<AccountBalanceProps>();
   const [usdPrices, setUsdPrices] = useState<TokenBalance>({});
+  const [allChainAvailableTokens, setAllChainAvailableTokens] = useState<string[][]>();
 
   const {
     wallet: { wallets },
@@ -50,11 +52,10 @@ export const AccountBalanceProvider = ({ children }: any) => {
 
   const fetchAllBalances = async (account: string) => {
     const promiseList: any[] = [];
-    // TODO: fetch token list from BE
-    const allChainAvailableTokens = fetchTokenList();
+
     for (let i = 0; i < CHAIN_COUNT; i += 1) {
-      const availableChainTokens = allChainAvailableTokens[i];
-      const filteredAvailableFt = fungibleTokens?.filter((t) => availableChainTokens.includes(t.contractAddress));
+      const availableChainTokens = allChainAvailableTokens && allChainAvailableTokens[i];
+      const filteredAvailableFt = fungibleTokens?.filter((t) => availableChainTokens?.includes(t.contractAddress));
       const pactCode = `
       (
         let* (
@@ -116,12 +117,14 @@ export const AccountBalanceProvider = ({ children }: any) => {
       });
   };
 
-  useEffect(() => {
+  const init = async () => {
     updateUsdPrices();
-  }, [fungibleTokens]);
+    const tokens = await fetchTokenList();
+    setAllChainAvailableTokens(tokens);
+  };
 
-  useEffect(() => {
-    if (uniqueWallets.length) {
+  const updateAllBalances = () => {
+    if (uniqueWallets.length && allChainAvailableTokens?.length) {
       setIsLoadingBalances(true);
       const sortedWallets = uniqueWallets.sort((a, b) => b.indexOf(selectedAccount));
       const promises: any = [];
@@ -130,7 +133,20 @@ export const AccountBalanceProvider = ({ children }: any) => {
       }
       Promise.all(promises).then(() => setIsLoadingBalances(false));
     }
-  }, [selectedAccount, fungibleTokens?.length]);
+  };
+
+  useEffect(() => {
+    init();
+  }, [fungibleTokens]);
+
+  useInterval(() => {
+    init();
+    updateAllBalances();
+  }, 120000);
+
+  useEffect(() => {
+    updateAllBalances();
+  }, [selectedAccount, fungibleTokens?.length, allChainAvailableTokens]);
 
   return (
     <AccountBalanceContext.Provider

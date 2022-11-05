@@ -13,6 +13,7 @@ import { ConfirmModal } from 'src/components/ConfirmModal';
 import { IconButton } from 'src/components/IconButton';
 import { ActionList } from 'src/components/ActionList';
 import { roundNumber, BigNumberConverter } from 'src/utils';
+import { extractDecimal } from 'src/utils/chainweb';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import useLocalStorage from 'src/hooks/useLocalStorage';
 import { useModalContext } from 'src/contexts/ModalContext';
@@ -60,7 +61,7 @@ const Wallet = () => {
 
   const getTokenTotalBalance = (contractAddress: string, account: string): number => {
     const accountChainBalance = allAccountsBalance && allAccountsBalance[account];
-    return accountChainBalance?.reduce((prev, curr) => prev + ((curr && curr[contractAddress]) || 0), 0) || 0;
+    return accountChainBalance?.reduce((prev, curr) => prev + ((curr && extractDecimal(curr[contractAddress])) || 0), 0) || 0;
   };
 
   const getUsdPrice = (tokenSymbol, tokenBalance): number => {
@@ -77,7 +78,7 @@ const Wallet = () => {
   };
 
   const getTokenChainDistribution = (contractAddress: string): ChainDistribution[] =>
-    selectedAccountBalance?.map((b: any, i) => ({ chainId: i, balance: (b && b[contractAddress]) || 0 })) ?? [];
+    selectedAccountBalance?.map((b: any, i) => ({ chainId: i, balance: (b && extractDecimal(b[contractAddress])) || 0 })) ?? [];
 
   const getAllChainUsdBalance = () => {
     let totalUSDBalance = 0;
