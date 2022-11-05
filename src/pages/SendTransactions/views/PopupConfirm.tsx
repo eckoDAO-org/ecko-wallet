@@ -325,14 +325,14 @@ const PopupConfirm = (props: Props) => {
             </CommonLabel>
           </DivFlex>
         </DivFlex>
-        {estimateUSDAmount && (
+        {estimateUSDAmount ? (
           <DivFlex margin="10px 0px" justifyContent="space-between" alignItems="center">
             <CommonLabel fontWeight={600} uppercase>
               total
             </CommonLabel>
             <CommonLabel fontWeight={600}>{humanReadableNumber(Number(estimateUSDAmount) + Number(estimateFee))} USD</CommonLabel>
           </DivFlex>
-        )}
+        ) : null}
       </div>
       <DivFlex margin="30px 0" gap="5px">
         <Button label="Cancel" size="full" variant="secondary" onClick={() => onClose()} />

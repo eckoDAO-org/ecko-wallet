@@ -27,6 +27,7 @@ import { Warning, Footer, Error, GasItem, ErrorWrapper } from '../styles';
 import { TransferButton, TransferImage, AmountWrapper, AccountTransferDetail } from './style';
 
 type Props = {
+  isDappTransfer?: boolean;
   sourceChainId: any;
   destinationAccount: any;
   fungibleToken: IFungibleToken | null;
@@ -85,7 +86,7 @@ export const renderTransactionInfo = (info: TransactionInfo, containerStyle?: Re
 );
 
 const Transfer = (props: Props) => {
-  const { destinationAccount, fungibleToken, sourceChainId } = props;
+  const { destinationAccount, fungibleToken, sourceChainId, isDappTransfer } = props;
   const { data: txSettings } = useTxSettingsContext();
   const { usdPrices } = useAccountBalanceContext();
   const [wallet, setWallet] = useState(defaultWallet);
@@ -286,7 +287,7 @@ const Transfer = (props: Props) => {
       : null;
 
   return (
-    <PaddedBodyStickyFooter paddingBottom={50}>
+    <PaddedBodyStickyFooter paddingBottom={!isDappTransfer && 50}>
       <AccountTransferDetail justifyContent="space-between" alignItems="center">
         <div>
           <JazzAccount
@@ -323,30 +324,38 @@ const Transfer = (props: Props) => {
           <SecondaryLabel uppercase fontWeight={700} style={{ flex: 1 }}>
             Amount to send
           </SecondaryLabel>
-          <DivFlex justifyContent="flex-end" style={{ flex: 1, gap: 5 }}>
-            <Button
-              type="button"
-              onClick={() => setPrefilledBalance('half')}
-              label="HALF"
-              size="full"
-              variant="grey"
-              style={{ height: 28, fontSize: 10, maxWidth: 60 }}
-            />
-            <Button
-              type="button"
-              onClick={() => setPrefilledBalance('max')}
-              label="MAX"
-              size="full"
-              variant="grey"
-              style={{ height: 28, fontSize: 10, maxWidth: 60 }}
-            />
-          </DivFlex>
+          {!isDappTransfer && (
+            <DivFlex justifyContent="flex-end" style={{ flex: 1, gap: 5 }}>
+              <Button
+                type="button"
+                onClick={() => setPrefilledBalance('half')}
+                label="HALF"
+                size="full"
+                variant="grey"
+                style={{ height: 28, fontSize: 10, maxWidth: 60 }}
+              />
+              <Button
+                type="button"
+                onClick={() => setPrefilledBalance('max')}
+                label="MAX"
+                size="full"
+                variant="grey"
+                style={{ height: 28, fontSize: 10, maxWidth: 60 }}
+              />
+            </DivFlex>
+          )}
         </DivFlex>
         {/* amount */}
         <AmountWrapper alignItems="center" justifyContent="space-between">
           {destinationAccount?.dappAmount ? (
             <SInput
               readOnly
+              style={{
+                flex: 1,
+                fontSize: 45,
+                fontWeight: 500,
+                padding: '0px 5px 0px 13px',
+              }}
               value={destinationAccount?.dappAmount}
               {...register('amount', {
                 required: {
@@ -436,9 +445,11 @@ const Transfer = (props: Props) => {
           </ErrorWrapper>
         )}
         <DivFlex justifyContent="space-between" alignItems="center" margin="0px">
-          <CommonLabel fontSize={12} fontWeight={600}>
-            {estimateUSDAmount && `${humanReadableNumber(estimateUSDAmount)} USD`}
-          </CommonLabel>
+          {!isDappTransfer && (
+            <CommonLabel fontSize={12} fontWeight={600}>
+              {estimateUSDAmount && `${humanReadableNumber(estimateUSDAmount)} USD`}
+            </CommonLabel>
+          )}
           <SecondaryLabel fontSize={12} fontWeight={600}>
             {`Balance: ${BigNumberConverter(wallet?.tokenBalance)} ${fungibleToken?.symbol.toUpperCase()}`}
           </SecondaryLabel>
@@ -591,14 +602,10 @@ const Transfer = (props: Props) => {
         </DivFlex>
         <Footer>
           {destinationAccount.domain ? (
-            <>
-              <TransferButton>
-                <Button variant="disabled" label="Reject" onClick={() => window.close()} />
-              </TransferButton>
-              <TransferButton>
-                <Button label="Next" form="send-transaction" />
-              </TransferButton>
-            </>
+            <DivFlex margin="30px 0" gap="5px">
+              <Button size="full" variant="disabled" label="Reject" onClick={() => window.close()} />
+              <Button size="full" label="Next" form="send-transaction" />
+            </DivFlex>
           ) : (
             <StickyFooter>
               <Button form="send-transaction" label="Next" size="full" style={{ width: '90%', maxWidth: 890 }} />

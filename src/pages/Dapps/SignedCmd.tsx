@@ -7,7 +7,7 @@ import Button from 'src/components/Buttons';
 import { DivFlex, SecondaryLabel } from 'src/components';
 import { updateSignedCmdMessage } from 'src/utils/message';
 
-const Wrapper = styled.div`
+export const DappWrapper = styled.div`
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -33,15 +33,15 @@ const Wrapper = styled.div`
     border-radius: 2px;
   }
 `;
-const ContentWrapper = styled.div`
+export const DappContentWrapper = styled.div`
   padding: 20px;
   word-break: break-word;
 `;
-const DappDescription = styled.div`
+export const DappDescription = styled.div`
   text-align: center;
   margin: 20px 0;
 `;
-const Logo = styled.img`
+export const DappLogo = styled.img`
   width: 70px;
   height: 70px;
   margin: 50px auto 20px auto;
@@ -92,13 +92,13 @@ const SignedCmd = () => {
 
   const newCmd = cmd.cmd ? { ...cmd, cmd: JSON.parse(cmd.cmd) } : {};
   return (
-    <Wrapper>
-      <Logo src={images.xWalletIcon} alt="logo" />
+    <DappWrapper>
+      <DappLogo src={images.xWalletIcon} alt="logo" />
       <DappDescription>{domain}</DappDescription>
       <SecondaryLabel style={{ textAlign: 'center' }} uppercase>
         Get signed command
       </SecondaryLabel>
-      <ContentWrapper>
+      <DappContentWrapper>
         <ReactJson
           src={newCmd}
           enableClipboard={false}
@@ -110,12 +110,12 @@ const SignedCmd = () => {
           style={{ paddingBottom: 40 }}
           collapseStringsAfterLength={false}
         />
-      </ContentWrapper>
+      </DappContentWrapper>
       <DivFlex gap="10px" padding="24px">
         <Button size="full" label="Reject" variant="disabled" onClick={onClose} />
         <Button size="full" label="Confirm" onClick={onSave} />
       </DivFlex>
-    </Wrapper>
+    </DappWrapper>
   );
 };
 
