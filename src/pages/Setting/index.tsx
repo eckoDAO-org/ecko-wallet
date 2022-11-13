@@ -5,12 +5,12 @@ import { useSelector } from 'react-redux';
 import { ReactComponent as ContactsIcon } from 'src/images/settings-contacts.svg';
 import { ReactComponent as NetworksIcon } from 'src/images/settings-networks.svg';
 import { ReactComponent as KeyIcon } from 'src/images/settings-export-key.svg';
-import { ReactComponent as TelegramIcon } from 'src/images/telegram-icon.svg';
+import { ReactComponent as DiscordIcon } from 'src/images/discord-icon.svg';
 import { ReactComponent as GlobeIcon } from 'src/images/globe-icon.svg';
 import { ReactComponent as Padlock } from 'src/images/padlock.svg';
 import { ReactComponent as ExpandView } from 'src/images/expand-view.svg';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
-import { TELEGRAM_GROUP_LINK, WEBSITE_LINK } from 'src/utils/config';
+import { DISCORD_INVITATION_LINK, WEBSITE_LINK } from 'src/utils/config';
 import { setExpiredTime } from 'src/stores/extensions';
 import { setLocalExpiredTime } from 'src/utils/storage';
 
@@ -104,8 +104,8 @@ const PageSetting = () => {
         </SecondaryLabel>
       </AboutDiv>
       <AboutDiv marginTop="30px">
-        <a href={TELEGRAM_GROUP_LINK} target="_blank" rel="noreferrer">
-          <TelegramIcon /> <SecondaryLabel>Join us on telegram</SecondaryLabel>
+        <a href={DISCORD_INVITATION_LINK} target="_blank" rel="noreferrer">
+          <DiscordIcon /> <SecondaryLabel>Join us on Discord</SecondaryLabel>
         </a>
       </AboutDiv>
       <AboutDiv marginTop="10px">
