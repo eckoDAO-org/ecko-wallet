@@ -8,7 +8,7 @@ import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import { fetchListLocal, fetchTokenList } from 'src/utils/chainweb';
 import { KADDEX_ANALYTICS_API } from 'src/utils/config';
 import { CHAIN_COUNT } from 'src/utils/constant';
-import { TxSettingsContext } from './TxSettingsContext';
+import { SettingsContext } from './SettingsContext';
 
 interface TokenBalance {
   [contractAddress: string]: number;
@@ -46,7 +46,7 @@ export const AccountBalanceProvider = ({ children }: any) => {
   const [fungibleTokens] = useLocalStorage<IFungibleToken[]>(LOCAL_KEY_FUNGIBLE_TOKENS, [{ contractAddress: 'kaddex.kdx', symbol: 'kdx' }]);
 
   const { account: selectedAccount } = useCurrentWallet();
-  const { data: txSettings } = useContext(TxSettingsContext);
+  const { data: txSettings } = useContext(SettingsContext);
 
   const uniqueWallets = wallets.map((w) => w.account).filter((value, index, self) => self.indexOf(value) === index);
 

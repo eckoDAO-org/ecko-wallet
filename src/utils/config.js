@@ -40,3 +40,5 @@ export const GAS_CONFIGS = {
 };
 export const XWALLET_SEND_TX_NONCE = 'XE';
 export const XWALLET_DAPP_SIGN_NONCE = 'XEDS';
+
+export const XWALLET_AUTOLOCK_SECONDS = 30 * 60;

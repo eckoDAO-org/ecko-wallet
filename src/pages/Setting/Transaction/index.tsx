@@ -2,7 +2,7 @@
 import { useContext, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import Button from 'src/components/Buttons';
-import { TxSettingsContextData, TxSettingsContext } from 'src/contexts/TxSettingsContext';
+import { SettingsContextData, SettingsContext } from 'src/contexts/SettingsContext';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
@@ -18,7 +18,7 @@ import { Body, DivError } from '../Contact/views/style';
 
 const PageTransaction = () => {
   const history = useHistory();
-  const { data, setTxSettings } = useContext(TxSettingsContext);
+  const { data, setTxSettings } = useContext(SettingsContext);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -38,7 +38,7 @@ const PageTransaction = () => {
     reset,
   } = useForm({ defaultValues: getDefaultData() });
 
-  const onSave = (dataSubmit: TxSettingsContextData) => {
+  const onSave = (dataSubmit: SettingsContextData) => {
     const toSubmit = {
       ...dataSubmit,
       gasLimit: Number(dataSubmit.gasLimit),

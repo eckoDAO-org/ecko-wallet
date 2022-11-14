@@ -11,7 +11,7 @@ import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import { fetchListLocal } from 'src/utils/chainweb';
 import { hideLoading, showLoading } from 'src/stores/extensions';
 import { KNOWN_TOKENS } from 'src/utils/constant';
-import { TxSettingsContext } from 'src/contexts/TxSettingsContext';
+import { SettingsContext } from 'src/contexts/SettingsContext';
 import Button from 'src/components/Buttons';
 import { NavigationHeader } from 'src/components/NavigationHeader';
 
@@ -54,7 +54,7 @@ const ImportToken = () => {
   const { selectedNetwork } = rootState.extensions;
   const history = useHistory();
   const [fungibleTokens, setFungibleTokens] = useLocalStorage<IFungibleToken[]>(LOCAL_KEY_FUNGIBLE_TOKENS, []);
-  const { data: txSettings } = useContext(TxSettingsContext);
+  const { data: txSettings } = useContext(SettingsContext);
 
   const params = new URLSearchParams(search);
   const coin = params.get('coin');

@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 import { SInput, SLabel } from 'src/baseComponent/BaseTextInput';
 import { JazzAccount } from 'src/components/JazzAccount';
 import { useAccountBalanceContext } from 'src/contexts/AccountBalanceContext';
-import { TxSettingsContext } from 'src/contexts/TxSettingsContext';
+import { SettingsContext } from 'src/contexts/SettingsContext';
 import { useWindowResizeMobile } from 'src/hooks/useWindowResizeMobile';
 import Toast from 'src/components/Toast/Toast';
 import { shortenAddress } from 'src/utils';
@@ -53,7 +53,7 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
   const { wallet } = rootState;
   const history = useHistory();
   const optionsChain = useChainIdOptions();
-  const { data: txSettings } = useContext(TxSettingsContext);
+  const { data: txSettings } = useContext(SettingsContext);
   const { selectedAccountBalance } = useAccountBalanceContext();
 
   const getSourceChainBalance = (chainId: number) => {

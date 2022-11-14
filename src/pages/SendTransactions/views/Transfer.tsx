@@ -13,7 +13,7 @@ import { SInput } from 'src/baseComponent/BaseTextInput';
 import PopupConfirm from 'src/pages/SendTransactions/views/PopupConfirm';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
-import { useTxSettingsContext } from 'src/contexts/TxSettingsContext';
+import { useSettingsContext } from 'src/contexts/SettingsContext';
 import { useAccountBalanceContext } from 'src/contexts/AccountBalanceContext';
 import { useForm } from 'react-hook-form';
 import { CONFIG, GAS_CONFIGS, NUMBER_DECIMAL_AFTER_DOT } from 'src/utils/config';
@@ -24,7 +24,7 @@ import { IFungibleToken } from 'src/pages/ImportToken';
 import Button from 'src/components/Buttons';
 import AddContact from './AddContact';
 import { Warning, Footer, Error, GasItem, ErrorWrapper } from '../styles';
-import { TransferButton, TransferImage, AmountWrapper, AccountTransferDetail } from './style';
+import { TransferImage, AmountWrapper, AccountTransferDetail } from './style';
 
 type Props = {
   isDappTransfer?: boolean;
@@ -87,7 +87,7 @@ export const renderTransactionInfo = (info: TransactionInfo, containerStyle?: Re
 
 const Transfer = (props: Props) => {
   const { destinationAccount, fungibleToken, sourceChainId, isDappTransfer } = props;
-  const { data: txSettings } = useTxSettingsContext();
+  const { data: txSettings } = useSettingsContext();
   const { usdPrices } = useAccountBalanceContext();
   const [wallet, setWallet] = useState(defaultWallet);
   const [selectedGas, setSelectedGas] = useState({ ...GAS_CONFIGS.NORMAL });
