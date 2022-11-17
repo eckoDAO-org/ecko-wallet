@@ -105,7 +105,7 @@ const RemoveWalletPopup = (props: Props) => {
           });
           setLocalWallets(selectedNetwork.networkId, []);
           setWallets([]);
-          setLocalActivities(selectedNetwork.networkId, chainId, account, []);
+          setLocalActivities(selectedNetwork.networkId, account, []);
           history.push('/init');
         } else {
           setWallets(newWallets);
@@ -119,7 +119,7 @@ const RemoveWalletPopup = (props: Props) => {
           }));
           setLocalSelectedWallet(newLocalWallets[0]);
           setLocalWallets(selectedNetwork.networkId, newLocalWallets);
-          setLocalActivities(selectedNetwork.networkId, chainId, account, []);
+          setLocalActivities(selectedNetwork.networkId, account, []);
         }
         onClose();
       } else {

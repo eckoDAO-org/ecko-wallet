@@ -7,6 +7,7 @@ import { getApiUrl, getSignatureFromHash, fetchLocal, pollRequestKey } from 'src
 import { CONFIG, XWALLET_SEND_TX_NONCE } from 'src/utils/config';
 import { getFloatPrecision } from 'src/utils/numbers';
 import { toast } from 'react-toastify';
+import { ReactComponent as AlertIconSVG } from 'src/images/icon-alert.svg';
 import Toast from 'src/components/Toast/Toast';
 import { CrossChainContext } from 'src/contexts/CrossChainContext';
 import { setActiveTab, setRecent } from 'src/stores/extensions';
@@ -18,6 +19,7 @@ import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import { IFungibleToken } from 'src/pages/ImportToken';
 import { LoadingTitle, SpinnerWrapper } from './style';
 import { renderTransactionInfo } from './Transfer';
+import { Warning } from '../styles';
 
 type Props = {
   configs: any;
@@ -218,17 +220,16 @@ const PopupConfirm = (props: Props) => {
           };
           getLocalActivities(
             selectedNetwork.networkId,
-            senderChainId,
             senderName,
             (activities) => {
               const newActivities = [...activities];
               newActivities.push(activity);
-              setLocalActivities(selectedNetwork.networkId, senderChainId, senderName, newActivities);
+              setLocalActivities(selectedNetwork.networkId, senderName, newActivities);
             },
             () => {
               const newActivities: any[] = [];
               newActivities.push(activity);
-              setLocalActivities(selectedNetwork.networkId, senderChainId, senderName, newActivities);
+              setLocalActivities(selectedNetwork.networkId, senderName, newActivities);
             },
           );
           if (senderChainId.toString() !== receiverChainId.toString()) {
@@ -334,6 +335,16 @@ const PopupConfirm = (props: Props) => {
           </DivFlex>
         ) : null}
       </div>
+      {isCrossChain && (
+        <Warning margin="10px 0" style={{ justifyContent: 'center' }}>
+          <AlertIconSVG />
+          <div>
+            <span>You are about to do a cross chain transfer</span>
+            <br />
+            <span>This operation usually takes more time</span>
+          </div>
+        </Warning>
+      )}
       <DivFlex margin="30px 0" gap="5px">
         <Button label="Cancel" size="full" variant="secondary" onClick={() => onClose()} />
         <Button label="Confirm" size="full" onClick={onSend} />

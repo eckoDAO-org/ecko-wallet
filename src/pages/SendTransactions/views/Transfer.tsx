@@ -286,6 +286,16 @@ const Transfer = (props: Props) => {
       ? (usdPrices[fungibleToken?.contractAddress as any] || 0) * Number(amount)
       : null;
 
+  const getInputFontSize = (length: number) => {
+    if (length < 5) {
+      return 40;
+    }
+    if (length < 12) {
+      return 40 - amount.toString().length;
+    }
+    return 22;
+  };
+
   return (
     <PaddedBodyStickyFooter paddingBottom={!isDappTransfer && 50}>
       <AccountTransferDetail justifyContent="space-between" alignItems="center">
@@ -389,9 +399,9 @@ const Transfer = (props: Props) => {
               value={amount}
               style={{
                 flex: 1,
-                fontSize: 45,
+                fontSize: getInputFontSize(amount?.toString().length || 40),
                 fontWeight: 500,
-                padding: '0px 5px 0px 13px',
+                padding: '0px 5px 0px 0px',
               }}
               onWheel={(event) => event.currentTarget.blur()}
               {...register('amount', {
@@ -421,7 +431,9 @@ const Transfer = (props: Props) => {
             />
           )}
           {/** TODO: make dynamic length text <TextScaling /> */}
-          <PrimaryLabel uppercase>{fungibleToken?.symbol?.substring(0, 3)}</PrimaryLabel>
+          <PrimaryLabel fontSize={40} uppercase>
+            {fungibleToken?.symbol?.substring(0, 3)}
+          </PrimaryLabel>
         </AmountWrapper>
         {errors.amount && errors.amount.type === 'required' && (
           <ErrorWrapper>
@@ -461,16 +473,6 @@ const Transfer = (props: Props) => {
               <span>
                 {fungibleToken?.contractAddress} could not exists on <b>CHAIN {destinationAccount?.chainId}</b>!
               </span>
-            </div>
-          </Warning>
-        )}
-        {isCrossChain && (
-          <Warning margin="10px 0">
-            <AlertIconSVG />
-            <div>
-              <span>You are about to do a cross chain transfer</span>
-              <br />
-              <span>This operation usually takes more time</span>
             </div>
           </Warning>
         )}

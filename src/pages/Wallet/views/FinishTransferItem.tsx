@@ -16,7 +16,7 @@ const RoundedArrow = styled.div`
   margin-right: 5px;
   svg {
     path {
-      fill: #ff6058;
+      fill: ${(props) => props.color};
     }
   }
 `;
@@ -26,12 +26,19 @@ const ActivityElement = styled(DivFlex)`
 `;
 
 const FinishTransferItem = (props: any) => {
-  const { createdTime, value, tokenType, receiver } = props;
+  const { createdTime, value, tokenType, receiver, status } = props;
+
+  let color = '#ff6058';
+  if (status === 'success') {
+    color = '#25d366';
+  } else if (status === 'pending') {
+    color = '#ffa500';
+  }
 
   return (
     <ActivityElement justifyContent="space-between" alignItems="center" padding="10px 0px">
       <DivFlex alignItems="center">
-        <RoundedArrow margin="0px 5px 0px 0px">
+        <RoundedArrow margin="0px 5px 0px 0px" color={color}>
           <ArrowSendIcon />
         </RoundedArrow>
         <DivFlex flexDirection="column" justifyContent="flex-start">
@@ -39,7 +46,7 @@ const FinishTransferItem = (props: any) => {
           <SecondaryLabel>{moment(createdTime).format('DD/MM/YYYY HH:mm')}</SecondaryLabel>
         </DivFlex>
       </DivFlex>
-      <CommonLabel fontWeight={500} color="#FF6058" fontSize={12}>
+      <CommonLabel fontWeight={500} color={color} fontSize={12}>
         - {value} {tokenType}
       </CommonLabel>
     </ActivityElement>
