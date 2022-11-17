@@ -288,8 +288,8 @@ const PopupConfirm = (props: Props) => {
   }
 
   return (
-    <div style={{ padding: '0 20px 20px 20px' }}>
-      {renderTransactionInfo(info, { borderTop: ' none', margin: '0px -20px 20px', paddingBottom: 10 })}
+    <div style={{ padding: '0 20px 20px 20px', marginTop: -15 }}>
+      {renderTransactionInfo(info, { borderTop: ' none', margin: '0px -20px 20px' })}
       <div style={{ textAlign: 'center' }}>
         <DivFlex margin="10px 0px" justifyContent="space-between" alignItems="flex-start">
           <SecondaryLabel uppercase fontSize={16}>
@@ -312,12 +312,9 @@ const PopupConfirm = (props: Props) => {
           <SecondaryLabel uppercase>gas price</SecondaryLabel>
           <DivFlex flexDirection="column" alignItems="flex-end">
             <SecondaryLabel uppercase>{gasPrice} KDA</SecondaryLabel>
-            <CommonLabel fontSize={12} fontWeight={600} lineHeight="8px">
-              {kdaUSDPrice ? humanReadableNumber(gasPrice * kdaUSDPrice) : '--'} USD
-            </CommonLabel>
           </DivFlex>
         </DivFlex>
-        <DivFlex margin="10px 0px" justifyContent="space-between" alignItems="flex-start">
+        <DivFlex justifyContent="space-between" alignItems="flex-start">
           <SecondaryLabel uppercase>gas fee</SecondaryLabel>
           <DivFlex flexDirection="column" alignItems="flex-end">
             <SecondaryLabel uppercase>{gasPrice * gasLimit} KDA</SecondaryLabel>
@@ -345,7 +342,7 @@ const PopupConfirm = (props: Props) => {
           </div>
         </Warning>
       )}
-      <DivFlex margin="30px 0" gap="5px">
+      <DivFlex margin={isCrossChain ? '10px 0' : '30px 0'} gap="5px">
         <Button label="Cancel" size="full" variant="secondary" onClick={() => onClose()} />
         <Button label="Confirm" size="full" onClick={onSend} />
       </DivFlex>
