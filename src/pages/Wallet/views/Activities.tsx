@@ -58,7 +58,6 @@ const Activities = () => {
   useEffect(() => {
     getLocalActivities(
       selectedNetwork.networkId,
-      chainId,
       account,
       (activities) => {
         const newActivityList = [...activities];
@@ -106,7 +105,7 @@ const Activities = () => {
                   return activity;
                 });
                 setList(newList);
-                setLocalActivities(selectedNetwork.networkId, chainId, account, newList);
+                setLocalActivities(selectedNetwork.networkId, account, newList);
               }
             })
             .catch(() => {});

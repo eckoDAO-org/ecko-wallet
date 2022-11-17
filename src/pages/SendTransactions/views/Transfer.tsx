@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { hideLoading, showLoading } from 'src/stores/extensions';
 import { ReactComponent as AddIconSVG } from 'src/images/add-round.svg';
 import { ReactComponent as AlertIconSVG } from 'src/images/icon-alert.svg';
+import { ReactComponent as GearIconSVG } from 'src/images/gear-icon.svg';
 import { fetchListLocal, fetchLocal, getBalanceFromChainwebApiResponse } from 'src/utils/chainweb';
 import { getLocalContacts, getExistContacts } from 'src/utils/storage';
 import ModalCustom from 'src/components/Modal/ModalCustom';
@@ -13,7 +14,8 @@ import { SInput } from 'src/baseComponent/BaseTextInput';
 import PopupConfirm from 'src/pages/SendTransactions/views/PopupConfirm';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
-import { useTxSettingsContext } from 'src/contexts/TxSettingsContext';
+import { useSettingsContext } from 'src/contexts/SettingsContext';
+import { useModalContext } from 'src/contexts/ModalContext';
 import { useAccountBalanceContext } from 'src/contexts/AccountBalanceContext';
 import { useForm } from 'react-hook-form';
 import { CONFIG, GAS_CONFIGS, NUMBER_DECIMAL_AFTER_DOT } from 'src/utils/config';
@@ -24,7 +26,7 @@ import { IFungibleToken } from 'src/pages/ImportToken';
 import Button from 'src/components/Buttons';
 import AddContact from './AddContact';
 import { Warning, Footer, Error, GasItem, ErrorWrapper } from '../styles';
-import { TransferButton, TransferImage, AmountWrapper, AccountTransferDetail } from './style';
+import { TransferImage, AmountWrapper, AccountTransferDetail } from './style';
 
 type Props = {
   isDappTransfer?: boolean;
@@ -87,8 +89,9 @@ export const renderTransactionInfo = (info: TransactionInfo, containerStyle?: Re
 
 const Transfer = (props: Props) => {
   const { destinationAccount, fungibleToken, sourceChainId, isDappTransfer } = props;
-  const { data: txSettings } = useTxSettingsContext();
+  const { data: txSettings } = useSettingsContext();
   const { usdPrices } = useAccountBalanceContext();
+  const { openModal } = useModalContext();
   const [wallet, setWallet] = useState(defaultWallet);
   const [selectedGas, setSelectedGas] = useState({ ...GAS_CONFIGS.NORMAL });
   const [amount, setAmount] = useState('0.0');
@@ -97,6 +100,7 @@ const Transfer = (props: Props) => {
   const [isDestinationChainTokenError, setIsDestinationChainTokenError] = useState(false);
   const [isOpenTransferModal, setIsOpenTransferModal] = useState(false);
   const [isOpenAddContactModal, setIsOpenAddContactModal] = useState(false);
+  const [isOpenGasOptionsModal, setIsOpenGasOptionsModal] = useState(false);
 
   const checkTokenExists = async () => {
     showLoading();
@@ -286,6 +290,135 @@ const Transfer = (props: Props) => {
       ? (usdPrices[fungibleToken?.contractAddress as any] || 0) * Number(amount)
       : null;
 
+  const getInputFontSize = (length: number) => {
+    if (length < 5) {
+      return 40;
+    }
+    if (length < 12) {
+      return 40 - amount.toString().length;
+    }
+    return 22;
+  };
+
+  const gasOptions = (
+    <>
+      {/* gas option */}
+      <DivFlex justifyContent="space-evenly" margin="10px 0" gap="10px" padding="0px 24px">
+        {Object.keys(GAS_CONFIGS).map((config) => {
+          const gas = GAS_CONFIGS[config];
+          return (
+            <GasItem
+              key={gas.LABEL}
+              isActive={selectedGas.LABEL === gas.LABEL}
+              onClick={() => {
+                setSelectedGas(gas);
+                clearErrors('gasLimit');
+                clearErrors('gasPrice');
+                setValue('gasLimit', gas?.GAS_LIMIT);
+                setValue('gasPrice', gas.GAS_PRICE);
+              }}
+            >
+              {gas.LABEL}
+            </GasItem>
+          );
+        })}
+      </DivFlex>
+      <DivFlex gap="10px" padding="24px">
+        <div style={{ flex: 1 }}>
+          {/* gas limit */}
+          <BaseTextInput
+            inputProps={{
+              type: 'number',
+              placeholder: '0',
+              value: selectedGas?.GAS_LIMIT,
+              ...register('gasLimit', {
+                required: {
+                  value: true,
+                  message: 'This field is required.',
+                },
+                validate: {
+                  positive: (v) => {
+                    const value = Number(v);
+                    return value > 0;
+                  },
+                  isInteger: (v) => {
+                    const reg = /^\d+$/;
+                    return reg.test(v);
+                  },
+                },
+              }),
+            }}
+            onWheel={(event) => event.currentTarget.blur()}
+            title="gas limit"
+            height="auto"
+            onChange={handleChangeGasLimit}
+          />
+          {errors.gasLimit && errors.gasLimit.type === 'required' && (
+            <ErrorWrapper>
+              <DivFlex>
+                <Error>This field is required</Error>
+              </DivFlex>
+            </ErrorWrapper>
+          )}
+          {errors.gasLimit && errors.gasLimit.type === 'positive' && (
+            <ErrorWrapper>
+              <DivFlex>
+                <Error>Invalid gas limit</Error>
+              </DivFlex>
+            </ErrorWrapper>
+          )}
+          {errors.gasLimit && errors.gasLimit.type === 'isInteger' && (
+            <ErrorWrapper>
+              <DivFlex>
+                <Error>Gas limit must be integer</Error>
+              </DivFlex>
+            </ErrorWrapper>
+          )}
+        </div>
+        <div style={{ flex: 1 }}>
+          {/* gas price */}
+          <BaseTextInput
+            inputProps={{
+              type: 'number',
+              placeholder: '0',
+              value: selectedGas.GAS_PRICE,
+              ...register('gasPrice', {
+                required: {
+                  value: true,
+                  message: 'This field is required.',
+                },
+                validate: {
+                  positive: (v) => {
+                    const value = Number(v);
+                    return value > 0;
+                  },
+                },
+              }),
+            }}
+            title="gas price"
+            height="auto"
+            onChange={handleChangeGasPrice}
+            onWheel={(event) => event.currentTarget.blur()}
+          />
+          {errors.gasPrice && errors.gasPrice.type === 'required' && (
+            <ErrorWrapper>
+              <DivFlex>
+                <Error>This field is required</Error>
+              </DivFlex>
+            </ErrorWrapper>
+          )}
+          {errors.gasPrice && errors.gasPrice.type === 'positive' && (
+            <ErrorWrapper>
+              <DivFlex>
+                <Error>Invalid gas price</Error>
+              </DivFlex>
+            </ErrorWrapper>
+          )}
+        </div>
+      </DivFlex>
+    </>
+  );
+
   return (
     <PaddedBodyStickyFooter paddingBottom={!isDappTransfer && 50}>
       <AccountTransferDetail justifyContent="space-between" alignItems="center">
@@ -389,9 +522,9 @@ const Transfer = (props: Props) => {
               value={amount}
               style={{
                 flex: 1,
-                fontSize: 45,
+                fontSize: getInputFontSize(amount?.toString().length || 40),
                 fontWeight: 500,
-                padding: '0px 5px 0px 13px',
+                padding: '0px 5px 0px 0px',
               }}
               onWheel={(event) => event.currentTarget.blur()}
               {...register('amount', {
@@ -421,7 +554,9 @@ const Transfer = (props: Props) => {
             />
           )}
           {/** TODO: make dynamic length text <TextScaling /> */}
-          <PrimaryLabel uppercase>{fungibleToken?.symbol?.substring(0, 3)}</PrimaryLabel>
+          <PrimaryLabel fontSize={40} uppercase>
+            {fungibleToken?.symbol?.substring(0, 3)}
+          </PrimaryLabel>
         </AmountWrapper>
         {errors.amount && errors.amount.type === 'required' && (
           <ErrorWrapper>
@@ -464,137 +599,20 @@ const Transfer = (props: Props) => {
             </div>
           </Warning>
         )}
-        {isCrossChain && (
-          <Warning margin="10px 0">
-            <AlertIconSVG />
-            <div>
-              <span>You are about to do a cross chain transfer</span>
-              <br />
-              <span>This operation usually takes more time</span>
-            </div>
-          </Warning>
-        )}
         <DivBottomShadow margin="0 -20px 20px 0" />
-        <SecondaryLabel fontSize={12} fontWeight={600} uppercase>
-          transaction parameters
-        </SecondaryLabel>
-        {/* gas option */}
-        <DivFlex justifyContent="space-evenly" margin="10px 0" gap="10px">
-          {Object.keys(GAS_CONFIGS).map((config) => {
-            const gas = GAS_CONFIGS[config];
-            return (
-              <GasItem
-                key={gas.LABEL}
-                isActive={selectedGas.LABEL === gas.LABEL}
-                onClick={() => {
-                  setSelectedGas(gas);
-                  clearErrors('gasLimit');
-                  clearErrors('gasPrice');
-                  setValue('gasLimit', gas?.GAS_LIMIT);
-                  setValue('gasPrice', gas.GAS_PRICE);
-                }}
-              >
-                {gas.LABEL}
-              </GasItem>
-            );
-          })}
-        </DivFlex>
-        <DivFlex gap="10px">
-          <div style={{ flex: 1 }}>
-            {/* gas limit */}
-            <BaseTextInput
-              inputProps={{
-                type: 'number',
-                placeholder: '0',
-                value: selectedGas?.GAS_LIMIT,
-                ...register('gasLimit', {
-                  required: {
-                    value: true,
-                    message: 'This field is required.',
-                  },
-                  validate: {
-                    positive: (v) => {
-                      const value = Number(v);
-                      return value > 0;
-                    },
-                    isInteger: (v) => {
-                      const reg = /^\d+$/;
-                      return reg.test(v);
-                    },
-                  },
-                }),
-              }}
-              onWheel={(event) => event.currentTarget.blur()}
-              title="gas limit"
-              height="auto"
-              onChange={handleChangeGasLimit}
-            />
-            {errors.gasLimit && errors.gasLimit.type === 'required' && (
-              <ErrorWrapper>
-                <DivFlex>
-                  <Error>This field is required</Error>
-                </DivFlex>
-              </ErrorWrapper>
-            )}
-            {errors.gasLimit && errors.gasLimit.type === 'positive' && (
-              <ErrorWrapper>
-                <DivFlex>
-                  <Error>Invalid gas limit</Error>
-                </DivFlex>
-              </ErrorWrapper>
-            )}
-            {errors.gasLimit && errors.gasLimit.type === 'isInteger' && (
-              <ErrorWrapper>
-                <DivFlex>
-                  <Error>Gas limit must be integer</Error>
-                </DivFlex>
-              </ErrorWrapper>
-            )}
-          </div>
-          <div style={{ flex: 1 }}>
-            {/* gas price */}
-            <BaseTextInput
-              inputProps={{
-                type: 'number',
-                placeholder: '0',
-                value: selectedGas.GAS_PRICE,
-                ...register('gasPrice', {
-                  required: {
-                    value: true,
-                    message: 'This field is required.',
-                  },
-                  validate: {
-                    positive: (v) => {
-                      const value = Number(v);
-                      return value > 0;
-                    },
-                  },
-                }),
-              }}
-              title="gas price"
-              height="auto"
-              onChange={handleChangeGasPrice}
-              onWheel={(event) => event.currentTarget.blur()}
-            />
-            {errors.gasPrice && errors.gasPrice.type === 'required' && (
-              <ErrorWrapper>
-                <DivFlex>
-                  <Error>This field is required</Error>
-                </DivFlex>
-              </ErrorWrapper>
-            )}
-            {errors.gasPrice && errors.gasPrice.type === 'positive' && (
-              <ErrorWrapper>
-                <DivFlex>
-                  <Error>Invalid gas price</Error>
-                </DivFlex>
-              </ErrorWrapper>
-            )}
-          </div>
+        <DivFlex justifyContent="space-between">
+          <SecondaryLabel fontSize={12} fontWeight={600} uppercase>
+            transaction parameters
+          </SecondaryLabel>
+          <GearIconSVG style={{ cursor: 'pointer' }} onClick={() => setIsOpenGasOptionsModal(true)} />
         </DivFlex>
         <DivFlex justifyContent="space-between" alignItems="center" margin="20px 0">
           <SecondaryLabel fontSize={12} fontWeight={600} uppercase>
             Estimated gas {configs.gasLimit * configs.gasPrice}
+            <br />
+            <SecondaryLabel fontWeight={200} uppercase>
+              {selectedGas.LABEL} SPEED
+            </SecondaryLabel>
           </SecondaryLabel>
           <CommonLabel fontSize={12} fontWeight={600} uppercase>
             {humanReadableNumber(usdPrices?.coin * configs.gasLimit * configs.gasPrice)} USD
@@ -625,6 +643,14 @@ const Transfer = (props: Props) => {
           />
         </ModalCustom>
       )}
+      <ModalCustom
+        closeOnOverlayClick
+        isOpen={isOpenGasOptionsModal}
+        title="Transaction Parameters"
+        onCloseModal={() => setIsOpenGasOptionsModal(false)}
+      >
+        {gasOptions}
+      </ModalCustom>
       {isOpenAddContactModal && (
         <ModalCustom
           isOpen={isOpenAddContactModal}

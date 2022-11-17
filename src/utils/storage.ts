@@ -50,15 +50,15 @@ export const getLocalSelectedWallet = (successCallback, failCallback) => {
 };
 
 // Activities
-export const setLocalActivities = (network, chainId, account, activities) => {
-  const key = `${network}.activities.${chainId}.${account}`;
+export const setLocalActivities = (network, account, activities) => {
+  const key = `${network}.activities.${account}`;
   const obj = {};
   obj[key] = activities;
   (window as any)?.chrome?.storage?.local?.set(obj);
 };
 
-export const getLocalActivities = (network, chainId, account, successCallback, failCallback) => {
-  const key = `${network}.activities.${chainId}.${account}`;
+export const getLocalActivities = (network, account, successCallback, failCallback) => {
+  const key = `${network}.activities.${account}`;
   (window as any)?.chrome?.storage?.local?.get(`${key}`, (result) => {
     if (result && result[key] && result[key].length) {
       successCallback(result[key]);

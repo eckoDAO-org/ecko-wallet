@@ -7,7 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import AppContainer from './AppContainer';
 import { ModalProvider, ModalConsumer } from './contexts/ModalContext';
 import { CrossChainProvider } from './contexts/CrossChainContext';
-import { TxSettingsProvider } from './contexts/TxSettingsContext';
+import { SettingsProvider } from './contexts/SettingsContext';
 import { AccountBalanceProvider } from './contexts/AccountBalanceContext';
 import ModalCustom from './components/Modal/ModalCustom';
 
@@ -58,13 +58,13 @@ const App = () => (
               </ModalCustom>
             )}
           </ModalConsumer>
-          <TxSettingsProvider>
+          <SettingsProvider>
             <AccountBalanceProvider>
               <CrossChainProvider>
                 <AppContainer />
               </CrossChainProvider>
             </AccountBalanceProvider>
-          </TxSettingsProvider>
+          </SettingsProvider>
         </ModalProvider>
       </Content>
     </AppWrapper>

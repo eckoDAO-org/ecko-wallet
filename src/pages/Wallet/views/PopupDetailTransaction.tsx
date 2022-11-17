@@ -21,21 +21,10 @@ const DivChild = styled.div`
   font-weight: ${(props) => props.fontWeight};
   margin: ${(props) => props.margin};
   padding: ${(props) => props.padding};
+  color: ${(props) => props.color};
 `;
 const CustomDiv = styled(DivChild)`
   font-weight: bold;
-`;
-const Total = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 0px 20px 20px;
-  font-weight: 700;
-  margin-top: 20px;
-`;
-const Hr = styled.hr`
-  height: 2px;
-  transform: matrix(1, 0, 0, -1, 0, 0);
-  border: none;
 `;
 const Image = styled.img<{ size: string; top: string; width: string }>`
   height: ${($props) => $props.size};
@@ -83,12 +72,17 @@ const PopupDetailTransaction = (props: Props) => {
   const status = get(activityDetails, 'result.status');
   const finishDate = get(activityDetails, 'metaData.blockTime');
   const finishDateValue = new Date(finishDate / 1000);
-  const isSameChain = activityDetails.receiverChainId.toString() === activityDetails.senderChainId.toString();
   const isPending = activityDetails.status === 'pending';
+  let color = '#ff6058';
+  if (activityDetails.status === 'success') {
+    color = '#25d366';
+  } else if (activityDetails.status === 'pending') {
+    color = '#ffa500';
+  }
   let statusText = 'Pending';
   if (!isPending) {
     if (status === 'success') {
-      statusText = isSameChain ? 'Completed' : 'Success - Cross chain transfer';
+      statusText = 'Success';
     } else {
       statusText = 'Failed';
     }
@@ -99,7 +93,7 @@ const PopupDetailTransaction = (props: Props) => {
         {renderTransactionInfo(activityDetails, { borderTop: ' none', margin: '0px -20px 20px', paddingBottom: 10 })}
         <Item>
           <DivChild fontWeight="700">Status</DivChild>
-          <CustomDiv fontSize="14px" fontWeight="700">
+          <CustomDiv fontSize="14px" fontWeight="700" color={color}>
             {statusText}
           </CustomDiv>
         </Item>
@@ -115,15 +109,14 @@ const PopupDetailTransaction = (props: Props) => {
           <DivChild>Gas Fee</DivChild>
           <DivChild>{isPending ? 'Pending' : new BigNumber(gasFee).decimalPlaces(12).toString()}</DivChild>
         </Item>
+        {(activityDetails.symbol || 'kda') === 'kda' && (
+          <Item>
+            <DivChild>Total</DivChild>
+            <DivChild>{isPending ? 'Pending' : `${new BigNumber(total).decimalPlaces(12).toString()} KDA`}</DivChild>
+          </Item>
+        )}
       </DetailTx>
-      <Hr />
-      {(activityDetails.symbol || 'kda') === 'kda' && (
-        <Total>
-          <DivChild>Total</DivChild>
-          <DivChild>{isPending ? 'Pending' : `${new BigNumber(total).decimalPlaces(12).toString()} KDA`}</DivChild>
-        </Total>
-      )}
-      <DivFlex justifyContent="center" padding="24px">
+      <DivFlex justifyContent="center" padding="0px 24px">
         <Button size="full" onClick={openTransactionDetails} label="View Details" />
       </DivFlex>
       <ActivityLog>
