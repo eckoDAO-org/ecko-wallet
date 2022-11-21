@@ -34,7 +34,7 @@ export const ContactInfo = ({ contact }: any) => {
         setLocalContacts(selectedNetwork.networkId, newContacts);
         setContacts(convertContacts(newContacts));
         setIsDeleting(false);
-        toast.success(<Toast type="success" content="Remove contact successfully" />);
+        toast.success(<Toast type="success" content="Contact Removed" />);
         closeModal();
       },
       () => {},
@@ -83,11 +83,11 @@ export const ContactInfo = ({ contact }: any) => {
         {isDeleting && (
           <ModalCustom isOpen={isDeleting} showCloseIcon={false} title="Delete contact">
             <div>
-              <DivFlex flexDirection="column" justifyContent="center" alignItems="center" padding="24px 0">
-                <CommonLabel fontSize={24} fontWeight={700}>
+              <DivFlex flexDirection="column" justifyContent="center" alignItems="center" padding="24px">
+                <CommonLabel fontSize={18} fontWeight={700}>
                   Remove Contact?
                 </CommonLabel>
-                <SecondaryLabel fontWeight={500} fontSize={16}>
+                <SecondaryLabel fontWeight={400} fontSize={14} style={{ textAlign: 'center', margin: '20px 0' }}>
                   Are you sure you want to remove this contact?
                 </SecondaryLabel>
               </DivFlex>

@@ -35,7 +35,6 @@ export const SPWrapper = styled.div`
     0px 10px 23px rgba(36, 8, 43, 0.06), 0px 0px 0px rgba(36, 8, 43, 0.07);
   border-radius: 25px;
   box-sizing: border-box;
-  margin: 30px 0;
   text-align: center;
 `;
 
@@ -147,15 +146,25 @@ const ExportSeedPhrase = () => {
       {!isHiddenSP && (
         <SPWrapper>
           <SPText>{sP ? encryptText(sP) : defaultText}</SPText>
-          <DivFlex flexDirection="column" alignItems="center" marginTop="30px" paddingTop="30px" style={{ borderTop: '1px solid #DFDFED' }}>
+          <DivFlex flexDirection="column" alignItems="center" paddingTop="30px" style={{ borderTop: '1px solid #DFDFED' }}>
             <SecondaryLabel fontWeight={500} fontSize={14}>
               Your Secret Recovery Phrase makes it easy to back up and restore your account.
             </SecondaryLabel>
             <Warning style={{ textAlign: 'start', marginTop: 30 }}>
               <AlertIcon style={{ minWidth: 22 }} />
-              Never disclose your Secret Recovery Phrase. Anyone with this phrase cane take your wallet forever.
+              Never disclose your Secret Recovery Phrase. Anyone with this phrase can take your wallet forever.
             </Warning>
           </DivFlex>
+          <ActionList
+            actions={[
+              {
+                label: 'Copy Keyphrase',
+                src: images.wallet.copyGray,
+                onClick: onCopy,
+              },
+              { label: 'Download', src: images.settings.iconDownload, onClick: onDownload },
+            ]}
+          />
         </SPWrapper>
       )}
       {isHiddenSP && (
@@ -165,7 +174,7 @@ const ExportSeedPhrase = () => {
         </DivFlex>
       )}
       <Body>
-        {isHiddenSP ? (
+        {isHiddenSP && (
           <>
             <BaseTextInput
               inputProps={{ placeholder: 'Input password', type: 'password' }}
@@ -187,19 +196,6 @@ const ExportSeedPhrase = () => {
               <Button size="full" variant="primary" onClick={handleVerifyPassword} isDisabled={!passwordInput} label="Continue" />
             </CustomButton>
           </>
-        ) : (
-          <div>
-            <ActionList
-              actions={[
-                {
-                  label: 'Copy Keyphrase',
-                  src: images.wallet.copyGray,
-                  onClick: onCopy,
-                },
-                { label: 'Download', src: images.settings.iconDownload, onClick: onDownload },
-              ]}
-            />
-          </div>
         )}
       </Body>
     </Wrapper>
