@@ -4,12 +4,10 @@ import { useEffect, useState } from 'react';
 import ReactJson from 'react-json-view';
 import { getLocalSelectedNetwork, getLocalSignedCmd } from 'src/utils/storage';
 import Button from 'src/components/Buttons';
-import { BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
+import { DivFlex, SecondaryLabel } from 'src/components';
 import { updateSignedCmdMessage } from 'src/utils/message';
-import { Footer } from '../SendTransactions/styles';
-import { ButtonWrapper } from '../SendTransactions/views/style';
 
-const Wrapper = styled.div`
+export const DappWrapper = styled.div`
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -18,7 +16,6 @@ const Wrapper = styled.div`
   bottom: 0;
   right: 0;
   z-index: 2;
-  background: linear-gradient(90deg, #e6fefe 0%, #fdf6e6 100%);
   font-size: 14px;
   overflow-y: scroll;
   overflow-x: hidden;
@@ -36,28 +33,15 @@ const Wrapper = styled.div`
     border-radius: 2px;
   }
 `;
-
-const DappTitle = styled.div`
-  text-align: center;
-  font-weight: 700;
-  font-size: 18px;
-`;
-
-const FooterWrapper = styled(Footer)`
-  padding: 0 20px;
-  position: fixed;
-  bottom: 10px;
-  width: 90%;
-`;
-const ContentWrapper = styled.div`
+export const DappContentWrapper = styled.div`
   padding: 20px;
   word-break: break-word;
 `;
-const DappDescription = styled.div`
+export const DappDescription = styled.div`
   text-align: center;
   margin: 20px 0;
 `;
-const Logo = styled.img`
+export const DappLogo = styled.img`
   width: 70px;
   height: 70px;
   margin: 50px auto 20px auto;
@@ -108,11 +92,13 @@ const SignedCmd = () => {
 
   const newCmd = cmd.cmd ? { ...cmd, cmd: JSON.parse(cmd.cmd) } : {};
   return (
-    <Wrapper>
-      <Logo src={images.xWalletIcon} alt="logo" />
+    <DappWrapper>
+      <DappLogo src={images.xWalletIcon} alt="logo" />
       <DappDescription>{domain}</DappDescription>
-      <DappTitle>Get signed command</DappTitle>
-      <ContentWrapper>
+      <SecondaryLabel style={{ textAlign: 'center' }} uppercase>
+        Get signed command
+      </SecondaryLabel>
+      <DappContentWrapper>
         <ReactJson
           src={newCmd}
           enableClipboard={false}
@@ -124,16 +110,12 @@ const SignedCmd = () => {
           style={{ paddingBottom: 40 }}
           collapseStringsAfterLength={false}
         />
-      </ContentWrapper>
-      <FooterWrapper>
-        <ButtonWrapper>
-          <Button label="Reject" type={BUTTON_TYPE.DISABLE} onClick={onClose} size={BUTTON_SIZE.FULL} />
-        </ButtonWrapper>
-        <ButtonWrapper>
-          <Button label="Confirm" onClick={onSave} size={BUTTON_SIZE.FULL} />
-        </ButtonWrapper>
-      </FooterWrapper>
-    </Wrapper>
+      </DappContentWrapper>
+      <DivFlex gap="10px" padding="24px">
+        <Button size="full" label="Reject" variant="disabled" onClick={onClose} />
+        <Button size="full" label="Confirm" onClick={onSave} />
+      </DivFlex>
+    </DappWrapper>
   );
 };
 

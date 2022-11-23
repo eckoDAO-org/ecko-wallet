@@ -9,12 +9,11 @@ import {
   getLocalSelectedWallet,
   setLocalActiveDapps,
 } from 'src/utils/storage';
+import { DivFlex, SecondaryLabel } from 'src/components';
 import { decryptKey } from 'src/utils/security';
 import Button from 'src/components/Buttons';
-import { BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
 import { updateConnectMessage } from 'src/utils/message';
 import { Footer } from '../SendTransactions/styles';
-import { ButtonWrapper } from '../SendTransactions/views/style';
 
 const Wrapper = styled.div`
   display: flex;
@@ -25,7 +24,6 @@ const Wrapper = styled.div`
   bottom: 0;
   right: 0;
   z-index: 2;
-  background: linear-gradient(90deg, #e6fefe 0%, #fdf6e6 100%);
   font-size: 14px;
   overflow-y: scroll;
   overflow-x: hidden;
@@ -178,16 +176,16 @@ const DappSignIn = () => {
           <Div>X Wallet extension</Div>
         </ConnectItem>
         <ConnectInfo>{`${domain} would like to connect to your account`}</ConnectInfo>
-        <ConnectDescription>
-          This site is requesting access to view your current account address. Always make sure you trust the sites you interact with.
-        </ConnectDescription>
+        <div>
+          <SecondaryLabel>
+            This site is requesting access to view your current account address. Always make sure you trust the sites you interact with.
+          </SecondaryLabel>
+        </div>
         <FooterWrapper>
-          <ButtonWrapper>
-            <Button label="Reject" type={BUTTON_TYPE.DISABLE} onClick={onReject} size={BUTTON_SIZE.FULL} />
-          </ButtonWrapper>
-          <ButtonWrapper>
-            <Button label="Save" onClick={onSave} size={BUTTON_SIZE.FULL} />
-          </ButtonWrapper>
+          <DivFlex padding="0" gap="5px">
+            <Button size="full" label="Reject" variant="disabled" onClick={onReject} />
+            <Button size="full" label="Save" onClick={onSave} />
+          </DivFlex>
         </FooterWrapper>
       </CompleteWrapper>
     </Wrapper>

@@ -4,13 +4,12 @@ import Button from 'src/components/Buttons';
 import { setContacts } from 'src/stores/extensions';
 import { convertContacts } from 'src/utils';
 import { toast } from 'react-toastify';
+import { DivFlex } from 'src/components';
 import Toast from 'src/components/Toast/Toast';
-import { BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
 import { getLocalContacts, setLocalContacts } from 'src/utils/storage';
 import { useState } from 'react';
 import images from 'src/images';
-import { Footer } from '../styles';
-import { PageConfirm, BodyContent, ButtonAdd, ButtonWrapper, ItemWrapper } from './style';
+import { PageConfirm, ItemWrapper } from './style';
 
 type Props = {
   onClose: any;
@@ -42,8 +41,8 @@ const AddContact = (props: Props) => {
       networkId,
       (data) => {
         const contacts = data;
-        contacts[`${contact.chainId}`] = contacts[`${contact.chainId}`] || {};
-        contacts[`${contact.chainId}`][`${contact.accountName}`] = newContact;
+        contacts[0] = contacts[0] || {};
+        contacts[0][`${contact.accountName}`] = newContact;
         setLocalContacts(networkId, contacts);
         setContacts(convertContacts(contacts));
         onClose(aliasName);
@@ -51,8 +50,8 @@ const AddContact = (props: Props) => {
       },
       () => {
         const contacts = {};
-        contacts[`${contact.chainId}`] = {};
-        contacts[`${contact.chainId}`][`${contact.accountName}`] = newContact;
+        contacts[0] = {};
+        contacts[0][`${contact.accountName}`] = newContact;
         setLocalContacts(networkId, contacts);
         setContacts(convertContacts(contacts));
         onClose(aliasName);
@@ -66,7 +65,7 @@ const AddContact = (props: Props) => {
   };
   return (
     <PageConfirm>
-      <BodyContent>
+      <div style={{ padding: 24 }}>
         <form onSubmit={handleSubmit(addContact)} id="contact-form">
           <ItemWrapper>
             <BaseTextInput
@@ -110,21 +109,12 @@ const AddContact = (props: Props) => {
               }}
             />
           </ItemWrapper>
-          <ItemWrapper>
-            <BaseTextInput inputProps={{ readOnly: true, value: contact.chainId }} title="Chain ID" height="auto" />
-          </ItemWrapper>
         </form>
-      </BodyContent>
-      <Footer>
-        <ButtonWrapper>
-          <Button label="Cancel" type={BUTTON_TYPE.DISABLE} onClick={() => onClose(false)} size={BUTTON_SIZE.FULL} />
-        </ButtonWrapper>
-        <ButtonWrapper>
-          <ButtonAdd disabled={!isValue} form="contact-form">
-            Save
-          </ButtonAdd>
-        </ButtonWrapper>
-      </Footer>
+      </div>
+      <DivFlex justifyContent="space-between" padding="24px">
+        <Button size="full" label="Cancel" variant="disabled" onClick={() => onClose(false)} />
+        <Button size="full" label="Save" variant="primary" disabled={!isValue} form="contact-form" />
+      </DivFlex>
     </PageConfirm>
   );
 };

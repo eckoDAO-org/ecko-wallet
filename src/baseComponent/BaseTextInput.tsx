@@ -1,6 +1,7 @@
+import React, { memo, useState } from 'react';
 import styled from 'styled-components';
-import { memo, useState } from 'react';
 import images from 'src/images';
+import { SecondaryLabel } from 'src/components';
 
 type ImageProps = {
   width: string;
@@ -20,27 +21,41 @@ type Props = {
   onWheel?: any;
   onBlur?: any;
   typeInput?: String;
+  wrapperStyle?: React.CSSProperties;
 };
 const BaseTextInput = memo(
-  ({ title, inputProps = {}, typeInput, image, height = '44px', isFlex, onChange, numberOptions, onKeyPress, onWheel, onBlur }: Props) => {
+  ({
+    title,
+    inputProps = {},
+    typeInput,
+    image,
+    height = '44px',
+    isFlex,
+    onChange,
+    numberOptions,
+    onKeyPress,
+    onWheel,
+    onBlur,
+    wrapperStyle,
+  }: Props) => {
     const [type, setType] = useState('password');
     const { readOnly } = inputProps;
     let styles = {
       border: '1px solid #c4c4c4',
       background: 'none',
-      color: '#461A57',
+      color: '#000000',
     };
     if (readOnly) {
       styles = {
         border: 'none',
         background: 'none',
-        color: '#461A57',
+        color: '#787B8E',
       };
     }
     return (
       <SDivRoot height={height} isFlex={isFlex}>
-        <SText isFlex={isFlex}>{title}</SText>
-        <InputWrapper isFlex={isFlex} readOnly={readOnly}>
+        <SLabel uppercase>{title}</SLabel>
+        <InputWrapper isFlex={isFlex} readOnly={readOnly} style={wrapperStyle}>
           {typeInput === 'password' ? (
             <>
               <SInput
@@ -101,10 +116,10 @@ const InputWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border: ${(props) => (props.border ? props.border : '1px solid #c4c4c4')};
+  border: ${(props) => props.border};
   border-radius: 4px;
   ${(props) => (props.isFlex ? 'flex-grow: 1' : '')};
-  background: ${(props) => (props.readOnly ? '#EEE6F3' : 'none')};
+  background: ${(props) => (props.readOnly ? '#ECECF5' : '#F6F6FA')};
 `;
 const ImageWrapper = styled.div`
   height: 34px;
@@ -123,17 +138,13 @@ const SImage = styled.img`
   width: ${(props) => props.height};
   cursor: pointer;
 `;
-const SText = styled.title`
-  display: block;
-  font-size: 16px;
-  line-height: 19px;
-  margin-bottom: ${(props) => (props.isFlex ? '0' : '10px')};
-  ${(props) => (props.isFlex ? 'width: 31%' : '')};
-  ${(props) => (props.isFlex ? 'align-self: center' : '')};
-  color: #461a57;
+
+export const SLabel = styled(SecondaryLabel)`
+  line-height: 30px;
   font-weight: 700;
 `;
-const SInput = styled.input`
+
+export const SInput = styled.input`
   width: 100%;
   background: ${(props) => props.background};
   color: ${(props) => props.color};
@@ -141,11 +152,13 @@ const SInput = styled.input`
   font-size: 16px;
   height: 40px;
   padding: 0 0 0 13px;
-  font-family: 'Play', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   outline: none;
   border: none;
   &::placeholder {
-    color: #a187ab;
+    color: #787b8e;
+    font-weight: 500;
+    font-size: 16px;
   }
 `;
 

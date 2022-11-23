@@ -5,14 +5,16 @@ import { ToastContainer } from 'react-toastify';
 import store from './stores';
 import 'react-toastify/dist/ReactToastify.css';
 import AppContainer from './AppContainer';
+import { ModalProvider, ModalConsumer } from './contexts/ModalContext';
 import { CrossChainProvider } from './contexts/CrossChainContext';
-import { TxSettingsProvider } from './contexts/TxSettingsContext';
+import { SettingsProvider } from './contexts/SettingsContext';
+import { AccountBalanceProvider } from './contexts/AccountBalanceContext';
+import ModalCustom from './components/Modal/ModalCustom';
 
 const AppWrapper = styled.div`
   display: block;
-  font-family: 'Play', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   display: flex;
-  color: #461a57;
   height: 100%;
   @media screen and (max-width: 1024px) {
     background: none;
@@ -27,18 +29,16 @@ const Content = styled.div`
   flex: 1 0 auto;
 `;
 const ToastWrapper = styled.div`
-  .Toastify__toast-theme--colored.Toastify__toast--success {
-    background: #45b95e;
+  .Toastify__toast-theme--light.Toastify__toast--success {
+    border-left: 4px solid #25d366;
     border-radius: 4px;
-    border-bottom: 4px solid rgba(0, 0, 0, 0.2);
-    width: 95%;
+    width: 90%;
     margin: 10px auto;
   }
-  .Toastify__toast-theme--colored.Toastify__toast--error {
-    background: #ffa69f;
+  .Toastify__toast-theme--light.Toastify__toast--error {
+    border-left: 4px solid #e74c3c;
     border-radius: 4px;
-    border-bottom: 4px solid rgba(0, 0, 0, 0.2);
-    width: 95%;
+    width: 90%;
     margin: 10px auto;
   }
   .Toastify__toast-container {
@@ -50,11 +50,22 @@ const App = () => (
   <Provider store={store}>
     <AppWrapper>
       <Content>
-        <TxSettingsProvider>
-          <CrossChainProvider>
-            <AppContainer />
-          </CrossChainProvider>
-        </TxSettingsProvider>
+        <ModalProvider>
+          <ModalConsumer>
+            {({ isOpen, title, content, footer, closeModal, roundIcon }) => (
+              <ModalCustom isOpen={isOpen || false} title={title} footer={footer} onCloseModal={closeModal} roundIcon={roundIcon}>
+                {content}
+              </ModalCustom>
+            )}
+          </ModalConsumer>
+          <SettingsProvider>
+            <AccountBalanceProvider>
+              <CrossChainProvider>
+                <AppContainer />
+              </CrossChainProvider>
+            </AccountBalanceProvider>
+          </SettingsProvider>
+        </ModalProvider>
       </Content>
     </AppWrapper>
     <ToastWrapper>
@@ -69,7 +80,7 @@ const App = () => (
         closeButton={false}
         pauseOnFocusLoss
         draggable
-        theme="colored"
+        theme="light"
         pauseOnHover
       />
     </ToastWrapper>

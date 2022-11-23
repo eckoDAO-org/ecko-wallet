@@ -1,3 +1,24 @@
+@font-face {
+  font-family: 'Montserrat';
+  font-weight: 400;
+  src: url(./css/static/Montserrat-Regular.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-weight: 500;
+  src: url(./css/static/Montserrat-Medium.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-weight: 600;
+  src: url(./css/static/Montserrat-SemiBold.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-weight: 700;
+  src: url(./css/static/Montserrat-Bold.ttf) format('truetype');
+}
+
 .main-container-wrapper {
   display: flex;
   justify-content: center;
@@ -12,4 +33,43 @@
   box-shadow: 0 0 7px 0 #444444;
   position: absolute;
   text-align: center;
+}
+
+.react-responsive-modal-modal {
+  .react-responsive-modal-closeButton {
+    &:focus-visible {
+      outline: none !important;
+    }
+  }
+}
+
+@keyframes animatebottom {
+  0% {
+    bottom: -300px;
+    opacity: 0;
+  }
+
+  100% {
+    bottom: 0;
+    opacity: 1;
+  }
+}
+
+.path-fill-white {
+  svg {
+    path {
+      fill: white !important;
+    }
+  }
+}
+
+@keyframes spin {
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes spin {
+  to {
+    -webkit-transform: rotate(360deg);
+  }
 }

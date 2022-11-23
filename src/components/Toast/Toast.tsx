@@ -1,25 +1,21 @@
 import images from 'src/images';
 import styled from 'styled-components';
+import { SecondaryLabel } from '..';
 
 const ToastWrapper = styled.div`
-  color: white;
+  font-family: Montserrat;
+  color: black;
+  font-weight: 500;
   position: relative;
-  font-family: 'Play', sans-serif;
 `;
 const ToastLabel = styled.div`
   font-weight: 700;
-  font-size: 16px;
+  font-size: 12px;
 `;
 const ToastContent = styled.div`
   display: flex;
   align-items: center;
 `;
-const ToastDescription = styled.div`
-  font-size: 12px;
-  word-break: break-word;
-  margin-top: 5px;
-`;
-const ToastBody = styled.div``;
 const ToastIcon = styled.img`
   width: ${(props) => (props.isSuccess ? '16px' : '24px')};
   height: ${(props) => (props.isSuccess ? '12px' : '24px')};
@@ -45,10 +41,10 @@ const Toast = (props: Props) => {
     <ToastWrapper>
       <ToastContent>
         <ToastIcon src={isSuccess ? images.toast.successToast : images.toast.failToast} />
-        <ToastBody>
+        <div>
           <ToastLabel>{isSuccess ? 'Success' : 'Fail'}</ToastLabel>
-          <ToastDescription>{content}</ToastDescription>
-        </ToastBody>
+          <SecondaryLabel fontSize={11}>{content}</SecondaryLabel>
+        </div>
       </ToastContent>
       <CloseIcon src={images.toast.closeWhite} alt="close-white" />
     </ToastWrapper>

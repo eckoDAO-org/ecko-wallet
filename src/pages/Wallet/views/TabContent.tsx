@@ -11,12 +11,6 @@ const TabContent = styled.div`
 
 const TabWallet = () => {
   const tabList = [
-    // @TODO
-    // {
-    //   title: 'Assets',
-    //   id: 0,
-    //   content: (<Assets />),
-    // },
     {
       title: 'Activities',
       id: 1,

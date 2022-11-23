@@ -1,9 +1,9 @@
+import { DivFlex } from 'src/components';
 import styled from 'styled-components';
 
 export const Body = styled.div`
   height: auto;
   width: 100%;
-  font-family: 'Play', sans-serif;
   font-size: 16px;
 `;
 
@@ -48,11 +48,7 @@ export const ItemWrapper = styled.div`
   margin-top: 15px;
 `;
 export const InfoWrapper = styled.div`
-  margin-top: 20px;
-  width: 370px;
-  @media screen and (max-width: 480px) {
-    width: 100%;
-  }
+  padding: 24px;
 `;
 export const DivChildLeft = styled.div`
   /* padding: 10px 0; */
@@ -87,14 +83,13 @@ export const DivChildBreak = styled.div`
   font-weight: normal;
   font-size: 16px;
   line-height: 25px;
-  color: #461a57;
 `;
 
 export const DivChildRight = styled.div`
   font-weight: normal;
   font-size: 16px;
   line-height: 25px;
-  color: #461a57;
+
   word-break: break-all;
 `;
 
@@ -103,7 +98,6 @@ export const TransactionInfo = styled.div`
 `;
 
 export const TitleConfirm = styled.div`
-  color: #461a57;
   text-align: center;
   padding: 40px 0;
   font-weight: 700;
@@ -133,27 +127,11 @@ export const BodyConfirm = styled.div`
   margin: 0 auto;
 `;
 
-export const LabelConfirm = styled.div`
-  color: #461a57;
-`;
-
-export const ButtonAdd = styled.button`
-  width: 100%;
-  height: 44px;
-  border-radius: 10px;
-  border: 1px solid #461a57;
-  font-family: 'Play', sans-serif;
-  background: ${(props) => (props.disabled ? 'white' : '#461A57')};
-  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
-  font-weight: 700;
-  color: ${(props) => (props.disabled ? '#461A57' : '#ffffff')};
-  font-size: 16px;
-  margin: auto;
-`;
+export const LabelConfirm = styled.div``;
 
 export const LabelBold = styled.div`
   font-weight: bold;
-  color: #461a57;
+
   ${(props) => (props.isRight ? 'margin-left: auto' : '')}
 `;
 
@@ -179,24 +157,12 @@ export const ButtonDiv = styled.button`
   height: 44px;
   background: #f2f2f2;
   border-radius: 20px;
-  font-family: 'Play', sans-serif;
   border: none;
   color: #606a73;
   font-size: 16px;
   margin: 0 20px 0 0;
 `;
 
-export const ButtonConfirm = styled.button`
-  width: 152px;
-  height: 44px;
-  border-radius: 20px;
-  background: #461a57;
-  font-family: 'Play', sans-serif;
-  border: none;
-  color: #ffffff;
-  left: 10%;
-  font-size: 16px;
-`;
 export const EstimateGas = styled.div`
   margin-bottom: 30px;
   margin-top: 20px;
@@ -204,13 +170,13 @@ export const EstimateGas = styled.div`
 export const GasFeeTitle = styled.div`
   font-size: 16px;
   line-height: 25px;
-  color: #461a57;
+
   font-weight: 700;
   margin-bottom: 10px;
 `;
 export const GasFeeBox = styled.div`
   background: #f2f2f2;
-  color: #461a57;
+
   padding: 10px 13px;
 `;
 export const GasFeeValue = styled.div`
@@ -220,13 +186,6 @@ export const SendTransaction = styled.div`
   font-size: 16px;
   margin: 10px 0 28px 0;
   position: relative;
-`;
-export const TransferItem = styled.div`
-  border: 1px solid #461a57;
-  box-sizing: border-box;
-  border-radius: 8px;
-  padding: 12px;
-  ${(props) => (props.isTop ? 'margin-bottom: 12px' : '')}
 `;
 export const TransactionImage = styled.img`
   height: 14px;
@@ -249,10 +208,11 @@ export const TooltipImage = styled.img`
   margin-left: 10px;
 `;
 export const TransferImage = styled.img<{ size: string; top: string; width: string }>`
-  height: ${($props) => $props.size};
-  width: ${($props) => ($props.width ? $props.width : $props.size)};
-  margin: auto;
-  padding: 0 9%;
+  padding: 4px;
+  width: 25px;
+  height: 25px;
+  border: 1px solid #dfdfed;
+  border-radius: 50px;
 `;
 export const TransferName = styled.div`
   font-weight: 700;
@@ -263,7 +223,6 @@ export const SpaceDiv = styled.div`
 `;
 export const TransferHr = styled.hr`
   height: 2px;
-  background: linear-gradient(90deg, #d2ab72 0%, #b66e84 35.42%, #b2579b 64.06%, #9ee9e4 99.48%);
   transform: matrix(1, 0, 0, -1, 0, 0);
   border: none;
 `;
@@ -271,7 +230,6 @@ export const TransferHr = styled.hr`
 export const TransferDetails = styled.div`
   display: flex;
   justify-content: space-between;
-  color: #461a57;
 `;
 
 export const ImageSpace = styled.span`
@@ -288,11 +246,27 @@ export const ImageWrapper = styled.div`
   width: 30px;
   height: 30px;
 `;
-export const AmountWrapper = styled.div`
-  display: flex;
-  align-items: center;
-`;
+
 export const Balance = styled.div`
   margin-left: auto;
   font-weight: 400;
+`;
+
+export const AccountTransferDetail = styled(DivFlex)`
+  border-bottom: 1px solid rgb(223, 223, 237);
+  border-top: 1px solid rgb(223, 223, 237);
+  margin: 0 -20px 20px -20px;
+  padding: 0 20px;
+`;
+
+export const AmountWrapper = styled(DivFlex)`
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+  }
+  input[type='number'] {
+    -moz-appearance: textfield; /* Firefox */
+  }
 `;

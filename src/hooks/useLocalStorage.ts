@@ -53,6 +53,18 @@ function useLocalStorage<S>(key: string, initialValue: S): [S | null, (value: an
     }
   };
 
+  useEffect(() => {
+    const onChange = (changes) => {
+      if (changes[key] && changes[key].newValue) {
+        setStoredValue(changes[key].newValue);
+      }
+    };
+    (window as any).chrome.storage.onChanged.addListener(onChange);
+    return () => {
+      (window as any).chrome.storage.onChanged.removeListener(onChange);
+    };
+  }, []);
+
   return [storedValue, setValue, getValueAsync, removeValue];
 }
 

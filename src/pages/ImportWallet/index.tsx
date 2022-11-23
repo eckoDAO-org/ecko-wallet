@@ -9,7 +9,8 @@ import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
 import images from 'src/images';
 import { setCurrentWallet, setWallets } from 'src/stores/wallet';
-import Back from 'src/components/Back';
+import { NavigationHeader } from 'src/components/NavigationHeader';
+import Button from 'src/components/Buttons';
 import { useWindowResizeMobile } from 'src/hooks/useWindowResizeMobile';
 import styled from 'styled-components';
 import useChainIdOptions from 'src/hooks/useChainIdOptions';
@@ -22,19 +23,6 @@ import { getLocalPassword, getLocalWallets, setLocalSelectedWallet, setLocalWall
 import { ACTIVE_TAB } from 'src/utils/constant';
 import { fetchLocal } from '../../utils/chainweb';
 
-const Title = styled.div`
-  font-style: normal;
-  font-weight: 700;
-  font-size: 24px;
-  display: flex;
-  line-height: 25px;
-  text-align: left;
-  width: fit-content;
-  padding-top: 22px;
-`;
-const Header = styled.div`
-  margin: 1.5em 0;
-`;
 const DivBody = styled.div`
   width: 100%;
   text-align: left;
@@ -52,19 +40,6 @@ const Footer = styled.div`
     margin-top: 25px;
   }
 `;
-const ButtonImport = styled.button`
-  width: 100%;
-  height: 44px;
-  font-family: 'Play', sans-serif;
-  background: #461a57;
-  border-radius: 10px;
-  border: none;
-  font-weight: 700;
-  color: #ffffff;
-  font-size: 16px;
-  margin: auto;
-  cursor: pointer;
-`;
 const ConditionWrapper = styled.div`
   padding: 0 20px;
 `;
@@ -74,14 +49,14 @@ const Body = styled.div`
 `;
 const DivChild = styled.div`
   margin-top: 20px;
-  color: #461a57;
+
   text-align: center;
 `;
 const TitleModal = styled.div`
   text-align: center;
   font-size: 20px;
   font-weight: 700;
-  color: #461a57;
+
   margin-bottom: 15px;
 `;
 const ImportAccount = () => {
@@ -198,12 +173,9 @@ const ImportAccount = () => {
   };
   return (
     <ConditionWrapper>
-      <Header>
-        <Back title="Back" onBack={goBack} />
-      </Header>
+      <NavigationHeader title="Import Wallet" onBack={goBack} />
       <Body>
         <form onSubmit={handleSubmit(onImport)} id="import-wallet-form">
-          <Title>Import Wallet</Title>
           <DivBody>
             <BaseTextInput
               inputProps={{
@@ -335,7 +307,7 @@ const ImportAccount = () => {
         </ModalCustom>
       )}
       <Footer>
-        <ButtonImport form="import-wallet-form">Import Wallet</ButtonImport>
+        <Button label="Import wallet" size="full" form="import-wallet-form" />
       </Footer>
     </ConditionWrapper>
   );

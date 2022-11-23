@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import { setExpiredTime } from 'src/stores/extensions';
 import { setLocalExpiredTime } from 'src/utils/storage';
 import images from 'src/images';
+import Button from 'src/components/Buttons';
 
 const CreatePasswordWrapper = styled.div`
   padding: 0 20px;
@@ -17,7 +18,6 @@ const Wrapper = styled.form`
 const Body = styled.div`
   height: auto;
   width: 100%;
-  font-family: 'Play', sans-serif;
   font-size: 16px;
   margin-top: 40px;
 `;
@@ -33,7 +33,7 @@ const Title = styled.div`
   font-weight: 700;
   font-size: 24px;
   line-height: 25px;
-  color: #461a57;
+
   text-align: left;
   margin-bottom: 50px;
 `;
@@ -41,19 +41,6 @@ const Footer = styled.div`
   width: 100%;
   height: 3em;
   margin-top: 100px;
-`;
-
-const SignInButton = styled.button`
-  width: 100%;
-  height: 44px;
-  border-radius: 10px;
-  font-size: 16px;
-  cursor: pointer;
-  border: none;
-  background: #461a57;
-  color: white;
-  font-weight: 700;
-  font-family: 'Play', sans-serif;
 `;
 const DivImage = styled.div`
   font-size: ${(props) => props.fontSize};
@@ -145,7 +132,7 @@ const LoginDapp = (props: any) => {
         </Wrapper>
       </Body>
       <Footer>
-        <SignInButton form="sign-in-form">Sign In</SignInButton>
+        <Button label="Sign In" size="full" form="sign-in-form" />
       </Footer>
     </CreatePasswordWrapper>
   );

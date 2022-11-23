@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { getLocalDapps } from 'src/utils/storage';
+import { CommonLabel, DivFlex, PrimaryLabel, SecondaryLabel } from 'src/components';
 import { get } from 'lodash';
 import { useSelector } from 'react-redux';
 import { fetchLocal } from 'src/utils/chainweb';
 import { hideLoading, showLoading } from 'src/stores/extensions';
 import images from 'src/images';
 import Button from 'src/components/Buttons';
-import { BUTTON_SIZE } from 'src/utils/constant';
 import Transfer from './views/Transfer';
-import { Body, TransactionWrapper, FormSend } from './styles';
+import { TransactionWrapper, FormSend } from './styles';
+import { DappContentWrapper, DappDescription, DappLogo, DappWrapper } from '../Dapps/SignedCmd';
 
 const Wrapper = styled(TransactionWrapper)`
   padding: 0;
@@ -20,28 +21,13 @@ const Header = styled.div`
   padding: 14px 20px;
   box-shadow: 0px 2px 12px rgba(0, 0, 0, 0.12);
 `;
-const HeaderWrapper = styled.div`
-  font-size: 16px;
-  margin-bottom: 14px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-`;
-const Logo = styled.img`
-  width: 114px;
-  height: 29px;
-`;
-const Domain = styled.div`
-  word-break: break-word;
-  padding: 16px 20px;
-`;
+
 const NotFound = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
   padding: 20px;
-`;
-const Padding = styled.div`
-  padding: 0 20px;
 `;
 const NotFoundImage = styled.img`
   width: 80px;
@@ -50,24 +36,10 @@ const NotFoundImage = styled.img`
 `;
 const NotFoundDescription = styled.div`
   font-size: 18px;
-  color: #461a57;
+
   text-align: center;
   word-break: break-word;
   margin-bottom: 222px;
-`;
-const Title = styled.div`
-  font-weight: 700;
-  font-size: 24px;
-  line-height: 25px;
-  margin: 5px 0;
-`;
-const NetworkLabel = styled.div`
-  padding: 10px 15px;
-  text-align: center;
-  background-color: #f2f2f2;
-  border-radius: 20px;
-  margin-left: auto;
-  width: 70px;
 `;
 export const PageSendTransaction = styled.div`
   display: block;
@@ -80,7 +52,6 @@ export const PageSendTransaction = styled.div`
   bottom: 0;
   margin-bottom: 14px;
   overflow-y: scroll;
-  background: linear-gradient(90deg, #e6fefe 0%, #fdf6e6 100%);
   overflow-x: hidden;
   &::-webkit-scrollbar {
     width: 2px;
@@ -103,7 +74,8 @@ const DappTransfer = () => {
   useEffect(() => {
     getLocalDapps(
       (dapps) => {
-        const { account, chainId } = dapps;
+        console.log(`🚀 !!! ~ dapps`, dapps);
+        const { account, chainId, sourceChainId } = dapps;
         const pactCode = `(coin.details "${account}")`;
         showLoading();
         fetchLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, chainId)
@@ -115,6 +87,7 @@ const DappTransfer = () => {
             const newDestinationAccount = exist
               ? {
                   accountName: account,
+                  sourceChainId,
                   chainId,
                   pred,
                   keys,
@@ -137,39 +110,40 @@ const DappTransfer = () => {
     );
   }, []);
   return (
-    <PageSendTransaction>
+    <DappWrapper>
       {!loading && (
-        <Wrapper>
-          {destinationAccount && destinationAccount.domain && (
-            <HeaderWrapper>
-              <Header>
-                <Logo alt="logo" src={images.logo} />
-                <NetworkLabel>{selectedNetwork.name}</NetworkLabel>
-              </Header>
-              <Domain>{destinationAccount.domain}</Domain>
-            </HeaderWrapper>
-          )}
-          <Body>
-            <FormSend>
-              {destinationAccount && destinationAccount.accountName ? (
-                <>
-                  <Padding>
-                    <Title isSendTitle>Send Transaction</Title>
-                  </Padding>
-                  <Transfer destinationAccount={destinationAccount} fungibleToken={{ symbol: 'kda', contractAddress: 'coin' }} />
-                </>
-              ) : (
-                <NotFound>
-                  <NotFoundImage src={images.transfer.accountNotFound} />
-                  <NotFoundDescription>Destination account not found</NotFoundDescription>
-                  <Button size={BUTTON_SIZE.FULL} label="Close" onClick={() => window.close()} />
-                </NotFound>
-              )}
-            </FormSend>
-          </Body>
-        </Wrapper>
+        <>
+          <DappLogo src={images.xWalletIcon} alt="logo" />
+          <SecondaryLabel style={{ textAlign: 'center' }} uppercase>
+            {selectedNetwork.networkId}
+          </SecondaryLabel>
+          <DappContentWrapper>
+            {destinationAccount && destinationAccount.accountName ? (
+              <>
+                <DivFlex flexDirection="column" alignItems="center" justifyContent="center" margin="10px 0px">
+                  <CommonLabel uppercase fontSize={24} fontWeight="bold" isSendCommonLabel>
+                    Send Transaction
+                  </CommonLabel>
+                  <SecondaryLabel>{destinationAccount.domain}</SecondaryLabel>
+                </DivFlex>
+                <Transfer
+                  isDappTransfer
+                  sourceChainId={destinationAccount?.sourceChainId}
+                  destinationAccount={destinationAccount}
+                  fungibleToken={{ symbol: 'kda', contractAddress: 'coin' }}
+                />
+              </>
+            ) : (
+              <NotFound>
+                <NotFoundImage src={images.transfer.accountNotFound} />
+                <NotFoundDescription>Destination account not found</NotFoundDescription>
+                <Button label="Close" onClick={() => window.close()} />
+              </NotFound>
+            )}
+          </DappContentWrapper>
+        </>
       )}
-    </PageSendTransaction>
+    </DappWrapper>
   );
 };
 

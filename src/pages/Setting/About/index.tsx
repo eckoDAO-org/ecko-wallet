@@ -4,7 +4,7 @@ import Back from 'src/components/Back';
 import { TELEGRAM_GROUP_LINK, WEBSITE_LINK } from 'src/utils/config';
 import { SettingBody } from '../style';
 import { Body } from '../../SendTransactions/styles';
-import { ContentAbout, TitleAbout, TitleDes, TitleVersion, AboutBody, Div, TitleHeaderAbout } from './style';
+import { ContentAbout, TitleAbout, TitleDes, TitleVersion, Div, TitleHeaderAbout } from './style';
 
 const PageAbout = () => {
   const text = 'About';
@@ -18,9 +18,9 @@ const PageAbout = () => {
         <Back title="Back" onBack={goBack} />
         <Body>
           <TitleHeaderAbout>{text}</TitleHeaderAbout>
-          <AboutBody>
+          <div>
             <ContentAbout>
-              <TitleAbout>X Wallet v1.4.0</TitleAbout>
+              <TitleAbout>X Wallet v2.0.0</TitleAbout>
               <TitleVersion>The evolution of DeFi on Kadena</TitleVersion>
             </ContentAbout>
             <ContentAbout>
@@ -35,7 +35,7 @@ const PageAbout = () => {
                 </a>
               </TitleDes>
             </ContentAbout>
-          </AboutBody>
+          </div>
         </Body>
       </Div>
     </SettingBody>

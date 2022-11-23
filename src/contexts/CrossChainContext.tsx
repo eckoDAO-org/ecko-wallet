@@ -7,7 +7,7 @@ import Toast from 'src/components/Toast/Toast';
 import { fetchSend, getApiUrl, pollRequestKey } from 'src/utils/chainweb';
 import useLocalStorage from 'src/hooks/useLocalStorage';
 import { getTimestamp } from 'src/utils';
-import { TxSettingsContext } from './TxSettingsContext';
+import { SettingsContext } from './SettingsContext';
 
 interface CrossChainContextValue {
   crossChainRequests: any[] | null;
@@ -34,7 +34,7 @@ export const CrossChainContext = createContext<CrossChainContextValue>(defaultCr
 export const CrossChainProvider = ({ children }: any) => {
   const rootState = useSelector((state) => state);
 
-  const { data: txSettings } = useContext(TxSettingsContext);
+  const { data: txSettings } = useContext(SettingsContext);
 
   const { selectedNetwork } = rootState.extensions;
   const { account, chainId } = rootState.wallet;
@@ -241,3 +241,7 @@ export const CrossChainProvider = ({ children }: any) => {
 };
 
 export const CrossChainConsumer = CrossChainContext.Consumer;
+
+export function useCrossChainContext() {
+  return useContext(CrossChainContext);
+}

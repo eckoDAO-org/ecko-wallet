@@ -1,51 +1,44 @@
 import { useHistory } from 'react-router-dom';
 import images from 'src/images';
 import styled from 'styled-components';
-import Back from 'src/components/Back';
 import Button from 'src/components/Buttons';
-import { BUTTON_SIZE } from 'src/utils/constant';
+import { ReactComponent as AlertIconSVG } from 'src/images/icon-alert.svg';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import CheckBox from 'src/baseComponent/CheckBox';
+import { Radio } from 'src/components/Radio';
 import { toast } from 'react-toastify';
+import { NavigationHeader } from 'src/components/NavigationHeader';
 import Toast from 'src/components/Toast/Toast';
+import { DivFlex, SecondaryLabel } from 'src/components';
 import { generateSeedPhrase, getKeyPairsFromSeedPhrase } from 'src/utils/chainweb';
 import { setIsHaveSeedPhrase } from 'src/stores/extensions';
 import { encryptKey } from 'src/utils/security';
 import { getLocalWallets, setLocalSeedPhrase, setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
 import { setCurrentWallet, setWallets } from 'src/stores/wallet';
+import { Warning } from '../SendTransactions/styles';
+import { SPWrapper } from '../Setting/ExportSeedPhrase';
 
 const Footer = styled.div`
   margin: 20px 0;
   display: flex;
   justify-content: space-between;
 `;
-const CLabel = styled.span`
-  font-size: 16px;
-`;
 const Wrapper = styled.div`
-  padding: 0 20px;
-  color: #461a57;
+  padding: 0 24px;
+  text-align: center;
   font-size: 16px;
   word-break: break-word;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
 `;
-const SPWrapper = styled.div`
-  padding: 16px;
-  font-size: 16px;
-  position: relative;
-  border: 1px solid #b3b3b3;
-  border-radius: 8px;
-  box-sizing: border-box;
-  margin-top: 30px;
-  text-align: center;
-  background: linear-gradient(90deg, rgba(230, 254, 254, 0.9) 0%, rgba(253, 246, 230, 0.9) 100%);
-`;
+
 const SPBlackDrop = styled.div`
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(90deg, rgba(230, 254, 254, 0.9) 0%, rgba(253, 246, 230, 0.9) 100%);
   display: flex;
   flex-direction: column;
   border-radius: 8px;
@@ -65,18 +58,9 @@ const Title = styled.div`
 const Text = styled.div`
   margin-bottom: ${(props) => (props.isLast ? '0' : '30px')};
 `;
-const SPDropText = styled.div`
-  text-align: center;
-  text-transform: uppercase;
-  margin-top: 12px;
-  font-weight: 700;
-`;
 const LockImage = styled.img`
   width: 28px;
   height: 35px;
-`;
-const Description = styled.div`
-  text-align: center;
 `;
 const CheckboxWrapper = styled.div`
   margin-top: 40px;
@@ -92,9 +76,6 @@ const ItemWrapper = styled.div`
   text-align: center;
   width: 22%;
 `;
-const CustomButton = styled.div`
-  margin-top: 20px;
-`;
 const SInput = styled.input`
   text-align: center;
   width: 100%;
@@ -104,25 +85,15 @@ const SInput = styled.input`
   border-radius: 8px;
   margin: 10px 0 25px 0;
   outline: none;
-  color: #461a57;
-  font-family: 'Play', sans-serif;
+
   background: none;
-`;
-const SPContent = styled.div`
-  text-align: center;
-  background: #eee6f3;
-  padding: 18px 15px;
-  margin-top: 20px;
-  font-size: 16px;
-  border: 1px solid #461a57;
-  border-radius: 8px;
-  align-items: center;
 `;
 const SPText = styled.div`
   ${(props) => (props.isBlur ? 'filter: blur(4px);' : '')};
   font-weight: 400;
   line-height: 40px;
   font-size: 24px;
+  font-family: monospace;
 `;
 const defaultArr = ['', '', '', '', '', '', '', '', '', '', '', ''];
 const SeedPhrase = () => {
@@ -253,7 +224,7 @@ const SeedPhrase = () => {
   const renderItem = (index) => (
     <ItemWrapper key={index}>
       {index}
-      <SInput type="text" onChange={(e) => onChangeSP(e.target.value, index)} />
+      <SInput type="text" onChange={(e) => onChangeSP(e.target.value, index)} style={{ fontFamily: 'monospace' }} />
     </ItemWrapper>
   );
 
@@ -269,57 +240,62 @@ const SeedPhrase = () => {
   const renderStep1 = () => (
     <>
       <Title>Secret Recovery Phrase</Title>
-      <SPContent>
-        <Text>In the next step you will record your 12 word recovery phrase.</Text>
-        <Text>Your recovery phrase makes it easy to restore your wallet on a new device.</Text>
-        <Text>Anyone with this phrase can take control of your wallet, keep this phrase private.</Text>
-        <Text isLast>Kadena cannot access your recovery phrase if lost, please store it safely.</Text>
-      </SPContent>
+      <Warning>
+        <AlertIconSVG />
+        <div style={{ flex: 1 }}>
+          In the next step you will record your 12 word recovery phrase.
+          <br />
+          Your recovery phrase makes it easy to restore your wallet on a new device.
+          <br />
+          Anyone with this phrase can take control of your wallet, keep this phrase private.
+          <br />
+          Kadena cannot access your recovery phrase if lost, please store it safely.
+        </div>
+      </Warning>
       <CheckboxWrapper>
-        <CheckBox
+        <Radio
           isChecked={isChecked}
-          onChange={(value) => setIsChecked(value)}
-          label={<CLabel>I understand that if I lose my recovery phrase, I will not be able to restore my wallet.</CLabel>}
+          label={<SecondaryLabel>I understand that if I lose my recovery phrase, I will not be able to restore my wallet.</SecondaryLabel>}
+          onClick={() => setIsChecked((prev) => !prev)}
         />
       </CheckboxWrapper>
-      <Footer>
-        <Button onClick={onNext} isDisabled={!isChecked} label="Continue" size={BUTTON_SIZE.FULL} />
+      <Footer style={{ marginTop: 50 }}>
+        <Button size="full" onClick={onNext} isDisabled={!isChecked} label="Continue" />
       </Footer>
     </>
   );
   const renderStep2 = () => (
     <>
-      <Back title="Back" onBack={goBack} />
-      <Title step={step}>Secret Recovery Phrase</Title>
+      <NavigationHeader title="Secret Recovery Phrase" onBack={goBack} />
       <SPWrapper>
         <SPText isBlur={isHiddenSP}>{sP}</SPText>
         {isHiddenSP && (
           <SPBlackDrop onClick={showSP}>
-            <LockImage src={images.settings.lockImg} alt="lock" />
-            <SPDropText>Click here to reveal secret words</SPDropText>
+            <LockImage src={images.settings.iconLockOpen} alt="lock" />
+            <SecondaryLabel fontWeight={500}>Click here to reveal secret words</SecondaryLabel>
           </SPBlackDrop>
         )}
       </SPWrapper>
-      <SPContent>
-        <Text>Your Secret Recovery Phrase makes it easy to back up and restore your account.</Text>
-        <Text isLast>Warning: Never disclose your Secret Recovery Phrase. Anyone with this phrase can take your wallet forever.</Text>
-      </SPContent>
-      <CustomButton>
-        <Button onClick={onDownload} label="Download" size={BUTTON_SIZE.FULL} />
-      </CustomButton>
-      <Footer>
-        <Button onClick={onNext} isDisabled={isHiddenSP} label="Continue" size={BUTTON_SIZE.FULL} />
-      </Footer>
+      <Warning>
+        <AlertIconSVG />
+        <div style={{ flex: 1 }}>
+          <Text>Your Secret Recovery Phrase makes it easy to back up and restore your account.</Text>
+          <Text isLast>Warning: Never disclose your Secret Recovery Phrase. Anyone with this phrase can take your wallet forever.</Text>
+        </div>
+      </Warning>
+      <DivFlex gap="10px" padding="24px 0">
+        <Button size="full" variant="primary" onClick={onDownload} label="Download" />
+        <Button size="full" onClick={onNext} isDisabled={isHiddenSP} label="Continue" />
+      </DivFlex>
     </>
   );
   const renderStep3 = () => (
     <>
-      <Back title="Back" onBack={goBack} />
-      <Title>Verify Recovery Phrase</Title>
-      <Description>Please confirm your recovery phrase by typing the words in the correct order.</Description>
+      <NavigationHeader title="Verify Recovery Phrase" onBack={goBack} />
+      <SecondaryLabel>Please confirm your recovery phrase by typing the words in the correct order.</SecondaryLabel>
       {renderVerifySP()}
       <Footer>
-        <Button onClick={onNext} isDisabled={!enable} label="Continue" size={BUTTON_SIZE.FULL} />
+        <Button size="full" onClick={onNext} isDisabled={!enable} label="Continue" />
       </Footer>
     </>
   );

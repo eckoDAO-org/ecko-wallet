@@ -1,111 +1,40 @@
-import { useEffect, useState, useContext } from 'react';
-import { BaseSelect, BaseTextInput } from 'src/baseComponent';
+import React, { useEffect, useState } from 'react';
+import { BaseTextInput } from 'src/baseComponent';
 import { useSelector } from 'react-redux';
 import { hideLoading, showLoading } from 'src/stores/extensions';
-import { fetchLocal, getBalanceFromChainwebApiResponse } from 'src/utils/chainweb';
+import { ReactComponent as AddIconSVG } from 'src/images/add-round.svg';
+import { ReactComponent as AlertIconSVG } from 'src/images/icon-alert.svg';
+import { ReactComponent as GearIconSVG } from 'src/images/gear-icon.svg';
+import { fetchListLocal, fetchLocal, getBalanceFromChainwebApiResponse } from 'src/utils/chainweb';
 import { getLocalContacts, getExistContacts } from 'src/utils/storage';
 import ModalCustom from 'src/components/Modal/ModalCustom';
+import { CommonLabel, DivBottomShadow, DivFlex, PaddedBodyStickyFooter, PrimaryLabel, SecondaryLabel, StickyFooter } from 'src/components';
+import { JazzAccount } from 'src/components/JazzAccount';
+import { SInput } from 'src/baseComponent/BaseTextInput';
 import PopupConfirm from 'src/pages/SendTransactions/views/PopupConfirm';
 import { toast } from 'react-toastify';
-import useLocalStorage from 'src/hooks/useLocalStorage';
 import Toast from 'src/components/Toast/Toast';
-import { TxSettingsContext } from 'src/contexts/TxSettingsContext';
-import { Controller, useForm } from 'react-hook-form';
-import { BUTTON_SIZE, BUTTON_TYPE, GAS_PAYER } from 'src/utils/constant';
-import { CONFIG, ESTIMATE_KDA_TO_USD_API, GAS_CONFIGS, NUMBER_DECIMAL_AFTER_DOT } from 'src/utils/config';
+import { useSettingsContext } from 'src/contexts/SettingsContext';
+import { useModalContext } from 'src/contexts/ModalContext';
+import { useAccountBalanceContext } from 'src/contexts/AccountBalanceContext';
+import { useForm } from 'react-hook-form';
+import { CONFIG, GAS_CONFIGS, NUMBER_DECIMAL_AFTER_DOT } from 'src/utils/config';
 import { get } from 'lodash';
 import images from 'src/images';
-import { BigNumberConverter, shortenAddress } from 'src/utils';
+import { BigNumberConverter, humanReadableNumber, shortenAddress } from 'src/utils';
 import { IFungibleToken } from 'src/pages/ImportToken';
 import Button from 'src/components/Buttons';
-import Tooltip from 'src/components/Tooltip';
-import {
-  ButtonSend,
-  Warning,
-  Footer,
-  LabelMax,
-  Item,
-  Error,
-  Label,
-  TransferWrapper,
-  GasOptions,
-  GasOptionsWrapper,
-  GasItem,
-  ErrorWrapper,
-  TransactionTitle,
-} from '../styles';
-import {
-  TransferButton,
-  SendTransaction,
-  TransferItem,
-  TransferName,
-  TransferDetails,
-  AccountDetails,
-  ImageSpace,
-  TransactionImage,
-  ImageWrapper,
-  TransferImage,
-  AddImage,
-  AmountWrapper,
-  Balance,
-  KadenaImage,
-  SpaceDiv,
-  TooltipImage,
-  TransferHr,
-} from './style';
 import AddContact from './AddContact';
+import { Warning, Footer, Error, GasItem, ErrorWrapper } from '../styles';
+import { TransferImage, AmountWrapper, AccountTransferDetail } from './style';
 
 type Props = {
+  isDappTransfer?: boolean;
+  sourceChainId: any;
   destinationAccount: any;
   fungibleToken: IFungibleToken | null;
 };
-export const renderTransactionInfo = (info) => (
-  <SendTransaction>
-    <TransferItem isTop>
-      <TransferName>Sender Account</TransferName>
-      <TransferDetails>
-        <AccountDetails>
-          {shortenAddress(info.sender)}
-          <ImageSpace>
-            <TransactionImage
-              cursor="pointer"
-              src={images.wallet.copyGray}
-              alt="copy-gray"
-              onClick={() => {
-                navigator.clipboard.writeText(info.sender);
-                toast.success(<Toast type="success" content="Copied!" />);
-              }}
-            />
-          </ImageSpace>
-        </AccountDetails>
-        <span>{`Chain ID ${info.senderChainId}`}</span>
-      </TransferDetails>
-    </TransferItem>
-    <ImageWrapper>
-      <TransferImage src={images?.transfer?.arrowDownViolet} width="100%" size="auto" alt="down-arrow" />
-    </ImageWrapper>
-    <TransferItem>
-      <TransferName>Destination Account</TransferName>
-      <TransferDetails>
-        <AccountDetails>
-          {shortenAddress(info.receiver)}
-          <ImageSpace>
-            <TransactionImage
-              cursor="pointer"
-              src={images.wallet.copyGray}
-              alt="copy-gray"
-              onClick={() => {
-                navigator.clipboard.writeText(info.receiver);
-                toast.success(<Toast type="success" content="Copied!" />);
-              }}
-            />
-          </ImageSpace>
-        </AccountDetails>
-        <span>{`Chain ID ${info.receiverChainId}`}</span>
-      </TransferDetails>
-    </TransferItem>
-  </SendTransaction>
-);
+
 interface Wallet {
   accountName: string;
   coinBalance: number;
@@ -122,18 +51,74 @@ const defaultWallet: Wallet = {
   chainId: '0',
   secretKey: '',
 };
+
+interface TransactionInfo {
+  sender: string;
+  senderChainId: string;
+  receiver: string;
+  receiverChainId: string;
+}
+
+export const renderTransactionInfo = (info: TransactionInfo, containerStyle?: React.CSSProperties) => (
+  <AccountTransferDetail justifyContent="space-between" alignItems="center" style={containerStyle}>
+    <div>
+      <JazzAccount
+        account={info.sender}
+        renderAccount={(acc) => (
+          <DivFlex flexDirection="column">
+            <span style={{ fontWeight: 500, fontSize: 12 }}>{shortenAddress(acc)}</span>
+            <SecondaryLabel uppercase>chain {info.senderChainId}</SecondaryLabel>
+          </DivFlex>
+        )}
+      />
+    </div>
+    <TransferImage src={images.wallet.arrowTransfer} />
+    <div>
+      <JazzAccount
+        account={info.receiver}
+        renderAccount={(acc) => (
+          <DivFlex flexDirection="column">
+            <span style={{ fontWeight: 500, fontSize: 12 }}>{shortenAddress(acc)}</span>
+            <SecondaryLabel uppercase>chain {info.receiverChainId}</SecondaryLabel>
+          </DivFlex>
+        )}
+      />
+    </div>
+  </AccountTransferDetail>
+);
+
 const Transfer = (props: Props) => {
-  const { destinationAccount, fungibleToken } = props;
-  const { data: txSettings } = useContext(TxSettingsContext);
+  const { destinationAccount, fungibleToken, sourceChainId, isDappTransfer } = props;
+  const { data: txSettings } = useSettingsContext();
+  const { usdPrices } = useAccountBalanceContext();
+  const { openModal } = useModalContext();
   const [wallet, setWallet] = useState(defaultWallet);
   const [selectedGas, setSelectedGas] = useState({ ...GAS_CONFIGS.NORMAL });
-  const [fungibleTokens] = useLocalStorage<IFungibleToken[]>('fungibleTokens', []);
-  const [amount, setAmount] = useState('');
+  const [amount, setAmount] = useState('0.0');
   const [isNewContact, setIsNewContact] = useState(true);
   const [aliasContact, setAliasContact] = useState('');
+  const [isDestinationChainTokenError, setIsDestinationChainTokenError] = useState(false);
   const [isOpenTransferModal, setIsOpenTransferModal] = useState(false);
   const [isOpenAddContactModal, setIsOpenAddContactModal] = useState(false);
-  const [KDApriceEstimate, setKDApriceEstimate] = useState(1);
+  const [isOpenGasOptionsModal, setIsOpenGasOptionsModal] = useState(false);
+
+  const checkTokenExists = async () => {
+    showLoading();
+    const pactCode = `(${fungibleToken?.contractAddress}.details "${destinationAccount?.accountName}")`;
+    const res = await fetchListLocal(
+      pactCode,
+      selectedNetwork.url,
+      selectedNetwork.networkId,
+      destinationAccount?.chainId,
+      txSettings?.gasPrice,
+      txSettings?.gasLimit,
+    );
+    if (res?.result?.error?.message?.includes('Cannot resolve') || res?.result?.error?.message?.includes('Database error')) {
+      setIsDestinationChainTokenError(true);
+    } else {
+      setIsDestinationChainTokenError(false);
+    }
+  };
 
   useEffect(() => {
     setSelectedGas({
@@ -146,7 +131,6 @@ const Transfer = (props: Props) => {
     register,
     handleSubmit,
     formState: { errors },
-    control,
     setValue,
     clearErrors,
   } = useForm();
@@ -154,23 +138,15 @@ const Transfer = (props: Props) => {
   const { selectedNetwork } = rootState.extensions;
   useEffect(() => {
     initData();
+    checkTokenExists();
     initContact();
   }, [selectedNetwork.networkId]);
-  useEffect(() => {
-    fetch(`${ESTIMATE_KDA_TO_USD_API}${fungibleTokens?.map((ft) => ft.symbol).join(',')}`)
-      .then((res) => res.json())
-      .then(
-        (result) => {
-          setKDApriceEstimate(result?.kadena?.usd);
-        },
-        () => {},
-      );
-  }, []);
+
   const initContact = () => {
     getLocalContacts(
       selectedNetwork.networkId,
       (data) => {
-        const aliasName = getExistContacts(destinationAccount.accountName, destinationAccount.chainId, data);
+        const aliasName = getExistContacts(destinationAccount.accountName, data);
         if (aliasName && aliasName.length) {
           setIsNewContact(false);
           setAliasContact(aliasName);
@@ -181,13 +157,13 @@ const Transfer = (props: Props) => {
   };
 
   const initData = () => {
-    const { account, chainId, publicKey, secretKey } = rootState.wallet;
+    const { account, publicKey, secretKey } = rootState.wallet;
     const pactCodeCoin = `(coin.details "${account}")`;
     const pactCodeToken = `(${fungibleToken?.contractAddress}.details "${account}")`;
     showLoading();
-    fetchLocal(pactCodeCoin, selectedNetwork.url, selectedNetwork.networkId, chainId)
+    fetchLocal(pactCodeCoin, selectedNetwork.url, selectedNetwork.networkId, sourceChainId)
       .then((resCoin) => {
-        fetchLocal(pactCodeToken, selectedNetwork.url, selectedNetwork.networkId, chainId).then((resToken) => {
+        fetchLocal(pactCodeToken, selectedNetwork.url, selectedNetwork.networkId, sourceChainId).then((resToken) => {
           hideLoading();
           const status = get(resToken, 'result.status');
           if (status === 'success') {
@@ -199,7 +175,7 @@ const Transfer = (props: Props) => {
               tokenBalance,
               publicKey,
               secretKey,
-              chainId,
+              chainId: sourceChainId,
             });
           }
         });
@@ -210,7 +186,7 @@ const Transfer = (props: Props) => {
   };
 
   const onNext = () => {
-    if (destinationAccount?.accountName === rootState.wallet.account && destinationAccount?.chainId === rootState.wallet.chainId) {
+    if (destinationAccount?.accountName === rootState.wallet.account && destinationAccount?.chainId === sourceChainId) {
       toast.error(<Toast type="fail" content="Can not send to yourself" />);
     } else {
       setIsOpenTransferModal(true);
@@ -261,7 +237,7 @@ const Transfer = (props: Props) => {
     setValue('amount', number);
   };
 
-  const estimateFee = `${BigNumberConverter(Number(selectedGas?.GAS_LIMIT) * Number(selectedGas?.GAS_PRICE) * Number(KDApriceEstimate))}`;
+  const estimateFee = `${BigNumberConverter(Number(selectedGas?.GAS_LIMIT) * Number(selectedGas?.GAS_PRICE) * Number(usdPrices?.coin))}`;
   const isCrossChain = wallet?.chainId?.toString() !== destinationAccount?.chainId?.toString();
   const configs = {
     senderName: wallet?.accountName,
@@ -294,9 +270,13 @@ const Transfer = (props: Props) => {
     }
     setIsOpenAddContactModal(false);
   };
-  const setMaxBalance = () => {
+
+  const setPrefilledBalance = (type: 'max' | 'half') => {
     const gasFee = BigNumberConverter(Number(selectedGas?.GAS_PRICE) * Number(selectedGas?.GAS_LIMIT));
     let amountValue = BigNumberConverter(wallet?.tokenBalance);
+    if (type === 'half') {
+      amountValue /= 2;
+    }
     if (fungibleToken?.contractAddress === 'coin') {
       amountValue -= gasFee;
     }
@@ -304,160 +284,48 @@ const Transfer = (props: Props) => {
     setAmount(amountCustom);
     setValue('amount', amountCustom);
   };
-  const renderAmountLabel = () => (
-    <AmountWrapper>
-      Amount
-      <Balance style={{ fontSize: 14 }}>{`Balance: ${BigNumberConverter(wallet?.tokenBalance)} ${fungibleToken?.symbol.toUpperCase()}`}</Balance>
-    </AmountWrapper>
-  );
-  const renderTitle = (title, tooltip) => (
-    <AmountWrapper>
-      {title}
-      <Tooltip tooltipText={tooltip}>
-        <TooltipImage src={images.transfer.info} alt="info" />
-      </Tooltip>
-    </AmountWrapper>
-  );
-  const info = {
-    sender: rootState.wallet.account,
-    senderChainId: rootState.wallet.chainId,
-    receiver: destinationAccount.accountName,
-    receiverChainId: destinationAccount.chainId,
+
+  const estimateUSDAmount =
+    fungibleToken?.contractAddress && Object.prototype.hasOwnProperty.call(usdPrices, fungibleToken?.contractAddress)
+      ? (usdPrices[fungibleToken?.contractAddress as any] || 0) * Number(amount)
+      : null;
+
+  const getInputFontSize = (length: number) => {
+    if (length < 5) {
+      return 40;
+    }
+    if (length < 12) {
+      return 40 - amount.toString().length;
+    }
+    return 22;
   };
 
-  return (
-    <TransferWrapper>
-      {renderTransactionInfo(info)}
-      {isNewContact && !destinationAccount.domain && (
-        <Warning isContact onClick={openAddContact}>
-          <AddImage src={images.transfer.violetAdd} alt="add" />
-          New address detected! Add to your contacts
-        </Warning>
-      )}
-      <TransferHr />
-      <TransactionTitle>Transaction</TransactionTitle>
-      <form onSubmit={handleSubmit(onNext, onErrors)} id="send-transaction" noValidate>
-        {/* amount */}
-        <SpaceDiv>
-          {destinationAccount?.dappAmount ? (
-            <BaseTextInput
-              inputProps={{
-                readOnly: true,
-                value: destinationAccount?.dappAmount,
-                ...register('amount', {
-                  required: {
-                    value: true,
-                    message: 'This field is required.',
-                  },
-                  validate: {
-                    isZero: (v) => {
-                      const value = Number(v);
-                      return value !== 0;
-                    },
-                    positive: (v) => {
-                      const value = Number(v);
-                      const balance = Number(wallet.tokenBalance);
-                      const gasFee = BigNumberConverter(Number(selectedGas.GAS_PRICE) * Number(selectedGas.GAS_LIMIT));
-                      let amountValue = BigNumberConverter(balance);
-                      if (fungibleToken?.contractAddress === 'coin') {
-                        amountValue -= gasFee;
-                      }
-                      return value > 0 && value <= amountValue;
-                    },
-                  },
-                }),
+  const gasOptions = (
+    <>
+      {/* gas option */}
+      <DivFlex justifyContent="space-evenly" margin="10px 0" gap="10px" padding="0px 24px">
+        {Object.keys(GAS_CONFIGS).map((config) => {
+          const gas = GAS_CONFIGS[config];
+          return (
+            <GasItem
+              key={gas.LABEL}
+              isActive={selectedGas.LABEL === gas.LABEL}
+              onClick={() => {
+                setSelectedGas(gas);
+                clearErrors('gasLimit');
+                clearErrors('gasPrice');
+                setValue('gasLimit', gas?.GAS_LIMIT);
+                setValue('gasPrice', gas.GAS_PRICE);
               }}
-              title={renderAmountLabel()}
-              height="auto"
-            />
-          ) : (
-            <BaseTextInput
-              inputProps={{
-                type: 'number',
-                value: amount,
-                placeholder: '0.0',
-                ...register('amount', {
-                  required: {
-                    value: true,
-                    message: 'This field is required.',
-                  },
-                  validate: {
-                    isZero: (v) => {
-                      const value = Number(v);
-                      return value !== 0;
-                    },
-                    positive: (v) => {
-                      const value = Number(v);
-                      const balance = Number(wallet.tokenBalance);
-                      const gasFee = BigNumberConverter(Number(selectedGas.GAS_PRICE) * Number(selectedGas.GAS_LIMIT));
-                      let amountValue = BigNumberConverter(balance);
-                      if (fungibleToken?.contractAddress === 'coin') {
-                        amountValue -= gasFee;
-                      }
-                      return value > 0 && value <= amountValue;
-                    },
-                  },
-                }),
-              }}
-              title={renderAmountLabel()}
-              height="auto"
-              onChange={changeAmount}
-              onWheel={(event) => event.currentTarget.blur()}
-              numberOptions={{
-                content: (
-                  <Item>
-                    <LabelMax onClick={setMaxBalance}>MAX</LabelMax>
-                    <KadenaImage src={images.wallet.iconKadenaToken} alt="logo" />
-                    <Label>{fungibleToken?.symbol.toUpperCase()}</Label>
-                  </Item>
-                ),
-              }}
-            />
-          )}
-          {errors.amount && errors.amount.type === 'required' && (
-            <ErrorWrapper>
-              <GasOptions>
-                <Error>This field is required</Error>
-              </GasOptions>
-            </ErrorWrapper>
-          )}
-          {errors.amount && errors.amount.type === 'positive' && (
-            <ErrorWrapper>
-              <GasOptions>
-                <Error>Insufficient funds</Error>
-              </GasOptions>
-            </ErrorWrapper>
-          )}
-          {errors.amount && errors.amount.type === 'isZero' && (
-            <ErrorWrapper>
-              <GasOptions>
-                <Error>Invalid amount</Error>
-              </GasOptions>
-            </ErrorWrapper>
-          )}
-        </SpaceDiv>
-        {isCrossChain && (
-          <SpaceDiv>
-            <Controller
-              control={control}
-              name="gasPayer"
-              render={({ field: { onChange, onBlur } }) => (
-                <BaseSelect
-                  selectProps={{
-                    onChange,
-                    onBlur,
-                    value: GAS_PAYER[0],
-                  }}
-                  options={GAS_PAYER}
-                  title={`Gas Payer For Chain ${destinationAccount?.chainId}`}
-                  height="auto"
-                />
-              )}
-            />
-          </SpaceDiv>
-        )}
-        {/* gas limit */}
-        <SpaceDiv>
+            >
+              {gas.LABEL}
+            </GasItem>
+          );
+        })}
+      </DivFlex>
+      <DivFlex gap="10px" padding="24px">
+        <div style={{ flex: 1 }}>
+          {/* gas limit */}
           <BaseTextInput
             inputProps={{
               type: 'number',
@@ -481,110 +349,285 @@ const Transfer = (props: Props) => {
               }),
             }}
             onWheel={(event) => event.currentTarget.blur()}
-            title={renderTitle('Gas Limit', 'Gas limit is the maximum amount of units of gas you are willing to spend.')}
+            title="gas limit"
             height="auto"
             onChange={handleChangeGasLimit}
           />
           {errors.gasLimit && errors.gasLimit.type === 'required' && (
             <ErrorWrapper>
-              <GasOptions>
+              <DivFlex>
                 <Error>This field is required</Error>
-              </GasOptions>
+              </DivFlex>
             </ErrorWrapper>
           )}
           {errors.gasLimit && errors.gasLimit.type === 'positive' && (
             <ErrorWrapper>
-              <GasOptions>
+              <DivFlex>
                 <Error>Invalid gas limit</Error>
-              </GasOptions>
+              </DivFlex>
             </ErrorWrapper>
           )}
           {errors.gasLimit && errors.gasLimit.type === 'isInteger' && (
             <ErrorWrapper>
-              <GasOptions>
+              <DivFlex>
                 <Error>Gas limit must be integer</Error>
-              </GasOptions>
+              </DivFlex>
             </ErrorWrapper>
           )}
-        </SpaceDiv>
-        {/* gas price */}
-        <BaseTextInput
-          inputProps={{
-            type: 'number',
-            placeholder: '0',
-            value: selectedGas.GAS_PRICE,
-            ...register('gasPrice', {
-              required: {
-                value: true,
-                message: 'This field is required.',
-              },
-              validate: {
-                positive: (v) => {
-                  const value = Number(v);
-                  return value > 0;
+        </div>
+        <div style={{ flex: 1 }}>
+          {/* gas price */}
+          <BaseTextInput
+            inputProps={{
+              type: 'number',
+              placeholder: '0',
+              value: selectedGas.GAS_PRICE,
+              ...register('gasPrice', {
+                required: {
+                  value: true,
+                  message: 'This field is required.',
                 },
-              },
-            }),
-          }}
-          title={renderTitle('Gas Price', 'Gas price specifies the amount of Kadena you are willing to pay for each unit of gas.')}
-          height="auto"
-          onChange={handleChangeGasPrice}
-          onWheel={(event) => event.currentTarget.blur()}
-        />
-        {errors.gasPrice && errors.gasPrice.type === 'required' && (
+                validate: {
+                  positive: (v) => {
+                    const value = Number(v);
+                    return value > 0;
+                  },
+                },
+              }),
+            }}
+            title="gas price"
+            height="auto"
+            onChange={handleChangeGasPrice}
+            onWheel={(event) => event.currentTarget.blur()}
+          />
+          {errors.gasPrice && errors.gasPrice.type === 'required' && (
+            <ErrorWrapper>
+              <DivFlex>
+                <Error>This field is required</Error>
+              </DivFlex>
+            </ErrorWrapper>
+          )}
+          {errors.gasPrice && errors.gasPrice.type === 'positive' && (
+            <ErrorWrapper>
+              <DivFlex>
+                <Error>Invalid gas price</Error>
+              </DivFlex>
+            </ErrorWrapper>
+          )}
+        </div>
+      </DivFlex>
+    </>
+  );
+
+  return (
+    <PaddedBodyStickyFooter paddingBottom={!isDappTransfer && 50}>
+      <AccountTransferDetail justifyContent="space-between" alignItems="center">
+        <div>
+          <JazzAccount
+            account={rootState.wallet.account}
+            renderAccount={(acc) => (
+              <DivFlex flexDirection="column">
+                <span style={{ fontWeight: 500, fontSize: 12 }}>{shortenAddress(acc)}</span>
+                <SecondaryLabel uppercase>chain {sourceChainId}</SecondaryLabel>
+              </DivFlex>
+            )}
+          />
+        </div>
+        <TransferImage src={images.wallet.arrowTransfer} />
+        <div>
+          <JazzAccount
+            account={destinationAccount.accountName}
+            renderAccount={(acc) => (
+              <DivFlex flexDirection="column">
+                <span style={{ fontWeight: 500, fontSize: 12 }}>{shortenAddress(acc)}</span>
+                <SecondaryLabel uppercase>chain {destinationAccount.chainId}</SecondaryLabel>
+              </DivFlex>
+            )}
+          />
+        </div>
+      </AccountTransferDetail>
+      {isNewContact && !destinationAccount.domain && (
+        <Warning isContact onClick={openAddContact}>
+          <AddIconSVG />
+          New address detected! Add to your contacts
+        </Warning>
+      )}
+      <form onSubmit={handleSubmit(onNext, onErrors)} id="send-transaction" noValidate>
+        <DivFlex justifyContent="space-between" margin="10px 0" alignItems="center">
+          <SecondaryLabel uppercase fontWeight={700} style={{ flex: 1 }}>
+            Amount to send
+          </SecondaryLabel>
+          {!isDappTransfer && (
+            <DivFlex justifyContent="flex-end" style={{ flex: 1, gap: 5 }}>
+              <Button
+                type="button"
+                onClick={() => setPrefilledBalance('half')}
+                label="HALF"
+                size="full"
+                variant="grey"
+                style={{ height: 28, fontSize: 10, maxWidth: 60 }}
+              />
+              <Button
+                type="button"
+                onClick={() => setPrefilledBalance('max')}
+                label="MAX"
+                size="full"
+                variant="grey"
+                style={{ height: 28, fontSize: 10, maxWidth: 60 }}
+              />
+            </DivFlex>
+          )}
+        </DivFlex>
+        {/* amount */}
+        <AmountWrapper alignItems="center" justifyContent="space-between">
+          {destinationAccount?.dappAmount ? (
+            <SInput
+              readOnly
+              style={{
+                flex: 1,
+                fontSize: 45,
+                fontWeight: 500,
+                padding: '0px 5px 0px 13px',
+              }}
+              value={destinationAccount?.dappAmount}
+              {...register('amount', {
+                required: {
+                  value: true,
+                  message: 'This field is required.',
+                },
+                validate: {
+                  isZero: (v) => {
+                    const value = Number(v);
+                    return value !== 0;
+                  },
+                  positive: (v) => {
+                    const value = Number(v);
+                    const balance = Number(wallet.tokenBalance);
+                    const gasFee = BigNumberConverter(Number(selectedGas.GAS_PRICE) * Number(selectedGas.GAS_LIMIT));
+                    let amountValue = BigNumberConverter(balance);
+                    if (fungibleToken?.contractAddress === 'coin') {
+                      amountValue -= gasFee;
+                    }
+                    return value > 0 && value <= amountValue;
+                  },
+                },
+              })}
+              title=""
+              height="auto"
+            />
+          ) : (
+            <SInput
+              autoComplete="off"
+              type="number"
+              value={amount}
+              style={{
+                flex: 1,
+                fontSize: getInputFontSize(amount?.toString().length || 40),
+                fontWeight: 500,
+                padding: '0px 5px 0px 0px',
+              }}
+              onWheel={(event) => event.currentTarget.blur()}
+              {...register('amount', {
+                required: {
+                  value: true,
+                  message: 'This field is required.',
+                },
+                validate: {
+                  isZero: (v) => {
+                    const value = Number(v);
+                    return value !== 0;
+                  },
+                  positive: (v) => {
+                    const value = Number(v);
+                    const balance = Number(wallet.tokenBalance);
+                    const gasFee = BigNumberConverter(Number(selectedGas.GAS_PRICE) * Number(selectedGas.GAS_LIMIT));
+                    let amountValue = BigNumberConverter(balance);
+                    if (fungibleToken?.contractAddress === 'coin') {
+                      amountValue -= gasFee;
+                    }
+                    return value > 0 && value <= amountValue;
+                  },
+                },
+              })}
+              onFocus={(event) => event.target.select()}
+              onChange={changeAmount}
+            />
+          )}
+          {/** TODO: make dynamic length text <TextScaling /> */}
+          <PrimaryLabel fontSize={40} uppercase>
+            {fungibleToken?.symbol?.substring(0, 3)}
+          </PrimaryLabel>
+        </AmountWrapper>
+        {errors.amount && errors.amount.type === 'required' && (
           <ErrorWrapper>
-            <GasOptions>
+            <DivFlex>
               <Error>This field is required</Error>
-            </GasOptions>
+            </DivFlex>
           </ErrorWrapper>
         )}
-        {errors.gasPrice && errors.gasPrice.type === 'positive' && (
+        {errors.amount && errors.amount.type === 'positive' && (
           <ErrorWrapper>
-            <GasOptions>
-              <Error>Invalid gas price</Error>
-            </GasOptions>
+            <DivFlex>
+              <Error>Insufficient funds</Error>
+            </DivFlex>
           </ErrorWrapper>
         )}
-        {/* gas option */}
-        <GasOptionsWrapper>
-          <GasOptions>
-            {Object.keys(GAS_CONFIGS).map((config) => {
-              const gas = GAS_CONFIGS[config];
-              return (
-                <GasItem
-                  key={gas.LABEL}
-                  isActive={selectedGas.LABEL === gas.LABEL}
-                  onClick={() => {
-                    setSelectedGas(gas);
-                    clearErrors('gasLimit');
-                    clearErrors('gasPrice');
-                    setValue('gasLimit', gas?.GAS_LIMIT);
-                    setValue('gasPrice', gas.GAS_PRICE);
-                  }}
-                >
-                  {gas.LABEL}
-                </GasItem>
-              );
-            })}
-          </GasOptions>
-        </GasOptionsWrapper>
-        {isCrossChain && (
-          <Warning>
-            {`You are about to do a cross chain transfer from chain ${wallet?.chainId} on which you are currently operating to chain ${destinationAccount?.chainId}. This operation may take up to 4 minutes and may result in failure depending on a Public Gas Station faucet operation or selected account availability. Don’t close extension while it’s processing the operation. The initial request key will be in log file.`}
+        {errors.amount && errors.amount.type === 'isZero' && (
+          <ErrorWrapper>
+            <DivFlex>
+              <Error>Invalid amount</Error>
+            </DivFlex>
+          </ErrorWrapper>
+        )}
+        <DivFlex justifyContent="space-between" alignItems="center" margin="0px">
+          {!isDappTransfer && (
+            <CommonLabel fontSize={12} fontWeight={600}>
+              {estimateUSDAmount && `${humanReadableNumber(estimateUSDAmount)} USD`}
+            </CommonLabel>
+          )}
+          <SecondaryLabel fontSize={12} fontWeight={600}>
+            {`Balance: ${BigNumberConverter(wallet?.tokenBalance)} ${fungibleToken?.symbol.toUpperCase()}`}
+          </SecondaryLabel>
+        </DivFlex>
+        {isDestinationChainTokenError && (
+          <Warning type="danger" margin="10px 0">
+            <AlertIconSVG />
+            <div>
+              <span>
+                {fungibleToken?.contractAddress} could not exists on <b>CHAIN {destinationAccount?.chainId}</b>!
+              </span>
+            </div>
           </Warning>
         )}
+        <DivBottomShadow margin="0 -20px 20px 0" />
+        <DivFlex justifyContent="space-between">
+          <SecondaryLabel fontSize={12} fontWeight={600} uppercase>
+            transaction parameters
+          </SecondaryLabel>
+          <GearIconSVG style={{ cursor: 'pointer' }} onClick={() => setIsOpenGasOptionsModal(true)} />
+        </DivFlex>
+        <DivFlex justifyContent="space-between" alignItems="center" margin="20px 0">
+          <SecondaryLabel fontSize={12} fontWeight={600} uppercase>
+            Estimated gas {configs.gasLimit * configs.gasPrice}
+            <br />
+            <SecondaryLabel fontWeight={200} uppercase>
+              {selectedGas.LABEL} SPEED
+            </SecondaryLabel>
+          </SecondaryLabel>
+          <CommonLabel fontSize={12} fontWeight={600} uppercase>
+            {humanReadableNumber(usdPrices?.coin * configs.gasLimit * configs.gasPrice)} USD
+          </CommonLabel>
+        </DivFlex>
         <Footer>
           {destinationAccount.domain ? (
-            <>
-              <TransferButton>
-                <Button type={BUTTON_TYPE.DISABLE} size={BUTTON_SIZE.FULL} label="Reject" onClick={() => window.close()} />
-              </TransferButton>
-              <TransferButton>
-                <ButtonSend form="send-transaction">Next</ButtonSend>
-              </TransferButton>
-            </>
+            <DivFlex margin="30px 0" gap="5px">
+              <Button size="full" variant="disabled" label="Reject" onClick={() => window.close()} />
+              <Button size="full" label="Next" form="send-transaction" />
+            </DivFlex>
           ) : (
-            <ButtonSend form="send-transaction">Next</ButtonSend>
+            <StickyFooter>
+              <Button form="send-transaction" label="Next" size="full" style={{ width: '90%', maxWidth: 890 }} />
+            </StickyFooter>
           )}
         </Footer>
       </form>
@@ -595,10 +638,19 @@ const Transfer = (props: Props) => {
             onClose={onCloseTransfer}
             aliasContact={aliasContact}
             fungibleToken={fungibleToken}
-            kdaUSDPrice={KDApriceEstimate}
+            estimateUSDAmount={estimateUSDAmount}
+            kdaUSDPrice={usdPrices?.coin}
           />
         </ModalCustom>
       )}
+      <ModalCustom
+        closeOnOverlayClick
+        isOpen={isOpenGasOptionsModal}
+        title="Transaction Parameters"
+        onCloseModal={() => setIsOpenGasOptionsModal(false)}
+      >
+        {gasOptions}
+      </ModalCustom>
       {isOpenAddContactModal && (
         <ModalCustom
           isOpen={isOpenAddContactModal}
@@ -609,7 +661,7 @@ const Transfer = (props: Props) => {
           <AddContact onClose={onCloseAddContact} contact={destinationAccount} networkId={selectedNetwork.networkId} />
         </ModalCustom>
       )}
-    </TransferWrapper>
+    </PaddedBodyStickyFooter>
   );
 };
 

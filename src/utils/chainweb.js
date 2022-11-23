@@ -1,7 +1,8 @@
 /* eslint-disable no-await-in-loop */
 import Pact from 'pact-lang-api';
 import lib from 'cardano-crypto.js/kadena-crypto';
-import { CONFIG } from './config';
+import { CHAIN_AVAILABLE_TOKENS_FIXTURE } from './constant';
+import { CONFIG, KADDEX_ANALYTICS_API } from './config';
 import { getTimestamp } from './index';
 
 export const getApiUrl = (url, networkId, chainId) => `${url}/chainweb/0.0/${networkId}/chain/${chainId}/pact`;
@@ -64,6 +65,12 @@ export const getSignatureFromHash = (hash, privateKey) => {
   return Pact.crypto.binToHex(s);
 };
 
+export const extractDecimal = (num) => {
+  if (num?.int) return Number(num.int);
+  if (num?.decimal) return Number(num.decimal);
+  return Number(num);
+};
+
 export const getBalanceFromChainwebApiResponse = (res) => {
   let balance = 0;
   if (typeof res?.result?.data?.balance === 'number') {
@@ -87,4 +94,27 @@ export const pollRequestKey = async (reqKey, network) => {
     await new Promise((rs) => setTimeout(rs, 5000));
   } while (attempts > 0);
   return { success: false };
+};
+
+export const fetchTokenList = async () => {
+  try {
+    const tokensResponse = await fetch(`${KADDEX_ANALYTICS_API}/chain-data/fungible-tokens`);
+    const tokensData = tokensResponse.json();
+    if (tokensData?.fungibleTokens) {
+      return tokensData?.fungibleTokens;
+    }
+    return CHAIN_AVAILABLE_TOKENS_FIXTURE;
+  } catch (err) {
+    console.log('Error fetching fungible tokens', err);
+  }
+  return CHAIN_AVAILABLE_TOKENS_FIXTURE;
+};
+
+export const getTokenList = (url, networkId, chainId) => {
+  const allChainTokens = CHAIN_AVAILABLE_TOKENS_FIXTURE;
+  let uniqueAllChainTokens = [];
+  allChainTokens.forEach((tokens) => {
+    uniqueAllChainTokens = [...new Set([...tokens, ...uniqueAllChainTokens])];
+  });
+  return chainId ? allChainTokens[Number(chainId)] : uniqueAllChainTokens;
 };

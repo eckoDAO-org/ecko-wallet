@@ -19,7 +19,7 @@ export const Footer = styled.div`
 export const DivError = styled.div`
   margin-top: ${(props) => (props.marginTop ? props.marginTop : '5px')};
   min-height: 20px;
-  @media screen and (max-width: 480px){
+  @media screen and (max-width: 480px) {
     min-height: 15px;
     margin-top: 5px;
   }
@@ -29,19 +29,6 @@ export const ImgScaner = styled.img`
   right: 10px;
   top: 60px;
   cursor: pointer;
-`;
-
-export const ButtonImport = styled.button`
-  width: 40%;
-  height: 44px;
-  background: #461A57;
-  border-radius: 10px;
-  border: none;
-  font-family: 'Play', sans-serif;
-  color: #ffffff;
-  font-size: 16px;
-  cursor: pointer;
-  margin: 0 auto;
 `;
 
 export const DesContact = styled.div`
@@ -65,31 +52,6 @@ export const LabelConatact = styled.div`
   min-width: fit-content;
 `;
 
-export const DescriptonAccountName = styled.div`
-  font-weight: normal;
-  font-size: 16px;
-  line-height: 25px;
-  padding: 10px 0 0 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  width: 250px;
-`;
-
-export const ButtonEdit = styled.button`
-  width: 40%;
-  height: 44px;
-  background: #461A57;
-  border-radius: 10px;
-  font-family: 'Play', sans-serif;
-  border: none;
-  font-weight: 700;
-  color: #ffffff;
-  font-size: 16px;
-  margin: 0 auto;
-  cursor: pointer;
-`;
-
 export const ButtonEditContact = styled.button`
   width: 70%;
   height: 44px;
@@ -97,7 +59,6 @@ export const ButtonEditContact = styled.button`
   border-radius: 10px;
   border: none;
   font-weight: 700;
-  font-family: 'Play', sans-serif;
   color: #606a73;
   font-size: 16px;
   margin: 0 auto;
@@ -111,18 +72,12 @@ export const ButtonCancel = styled.button`
   border-radius: 10px;
   border: none;
   color: #606a73;
-  font-family: 'Play', sans-serif;
   font-size: 16px;
   cursor: pointer;
 `;
 
 export const ConditionWrapper = styled.div`
   position: relative;
-`;
-
-export const BodyInforConact = styled.div`
-  display: block;
-  color: #461A57
 `;
 
 export const BodyInfor = styled.div`
@@ -158,7 +113,6 @@ export const ButtonDelete = styled.button`
   cursor: pointer;
   border: none;
   background: none;
-  font-family: 'Play', sans-serif;
 `;
 
 export const ImgDelete = styled.img`
@@ -208,20 +162,20 @@ export const BodyModal = styled.div`
   padding: 30px 0px;
 `;
 export const TitleModal = styled.div`
-text-align: center;
-font-size: 20px;
-font-weight: 700;
-color: #461A57;
-margin-bottom: 10px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 700;
+
+  margin-bottom: 10px;
 `;
 export const DivChild = styled.div`
-margin-top: 20px;
-color: #461A57;
-text-align: center;
+  margin-top: 20px;
+
+  text-align: center;
 `;
 export const DivChildButton = styled.div`
   margin-top: 50px;
-  @media screen and (max-width: 480px){
+  @media screen and (max-width: 480px) {
     margin-top: 50px;
   }
 `;
@@ -230,7 +184,7 @@ export const DivChildFlex = styled.div`
   display: flex;
   width: 100%;
   justify-content: space-between;
-  @media screen and (max-width: 480px){
+  @media screen and (max-width: 480px) {
     margin-top: 80px;
   }
 `;

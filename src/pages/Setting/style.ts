@@ -20,7 +20,6 @@ export const TitleHeader = styled.div`
   font-weight: 700;
   font-size: 24px;
   line-height: 25px;
-  color: #461A57;
 `;
 export const LockWrapper = styled.div`
   margin-left: auto;
@@ -44,7 +43,7 @@ export const ButtonBack = styled.div`
 `;
 
 export const DivContent = styled.div`
-  border-bottom: 1px solid #461A57;
+  border-bottom: 1px solid #dfdfed;
   padding: 16px 20px 12px 20px;
   cursor: pointer;
   display: flex;
@@ -55,7 +54,6 @@ export const Descripton = styled.div`
   font-weight: normal;
   font-size: 16px;
   line-height: 25px;
-  color: #461A57;
 `;
 
 export const ImageContact = styled.img`
@@ -79,7 +77,7 @@ export const TitleSetting = styled.div`
   font-weight: 700;
   font-size: 16px;
   line-height: 25px;
-  color: #461A57;
+
   cursor: pointer;
 `;
 

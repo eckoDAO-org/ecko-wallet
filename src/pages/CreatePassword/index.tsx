@@ -6,28 +6,17 @@ import { useSelector } from 'react-redux';
 import bcrypt from 'bcryptjs';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import Back from 'src/components/Back';
 import { setExtensionPassword, setIsHaveSeedPhrase } from 'src/stores/extensions';
 import { getLocalWallets, setLocalPassword, setLocalSeedPhrase, setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
 import Toast from 'src/components/Toast/Toast';
 import { encryptKey } from 'src/utils/security';
 import { getKeyPairsFromSeedPhrase } from 'src/utils/chainweb';
 import { setCurrentWallet, setWallets } from 'src/stores/wallet';
+import { NavigationHeader } from 'src/components/NavigationHeader';
+import Button from 'src/components/Buttons';
 
 const CreatePasswordWrapper = styled.div`
   padding: 0 20px;
-`;
-const CreateButton = styled.button`
-  width: 100%;
-  height: 44px;
-  border-radius: 10px;
-  font-family: 'Play', sans-serif;
-  background: ${(props) => (props.disabled ? 'white' : '#461A57')};
-  color: ${(props) => (props.disabled ? '#461A57' : '#ffffff')};
-  font-size: 16px;
-  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
-  border: none;
-  font-weight: 700;
 `;
 const Body = styled.div`
   height: auto;
@@ -47,7 +36,7 @@ const Title = styled.div`
   font-weight: 700;
   font-size: 24px;
   line-height: 25px;
-  color: #461a57;
+
   text-align: left;
   margin: 20px 0 30px 0;
 `;
@@ -170,9 +159,8 @@ const CreatePassword = () => {
 
   return (
     <CreatePasswordWrapper>
-      <Back title="Back" onBack={goBack} />
+      <NavigationHeader title={isCreateSeedPhrase ? 'Import From Recovery Phrase' : 'Create Password'} onBack={goBack} />
       <Body>
-        <Title>{isCreateSeedPhrase ? 'Import a wallet with Secret Recovery Phrase' : 'Create Password'}</Title>
         <Wrapper onSubmit={handleSubmit(onCheck)} id="create-password-form">
           {isCreateSeedPhrase && (
             <>
@@ -270,7 +258,7 @@ const CreatePassword = () => {
         </Wrapper>
       </Body>
       <Footer>
-        <CreateButton form="create-password-form">{isCreateSeedPhrase ? 'Import' : 'Create'}</CreateButton>
+        <Button label={isCreateSeedPhrase ? 'Import' : 'Create'} size="full" variant="primary" form="create-password-form" />
       </Footer>
     </CreatePasswordWrapper>
   );
