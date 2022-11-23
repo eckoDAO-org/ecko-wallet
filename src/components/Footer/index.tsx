@@ -34,7 +34,7 @@ import {
 import { ReactComponent as XWalletLogoBar } from 'src/images/x-wallet-icon.svg';
 import { ReactComponent as HistoryIcon } from 'src/images/history-icon.svg';
 import { ReactComponent as GearIcon } from 'src/images/gear-icon.svg';
-import { ReactComponent as NFTIcon } from 'src/images/nft-icon.svg';
+import { ReactComponent as SWAPIcon } from 'src/images/swap-icon.svg';
 import { convertContacts, convertNetworks, convertRecent, revertNetworks } from 'src/utils';
 import { ACTIVE_TAB } from 'src/utils/constant';
 import { DivFlex, SecondaryLabel } from '..';
@@ -83,11 +83,6 @@ const ActionBarElement = styled.div`
   &.disabled {
     span {
       color: #dadada !important;
-    }
-    svg {
-      path {
-        fill: #dadada;
-      }
     }
   }
 `;
@@ -361,9 +356,9 @@ const Footer = () => {
         </ActionBarElement>
         <ActionBarElement className="disabled">
           <span>
-            <NFTIcon />
+            <SWAPIcon />
           </span>
-          <SecondaryLabel fontWeight={700}>NFT</SecondaryLabel>
+          <SecondaryLabel fontWeight={700}>CONVERT</SecondaryLabel>
         </ActionBarElement>
         <ActionBarElement
           className={activeTab === ACTIVE_TAB.SETTINGS && 'active'}

@@ -63,7 +63,7 @@ const ContactForm = (props: Props) => {
         setLocalContacts(networkId, contacts);
         setContacts(convertContacts(contacts));
         closeModal();
-        toast.success(<Toast type="success" content="Add contact successfully" />);
+        toast.success(<Toast type="success" content="Contact Added" />);
       },
       () => {
         const contacts = {};
@@ -71,7 +71,7 @@ const ContactForm = (props: Props) => {
         contacts[`${0}`][`${addContact.accountName}`] = newContact;
         setLocalContacts(networkId, contacts);
         setContacts(convertContacts(contacts));
-        toast.success(<Toast type="success" content="Add contact successfully" />);
+        toast.success(<Toast type="success" content="Contact Added" />);
         closeModal();
       },
     );
