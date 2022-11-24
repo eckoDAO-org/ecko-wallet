@@ -96,3 +96,8 @@ export const getCoingeckoIdFromContractAddress = (contractAddress) =>
   KNOWN_TOKENS[contractAddress] && KNOWN_TOKENS[contractAddress]?.coingeckoId && KNOWN_TOKENS[contractAddress]?.coingeckoId;
 
 export const wait = (ms) => new Promise((rs) => setTimeout(rs, ms));
+
+export const toFixedDown = (num, fixed) => {
+  const re = new RegExp(`^-?\\d+(?:.\\d{0,${fixed || -1}})?`);
+  return num.toString().match(re)[0];
+};
