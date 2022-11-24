@@ -21,7 +21,7 @@ import { useForm } from 'react-hook-form';
 import { CONFIG, GAS_CONFIGS, NUMBER_DECIMAL_AFTER_DOT } from 'src/utils/config';
 import { get } from 'lodash';
 import images from 'src/images';
-import { BigNumberConverter, humanReadableNumber, shortenAddress } from 'src/utils';
+import { BigNumberConverter, humanReadableNumber, shortenAddress, toFixedDown } from 'src/utils';
 import { IFungibleToken } from 'src/pages/ImportToken';
 import Button from 'src/components/Buttons';
 import AddContact from './AddContact';
@@ -280,7 +280,7 @@ const Transfer = (props: Props) => {
     if (fungibleToken?.contractAddress === 'coin') {
       amountValue -= gasFee;
     }
-    const amountCustom = amountValue > 0 ? amountValue.toString() : '0';
+    const amountCustom = amountValue > 0 ? toFixedDown(amountValue, 12) : '0';
     setAmount(amountCustom);
     setValue('amount', amountCustom);
   };
