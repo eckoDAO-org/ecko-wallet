@@ -29,6 +29,7 @@ import InitSeedPhrase from './pages/InitSeedPhrase';
 import ExportSeedPhrase from './pages/Setting/ExportSeedPhrase';
 import History from './pages/Wallet/views/History';
 import PageTransaction from './pages/Setting/Transaction';
+import PageConnectedSites from './pages/Setting/ConnectedSites';
 
 const Container = styled.div`
   width: 1000px;
@@ -65,6 +66,7 @@ const AppContainer = () => {
         <DappPrivateRoute path="/dapps-transfer" component={DappTransfer} />
         <PrivateRoute path="/contact" component={PageContact} />
         <PrivateRoute path="/networks" component={PageNetworks} />
+        <PrivateRoute path="/connected-sites" component={PageConnectedSites} />
         <PrivateRoute path="/tx-settings" component={PageTransaction} />
         <PrivateRoute path="/about" component={PageAbout} />
         <PrivateRoute path="/setting" component={PageSetting} />
