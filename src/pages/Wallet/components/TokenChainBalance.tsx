@@ -19,7 +19,7 @@ export const TokenChainBalance = ({ name, contractAddress, balance, usdBalance, 
     <DivFlex justifyContent="space-between" style={{ padding: '10px 0', cursor: 'pointer' }} onClick={onSendToken}>
       <DivFlex flexDirection="column">
         <CommonLabel fontSize="14px" fontWeight={700}>
-          {humanReadableNumber(balance, 5)} {name}
+          {humanReadableNumber(balance, 5)} {name.toUpperCase()}
         </CommonLabel>
         <CommonLabel fontSize="14px">$ {humanReadableNumber(usdBalance, 2)}</CommonLabel>
       </DivFlex>
