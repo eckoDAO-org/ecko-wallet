@@ -148,7 +148,6 @@ const ConnectedDapp = () => {
                         const isSelected = wallet.connectedSites.includes(dapps.domain);
                         if (!isSelected) {
                           newWallets.push({
-                            chainId: wallet.chainId,
                             account: decryptKey(wallet.account, accountPassword),
                             publicKey: decryptKey(wallet.publicKey, accountPassword),
                             secretKey: decryptKey(wallet.secretKey, accountPassword),
@@ -188,7 +187,7 @@ const ConnectedDapp = () => {
   const onSelectChange = (item, value) => {
     const newData = data.map((d) => ({
       ...d,
-      isSelected: d.chainId.toString() === item.chainId.toString() && d.account === item.account ? value : d.isSelected,
+      isSelected: d.account === item.account ? value : d.isSelected,
     }));
     const selectedIndex = newData.findIndex((d) => d.isSelected);
     if (selectedIndex > -1) {
@@ -207,9 +206,7 @@ const ConnectedDapp = () => {
           (accountPassword) => {
             const newWallets = wallets.map((wallet: any) => {
               const newWallet = { ...wallet };
-              const selectedWallet = data.find(
-                (d) => d.chainId.toString() === wallet.chainId.toString() && d.account === decryptKey(wallet.account, accountPassword),
-              );
+              const selectedWallet = data.find((d) => d.account === decryptKey(wallet.account, accountPassword));
               if (selectedWallet) {
                 newWallet.connectedSites = getSelectConnectedSites(newWallet.connectedSites, domain, selectedWallet.isSelected);
               }
@@ -221,7 +218,6 @@ const ConnectedDapp = () => {
               (n) => {
                 if (n.networkId === networkId) {
                   const newStateWallets = newWallets.map((w) => ({
-                    chainId: w.chainId,
                     account: decryptKey(w.account, accountPassword),
                     publicKey: decryptKey(w.publicKey, accountPassword),
                     secretKey: decryptKey(w.secretKey, accountPassword),
@@ -231,11 +227,7 @@ const ConnectedDapp = () => {
                   getLocalSelectedWallet(
                     (w) => {
                       const selectedWallet =
-                        newWallets.find(
-                          (d) =>
-                            d.chainId.toString() === w.chainId.toString() &&
-                            decryptKey(w.account, accountPassword) === decryptKey(d.account, accountPassword),
-                        ) || {};
+                        newWallets.find((d) => decryptKey(w.account, accountPassword) === decryptKey(d.account, accountPassword)) || {};
                       if (selectedWallet && selectedWallet.account) {
                         getLocalActiveDapps(
                           (activeDapps) => {
@@ -245,7 +237,6 @@ const ConnectedDapp = () => {
                             }
                             setLocalActiveDapps(newActiveDapps, () => {
                               const currentWallet = {
-                                chainId: selectedWallet.chainId,
                                 account: decryptKey(selectedWallet.account, accountPassword),
                                 publicKey: decryptKey(selectedWallet.publicKey, accountPassword),
                                 secretKey: decryptKey(selectedWallet.secretKey, accountPassword),
@@ -259,7 +250,6 @@ const ConnectedDapp = () => {
                             const newActiveDapps = [domain];
                             setLocalActiveDapps(newActiveDapps, () => {
                               const currentWallet = {
-                                chainId: selectedWallet.chainId,
                                 account: decryptKey(selectedWallet.account, accountPassword),
                                 publicKey: decryptKey(selectedWallet.publicKey, accountPassword),
                                 secretKey: decryptKey(selectedWallet.secretKey, accountPassword),
@@ -271,7 +261,6 @@ const ConnectedDapp = () => {
                                 status: 'success',
                                 message: 'Connected successfully',
                                 account: {
-                                  chainId: selectedWallet.chainId,
                                   account: decryptKey(selectedWallet.account, accountPassword),
                                   publicKey: decryptKey(selectedWallet.publicKey, accountPassword),
                                 },
@@ -314,18 +303,13 @@ const ConnectedDapp = () => {
     <Label>
       <AccountName>{shortenAddress(item.account)}</AccountName>
       <br />
-      {shortenAddress(item.publicKey)} - Chain {item.chainId}
+      {shortenAddress(item.publicKey)}
     </Label>
   );
 
   const renderCheckbox = (item) => (
     <CheckboxWrapper>
-      <Radio
-        key={`${item.chainId}-${item.account}`}
-        isChecked={item.isSelected}
-        onClick={() => onSelectChange(item, !item.isSelected)}
-        label={getCheckboxLabel(item)}
-      />
+      <Radio key={item.account} isChecked={item.isSelected} onClick={() => onSelectChange(item, !item.isSelected)} label={getCheckboxLabel(item)} />
     </CheckboxWrapper>
   );
   return (

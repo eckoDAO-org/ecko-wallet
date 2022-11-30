@@ -49,12 +49,18 @@ const PageSetting = () => {
   };
 
   const settingsMenu: ISettingsMenu[] = [
-    { title: 'Contacts', img: <ContactsIcon />, description: 'Add, edit, remove and manage your contacts', onClick: () => history.push('/contact') },
+    { title: 'Contacts', img: <ContactsIcon />, description: 'Manage your contacts', onClick: () => history.push('/contact') },
     { title: 'Networks', img: <NetworksIcon />, description: 'Add or edit custom RPC networks', onClick: () => history.push('/networks') },
+    {
+      title: 'Connected Sites',
+      img: <NetworksIcon />,
+      description: 'View and manage connected sites',
+      onClick: () => history.push('/connected-sites'),
+    },
     {
       title: 'Transaction Settings',
       img: <NetworksIcon />,
-      description: 'Edit Gas Limit, Gas Price, Gas Station...',
+      description: 'Set your gas preferences',
       onClick: () => history.push('/tx-settings'),
     },
     {
@@ -73,7 +79,7 @@ const PageSetting = () => {
     {
       title: 'Lock Wallet',
       img: <Padlock />,
-      description: 'Lock X Wallet with password',
+      description: 'Protect your wallet',
       onClick: lockWallet,
     },
   ];
@@ -97,7 +103,7 @@ const PageSetting = () => {
       {settingsMenu.map((menuItem) => !menuItem.isHidden && getSettingsItem(menuItem))}
       <AboutDiv marginTop="48px" alignItems="center">
         <SecondaryLabel fontWeight={500}>
-          X Wallet V.2
+          X Wallet V. 2.0.1
           <br />
           <br />
           The evolution of DeFi on Kadena
