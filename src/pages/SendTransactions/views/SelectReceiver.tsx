@@ -329,13 +329,13 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
             {recent.length > 0 && (
               <div>
                 <SecondaryLabel>RECENT</SecondaryLabel>
-                {getTabContent(recent)}
+                {getTabContent(recent.filter((r, i) => i < 5))}
               </div>
             )}
             {contacts.length > 0 && (
               <div>
                 <SecondaryLabel>CONTACTS</SecondaryLabel>
-                {getTabContent(contacts)}
+                {getTabContent(contacts.filter((c, i) => i < 5))}
               </div>
             )}
           </div>
