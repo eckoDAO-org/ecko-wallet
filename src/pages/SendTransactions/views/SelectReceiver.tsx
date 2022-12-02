@@ -335,7 +335,7 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
             {contacts.length > 0 && (
               <div>
                 <SecondaryLabel>CONTACTS</SecondaryLabel>
-                {getTabContent(contacts.filter((c, i) => i < 5))}
+                {getTabContent(contacts)}
               </div>
             )}
           </div>

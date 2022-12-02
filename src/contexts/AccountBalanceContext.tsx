@@ -26,6 +26,8 @@ interface AccountBalanceContextProps {
   isLoadingBalances: boolean;
 }
 
+const SEPARATOR = '___';
+
 export const AccountBalanceContext = createContext<AccountBalanceContextProps>({
   selectedAccountBalance: undefined,
   allAccountsBalance: {},
@@ -50,41 +52,64 @@ export const AccountBalanceProvider = ({ children }: any) => {
   const { data: txSettings } = useContext(SettingsContext);
 
   const uniqueWallets = wallets.map((w) => w.account).filter((value, index, self) => self.indexOf(value) === index);
+  const sortedWallets = uniqueWallets.sort((a, b) => b.indexOf(selectedAccount));
 
-  const fetchAllBalances = async (account: string) => {
-    if (selectedNetwork.networkId === MAINNET_NETWORK_ID) {
-      const promiseList: any[] = [];
-
-      for (let i = 0; i < CHAIN_COUNT; i += 1) {
-        const availableChainTokens = allChainAvailableTokens && allChainAvailableTokens[i];
-        const filteredAvailableFt = fungibleTokens?.filter((t) => availableChainTokens?.includes(t.contractAddress));
-        const pactCode = `
+  const fetchGroupedBalances = async () => {
+    const promiseList: any[] = [];
+    for (let i = 0; i < CHAIN_COUNT; i += 1) {
+      const availableChainTokens = allChainAvailableTokens && allChainAvailableTokens[i];
+      const filteredAvailableFt = fungibleTokens?.filter((t) => availableChainTokens?.includes(t.contractAddress));
+      const pactCode = `
         (
           let* (
-                (coin-balance (try 0.0 (coin.get-balance "${account}")))
-                ${filteredAvailableFt
-                  ?.map((ft) => `(${ft.contractAddress.replace(/\./g, '')} (try 0.0 (${ft.contractAddress}.get-balance "${account}")))`)
-                  .join('\n')}              
-               )
-          {"coin": coin-balance, ${filteredAvailableFt?.map((ft) => `"${ft.contractAddress}": ${ft.contractAddress.replace(/\./g, '')}`)}}
+                ${sortedWallets
+                  .map(
+                    (account, j) => `
+                  (coin_balance_${j} (try 0.0 (coin.get-balance "${account}")))
+                  ${filteredAvailableFt
+                    ?.map((ft) => `(${ft.contractAddress.replace(/\./g, '')}_${j} (try 0.0 (${ft.contractAddress}.get-balance "${account}")))`)
+                    .join('\n')}`,
+                  )
+                  .join('\n')}
+              )
+                {${sortedWallets.map(
+                  (acc, j) => `
+                  "coin${SEPARATOR}${j}": coin_balance_${j}, ${filteredAvailableFt?.map(
+                    (ft) => `"${ft.contractAddress}${SEPARATOR}${j}": ${ft.contractAddress.replace(/\./g, '')}_${j}`,
+                  )}
+                  `,
+                )}}
         )`;
-        const promise = fetchListLocal(
-          pactCode,
-          selectedNetwork.url,
-          selectedNetwork.networkId,
-          i.toString(),
-          txSettings?.gasPrice,
-          txSettings?.gasLimit,
-        );
-        promiseList.push(promise);
-      }
-      return Promise.all(promiseList).then((allRes) => {
-        setAccountBalanceState((prev) => ({
-          ...prev,
-          [account]: allRes.map((chainBalance) => chainBalance?.result?.data),
-        }));
-      });
+      const promise = fetchListLocal(
+        pactCode,
+        selectedNetwork.url,
+        selectedNetwork.networkId,
+        i.toString(),
+        txSettings?.gasPrice,
+        txSettings?.gasLimit,
+      );
+      promiseList.push(promise);
     }
+    return Promise.all(promiseList).then((allRes) => {
+      const balanceProps = {};
+      allRes.forEach((chainBalance, chainId) => {
+        if (chainBalance?.result?.data) {
+          for (const key of Object.keys(chainBalance?.result?.data)) {
+            const splitted = key.split(SEPARATOR);
+            const contractAddress = splitted[0];
+            const accountIndex = splitted[1];
+            const account = sortedWallets[accountIndex];
+            balanceProps[account] = [...(balanceProps[account] || [])];
+            balanceProps[account][chainId] = { ...(balanceProps[account][chainId] || []), [contractAddress]: chainBalance?.result?.data[key] };
+          }
+        }
+      });
+      setAccountBalanceState(balanceProps);
+      setIsLoadingBalances(false);
+    });
+  };
+
+  const fetchSinglesBalances = async (account: string) => {
     const fts: IFungibleToken[] = [
       { contractAddress: 'coin', symbol: 'KDA' },
       { contractAddress: 'kaddex.kdx', symbol: 'KDX' },
@@ -109,10 +134,11 @@ export const AccountBalanceProvider = ({ children }: any) => {
       chainBalance.push(tokenBalance);
     }
 
-    return setAccountBalanceState((prev) => ({
+    setAccountBalanceState((prev) => ({
       ...prev,
       [account]: chainBalance,
     }));
+    setIsLoadingBalances(false);
   };
 
   const updateUsdPrices = () => {
@@ -157,14 +183,11 @@ export const AccountBalanceProvider = ({ children }: any) => {
   const updateAllBalances = () => {
     if (uniqueWallets.length && allChainAvailableTokens?.length) {
       setIsLoadingBalances(true);
-      const sortedWallets = uniqueWallets.sort((a, b) => b.indexOf(selectedAccount));
-      const promises: any = [];
-      for (let i = 0; i < sortedWallets.length; i += 1) {
-        if (selectedNetwork.networkId === MAINNET_NETWORK_ID || i === 0) {
-          promises.push(fetchAllBalances(sortedWallets[i]));
-        }
+      if (selectedNetwork.networkId === MAINNET_NETWORK_ID) {
+        fetchGroupedBalances();
+      } else {
+        fetchSinglesBalances(sortedWallets[0]);
       }
-      Promise.all(promises).then(() => setIsLoadingBalances(false));
     }
   };
 
