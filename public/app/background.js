@@ -472,6 +472,7 @@ const showSignPopup = async (data = {}) => {
     icon: data.icon,
     cmd: data.signedCmd,
     tabId: data.tabId,
+    caps: data?.signingCmd?.caps,
   };
 
   chrome.storage.local.set({ signedCmd });
