@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import ReactJson from 'react-json-view';
 import { getLocalSelectedNetwork, getLocalSignedCmd } from 'src/utils/storage';
 import Button from 'src/components/Buttons';
-import { DivFlex, SecondaryLabel } from 'src/components';
+import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import { updateSignedCmdMessage } from 'src/utils/message';
 
 export const DappWrapper = styled.div`
@@ -50,6 +50,7 @@ const SignedCmd = () => {
   const [domain, setDomain] = useState('example.com.vn');
   const [tabId, setTabId] = useState(null);
   const [cmd, setCmd] = useState<any>({});
+  const [caps, setCaps] = useState<any[]>([]);
 
   useEffect(() => {
     getLocalSignedCmd(
@@ -60,6 +61,7 @@ const SignedCmd = () => {
               setDomain(signedCmd.domain);
               setCmd(signedCmd.cmd);
               setTabId(signedCmd.tabId);
+              setCaps(signedCmd.caps);
             }
           },
           () => {},
@@ -96,10 +98,11 @@ const SignedCmd = () => {
       <DappLogo src={images.xWalletIcon} alt="logo" />
       <DappDescription>{domain}</DappDescription>
       <SecondaryLabel style={{ textAlign: 'center' }} uppercase>
-        Get signed command
+        signed command
       </SecondaryLabel>
       <DappContentWrapper>
         <ReactJson
+          name="signedCmd"
           src={newCmd}
           enableClipboard={false}
           displayObjectSize={false}
@@ -111,6 +114,31 @@ const SignedCmd = () => {
           collapseStringsAfterLength={false}
         />
       </DappContentWrapper>
+      {caps?.length ? (
+        <>
+          <SecondaryLabel style={{ textAlign: 'center' }}>CAPABILITIES</SecondaryLabel>
+          <DivFlex flexDirection="column">
+            {caps?.map((cap, i) => (
+              <DivFlex flexDirection="column">
+                <DappContentWrapper>
+                  <ReactJson
+                    name={cap?.cap?.name || `CAP ${i + 1}`}
+                    src={cap}
+                    enableClipboard={false}
+                    displayObjectSize={false}
+                    displayDataTypes={false}
+                    quotesOnKeys={false}
+                    collapsed
+                    indentWidth={2}
+                    collapseStringsAfterLength={false}
+                  />
+                </DappContentWrapper>
+              </DivFlex>
+            ))}
+          </DivFlex>
+        </>
+      ) : null}
+
       <DivFlex gap="10px" padding="24px">
         <Button size="full" label="Reject" variant="disabled" onClick={onClose} />
         <Button size="full" label="Confirm" onClick={onSave} />
