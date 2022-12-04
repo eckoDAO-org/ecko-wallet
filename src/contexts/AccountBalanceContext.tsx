@@ -58,7 +58,10 @@ export const AccountBalanceProvider = ({ children }: any) => {
     const promiseList: any[] = [];
     for (let i = 0; i < CHAIN_COUNT; i += 1) {
       const availableChainTokens = allChainAvailableTokens && allChainAvailableTokens[i];
-      const filteredAvailableFt = fungibleTokens?.filter((t) => availableChainTokens?.includes(t.contractAddress));
+      let filteredAvailableFt = fungibleTokens?.filter((t) => availableChainTokens?.includes(t.contractAddress));
+      if (i === 2) {
+        filteredAvailableFt = [...(filteredAvailableFt || []), { contractAddress: 'kaddex.skdx', symbol: 'sKDX' }];
+      }
       const pactCode = `
         (
           let* (
