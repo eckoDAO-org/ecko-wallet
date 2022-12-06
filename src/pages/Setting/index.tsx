@@ -66,7 +66,7 @@ const PageSetting = () => {
     {
       title: 'Export Recovery Phrase',
       img: <KeyIcon />,
-      description: 'Protect your wallet.... ',
+      description: 'Protect your wallet',
       onClick: () => history.push('/export-seed-phrase'),
       isHidden: secretKey?.length !== 256,
     },

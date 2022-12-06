@@ -125,6 +125,8 @@ const baseTokenList = [
   'runonflux.testflux',
 ];
 
+export const NON_TRANSFERABLE_TOKENS = ['kaddex.skdx'];
+
 export const CHAIN_AVAILABLE_TOKENS_FIXTURE = [
   baseTokenList,
   baseTokenList.filter((tk) => tk !== 'lago.kwUSDC'),

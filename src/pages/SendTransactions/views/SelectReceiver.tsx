@@ -8,8 +8,10 @@ import { useHistory } from 'react-router-dom';
 import QrReader from 'react-qr-reader';
 import images from 'src/images';
 import { toast } from 'react-toastify';
+import { ReactComponent as AlertIconSVG } from 'src/images/icon-alert.svg';
 import { SInput, SLabel } from 'src/baseComponent/BaseTextInput';
 import { JazzAccount } from 'src/components/JazzAccount';
+import { NON_TRANSFERABLE_TOKENS } from 'src/utils/constant';
 import { useAccountBalanceContext } from 'src/contexts/AccountBalanceContext';
 import { SettingsContext } from 'src/contexts/SettingsContext';
 import { useWindowResizeMobile } from 'src/hooks/useWindowResizeMobile';
@@ -21,7 +23,7 @@ import { CommonLabel, DivBottomShadow, DivFlex, SecondaryLabel, StickyFooter } f
 import useChainIdOptions from 'src/hooks/useChainIdOptions';
 import Button from 'src/components/Buttons';
 import { IFungibleToken } from 'src/pages/ImportToken';
-import { BodyModal, TitleModal, DivChild, InputWrapper } from '../styles';
+import { BodyModal, TitleModal, DivChild, InputWrapper, Warning } from '../styles';
 import { KeyWrapper, KeyItemWrapper, KeyRemove, KeyTitle } from './style';
 
 type Props = {
@@ -237,10 +239,20 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
     goToTransferAccount(newAccount, getValues('sourceChainId') && getValues('sourceChainId').value);
   };
 
+  const isNonTransferable = NON_TRANSFERABLE_TOKENS.some((nonTransf) => nonTransf === fungibleToken?.contractAddress);
+
   return (
     <>
       <div>
         <form>
+          {isNonTransferable ? (
+            <Warning type="danger" margin="-20px 0px 10px 0px">
+              <AlertIconSVG />
+              <div>
+                <span>{fungibleToken?.contractAddress} is not transferable!</span>
+              </div>
+            </Warning>
+          ) : null}
           <DivBottomShadow justifyContent="center" flexDirection="column" padding="20px" margin="0 -20px">
             <InputWrapper>
               <Controller
