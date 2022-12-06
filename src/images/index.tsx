@@ -77,6 +77,7 @@ import iconFlux from './flux-icon.png';
 import iconKdl from './kdl-logo.svg';
 import iconKdx from './kdx-logo.svg';
 import iconHype from './hypercent-logo.svg';
+import iconDocu from './docushield-logo.svg';
 import iconBabena from './babena-logo.svg';
 import iconAnedak from './anedak-logo.svg';
 import iconSkdx from './skdx-logo.png';
@@ -85,6 +86,11 @@ import iconKapy from './kapy-logo.svg';
 import iconJde from './jodie-logo.svg';
 import iconKwbtc from './kwbtc-logo.svg';
 import iconUsdc from './usdc-logo.png';
+import iconKayc from './kayc-logo.svg';
+import iconKds from './kds-logo.svg';
+import iconCrna from './corona-logo.svg';
+import iconKishu from './kishk-logo.svg';
+import iconArkd from './ark-logo.svg';
 import checkedV from './checked-v.svg';
 import violetAdd from './violet-add.svg';
 import trashViolet from './trash-violet.svg';
@@ -179,6 +185,12 @@ const wallet = {
     'free.jodie-token': iconJde,
     'lago.kwBTC': iconKwbtc,
     'free.kapybara-token': iconKapy,
+    'free.docu': iconDocu,
+    'free.kishu-ken': iconKishu,
+    'kdlaunch.kdswap-token': iconKds,
+    'arkade.token': iconArkd,
+    'free.KAYC': iconKayc,
+    'free.corona-token': iconCrna,
   },
 };
 const initPage = {

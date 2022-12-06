@@ -3,10 +3,12 @@ import images from 'src/images';
 import { ReactComponent as SearchIconSVG } from 'src/images/search.svg';
 import { ReactComponent as AddIconSVG } from 'src/images/add-round.svg';
 import styled from 'styled-components';
+import { ReactComponent as AlertIconSVG } from 'src/images/icon-alert.svg';
 import Button from 'src/components/Buttons';
 import Spinner from 'src/components/Spinner';
 import { Header } from 'src/components/Header';
 import { toast } from 'react-toastify';
+import { NON_TRANSFERABLE_TOKENS } from 'src/utils/constant';
 import Toast from 'src/components/Toast/Toast';
 import { DivBottomShadow, DivFlex, PrimaryLabel, SecondaryLabel } from 'src/components';
 import { ConfirmModal } from 'src/components/ConfirmModal';
@@ -23,6 +25,7 @@ import { IFungibleToken, LOCAL_KEY_FUNGIBLE_TOKENS } from '../ImportToken';
 import { TokenElement } from './components/TokenElement';
 import { TokenChainBalance } from './components/TokenChainBalance';
 import { AssetsList } from './components/AssetsList';
+import { Warning } from '../SendTransactions/styles';
 
 export interface IFungibleTokenBalance {
   contractAddress: string;
@@ -97,50 +100,62 @@ const Wallet = () => {
     closeModal();
   };
 
-  const renderChainDistribution = (symbol: string, contractAddress: string) => (
-    <div style={{ padding: 20 }}>
-      {getTokenChainDistribution(contractAddress)
-        .filter((cD) => cD.balance > 0)
-        .map((cD) => (
-          <TokenChainBalance
-            name={symbol}
-            contractAddress={contractAddress}
-            chainId={cD.chainId}
-            balance={cD.balance}
-            usdBalance={getUsdPrice(contractAddress, cD.balance)}
-          />
-        ))}
-      {['coin', 'kaddex.kdx'].every((add) => add !== contractAddress) && (
-        <ActionList
-          actions={[
-            {
-              src: images.settings.iconTrash,
-              label: 'Remove token',
-              onClick: () =>
-                openModal({
-                  title: `Remove ${symbol.toUpperCase()} token`,
-                  content: (
-                    <ConfirmModal
-                      text={`Are you sure you want remove ${symbol.toUpperCase()} token?`}
-                      onClose={closeModal}
-                      onConfirm={() => handleRemoveToken(contractAddress)}
-                    />
-                  ),
-                }),
-            },
-            {
-              src: images.settings.iconEdit,
-              label: 'Edit token',
-              onClick: () => {
-                closeModal();
-                history.push(`/import-token?coin=${contractAddress}`);
+  const renderChainDistribution = (symbol: string, contractAddress: string) => {
+    const isNonTransferable = NON_TRANSFERABLE_TOKENS.some((nonTransf) => nonTransf === contractAddress);
+    return (
+      <div style={{ padding: 20 }}>
+        {isNonTransferable ? (
+          <Warning type="danger" margin="-20px 0px 10px 0px">
+            <AlertIconSVG />
+            <div>
+              <span>{contractAddress} is not transferable!</span>
+            </div>
+          </Warning>
+        ) : null}
+        {getTokenChainDistribution(contractAddress)
+          .filter((cD) => cD.balance > 0)
+          .map((cD) => (
+            <TokenChainBalance
+              name={symbol}
+              isNonTransferable={isNonTransferable}
+              contractAddress={contractAddress}
+              chainId={cD.chainId}
+              balance={cD.balance}
+              usdBalance={getUsdPrice(contractAddress, cD.balance)}
+            />
+          ))}
+        {['coin', 'kaddex.kdx'].every((add) => add !== contractAddress) && (
+          <ActionList
+            actions={[
+              {
+                src: images.settings.iconTrash,
+                label: 'Remove token',
+                onClick: () =>
+                  openModal({
+                    title: `Remove ${symbol.toUpperCase()} token`,
+                    content: (
+                      <ConfirmModal
+                        text={`Are you sure you want remove ${symbol.toUpperCase()} token?`}
+                        onClose={closeModal}
+                        onConfirm={() => handleRemoveToken(contractAddress)}
+                      />
+                    ),
+                  }),
               },
-            },
-          ]}
-        />
-      )}
-    </div>
-  );
+              {
+                src: images.settings.iconEdit,
+                label: 'Edit token',
+                onClick: () => {
+                  closeModal();
+                  history.push(`/import-token?coin=${contractAddress}`);
+                },
+              },
+            ]}
+          />
+        )}
+      </div>
+    );
+  };
 
   return (
     <div>

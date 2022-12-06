@@ -23,6 +23,7 @@ export interface TokenElementProps {
   balance: number;
   usdBalance: number;
   logo?: string;
+  isNonTransferable?: boolean;
   chainId?: number;
   onClick?: any;
 }

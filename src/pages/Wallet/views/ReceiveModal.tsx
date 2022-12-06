@@ -27,7 +27,7 @@ export const ReceiveSection = styled.div`
 `;
 
 const ReceiveModal = () => {
-  const { chainId, account, publicKey } = useSelector((state) => state?.wallet);
+  const { account } = useSelector((state) => state?.wallet);
 
   const onCopy = (str: string) => {
     navigator.clipboard.writeText(str);
@@ -39,7 +39,7 @@ const ReceiveModal = () => {
       <DivFlex alignItems="center" justifyContent="center" style={{ paddingBottom: 30 }}>
         <QRCode id="receive" value={account} size={200} level="H" />
       </DivFlex>
-      <ReceiveSection>
+      <ReceiveSection style={{ marginBottom: 30 }}>
         <DivFlex justifyContent="space-between" alignItems="center" style={{ marginBottom: 20 }}>
           <ReceiveTitle fontSize={10}>YOUR ACCOUNT NAME</ReceiveTitle>
           <Icon src={images.wallet.copyGray} onClick={() => onCopy(account)} />
@@ -47,27 +47,6 @@ const ReceiveModal = () => {
         <DivFlex justifyContent="flex-start" alignItems="flex-start">
           <Jazzicon diameter={24} seed={jsNumberForAddress(account)} paperStyles={{ marginRight: 5, minWidth: 24 }} />
           <Label>{account}</Label>
-        </DivFlex>
-      </ReceiveSection>
-      <ReceiveSection>
-        <DivFlex justifyContent="space-between" alignItems="center" style={{ marginBottom: 20 }}>
-          <ReceiveTitle uppercase fontSize={10}>
-            your public key
-          </ReceiveTitle>
-          <Icon src={images.wallet.copyGray} onClick={() => onCopy(publicKey)} />
-        </DivFlex>
-        <DivFlex justifyContent="flex-start" alignItems="flex-start">
-          <Label>{publicKey}</Label>
-        </DivFlex>
-      </ReceiveSection>
-      <ReceiveSection>
-        <DivFlex style={{ marginBottom: 20 }}>
-          <ReceiveTitle fontSize={10} uppercase>
-            chain id
-          </ReceiveTitle>
-        </DivFlex>
-        <DivFlex justifyContent="flex-start" alignItems="flex-start">
-          <Label>{chainId}</Label>
         </DivFlex>
       </ReceiveSection>
     </>

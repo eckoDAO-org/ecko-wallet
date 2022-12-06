@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 import { useState, createContext, useEffect, useContext } from 'react';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
@@ -5,7 +6,7 @@ import useLocalStorage from 'src/hooks/useLocalStorage';
 import { useInterval } from 'src/hooks/useInterval';
 import { IFungibleToken, LOCAL_KEY_FUNGIBLE_TOKENS } from 'src/pages/ImportToken';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
-import { fetchListLocal, fetchTokenList } from 'src/utils/chainweb';
+import { fetchListLocal, fetchTokenList, MAINNET_NETWORK_ID } from 'src/utils/chainweb';
 import { KADDEX_ANALYTICS_API } from 'src/utils/config';
 import { CHAIN_COUNT } from 'src/utils/constant';
 import { SettingsContext } from './SettingsContext';
@@ -24,6 +25,8 @@ interface AccountBalanceContextProps {
   usdPrices: TokenBalance;
   isLoadingBalances: boolean;
 }
+
+const SEPARATOR = '___';
 
 export const AccountBalanceContext = createContext<AccountBalanceContextProps>({
   selectedAccountBalance: undefined,
@@ -49,23 +52,37 @@ export const AccountBalanceProvider = ({ children }: any) => {
   const { data: txSettings } = useContext(SettingsContext);
 
   const uniqueWallets = wallets.map((w) => w.account).filter((value, index, self) => self.indexOf(value) === index);
+  const sortedWallets = uniqueWallets.sort((a, b) => b.indexOf(selectedAccount));
 
-  const fetchAllBalances = async (account: string) => {
+  const fetchGroupedBalances = async () => {
     const promiseList: any[] = [];
-
     for (let i = 0; i < CHAIN_COUNT; i += 1) {
       const availableChainTokens = allChainAvailableTokens && allChainAvailableTokens[i];
-      const filteredAvailableFt = fungibleTokens?.filter((t) => availableChainTokens?.includes(t.contractAddress));
+      let filteredAvailableFt = fungibleTokens?.filter((t) => availableChainTokens?.includes(t.contractAddress));
+      if (i === 2) {
+        filteredAvailableFt = [...(filteredAvailableFt || []), { contractAddress: 'kaddex.skdx', symbol: 'sKDX' }];
+      }
       const pactCode = `
-      (
-        let* (
-              (coin-balance (try 0.0 (coin.get-balance "${account}")))
-              ${filteredAvailableFt
-                ?.map((ft) => `(${ft.contractAddress.replace(/\./g, '')} (try 0.0 (${ft.contractAddress}.get-balance "${account}")))`)
-                .join('\n')}              
-             )
-        {"coin": coin-balance, ${filteredAvailableFt?.map((ft) => `"${ft.contractAddress}": ${ft.contractAddress.replace(/\./g, '')}`)}}
-      )`;
+        (
+          let* (
+                ${sortedWallets
+                  .map(
+                    (account, j) => `
+                  (coin_balance_${j} (try 0.0 (coin.get-balance "${account}")))
+                  ${filteredAvailableFt
+                    ?.map((ft) => `(${ft.contractAddress.replace(/\./g, '')}_${j} (try 0.0 (${ft.contractAddress}.get-balance "${account}")))`)
+                    .join('\n')}`,
+                  )
+                  .join('\n')}
+              )
+                {${sortedWallets.map(
+                  (acc, j) => `
+                  "coin${SEPARATOR}${j}": coin_balance_${j}, ${filteredAvailableFt?.map(
+                    (ft) => `"${ft.contractAddress}${SEPARATOR}${j}": ${ft.contractAddress.replace(/\./g, '')}_${j}`,
+                  )}
+                  `,
+                )}}
+        )`;
       const promise = fetchListLocal(
         pactCode,
         selectedNetwork.url,
@@ -77,11 +94,54 @@ export const AccountBalanceProvider = ({ children }: any) => {
       promiseList.push(promise);
     }
     return Promise.all(promiseList).then((allRes) => {
-      setAccountBalanceState((prev) => ({
-        ...prev,
-        [account]: allRes.map((chainBalance) => chainBalance?.result?.data),
-      }));
+      const balanceProps = {};
+      allRes.forEach((chainBalance, chainId) => {
+        if (chainBalance?.result?.data) {
+          for (const key of Object.keys(chainBalance?.result?.data)) {
+            const splitted = key.split(SEPARATOR);
+            const contractAddress = splitted[0];
+            const accountIndex = splitted[1];
+            const account = sortedWallets[accountIndex];
+            balanceProps[account] = [...(balanceProps[account] || [])];
+            balanceProps[account][chainId] = { ...(balanceProps[account][chainId] || []), [contractAddress]: chainBalance?.result?.data[key] };
+          }
+        }
+      });
+      setAccountBalanceState(balanceProps);
+      setIsLoadingBalances(false);
     });
+  };
+
+  const fetchSinglesBalances = async (account: string) => {
+    const fts: IFungibleToken[] = [
+      { contractAddress: 'coin', symbol: 'KDA' },
+      { contractAddress: 'kaddex.kdx', symbol: 'KDX' },
+      ...(fungibleTokens || []),
+    ];
+    const chainBalance: TokenBalance[] = [];
+    for (let i = 0; i < CHAIN_COUNT; i += 1) {
+      const tokenBalance: TokenBalance = {};
+      for (const ft of fts) {
+        const pactCode = `(${ft.contractAddress}.get-balance "${account}")`;
+        // eslint-disable-next-line no-await-in-loop
+        const pactResponse = await fetchListLocal(
+          pactCode,
+          selectedNetwork.url,
+          selectedNetwork.networkId,
+          i.toString(),
+          txSettings?.gasPrice,
+          txSettings?.gasLimit,
+        );
+        tokenBalance[ft.contractAddress] = pactResponse?.result?.data || 0;
+      }
+      chainBalance.push(tokenBalance);
+    }
+
+    setAccountBalanceState((prev) => ({
+      ...prev,
+      [account]: chainBalance,
+    }));
+    setIsLoadingBalances(false);
   };
 
   const updateUsdPrices = () => {
@@ -126,12 +186,11 @@ export const AccountBalanceProvider = ({ children }: any) => {
   const updateAllBalances = () => {
     if (uniqueWallets.length && allChainAvailableTokens?.length) {
       setIsLoadingBalances(true);
-      const sortedWallets = uniqueWallets.sort((a, b) => b.indexOf(selectedAccount));
-      const promises: any = [];
-      for (let i = 0; i < sortedWallets.length; i += 1) {
-        promises.push(fetchAllBalances(sortedWallets[i]));
+      if (selectedNetwork.networkId === MAINNET_NETWORK_ID) {
+        fetchGroupedBalances();
+      } else {
+        fetchSinglesBalances(sortedWallets[0]);
       }
-      Promise.all(promises).then(() => setIsLoadingBalances(false));
     }
   };
 

@@ -5,6 +5,8 @@ import { CHAIN_AVAILABLE_TOKENS_FIXTURE } from './constant';
 import { CONFIG, KADDEX_ANALYTICS_API } from './config';
 import { getTimestamp } from './index';
 
+export const MAINNET_NETWORK_ID = 'mainnet01';
+
 export const getApiUrl = (url, networkId, chainId) => `${url}/chainweb/0.0/${networkId}/chain/${chainId}/pact`;
 
 export const fetchLocal = (code, url, networkId, chainId) => {

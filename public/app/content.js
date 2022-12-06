@@ -14,16 +14,18 @@ scriptInjection.onload = () => {
 // Long-life connection to background
 let port = {};
 
-let setupPort = function() {
-  port = chrome.runtime.connect({name: 'kda.extension'});
+let setupPort = function () {
+  port = chrome.runtime.connect({ name: 'kda.extension' });
   port.onMessage.addListener(async (data) => {
-      window.postMessage({
-        ...data,
-        target: 'kda.dapps',
+    window.postMessage({
+      ...data,
+      target: 'kda.dapps',
     });
     return true;
   });
-  port.onDisconnect.addListener(() => { setupPort(); });
+  port.onDisconnect.addListener(() => {
+    setupPort();
+  });
 };
 
 setupPort();
@@ -47,8 +49,7 @@ window.addEventListener(
             ...data,
             target: 'kda.background',
           });
-        }
-        catch (err) {
+        } catch (err) {
           console.log(err);
         }
       }
