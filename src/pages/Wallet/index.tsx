@@ -52,6 +52,8 @@ const DivAssetList = styled.div`
   }
 `;
 
+const isSKdx = (contractAddress) => contractAddress === 'kaddex.skdx';
+
 const Wallet = () => {
   const history = useHistory();
   const { openModal, closeModal } = useModalContext();
@@ -68,7 +70,8 @@ const Wallet = () => {
   };
 
   const getUsdPrice = (tokenSymbol, tokenBalance): number => {
-    const usdPrice = usdPrices[tokenSymbol] || 0;
+    const symbol = isSKdx(tokenSymbol) ? 'kaddex.kdx' : tokenSymbol;
+    const usdPrice = usdPrices[symbol] || 0;
     return BigNumberConverter(Number(tokenBalance) * Number(usdPrice)) || 0;
   };
 

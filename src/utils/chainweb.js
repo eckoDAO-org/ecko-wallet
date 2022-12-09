@@ -101,9 +101,9 @@ export const pollRequestKey = async (reqKey, network) => {
 export const fetchTokenList = async () => {
   try {
     const tokensResponse = await fetch(`${KADDEX_ANALYTICS_API}/chain-data/fungible-tokens`);
-    const tokensData = tokensResponse.json();
-    if (tokensData?.fungibleTokens) {
-      return tokensData?.fungibleTokens;
+    const tokensData = await tokensResponse.json();
+    if (tokensData && tokensData[0] && tokensData[0]?.fungibleTokens) {
+      return tokensData[0]?.fungibleTokens;
     }
     return CHAIN_AVAILABLE_TOKENS_FIXTURE;
   } catch (err) {
@@ -112,8 +112,8 @@ export const fetchTokenList = async () => {
   return CHAIN_AVAILABLE_TOKENS_FIXTURE;
 };
 
-export const getTokenList = (url, networkId, chainId) => {
-  const allChainTokens = CHAIN_AVAILABLE_TOKENS_FIXTURE;
+export const getTokenList = async (chainId) => {
+  const allChainTokens = await fetchTokenList();
   let uniqueAllChainTokens = [];
   allChainTokens.forEach((tokens) => {
     uniqueAllChainTokens = [...new Set([...tokens, ...uniqueAllChainTokens])];

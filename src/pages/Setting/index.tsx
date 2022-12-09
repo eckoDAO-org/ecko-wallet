@@ -103,7 +103,7 @@ const PageSetting = () => {
       {settingsMenu.map((menuItem) => !menuItem.isHidden && getSettingsItem(menuItem))}
       <AboutDiv marginTop="48px" alignItems="center">
         <SecondaryLabel fontWeight={500}>
-          X Wallet V. 2.0.1
+          X Wallet V. 2.0.3
           <br />
           <br />
           The evolution of DeFi on Kadena
