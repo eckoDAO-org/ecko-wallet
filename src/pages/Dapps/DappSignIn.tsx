@@ -68,12 +68,6 @@ const ConnectInfo = styled.div`
   text-align: center;
   word-break: break-word;
 `;
-const ConnectDescription = styled.div`
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 25px;
-  text-align: center;
-`;
 const Image = styled.img`
   width: 60px;
   height: 60px;

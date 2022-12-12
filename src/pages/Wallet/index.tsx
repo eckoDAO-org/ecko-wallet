@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-curly-newline */
 import { useHistory } from 'react-router-dom';
 import images from 'src/images';
 import { ReactComponent as SearchIconSVG } from 'src/images/search.svg';
@@ -105,10 +106,11 @@ const Wallet = () => {
 
   const renderChainDistribution = (symbol: string, contractAddress: string) => {
     const isNonTransferable = NON_TRANSFERABLE_TOKENS.some((nonTransf) => nonTransf === contractAddress);
+    const hasBalance = getTokenChainDistribution(contractAddress).filter((cD) => cD.balance > 0)?.length > 0;
     return (
       <div style={{ padding: 20 }}>
         {isNonTransferable ? (
-          <Warning type="danger" margin="-20px 0px 10px 0px">
+          <Warning justifyContent="center" type="danger" margin="-20px 0px 10px 0px">
             <AlertIconSVG />
             <div>
               <span>{contractAddress} is not transferable!</span>
@@ -127,6 +129,10 @@ const Wallet = () => {
               usdBalance={getUsdPrice(contractAddress, cD.balance)}
             />
           ))}
+        {!hasBalance && symbol?.toLowerCase() === 'kda' ? (
+          <Warning justifyContent="center">Doesn’t exist: This account does not exist.</Warning>
+        ) : null}
+        {!hasBalance && symbol?.toLowerCase() !== 'kda' ? <Warning justifyContent="center">{symbol?.toUpperCase()} balance is 0.</Warning> : null}
         {['coin', 'kaddex.kdx'].every((add) => add !== contractAddress) && (
           <ActionList
             actions={[
@@ -206,18 +212,22 @@ const Wallet = () => {
         </DivFlex>
         <DivAssetList>
           <TokenElement
+            isLoadingBalances={isLoadingBalances}
             balance={getTokenTotalBalance('coin', stateWallet?.account)}
             name="KDA"
             usdBalance={roundNumber(getUsdPrice('coin', getTokenTotalBalance('coin', stateWallet?.account)), 2)}
             logo={images.wallet.tokens.coin}
-            onClick={() => openModal({ title: 'KDA Chain Distribution', content: renderChainDistribution('kda', 'coin') })}
+            onClick={() => selectedAccountBalance && openModal({ title: 'KDA Chain Distribution', content: renderChainDistribution('kda', 'coin') })}
           />
           <TokenElement
+            isLoadingBalances={isLoadingBalances}
             balance={getTokenTotalBalance('kaddex.kdx', stateWallet?.account)}
             name="KDX"
             usdBalance={roundNumber(getUsdPrice('kaddex.kdx', getTokenTotalBalance('kaddex.kdx', stateWallet?.account)), 2)}
             logo={images.wallet.tokens['kaddex.kdx']}
-            onClick={() => openModal({ title: 'KDX Chain Distribution', content: renderChainDistribution('kdx', 'kaddex.kdx') })}
+            onClick={() =>
+              selectedAccountBalance && openModal({ title: 'KDX Chain Distribution', content: renderChainDistribution('kdx', 'kaddex.kdx') })
+            }
           />
           {fungibleTokens
             ?.filter((fT) => fT.contractAddress !== 'kaddex.kdx')
@@ -225,15 +235,17 @@ const Wallet = () => {
               const tokenBalance = getTokenTotalBalance(fT.contractAddress, stateWallet?.account);
               return (
                 <TokenElement
+                  isLoadingBalances={isLoadingBalances}
                   balance={tokenBalance || 0}
                   name={fT.symbol?.toUpperCase()}
                   usdBalance={roundNumber(getUsdPrice(fT.contractAddress, tokenBalance || 0), 2)}
                   logo={images.wallet.tokens[fT.contractAddress] || images.wallet.tokens.coin}
                   onClick={() => {
-                    openModal({
-                      title: `${fT.symbol?.toUpperCase()} Chain Distribution`,
-                      content: renderChainDistribution(fT.symbol, fT.contractAddress),
-                    });
+                    selectedAccountBalance &&
+                      openModal({
+                        title: `${fT.symbol?.toUpperCase()} Chain Distribution`,
+                        content: renderChainDistribution(fT.symbol, fT.contractAddress),
+                      });
                   }}
                 />
               );

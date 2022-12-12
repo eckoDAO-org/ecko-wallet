@@ -68,7 +68,7 @@ const Div = styled.div`
   word-break: break-word;
 `;
 const ContentWrapper = styled.div`
-  padding: 20px 20px 75px 20px;
+  padding: 20px 20px;
 `;
 const Label = styled.span`
   display: inline-block;
@@ -349,7 +349,7 @@ const ConnectedDapp = () => {
           {data.length > 0 ? (
             <>
               <ContentWrapper>{data.map((item) => renderCheckbox(item))}</ContentWrapper>
-              <DivFlex padding="0 24px">
+              <DivFlex padding="24px" gap="10px">
                 <Button size="full" label="Cancel" variant="disabled" onClick={onReject} />
                 <Button size="full" label="Save" onClick={onSave} isDisabled={disabledBtn} />
               </DivFlex>

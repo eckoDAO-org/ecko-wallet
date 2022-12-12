@@ -18,6 +18,7 @@ export const KeyItemWrapper = styled.div`
 `;
 export const KeyWrapper = styled.div`
   margin-top: 15px;
+  word-break: break-all;
 `;
 export const KeyTitle = styled.div`
   font-size: 16px;
