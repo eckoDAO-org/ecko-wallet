@@ -22,6 +22,17 @@ interface ISettingsMenu {
   isHidden?: boolean;
 }
 
+const SettingsContainer = styled.div`
+  padding: 24px;
+  margin-bottom: 60px;
+  .settingMenu {
+    border-top: 1px solid #d3d3d3;
+  }
+  .settingMenu:first-child {
+    border-top: none;
+  }
+`;
+
 const SettingMenu = styled(DivFlex)`
   cursor: pointer;
   border-bottom: '1px solid #dfdfed';
@@ -85,7 +96,7 @@ const PageSetting = () => {
   ];
 
   const getSettingsItem = ({ img, title, description, onClick }: ISettingsMenu) => (
-    <SettingMenu justifyContent="flex-start" gap="10px" padding="15px 0" onClick={onClick}>
+    <SettingMenu className="settingMenu" justifyContent="flex-start" gap="10px" padding="15px 0" onClick={onClick}>
       {img}
       <DivFlex flexDirection="column" justifyContent="flex-start">
         <CommonLabel fontWeight={600} fontSize={16}>
@@ -99,11 +110,11 @@ const PageSetting = () => {
   );
 
   return (
-    <div style={{ padding: 24, marginBottom: 60 }}>
+    <SettingsContainer>
       {settingsMenu.map((menuItem) => !menuItem.isHidden && getSettingsItem(menuItem))}
       <AboutDiv marginTop="48px" alignItems="center">
         <SecondaryLabel fontWeight={500}>
-          X Wallet V. 2.0.1
+          X Wallet V. 2.0.3
           <br />
           <br />
           The evolution of DeFi on Kadena
@@ -119,7 +130,7 @@ const PageSetting = () => {
           <GlobeIcon /> <SecondaryLabel>Visit our website</SecondaryLabel>
         </a>
       </AboutDiv>
-    </div>
+    </SettingsContainer>
   );
 };
 export default PageSetting;

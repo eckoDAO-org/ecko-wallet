@@ -39,7 +39,6 @@ export const AccountBalanceProvider = ({ children }: any) => {
   const [isLoadingBalances, setIsLoadingBalances] = useState<boolean>(false);
   const [accountsBalanceState, setAccountBalanceState] = useState<AccountBalanceProps>();
   const [usdPrices, setUsdPrices] = useState<TokenBalance>({});
-  const [allChainAvailableTokens, setAllChainAvailableTokens] = useState<string[][]>();
 
   const {
     wallet: { wallets },
@@ -54,10 +53,10 @@ export const AccountBalanceProvider = ({ children }: any) => {
   const uniqueWallets = wallets.map((w) => w.account).filter((value, index, self) => self.indexOf(value) === index);
   const sortedWallets = uniqueWallets.sort((a, b) => b.indexOf(selectedAccount));
 
-  const fetchGroupedBalances = async () => {
+  const fetchGroupedBalances = async (allChainTokens) => {
     const promiseList: any[] = [];
     for (let i = 0; i < CHAIN_COUNT; i += 1) {
-      const availableChainTokens = allChainAvailableTokens && allChainAvailableTokens[i];
+      const availableChainTokens = allChainTokens && allChainTokens[i];
       let filteredAvailableFt = fungibleTokens?.filter((t) => availableChainTokens?.includes(t.contractAddress));
       if (i === 2) {
         filteredAvailableFt = [...(filteredAvailableFt || []), { contractAddress: 'kaddex.skdx', symbol: 'sKDX' }];
@@ -177,35 +176,32 @@ export const AccountBalanceProvider = ({ children }: any) => {
       });
   };
 
-  const init = async () => {
-    updateUsdPrices();
-    const tokens = await fetchTokenList();
-    setAllChainAvailableTokens(tokens);
-  };
-
-  const updateAllBalances = () => {
-    if (uniqueWallets.length && allChainAvailableTokens?.length) {
+  const updateAllBalances = async () => {
+    if (uniqueWallets.length) {
       setIsLoadingBalances(true);
       if (selectedNetwork.networkId === MAINNET_NETWORK_ID) {
-        fetchGroupedBalances();
+        const tokens = await fetchTokenList();
+        fetchGroupedBalances(tokens);
       } else {
         fetchSinglesBalances(sortedWallets[0]);
       }
     }
   };
 
-  useEffect(() => {
-    init();
-  }, [fungibleTokens]);
+  const refreshBalances = async () => {
+    updateUsdPrices();
+    updateAllBalances();
+  };
 
   useInterval(() => {
-    init();
-    updateAllBalances();
+    refreshBalances();
   }, 120000);
 
   useEffect(() => {
-    updateAllBalances();
-  }, [selectedAccount, fungibleTokens?.length, allChainAvailableTokens]);
+    if (fungibleTokens?.length) {
+      refreshBalances();
+    }
+  }, [sortedWallets?.length, fungibleTokens?.length]);
 
   return (
     <AccountBalanceContext.Provider

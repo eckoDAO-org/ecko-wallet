@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-curly-newline */
 import { useHistory } from 'react-router-dom';
 import images from 'src/images';
 import { ReactComponent as SearchIconSVG } from 'src/images/search.svg';
@@ -14,7 +15,7 @@ import { DivBottomShadow, DivFlex, PrimaryLabel, SecondaryLabel } from 'src/comp
 import { ConfirmModal } from 'src/components/ConfirmModal';
 import { IconButton } from 'src/components/IconButton';
 import { ActionList } from 'src/components/ActionList';
-import { roundNumber, BigNumberConverter } from 'src/utils';
+import { roundNumber, BigNumberConverter, humanReadableNumber } from 'src/utils';
 import { extractDecimal } from 'src/utils/chainweb';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import useLocalStorage from 'src/hooks/useLocalStorage';
@@ -52,6 +53,8 @@ const DivAssetList = styled.div`
   }
 `;
 
+const isSKdx = (contractAddress) => contractAddress === 'kaddex.skdx';
+
 const Wallet = () => {
   const history = useHistory();
   const { openModal, closeModal } = useModalContext();
@@ -68,7 +71,8 @@ const Wallet = () => {
   };
 
   const getUsdPrice = (tokenSymbol, tokenBalance): number => {
-    const usdPrice = usdPrices[tokenSymbol] || 0;
+    const symbol = isSKdx(tokenSymbol) ? 'kaddex.kdx' : tokenSymbol;
+    const usdPrice = usdPrices[symbol] || 0;
     return BigNumberConverter(Number(tokenBalance) * Number(usdPrice)) || 0;
   };
 
@@ -102,10 +106,11 @@ const Wallet = () => {
 
   const renderChainDistribution = (symbol: string, contractAddress: string) => {
     const isNonTransferable = NON_TRANSFERABLE_TOKENS.some((nonTransf) => nonTransf === contractAddress);
+    const hasBalance = getTokenChainDistribution(contractAddress).filter((cD) => cD.balance > 0)?.length > 0;
     return (
       <div style={{ padding: 20 }}>
         {isNonTransferable ? (
-          <Warning type="danger" margin="-20px 0px 10px 0px">
+          <Warning justifyContent="center" type="danger" margin="-20px 0px 10px 0px">
             <AlertIconSVG />
             <div>
               <span>{contractAddress} is not transferable!</span>
@@ -124,6 +129,10 @@ const Wallet = () => {
               usdBalance={getUsdPrice(contractAddress, cD.balance)}
             />
           ))}
+        {!hasBalance && symbol?.toLowerCase() === 'kda' ? (
+          <Warning justifyContent="center">Doesn’t exist: This account does not exist.</Warning>
+        ) : null}
+        {!hasBalance && symbol?.toLowerCase() !== 'kda' ? <Warning justifyContent="center">{symbol?.toUpperCase()} balance is 0.</Warning> : null}
         {['coin', 'kaddex.kdx'].every((add) => add !== contractAddress) && (
           <ActionList
             actions={[
@@ -163,12 +172,12 @@ const Wallet = () => {
       <DivFlex justifyContent="space-between" padding="15px 20px">
         <SecondaryLabel>NET WORTH</SecondaryLabel>
         <SecondaryLabel color="black">
-          {isLoadingBalances ? <Spinner size={10} color="black" weight={2} /> : `$ ${roundNumber(getAllChainUsdBalance(), 2)}`}
+          {isLoadingBalances ? <Spinner size={10} color="black" weight={2} /> : `$ ${humanReadableNumber(getAllChainUsdBalance().toFixed(2), 2)}`}
         </SecondaryLabel>
       </DivFlex>
       <DivBottomShadow justifyContent="center" flexDirection="column" alignItems="center" padding="20px">
         <SecondaryLabel>ACCOUNT BALANCE</SecondaryLabel>
-        <PrimaryLabel>$ {roundNumber(getAccountBalance(stateWallet?.account), 2)}</PrimaryLabel>
+        <PrimaryLabel>$ {humanReadableNumber(getAccountBalance(stateWallet?.account).toFixed(2), 2)}</PrimaryLabel>
         <DivFlex gap="5%" style={{ width: '100%', marginTop: 30 }}>
           <Button
             onClick={() => history.push('/transfer?coin=kda&chainId=0')}
@@ -203,18 +212,22 @@ const Wallet = () => {
         </DivFlex>
         <DivAssetList>
           <TokenElement
+            isLoadingBalances={isLoadingBalances}
             balance={getTokenTotalBalance('coin', stateWallet?.account)}
             name="KDA"
             usdBalance={roundNumber(getUsdPrice('coin', getTokenTotalBalance('coin', stateWallet?.account)), 2)}
             logo={images.wallet.tokens.coin}
-            onClick={() => openModal({ title: 'KDA Chain Distribution', content: renderChainDistribution('kda', 'coin') })}
+            onClick={() => selectedAccountBalance && openModal({ title: 'KDA Chain Distribution', content: renderChainDistribution('kda', 'coin') })}
           />
           <TokenElement
+            isLoadingBalances={isLoadingBalances}
             balance={getTokenTotalBalance('kaddex.kdx', stateWallet?.account)}
             name="KDX"
             usdBalance={roundNumber(getUsdPrice('kaddex.kdx', getTokenTotalBalance('kaddex.kdx', stateWallet?.account)), 2)}
             logo={images.wallet.tokens['kaddex.kdx']}
-            onClick={() => openModal({ title: 'KDX Chain Distribution', content: renderChainDistribution('kdx', 'kaddex.kdx') })}
+            onClick={() =>
+              selectedAccountBalance && openModal({ title: 'KDX Chain Distribution', content: renderChainDistribution('kdx', 'kaddex.kdx') })
+            }
           />
           {fungibleTokens
             ?.filter((fT) => fT.contractAddress !== 'kaddex.kdx')
@@ -222,15 +235,17 @@ const Wallet = () => {
               const tokenBalance = getTokenTotalBalance(fT.contractAddress, stateWallet?.account);
               return (
                 <TokenElement
+                  isLoadingBalances={isLoadingBalances}
                   balance={tokenBalance || 0}
                   name={fT.symbol?.toUpperCase()}
                   usdBalance={roundNumber(getUsdPrice(fT.contractAddress, tokenBalance || 0), 2)}
                   logo={images.wallet.tokens[fT.contractAddress] || images.wallet.tokens.coin}
                   onClick={() => {
-                    openModal({
-                      title: `${fT.symbol?.toUpperCase()} Chain Distribution`,
-                      content: renderChainDistribution(fT.symbol, fT.contractAddress),
-                    });
+                    selectedAccountBalance &&
+                      openModal({
+                        title: `${fT.symbol?.toUpperCase()} Chain Distribution`,
+                        content: renderChainDistribution(fT.symbol, fT.contractAddress),
+                      });
                   }}
                 />
               );

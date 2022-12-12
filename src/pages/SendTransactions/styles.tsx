@@ -143,6 +143,7 @@ export const Warning = styled.div`
   color: ${(props) => (props.type === 'danger' ? '#000000' : '#ce8900')};
   padding: 10px;
   cursor: ${(props) => (props.isContact ? 'pointer' : 'default')};
+  justify-content: ${(props) => props.justifyContent || 'default'};
   font-size: 11px;
   font-weight: 600;
   border-radius: 10px;

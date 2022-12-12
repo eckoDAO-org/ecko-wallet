@@ -287,6 +287,8 @@ const PopupConfirm = (props: Props) => {
     );
   }
 
+  const isVanityAccount = !receiverName?.startsWith('k:');
+
   return (
     <div style={{ padding: '0 20px 20px 20px', marginTop: -15 }}>
       {renderTransactionInfo(info, { borderTop: ' none', margin: '0px -20px 20px' })}
@@ -339,6 +341,16 @@ const PopupConfirm = (props: Props) => {
             <span>You are about to do a cross chain transfer</span>
             <br />
             <span>This operation usually takes more time</span>
+          </div>
+        </Warning>
+      )}
+      {isVanityAccount && (
+        <Warning margin="10px 0" style={{ justifyContent: 'center' }}>
+          <AlertIconSVG />
+          <div>
+            <span>You are sending to a non “k:account”!</span>
+            <br />
+            <span>Are you sure you want to proceed?</span>
           </div>
         </Warning>
       )}

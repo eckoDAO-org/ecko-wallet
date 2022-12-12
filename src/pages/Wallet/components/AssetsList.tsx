@@ -26,10 +26,13 @@ export const AssetsList = () => {
   const [search, setSearch] = useState<string>('');
 
   useEffect(() => {
-    if (selectedNetwork && selectedNetwork.url) {
-      const allTokens = getTokenList(selectedNetwork.url, selectedNetwork.networkId);
-      setTokens([...allTokens]);
-    }
+    const init = async () => {
+      if (selectedNetwork && selectedNetwork.url) {
+        const allTokens = await getTokenList();
+        setTokens([...allTokens]);
+      }
+    };
+    init();
   }, [selectedNetwork, chainId]);
   return (
     <Wrapper>

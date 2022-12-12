@@ -95,7 +95,7 @@ const LoginDapp = (props: any) => {
     <CreatePasswordWrapper>
       <Body>
         <DivImage marginBottom="30px" marginTop="30px">
-          <Image src={images.logoDapps} size={80} width={80} alt="logo" />
+          <Image src={images.xWalletIcon} size={80} width={80} alt="logo" />
         </DivImage>
         <Title>Input Password Sign In</Title>
         <Wrapper onSubmit={handleSubmit(handleSignIn)} id="sign-in-form">

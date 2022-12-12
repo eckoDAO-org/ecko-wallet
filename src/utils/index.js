@@ -84,7 +84,7 @@ export const countDecimalPlaces = (value) => {
 };
 
 export const humanReadableNumber = (num, minimumFractionDigits = 2) =>
-  parseFloat(num).toLocaleString(undefined, { minimumFractionDigits }).replace(/\.0+$/, '');
+  parseFloat(num).toLocaleString('en-GB', { minimumFractionDigits }).replace(/\.0+$/, '');
 
 export const BigNumberConverter = (value) => {
   const valueConverter = parseFloat(value);

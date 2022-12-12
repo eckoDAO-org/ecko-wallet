@@ -181,7 +181,7 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
 
   const renderKeys = () => (
     <KeyWrapper>
-      <KeyTitle>Keys:</KeyTitle>
+      <SecondaryLabel fontWeight={700}>KEYS</SecondaryLabel>
       {pKeys.map((key) => (
         <KeyItemWrapper key={key}>
           {key}
