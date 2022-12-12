@@ -15,7 +15,7 @@ import { DivBottomShadow, DivFlex, PrimaryLabel, SecondaryLabel } from 'src/comp
 import { ConfirmModal } from 'src/components/ConfirmModal';
 import { IconButton } from 'src/components/IconButton';
 import { ActionList } from 'src/components/ActionList';
-import { roundNumber, BigNumberConverter } from 'src/utils';
+import { roundNumber, BigNumberConverter, humanReadableNumber } from 'src/utils';
 import { extractDecimal } from 'src/utils/chainweb';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import useLocalStorage from 'src/hooks/useLocalStorage';
@@ -172,12 +172,12 @@ const Wallet = () => {
       <DivFlex justifyContent="space-between" padding="15px 20px">
         <SecondaryLabel>NET WORTH</SecondaryLabel>
         <SecondaryLabel color="black">
-          {isLoadingBalances ? <Spinner size={10} color="black" weight={2} /> : `$ ${roundNumber(getAllChainUsdBalance(), 2)}`}
+          {isLoadingBalances ? <Spinner size={10} color="black" weight={2} /> : `$ ${humanReadableNumber(getAllChainUsdBalance().toFixed(2), 2)}`}
         </SecondaryLabel>
       </DivFlex>
       <DivBottomShadow justifyContent="center" flexDirection="column" alignItems="center" padding="20px">
         <SecondaryLabel>ACCOUNT BALANCE</SecondaryLabel>
-        <PrimaryLabel>$ {roundNumber(getAccountBalance(stateWallet?.account), 2)}</PrimaryLabel>
+        <PrimaryLabel>$ {humanReadableNumber(getAccountBalance(stateWallet?.account).toFixed(2), 2)}</PrimaryLabel>
         <DivFlex gap="5%" style={{ width: '100%', marginTop: 30 }}>
           <Button
             onClick={() => history.push('/transfer?coin=kda&chainId=0')}
