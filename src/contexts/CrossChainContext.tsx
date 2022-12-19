@@ -34,8 +34,8 @@ export const CrossChainContext = createContext<CrossChainContextValue>(defaultCr
 export const CrossChainProvider = ({ children }: any) => {
   const rootState = useSelector((state) => state);
 
-  const { data: txSettings } = useContext(SettingsContext);
-
+  const { data: settings } = useContext(SettingsContext);
+  const txSettings = settings?.txSettings;
   const { selectedNetwork } = rootState.extensions;
   const { account, chainId } = rootState.wallet;
 

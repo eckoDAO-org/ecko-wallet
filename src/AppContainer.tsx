@@ -29,6 +29,7 @@ import InitSeedPhrase from './pages/InitSeedPhrase';
 import ExportSeedPhrase from './pages/Setting/ExportSeedPhrase';
 import History from './pages/Wallet/views/History';
 import PageTransaction from './pages/Setting/Transaction';
+import PageLockSettings from './pages/Setting/Lock';
 import PageConnectedSites from './pages/Setting/ConnectedSites';
 
 const Container = styled.div`
@@ -68,6 +69,7 @@ const AppContainer = () => {
         <PrivateRoute path="/networks" component={PageNetworks} />
         <PrivateRoute path="/connected-sites" component={PageConnectedSites} />
         <PrivateRoute path="/tx-settings" component={PageTransaction} />
+        <PrivateRoute path="/lock-settings" component={PageLockSettings} />
         <PrivateRoute path="/about" component={PageAbout} />
         <PrivateRoute path="/setting" component={PageSetting} />
         <PrivateRoute path="/history" component={History} />

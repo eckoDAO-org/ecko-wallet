@@ -90,7 +90,7 @@ import iconKayc from './kayc-logo.svg';
 import iconKds from './kds-logo.svg';
 import iconCrna from './corona-logo.svg';
 import iconKishu from './kishk-logo.svg';
-import iconArkd from './ark-logo.svg';
+import iconArkd from './arkade-logo.png';
 import checkedV from './checked-v.svg';
 import violetAdd from './violet-add.svg';
 import trashViolet from './trash-violet.svg';

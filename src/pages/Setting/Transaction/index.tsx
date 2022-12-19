@@ -2,7 +2,7 @@
 import { useContext, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import Button from 'src/components/Buttons';
-import { SettingsContextData, SettingsContext } from 'src/contexts/SettingsContext';
+import { SettingsContext, TxSettings } from 'src/contexts/SettingsContext';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
@@ -18,16 +18,21 @@ import { Body, DivError } from '../Contact/views/style';
 
 const PageTransaction = () => {
   const history = useHistory();
-  const { data, setTxSettings } = useContext(SettingsContext);
+  const { data: settings, setTxSettings } = useContext(SettingsContext);
+  const txSettings = settings?.txSettings;
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   const getDefaultData = (): any => {
-    const gasPriceDecimals = new BigNumber(data?.gasPrice ?? CONFIG.GAS_PRICE).decimalPlaces();
-    const xChainGasPriceDecimals = new BigNumber(data?.xChainGasPrice ?? CONFIG.X_CHAIN_GAS_PRICE).decimalPlaces();
-    return { ...data, gasPrice: data?.gasPrice?.toFixed(gasPriceDecimals), xChainGasPrice: data?.xChainGasPrice?.toFixed(xChainGasPriceDecimals) };
+    const gasPriceDecimals = new BigNumber(txSettings?.gasPrice ?? CONFIG.GAS_PRICE).decimalPlaces();
+    const xChainGasPriceDecimals = new BigNumber(txSettings?.xChainGasPrice ?? CONFIG.X_CHAIN_GAS_PRICE).decimalPlaces();
+    return {
+      ...txSettings,
+      gasPrice: txSettings?.gasPrice?.toFixed(gasPriceDecimals),
+      xChainGasPrice: txSettings?.xChainGasPrice?.toFixed(xChainGasPriceDecimals),
+    };
   };
 
   const {
@@ -38,7 +43,7 @@ const PageTransaction = () => {
     reset,
   } = useForm({ defaultValues: getDefaultData() });
 
-  const onSave = (dataSubmit: SettingsContextData) => {
+  const onSave = (dataSubmit: TxSettings) => {
     const toSubmit = {
       ...dataSubmit,
       gasLimit: Number(dataSubmit.gasLimit),
