@@ -40,7 +40,6 @@ const PageTransaction = () => {
     handleSubmit,
     formState: { errors },
     setValue,
-    reset,
   } = useForm({ defaultValues: getDefaultData() });
 
   const onSave = (dataSubmit: TxSettings) => {
