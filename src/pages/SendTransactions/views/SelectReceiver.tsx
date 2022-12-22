@@ -53,6 +53,7 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
   const [pKeys, setPKeys] = useState<any>([]);
   const rootState = useSelector((state) => state);
   const { contacts, recent, selectedNetwork } = rootState.extensions;
+  const sortedContacts = [...(contacts || [])]?.sort((a, b) => a?.aliasName?.localeCompare(b?.aliasName));
   const { wallet } = rootState;
   const history = useHistory();
   const optionsChain = useChainIdOptions();
@@ -381,7 +382,7 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
             {contacts.length > 0 && (
               <div>
                 <SecondaryLabel>CONTACTS</SecondaryLabel>
-                {getTabContent(contacts)}
+                {getTabContent(sortedContacts)}
               </div>
             )}
           </div>

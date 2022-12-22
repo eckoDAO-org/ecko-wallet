@@ -2,12 +2,13 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { groupBy } from 'lodash';
 import { shortenAddress } from 'src/utils';
 import { useModalContext } from 'src/contexts/ModalContext';
 import Button from 'src/components/Buttons';
 import { NavigationHeader } from 'src/components/NavigationHeader';
 import { JazzAccount } from 'src/components/JazzAccount';
-import { CommonLabel, DivFlex, SecondaryLabel, StickyFooter } from 'src/components';
+import { CommonLabel, DivFlex, PrimaryLabel, SecondaryLabel, StickyFooter } from 'src/components';
 import { TitleMessage } from './style';
 import { Body } from '../../SendTransactions/styles';
 import ContactForm from './views/ContactForm';
@@ -18,14 +19,15 @@ const Wrapper = styled.div`
 `;
 
 const AccountRow = styled.div`
-  border-bottom: 1px solid #dfdfed;
+  border-bottom: ${(props) => props.hasBorder && '1px solid #dfdfed'};
   cursor: pointer;
 `;
 
 const PageContact = () => {
   const { contacts, selectedNetwork } = useSelector((state) => state.extensions);
   const history = useHistory();
-
+  const groupedContacts = groupBy(contacts, (c) => c.aliasName[0]);
+  const sortedKeys = Object.keys(groupedContacts).sort((a, b) => a.localeCompare(b));
   const { openModal } = useModalContext();
 
   const onClickAccount = (contact) =>
@@ -42,44 +44,51 @@ const PageContact = () => {
   const onAddAccount = () =>
     openModal({
       title: 'New account',
-      content: <ContactForm networkId={selectedNetwork.networkId} />,
+      content: <ContactForm isNew contact={{ aliasName: null, accountName: null }} networkId={selectedNetwork.networkId} />,
     });
 
   const goBack = () => {
     history.push('/setting');
   };
 
-  const getTabContent = () =>
-    contacts.length ? (
-      contacts
-        .filter((value, index, self) => index === self.findIndex((t) => t?.accountName === value?.accountName))
-        .map(
-          (contact: any) =>
-            contact?.accountName && (
-              <AccountRow onClick={() => onClickAccount(contact)}>
-                <JazzAccount
-                  key={contact.aliasName}
-                  account={contact.accountName}
-                  renderAccount={(acc) => (
-                    <DivFlex flexDirection="column">
-                      <CommonLabel color="#20264E" fontWeight={700} fontSize={14}>
-                        {contact.aliasName}
-                      </CommonLabel>
-                      <SecondaryLabel fontWeight={500}>{shortenAddress(acc)}</SecondaryLabel>
-                    </DivFlex>
-                  )}
-                />
-              </AccountRow>
-            ),
-        )
-    ) : (
-      <TitleMessage>No data</TitleMessage>
-    );
   return (
     <Wrapper>
       <NavigationHeader title="Contacts" onBack={goBack} />
-      <Body style={{ marginBottom: 50 }}>
-        {getTabContent()}
+      <Body style={{ marginBottom: 100 }}>
+        {sortedKeys?.length ? (
+          sortedKeys.map((letter) => (
+            <DivFlex alignItems="flex-start" style={{ borderTop: '1px solid #dfdfed' }}>
+              <PrimaryLabel style={{ flex: 1 }}>{letter}</PrimaryLabel>
+              <div style={{ flex: 3 }}>
+                {groupedContacts[letter]
+                  ?.sort((a, b) => a.aliasName.localeCompare(b.aliasName))
+                  ?.map(
+                    (contact, i) =>
+                      (contact?.accountName || contact?.aliasName) && (
+                        <AccountRow hasBorder={i < groupedContacts[letter].length - 1} onClick={() => onClickAccount(contact)}>
+                          {contact.accountName && (
+                            <JazzAccount
+                              key={contact.aliasName}
+                              account={contact.accountName}
+                              renderAccount={(acc) => (
+                                <DivFlex flexDirection="column">
+                                  <CommonLabel color="#20264E" fontWeight={700} fontSize={14}>
+                                    {contact.aliasName}
+                                  </CommonLabel>
+                                  <SecondaryLabel fontWeight={500}>{shortenAddress(acc)}</SecondaryLabel>
+                                </DivFlex>
+                              )}
+                            />
+                          )}
+                        </AccountRow>
+                      ),
+                  )}
+              </div>
+            </DivFlex>
+          ))
+        ) : (
+          <TitleMessage>No contacts</TitleMessage>
+        )}
         <StickyFooter>
           <Button size="full" label="Add New Contact" onClick={onAddAccount} style={{ width: '90%', maxWidth: 890 }} />
         </StickyFooter>

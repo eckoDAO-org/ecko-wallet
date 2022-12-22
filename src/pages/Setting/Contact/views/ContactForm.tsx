@@ -24,10 +24,11 @@ import { BodyModal, TitleModal, DivChild, DivError, DivChildButton, ItemWrapperC
 type Props = {
   contact?: any;
   networkId: any;
+  isNew?: boolean;
 };
 
 const ContactForm = (props: Props) => {
-  const { contact, networkId } = props;
+  const { contact, networkId, isNew } = props;
   const { closeModal } = useModalContext();
   const {
     register,
@@ -36,7 +37,12 @@ const ContactForm = (props: Props) => {
     setValue,
     clearErrors,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      alias: contact?.aliasName ?? '',
+      accountName: contact?.accountName ?? '',
+    },
+  });
   const [isMobile] = useWindowResizeMobile(420);
   const rootState = useSelector((state) => state);
   const { selectedNetwork } = rootState.extensions;
@@ -62,6 +68,7 @@ const ContactForm = (props: Props) => {
         contacts[`${0}`][`${addContact.accountName}`] = newContact;
         setLocalContacts(networkId, contacts);
         setContacts(convertContacts(contacts));
+        setAliasState('');
         closeModal();
         toast.success(<Toast type="success" content="Contact Added" />);
       },
@@ -72,32 +79,35 @@ const ContactForm = (props: Props) => {
         setLocalContacts(networkId, contacts);
         setContacts(convertContacts(contacts));
         toast.success(<Toast type="success" content="Contact Added" />);
+        setAliasState('');
         closeModal();
       },
     );
   };
   const checkAddContact = () => {
-    if (contact) {
-      finishAddContact(contact);
-    } else {
-      const { accountName } = getValues();
-      const pactCode = `(coin.details "${accountName}")`;
-      showLoading();
-      fetchLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, 0)
-        .then((request) => {
-          hideLoading();
-          const newContact = {
-            accountName,
-            chainId: 0,
-            pred: get(request, 'result.data.guard.pred'),
-            keys: get(request, 'result.data.guard.keys'),
-          };
-          finishAddContact(newContact);
-        })
-        .catch(() => {
-          hideLoading();
-          toast.error(<Toast type="fail" content="Network error." />);
-        });
+    const { accountName, alias } = getValues();
+    if (accountName && alias) {
+      if (contact) {
+        finishAddContact(contact);
+      } else {
+        const pactCode = `(coin.details "${accountName}")`;
+        showLoading();
+        fetchLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, 0)
+          .then((request) => {
+            hideLoading();
+            const newContact = {
+              accountName,
+              chainId: 0,
+              pred: get(request, 'result.data.guard.pred'),
+              keys: get(request, 'result.data.guard.keys'),
+            };
+            finishAddContact(newContact);
+          })
+          .catch(() => {
+            hideLoading();
+            toast.error(<Toast type="fail" content="Network error." />);
+          });
+      }
     }
   };
 
@@ -150,16 +160,16 @@ const ContactForm = (props: Props) => {
           </ItemWrapperContact>
           <DivError>{errors.alias && <InputError marginTop="0">{errors.alias.message}</InputError>}</DivError>
           <ItemWrapperContact>
-            {contact ? (
+            {!isNew ? (
               <BaseTextInput
-                inputProps={{ readOnly: true, value: shortenAddress(contact.accountName) }}
+                inputProps={{ readOnly: true, value: shortenAddress(contact?.accountName ?? '') }}
                 title="Account name"
                 height="auto"
                 image={{
                   width: '15px',
                   height: '15px',
                   src: images.wallet.copyGray,
-                  callback: () => copyToClipboard(contact.accountName),
+                  callback: () => copyToClipboard(contact?.accountName ?? ''),
                 }}
               />
             ) : (
