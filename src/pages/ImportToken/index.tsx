@@ -54,7 +54,8 @@ const ImportToken = () => {
   const { selectedNetwork } = rootState.extensions;
   const history = useHistory();
   const [fungibleTokens, setFungibleTokens] = useLocalStorage<IFungibleToken[]>(LOCAL_KEY_FUNGIBLE_TOKENS, []);
-  const { data: txSettings } = useContext(SettingsContext);
+  const { data: settings } = useContext(SettingsContext);
+  const txSettings = settings?.txSettings;
 
   const params = new URLSearchParams(search);
   const coin = params.get('coin');

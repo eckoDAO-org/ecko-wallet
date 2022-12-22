@@ -3,6 +3,7 @@ import { createSlice, PayloadAction, Store } from '@reduxjs/toolkit';
 interface RawWallet {
   chainId: string | number;
   account: string;
+  alias?: string;
   publicKey: string;
   secretKey: string;
   connectedSites: string[];
@@ -11,6 +12,7 @@ interface Wallet {
   chainId: string | number;
   balance: number;
   account: string;
+  alias: string;
   publicKey: string;
   secretKey: string;
   wallets: RawWallet[];
@@ -27,6 +29,7 @@ const initialState: Wallet = {
   chainId: '0',
   balance: 0,
   account: '',
+  alias: '',
   publicKey: '',
   secretKey: '',
   wallets: [],
@@ -41,6 +44,7 @@ const storeWallet = createSlice({
       ...state,
       chainId: action.payload.chainId,
       account: action.payload.account,
+      alias: action.payload.alias,
       publicKey: action.payload.publicKey,
       secretKey: action.payload.secretKey,
       connectedSites: action.payload.connectedSites,
