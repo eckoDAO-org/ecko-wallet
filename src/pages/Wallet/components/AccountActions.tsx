@@ -57,6 +57,8 @@ export const AccountActions = ({
         const selectedWalletIndex = wallets.findIndex((a) => a.account === stateWallet?.account);
         newWallets.splice(selectedWalletIndex, 0, { ...wallets[selectedWalletIndex], alias });
         setWallets(newWallets);
+        toast.success(<Toast type="success" content="Alias changed successfully" />);
+        closeModal();
       },
       () => {},
     );
@@ -78,7 +80,12 @@ export const AccountActions = ({
                 },
               },
               { src: images.settings.iconShare, label: 'Export Recovery Phrase', onClick: () => onActionClick(history.push('/export-seed-phrase')) },
-              { src: images.settings.iconEdit, label: 'Edit Account Alias', onClick: () => setIsOpenAliasModal(true) },
+              {
+                src: images.settings.iconEdit,
+                label: 'Edit Account Alias',
+                onClick: () => setIsOpenAliasModal(true),
+                style: { marginLeft: -2, marginRight: 10, width: 22 },
+              },
               { src: images.settings.iconTrash, label: 'Remove Selected Wallet', onClick: onRemoveWallet },
             ]}
           />
