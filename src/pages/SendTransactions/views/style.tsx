@@ -271,3 +271,12 @@ export const AmountWrapper = styled(DivFlex)`
     -moz-appearance: textfield; /* Firefox */
   }
 `;
+
+export const ContactSuggestion = styled.div`
+  background: white;
+  position: absolute;
+  width: 100%;
+  max-height: 200px;
+  overflow: auto;
+  padding: 0 10px;
+`;

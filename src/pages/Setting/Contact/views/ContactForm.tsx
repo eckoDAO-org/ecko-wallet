@@ -87,7 +87,7 @@ const ContactForm = (props: Props) => {
   const checkAddContact = () => {
     const { accountName, alias } = getValues();
     if (accountName && alias) {
-      if (contact) {
+      if (contact?.accountName) {
         finishAddContact(contact);
       } else {
         const pactCode = `(coin.details "${accountName}")`;
@@ -97,6 +97,7 @@ const ContactForm = (props: Props) => {
             hideLoading();
             const newContact = {
               accountName,
+              aliasName: alias,
               chainId: 0,
               pred: get(request, 'result.data.guard.pred'),
               keys: get(request, 'result.data.guard.keys'),
@@ -187,7 +188,7 @@ const ContactForm = (props: Props) => {
                       },
                       maxLength: {
                         value: 1000,
-                        message: 'Acount name should be maximum 1000 characters.',
+                        message: 'Account name should be maximum 1000 characters.',
                       },
                     }),
                   }}

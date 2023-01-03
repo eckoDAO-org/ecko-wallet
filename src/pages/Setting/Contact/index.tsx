@@ -26,7 +26,10 @@ const AccountRow = styled.div`
 const PageContact = () => {
   const { contacts, selectedNetwork } = useSelector((state) => state.extensions);
   const history = useHistory();
-  const groupedContacts = groupBy(contacts, (c) => c.aliasName[0]);
+  const groupedContacts = groupBy(
+    contacts?.filter((c) => c.accountName),
+    (c) => c.aliasName[0],
+  );
   const sortedKeys = Object.keys(groupedContacts).sort((a, b) => a.localeCompare(b));
   const { openModal } = useModalContext();
 

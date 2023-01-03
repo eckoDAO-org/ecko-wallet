@@ -25,7 +25,7 @@ import useChainIdOptions from 'src/hooks/useChainIdOptions';
 import Button from 'src/components/Buttons';
 import { IFungibleToken } from 'src/pages/ImportToken';
 import { BodyModal, TitleModal, DivChild, InputWrapper, Warning } from '../styles';
-import { KeyWrapper, KeyItemWrapper, KeyRemove } from './style';
+import { KeyWrapper, KeyItemWrapper, KeyRemove, ContactSuggestion } from './style';
 
 type Props = {
   goToTransfer: any;
@@ -45,12 +45,6 @@ const predList = [
 ];
 
 const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) => {
-  const [isMobile] = useWindowResizeMobile(420);
-  const [isSearching, setIsSearching] = useState(false);
-  const [isScanSearching, setIsScanSearching] = useState(false);
-  const [isOpenConfirmModal, setIsOpenConfirmModal] = useState(false);
-  const [account, setAccount] = useState<any>({});
-  const [pKeys, setPKeys] = useState<any>([]);
   const rootState = useSelector((state) => state);
   const { contacts, recent, selectedNetwork } = rootState.extensions;
   const sortedContacts = [...(contacts || [])]?.sort((a, b) => a?.aliasName?.localeCompare(b?.aliasName));
@@ -61,6 +55,14 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
   const txSettings = settings?.txSettings;
   const { selectedAccountBalance, usdPrices } = useAccountBalanceContext();
   const { openModal, closeModal } = useModalContext();
+
+  const [isMobile] = useWindowResizeMobile(420);
+  const [isSearching, setIsSearching] = useState(false);
+  const [isScanSearching, setIsScanSearching] = useState(false);
+  const [isOpenConfirmModal, setIsOpenConfirmModal] = useState(false);
+  const [account, setAccount] = useState<any>({});
+  const [pKeys, setPKeys] = useState<any>([]);
+  const [isOpenContactSuggestion, setIsOpenContactSuggestion] = useState<boolean>(true);
 
   const getSourceChainBalance = (chainId: number) => {
     if (selectedAccountBalance) {
@@ -93,6 +95,8 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
       publicKey: '',
     },
   });
+
+  const accountName = getValues('accountName');
 
   const onNext = () => {
     const receiver: string = getValues('accountName');
@@ -225,7 +229,7 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
 
   const getTabContent = (data) =>
     data
-      .filter((value, index, self) => index === self.findIndex((t) => t.accountName === value.accountName))
+      ?.filter((value, index, self) => index === self.findIndex((t) => t.accountName === value.accountName))
       .map((contact: any) => (
         <JazzAccount
           account={contact.accountName}
@@ -242,6 +246,7 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
           }
           onClick={() => {
             setValue('accountName', contact.accountName);
+            setIsOpenContactSuggestion(false);
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
         />
@@ -317,7 +322,7 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
                 <SecondaryLabel>{humanReadableNumber(usdPrices[fungibleToken?.contractAddress] * selectedChainBalance)} USD</SecondaryLabel>
               ) : null}
             </InputWrapper>
-            <InputWrapper style={{ borderTop: '1px solid #DFDFED', paddingTop: 10, marginTop: 30 }}>
+            <InputWrapper style={{ borderTop: '1px solid #DFDFED', paddingTop: 10, marginTop: 30, position: 'relative' }}>
               <BaseTextInput
                 inputProps={{
                   ...register('accountName', {
@@ -344,10 +349,16 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
                 }}
                 onChange={(e) => {
                   clearErrors('accountName');
+                  setIsOpenContactSuggestion(true);
                   setValue('accountName', e.target.value);
                 }}
               />
               {errors.accountName && <InputError>{errors.accountName.message}</InputError>}
+              {isOpenContactSuggestion && accountName ? (
+                <ContactSuggestion className="lightScrollbar">
+                  {getTabContent(sortedContacts?.filter((c) => c.aliasName?.includes(accountName)))}
+                </ContactSuggestion>
+              ) : null}
             </InputWrapper>
             <InputWrapper>
               <Controller

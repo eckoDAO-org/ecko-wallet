@@ -55,16 +55,6 @@ export const ContactInfo = ({ contact }: any) => {
           <CommonLabel wordBreak="break-word">{contact.accountName}</CommonLabel>
         </DivFlex>
       </div>
-      <ReceiveSection>
-        <DivFlex style={{ marginBottom: 20 }}>
-          <ReceiveTitle fontSize={10} uppercase>
-            chain id
-          </ReceiveTitle>
-        </DivFlex>
-        <DivFlex justifyContent="flex-start" alignItems="flex-start">
-          <CommonLabel>0</CommonLabel>
-        </DivFlex>
-      </ReceiveSection>
       <ReceiveSection flexDirection="column" padding="0 24px">
         <ActionList
           actions={[
