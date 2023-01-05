@@ -62,7 +62,7 @@ const RemoveWalletPopup = (props: Props) => {
   const history = useHistory();
   const rootState = useSelector((state) => state);
   const { passwordHash, selectedNetwork } = rootState.extensions;
-  const { wallets, chainId, account } = rootState.wallet;
+  const { wallets, account } = rootState.wallet;
   const { crossChainRequests, setCrossChainRequest } = useContext(CrossChainContext);
   const [passwordInput, setPasswordInput] = useState('');
 

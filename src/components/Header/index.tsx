@@ -39,11 +39,11 @@ export const Header = ({ hideAccounts }: { hideAccounts?: boolean }) => {
   const location = useLocation().pathname;
   const rootState = useSelector((state) => state);
   const stateWallet = useCurrentWallet();
-  // TODO: sometimes undefined on switching network (check for the same networkId)
   const { openModal, closeModal } = useContext(ModalContext);
 
   const { selectedNetwork, passwordHash, networks } = rootState.extensions;
   const { wallets } = rootState?.wallet;
+  const selectedWallet = wallets?.find((a) => a.account === stateWallet?.account);
 
   const checkWallet = (pub) => {
     let result = true;
@@ -67,6 +67,7 @@ export const Header = ({ hideAccounts }: { hideAccounts?: boolean }) => {
         publicKey: encryptKey(publicKey, passwordHash),
         secretKey: encryptKey(secretKey, passwordHash),
         chainId: '0',
+        alias: '',
         connectedSites: [],
       };
       getLocalWallets(
@@ -81,6 +82,7 @@ export const Header = ({ hideAccounts }: { hideAccounts?: boolean }) => {
       );
       const newStateWallet = {
         chainId: '0',
+        alias: '',
         account: accountName,
         publicKey,
         secretKey,
@@ -143,6 +145,7 @@ export const Header = ({ hideAccounts }: { hideAccounts?: boolean }) => {
     setCurrentWallet({
       chainId: 0,
       account: '',
+      alias: '',
       publicKey: '',
       secretKey: '',
       connectedSites: [],
@@ -150,6 +153,7 @@ export const Header = ({ hideAccounts }: { hideAccounts?: boolean }) => {
     setLocalSelectedWallet({
       chainId: 0,
       account: '',
+      alias: '',
       publicKey: '',
       secretKey: '',
       connectedSites: [],
@@ -185,12 +189,12 @@ export const Header = ({ hideAccounts }: { hideAccounts?: boolean }) => {
           title={
             <DivFlex>
               <Jazzicon diameter={24} seed={jsNumberForAddress(stateWallet?.account)} />{' '}
-              <span style={{ color: '#787B8E', marginLeft: 5 }}>{shortenAddress(stateWallet?.account)}</span>{' '}
+              <span style={{ color: '#787B8E', marginLeft: 5 }}>{selectedWallet?.alias || shortenAddress(stateWallet?.account)}</span>{' '}
             </DivFlex>
           }
           iconComponent={<img src={images.moreIcon} style={{ width: 14, marginTop: 10 }} />}
           iconContainerStyle={{ padding: 0 }}
-          containerStyle={{ border: 'none' }}
+          containerStyle={{ border: 'none', justifyContent: 'flex-end' }}
           modalTitle="My Wallets"
           modalContent={
             <AccountList

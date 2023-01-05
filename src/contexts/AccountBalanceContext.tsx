@@ -48,7 +48,9 @@ export const AccountBalanceProvider = ({ children }: any) => {
   const [fungibleTokens] = useLocalStorage<IFungibleToken[]>(LOCAL_KEY_FUNGIBLE_TOKENS, [{ contractAddress: 'kaddex.kdx', symbol: 'kdx' }]);
 
   const { account: selectedAccount } = useCurrentWallet();
-  const { data: txSettings } = useContext(SettingsContext);
+  const { data: settings } = useContext(SettingsContext);
+
+  const txSettings = settings?.txSettings;
 
   const uniqueWallets = wallets.map((w) => w.account).filter((value, index, self) => self.indexOf(value) === index);
   const sortedWallets = uniqueWallets.sort((a, b) => b.indexOf(selectedAccount));

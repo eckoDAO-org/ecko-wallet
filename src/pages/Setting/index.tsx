@@ -93,6 +93,12 @@ const PageSetting = () => {
       description: 'Protect your wallet',
       onClick: lockWallet,
     },
+    {
+      title: 'Lock Wallet Settings',
+      img: <Padlock />,
+      description: 'Change security settings',
+      onClick: () => history.push('/lock-settings'),
+    },
   ];
 
   const getSettingsItem = ({ img, title, description, onClick }: ISettingsMenu) => (

@@ -38,6 +38,7 @@
     "no-confusing-arrow": "off",
     "operator-linebreak": "off",
     "indent": "off",
+    "function-paren-newline": "off",
     "quotes": "warn",
     "import/extensions": [
       "error",

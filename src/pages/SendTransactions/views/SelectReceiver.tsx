@@ -10,13 +10,14 @@ import images from 'src/images';
 import { toast } from 'react-toastify';
 import { ReactComponent as AlertIconSVG } from 'src/images/icon-alert.svg';
 import { SInput, SLabel } from 'src/baseComponent/BaseTextInput';
+import { useModalContext } from 'src/contexts/ModalContext';
 import { JazzAccount } from 'src/components/JazzAccount';
 import { NON_TRANSFERABLE_TOKENS } from 'src/utils/constant';
 import { useAccountBalanceContext } from 'src/contexts/AccountBalanceContext';
 import { SettingsContext } from 'src/contexts/SettingsContext';
 import { useWindowResizeMobile } from 'src/hooks/useWindowResizeMobile';
 import Toast from 'src/components/Toast/Toast';
-import { shortenAddress } from 'src/utils';
+import { humanReadableNumber, shortenAddress } from 'src/utils';
 import ModalCustom from 'src/components/Modal/ModalCustom';
 import { get } from 'lodash';
 import { CommonLabel, DivBottomShadow, DivFlex, SecondaryLabel, StickyFooter } from 'src/components';
@@ -24,7 +25,7 @@ import useChainIdOptions from 'src/hooks/useChainIdOptions';
 import Button from 'src/components/Buttons';
 import { IFungibleToken } from 'src/pages/ImportToken';
 import { BodyModal, TitleModal, DivChild, InputWrapper, Warning } from '../styles';
-import { KeyWrapper, KeyItemWrapper, KeyRemove, KeyTitle } from './style';
+import { KeyWrapper, KeyItemWrapper, KeyRemove, ContactSuggestion } from './style';
 
 type Props = {
   goToTransfer: any;
@@ -44,19 +45,24 @@ const predList = [
 ];
 
 const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) => {
+  const rootState = useSelector((state) => state);
+  const { contacts, recent, selectedNetwork } = rootState.extensions;
+  const sortedContacts = [...(contacts || [])]?.sort((a, b) => a?.aliasName?.localeCompare(b?.aliasName));
+  const { wallet } = rootState;
+  const history = useHistory();
+  const optionsChain = useChainIdOptions();
+  const { data: settings } = useContext(SettingsContext);
+  const txSettings = settings?.txSettings;
+  const { selectedAccountBalance, usdPrices } = useAccountBalanceContext();
+  const { openModal, closeModal } = useModalContext();
+
   const [isMobile] = useWindowResizeMobile(420);
   const [isSearching, setIsSearching] = useState(false);
   const [isScanSearching, setIsScanSearching] = useState(false);
   const [isOpenConfirmModal, setIsOpenConfirmModal] = useState(false);
   const [account, setAccount] = useState<any>({});
   const [pKeys, setPKeys] = useState<any>([]);
-  const rootState = useSelector((state) => state);
-  const { contacts, recent, selectedNetwork } = rootState.extensions;
-  const { wallet } = rootState;
-  const history = useHistory();
-  const optionsChain = useChainIdOptions();
-  const { data: txSettings } = useContext(SettingsContext);
-  const { selectedAccountBalance } = useAccountBalanceContext();
+  const [isOpenContactSuggestion, setIsOpenContactSuggestion] = useState<boolean>(true);
 
   const getSourceChainBalance = (chainId: number) => {
     if (selectedAccountBalance) {
@@ -89,6 +95,8 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
       publicKey: '',
     },
   });
+
+  const accountName = getValues('accountName');
 
   const onNext = () => {
     const receiver: string = getValues('accountName');
@@ -133,7 +141,35 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
               accountName: receiver,
               chainId,
             });
-            setIsOpenConfirmModal(true);
+            openModal({
+              title: 'Warning',
+              content: (
+                <DivFlex flexDirection="column" alignItems="center" justifyContent="space-evenly" padding="15px" style={{ textAlign: 'center' }}>
+                  <CommonLabel fontWeight={600} fontSize={14}>
+                    You are sending to a non “k:account”! <br /> <br /> Are you sure you want to proceed?
+                  </CommonLabel>
+                  <DivFlex gap="10px" style={{ width: '90%', marginTop: 40 }}>
+                    <Button
+                      onClick={() => {
+                        setValue('accountName', '');
+                        closeModal();
+                      }}
+                      variant="secondary"
+                      label="Cancel"
+                      size="full"
+                    />
+                    <Button
+                      onClick={() => {
+                        closeModal();
+                        setIsOpenConfirmModal(true);
+                      }}
+                      label="Continue"
+                      size="full"
+                    />
+                  </DivFlex>
+                </DivFlex>
+              ),
+            });
           }
         })
         .catch(() => {
@@ -193,7 +229,7 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
 
   const getTabContent = (data) =>
     data
-      .filter((value, index, self) => index === self.findIndex((t) => t.accountName === value.accountName))
+      ?.filter((value, index, self) => index === self.findIndex((t) => t.accountName === value.accountName))
       .map((contact: any) => (
         <JazzAccount
           account={contact.accountName}
@@ -210,6 +246,7 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
           }
           onClick={() => {
             setValue('accountName', contact.accountName);
+            setIsOpenContactSuggestion(false);
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
         />
@@ -279,10 +316,13 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
               {errors.sourceChainId && <InputError>{(errors.sourceChainId as any).message}</InputError>}
             </InputWrapper>
             <InputWrapper>
-              <SLabel uppercase>Chain balance</SLabel>
+              <SLabel uppercase>{fungibleToken?.symbol} Chain balance</SLabel>
               <SInput value={selectedChainBalance} />
+              {usdPrices && fungibleToken && usdPrices[fungibleToken?.contractAddress] ? (
+                <SecondaryLabel>{humanReadableNumber(usdPrices[fungibleToken?.contractAddress] * selectedChainBalance)} USD</SecondaryLabel>
+              ) : null}
             </InputWrapper>
-            <InputWrapper style={{ borderTop: '1px solid #DFDFED', paddingTop: 10, marginTop: 30 }}>
+            <InputWrapper style={{ borderTop: '1px solid #DFDFED', paddingTop: 10, marginTop: 30, position: 'relative' }}>
               <BaseTextInput
                 inputProps={{
                   ...register('accountName', {
@@ -309,10 +349,16 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
                 }}
                 onChange={(e) => {
                   clearErrors('accountName');
+                  setIsOpenContactSuggestion(true);
                   setValue('accountName', e.target.value);
                 }}
               />
               {errors.accountName && <InputError>{errors.accountName.message}</InputError>}
+              {isOpenContactSuggestion && accountName ? (
+                <ContactSuggestion className="lightScrollbar">
+                  {getTabContent(sortedContacts?.filter((c) => c.aliasName?.includes(accountName)))}
+                </ContactSuggestion>
+              ) : null}
             </InputWrapper>
             <InputWrapper>
               <Controller
@@ -347,7 +393,7 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
             {contacts.length > 0 && (
               <div>
                 <SecondaryLabel>CONTACTS</SecondaryLabel>
-                {getTabContent(contacts)}
+                {getTabContent(sortedContacts)}
               </div>
             )}
           </div>

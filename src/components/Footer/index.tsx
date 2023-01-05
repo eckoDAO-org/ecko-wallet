@@ -232,6 +232,7 @@ const Footer = () => {
           (data) => {
             const newWallets = data.map((item) => ({
               chainId: item.chainId,
+              alias: item.alias,
               account: decryptKey(item.account, accountPassword),
               publicKey: decryptKey(item.publicKey, accountPassword),
               secretKey: decryptKey(item.secretKey, accountPassword),
@@ -243,6 +244,7 @@ const Footer = () => {
               (selectedWallet) => {
                 setCurrentWallet({
                   chainId: selectedWallet.chainId,
+                  alias: selectedWallet.alias,
                   account: decryptKey(selectedWallet.account, accountPassword),
                   publicKey: decryptKey(selectedWallet.publicKey, accountPassword),
                   secretKey: decryptKey(selectedWallet.secretKey, accountPassword),
@@ -290,6 +292,7 @@ const Footer = () => {
             setCurrentWallet({
               chainId: 0,
               account: '',
+              alias: '',
               publicKey: '',
               secretKey: '',
               connectedSites: [],
@@ -297,6 +300,7 @@ const Footer = () => {
             setLocalSelectedWallet({
               chainId: 0,
               account: '',
+              alias: '',
               publicKey: '',
               secretKey: '',
               connectedSites: [],

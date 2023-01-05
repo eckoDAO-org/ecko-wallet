@@ -15,7 +15,6 @@ import PopupConfirm from 'src/pages/SendTransactions/views/PopupConfirm';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
 import { useSettingsContext } from 'src/contexts/SettingsContext';
-import { useModalContext } from 'src/contexts/ModalContext';
 import { useAccountBalanceContext } from 'src/contexts/AccountBalanceContext';
 import { useForm } from 'react-hook-form';
 import { CONFIG, GAS_CONFIGS, NUMBER_DECIMAL_AFTER_DOT } from 'src/utils/config';
@@ -89,9 +88,9 @@ export const renderTransactionInfo = (info: TransactionInfo, containerStyle?: Re
 
 const Transfer = (props: Props) => {
   const { destinationAccount, fungibleToken, sourceChainId, isDappTransfer } = props;
-  const { data: txSettings } = useSettingsContext();
+  const { data: settings } = useSettingsContext();
+  const txSettings = settings?.txSettings;
   const { usdPrices } = useAccountBalanceContext();
-  const { openModal } = useModalContext();
   const [wallet, setWallet] = useState(defaultWallet);
   const [selectedGas, setSelectedGas] = useState({ ...GAS_CONFIGS.NORMAL });
   const [amount, setAmount] = useState('0.0');

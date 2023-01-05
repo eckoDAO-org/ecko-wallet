@@ -1,11 +1,11 @@
 import { createContext, useContext } from 'react';
 import useLocalStorage from 'src/hooks/useLocalStorage';
 import useIdleTimeout from 'src/hooks/useIdleTimeout';
-import { CONFIG, XWALLET_AUTOLOCK_SECONDS } from 'src/utils/config';
+import { CONFIG } from 'src/utils/config';
 import { setExpiredTime } from 'src/stores/extensions';
 import { setLocalExpiredTime } from 'src/utils/storage';
 
-export interface SettingsContextData {
+export interface TxSettings {
   gasLimit?: number;
   gasPrice?: number;
   xChainGasStation?: string;
@@ -14,26 +14,35 @@ export interface SettingsContextData {
   xChainTTL?: number;
 }
 
+export interface SettingsContextData {
+  txSettings: TxSettings;
+  lockTime: number | null;
+}
+
 interface SettingsContextValue {
   data: SettingsContextData | null;
-  // eslint-disable-next-line no-unused-vars
+  setSettings: (value: any) => any;
   setTxSettings: (value: any) => any;
-  getTxSettingsAsync: () => Promise<SettingsContextData>;
+  getSettingsAsync: () => Promise<SettingsContextData>;
 }
 
 const defaultSettingsContextValue: SettingsContextData = {
-  gasLimit: CONFIG.GAS_LIMIT,
-  gasPrice: CONFIG.GAS_PRICE,
-  xChainGasStation: CONFIG.X_CHAIN_GAS_STATION,
-  xChainGasPrice: CONFIG.X_CHAIN_GAS_PRICE,
-  xChainGasLimit: CONFIG.X_CHAIN_GAS_LIMIT,
-  xChainTTL: CONFIG.X_CHAIN_TTL,
+  txSettings: {
+    gasLimit: CONFIG.GAS_LIMIT,
+    gasPrice: CONFIG.GAS_PRICE,
+    xChainGasStation: CONFIG.X_CHAIN_GAS_STATION,
+    xChainGasPrice: CONFIG.X_CHAIN_GAS_PRICE,
+    xChainGasLimit: CONFIG.X_CHAIN_GAS_LIMIT,
+    xChainTTL: CONFIG.X_CHAIN_TTL,
+  },
+  lockTime: null,
 };
 
 export const SettingsContext = createContext<SettingsContextValue>({
   data: defaultSettingsContextValue,
+  setSettings: () => {},
   setTxSettings: () => {},
-  getTxSettingsAsync: async () => defaultSettingsContextValue,
+  getSettingsAsync: async () => defaultSettingsContextValue,
 });
 
 export const SettingsProvider = ({ children }: any) => {
@@ -45,18 +54,26 @@ export const SettingsProvider = ({ children }: any) => {
   };
   const diff = lastActivityTimeout ? (new Date().getTime() - lastActivityTimeout) / 1000 : 0;
 
-  if (diff > XWALLET_AUTOLOCK_SECONDS) {
+  const [settings, setSettings, getSettingsAsync] = useLocalStorage<SettingsContextData>('settingsV2', defaultSettingsContextValue);
+
+  if (settings?.lockTime && diff > settings?.lockTime) {
     lockWallet();
   }
 
-  const [txSettings, setTxSettings, getTxSettingsAsync] = useLocalStorage<SettingsContextData>('txSettings', defaultSettingsContextValue);
+  const setTxSettings = (txSettings) => {
+    setSettings({
+      ...settings,
+      txSettings,
+    });
+  };
 
   return (
     <SettingsContext.Provider
       value={{
-        data: txSettings,
+        data: settings,
+        setSettings,
         setTxSettings,
-        getTxSettingsAsync,
+        getSettingsAsync,
       }}
     >
       {children}

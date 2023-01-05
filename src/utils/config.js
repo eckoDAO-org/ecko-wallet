@@ -41,4 +41,25 @@ export const GAS_CONFIGS = {
 export const XWALLET_SEND_TX_NONCE = 'XE';
 export const XWALLET_DAPP_SIGN_NONCE = 'XEDS';
 
-export const XWALLET_AUTOLOCK_SECONDS = 30 * 60;
+export const autoLockOptions = [
+  {
+    value: 30 * 60,
+    label: '30min',
+  },
+  {
+    value: 60 * 60,
+    label: '1h',
+  },
+  {
+    value: 60 * 60 * 2,
+    label: '2h',
+  },
+  {
+    value: 60 * 60 * 4,
+    label: '4h',
+  },
+  {
+    value: null,
+    label: 'Lock manually only',
+  },
+];

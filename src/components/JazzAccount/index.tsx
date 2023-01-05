@@ -22,13 +22,18 @@ export const JazzAccount = ({
   renderAccount?: (acc: string) => React.ReactNode;
   isSelected?: boolean;
   onClick?: any;
-}) => (
-  <AccountListWrapper key={account} justifyContent="flex-start" alignItems="center" onClick={onClick}>
-    <Jazzicon
-      diameter={diameter || 24}
-      seed={jsNumberForAddress(account)}
-      paperStyles={{ marginRight: 10, border: isSelected ? '2px solid #20264e' : null, padding: !isSelected ? 1 : 0 }}
-    />
-    {renderAccount ? renderAccount(account) : <span style={{ fontWeight: isSelected ? 'bold' : 500, fontSize: 16 }}>{shortenAddress(account)}</span>}
-  </AccountListWrapper>
-);
+}) =>
+  account ? (
+    <AccountListWrapper key={account} justifyContent="flex-start" alignItems="center" onClick={onClick}>
+      <Jazzicon
+        diameter={diameter || 24}
+        seed={jsNumberForAddress(account)}
+        paperStyles={{ marginRight: 10, border: isSelected ? '2px solid #20264e' : null, padding: !isSelected ? 1 : 0 }}
+      />
+      {renderAccount ? (
+        renderAccount(account)
+      ) : (
+        <span style={{ fontWeight: isSelected ? 'bold' : 500, fontSize: 16 }}>{shortenAddress(account)}</span>
+      )}
+    </AccountListWrapper>
+  ) : null;

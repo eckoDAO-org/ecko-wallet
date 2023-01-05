@@ -73,3 +73,18 @@
     -webkit-transform: rotate(360deg);
   }
 }
+
+.lightScrollbar {
+  &::-webkit-scrollbar {
+    width: 2px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgb(226, 226, 226);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #b9b9b9;
+    border-radius: 2px;
+  }
+}
