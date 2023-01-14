@@ -117,6 +117,9 @@ chrome.runtime.onConnect.addListener(async (port) => {
       case 'kda_requestSign':
         kdaRequestSign(payload.data, originTabId);
         break;
+      case 'kda_requestQuickSign':
+        kdaRequestQuickSign(payload.data, originTabId);
+        break;
       case 'kda_checkStatus':
         checkStatus(payload.data, originTabId);
         break;
@@ -211,6 +214,7 @@ const kdaRequestSign = async (data, tabId) => {
         if (clist.length > 0) {
           keyPairs.clist = clist;
         }
+        console.log(`!!! ~ keyPairs`, keyPairs);
         const signedCmd = Pact.api.prepareExecCmd(
           keyPairs,
           `${XWALLET_DAPP_SIGN_NONCE}-"${new Date().toISOString()}"`,
@@ -219,6 +223,7 @@ const kdaRequestSign = async (data, tabId) => {
           meta,
           signingCmd.networkId,
         );
+        console.log(`!!! ~ signedCmd`, signedCmd);
 
         if (account.secretKey.length > 64) {
           const signature = getSignatureFromHash(signedCmd.hash, account.secretKey);
@@ -244,6 +249,104 @@ const kdaRequestSign = async (data, tabId) => {
     }
   } else {
     checkStatus(data, tabId);
+  }
+};
+
+const checkIsValidQuickSignPayload = (payload) =>
+  payload && payload.reqs && Array.isArray(payload.reqs) && payload.reqs.every((r) => Array.isArray(r.sigs) && r.cmd);
+
+const checkHasQuickSignValidSignature = async (reqs) => {
+  const { publicKey } = await getSelectedWallet();
+  return reqs.filter((r) => r.sigs?.some((s) => s.includes(publicKey)))?.length > 0
+    ? reqs.filter((r) => r.sigs?.some((s) => s.includes(publicKey)))
+    : false;
+};
+
+const kdaRequestQuickSign = async (data, tabId) => {
+  const returnErrorMessage = (message) => {
+    sendToConnectedPorts({
+      result: {
+        status: 'fail',
+        message,
+      },
+      target: 'kda.content',
+      action: 'res_requestQuickSign',
+    });
+  };
+  console.log(`!!! ~ kdaRequestQuickSign`, data);
+  const isValidNetwork = await verifyNetwork(data.networkId);
+  console.log(`!!! ~ isValidNetwork`, isValidNetwork);
+  if (isValidNetwork) {
+    const isValid = await checkValid(data);
+    console.log(`!!! ~ isValid`, isValid);
+    if (isValid) {
+      const isValidPayload = checkIsValidQuickSignPayload(data);
+      console.log(`!!! ~ isValidPayload`, isValidPayload);
+      if (!isValidPayload) {
+        returnErrorMessage('QuickSign fail: your data structure is invalid');
+        return;
+      }
+      const hasQuickSignValidSignature = await checkHasQuickSignValidSignature(data.reqs);
+      if (!hasQuickSignValidSignature) {
+        returnErrorMessage('QuickSign fail: wallet public key not found');
+        return;
+      }
+      const signedResponses = [];
+      const account = await getSelectedWallet(true);
+      for (let i = 0; i < data.reqs.length; i += 1) {
+        const { cmd, sigs } = data.reqs[i];
+        const hash = Pact.crypto.hash(cmd);
+        if (account.secretKey.length > 64) {
+          const signature = getSignatureFromHash(hash, account.secretKey);
+          console.log(`!!! ~ signature`, signature);
+        } else {
+          const parsedCmd = JSON.parse(cmd);
+          const sigIndex = parsedCmd?.signers.findIndex((s) => s.pubKey === account.publicKey);
+          if (sigIndex < 0) {
+            returnErrorMessage('QuickSign fail: invalid cmd signers');
+            return;
+          }
+          parsedCmd.signers[sigIndex].secretKey = account.secretKey;
+          const clist = parsedCmd.caps ? parsedCmd.caps.map((c) => c.cap) : [];
+          const keyPairs = {
+            publicKey: account.publicKey,
+          };
+          if (account.secretKey.length === 64) {
+            keyPairs.secretKey = account.secretKey;
+          }
+          if (clist.length > 0) {
+            keyPairs.clist = clist;
+          }
+          const signedCmd = Pact.api.prepareExecCmd(
+            keyPairs,
+            `${XWALLET_DAPP_SIGN_NONCE}-"${new Date().toISOString()}"`,
+            parsedCmd.payload.exec.code,
+            parsedCmd.payload.exec.data,
+            parsedCmd.meta,
+            parsedCmd.networkId,
+          );
+          console.log(`!!! ~ signedCmd`, signedCmd);
+        }
+
+        // sign message
+        // add signed message to right sigs index
+      }
+      //       console.log(`!!! ~ hasQuickSignValidSignature`, hasQuickSignValidSignature);
+      //       try {
+      //         //   const account = await getSelectedWallet(true);
+      //         // const { signingCmd } = data;
+      //         //   data.signedCmd = signedCmd;
+      //         //   data.tabId = tabId;
+      //         //   showSignPopup(data);
+      //       } catch {
+      //         returnErrorMessage('QuickSign fail');
+      //       }
+      //     } else {
+      //       checkStatus(data, tabId);
+      //     }
+    } else {
+      checkStatus(data, tabId);
+    }
   }
 };
 
