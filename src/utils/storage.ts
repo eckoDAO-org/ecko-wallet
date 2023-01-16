@@ -217,3 +217,13 @@ export const getLocalSignedCmd = (successCallback, failCallback) => {
     }
   });
 };
+
+export const getLocalQuickSignedCmd = (successCallback, failCallback) => {
+  (window as any)?.chrome?.storage?.local?.get('quickSignedCmd', (result) => {
+    if (result && result.quickSignedCmd) {
+      successCallback(result.quickSignedCmd);
+    } else {
+      failCallback();
+    }
+  });
+};

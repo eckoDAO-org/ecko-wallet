@@ -26,3 +26,13 @@ export const updateSignedCmdMessage = (result, tabId) => {
     tabId,
   });
 };
+
+// QuickSign cmd
+export const updateQuickSignedCmdMessage = (result, tabId) => {
+  (window as any)?.chrome?.runtime?.sendMessage({
+    result,
+    target: 'kda.background',
+    action: 'res_requestQuickSign',
+    tabId,
+  });
+};
