@@ -250,13 +250,14 @@ const kdaRequestSign = async (data, tabId) => {
 };
 
 const checkIsValidQuickSignPayload = (payload) =>
-  payload && payload.reqs && Array.isArray(payload.reqs) && payload.reqs.every((r) => Array.isArray(r.sigs) && r.cmd);
+  payload &&
+  payload.commandSigDatas &&
+  Array.isArray(payload.commandSigDatas) &&
+  payload.commandSigDatas.every((r) => Array.isArray(r.sigs) && r.cmd);
 
-const checkHasQuickSignValidSignature = async (reqs) => {
+const checkHasQuickSignValidSignature = async (commandSigDatas) => {
   const { publicKey } = await getSelectedWallet();
-  return reqs.filter((r) => r.sigs?.some((s) => s.includes(publicKey)))?.length > 0
-    ? reqs.filter((r) => r.sigs?.some((s) => s.includes(publicKey)))
-    : false;
+  return commandSigDatas && commandSigDatas.filter((r) => r.sigs?.some((s) => s.pubKey === publicKey))?.length > 0;
 };
 
 const kdaRequestQuickSign = async (data, tabId) => {
@@ -264,7 +265,7 @@ const kdaRequestQuickSign = async (data, tabId) => {
     sendToConnectedPorts({
       result: {
         status: 'fail',
-        message,
+        error: message,
       },
       target: 'kda.content',
       action: 'res_requestQuickSign',
@@ -279,25 +280,34 @@ const kdaRequestQuickSign = async (data, tabId) => {
         returnErrorMessage('QuickSign fail: your data structure is invalid');
         return;
       }
-      const hasQuickSignValidSignature = await checkHasQuickSignValidSignature(data.reqs);
+      const hasQuickSignValidSignature = await checkHasQuickSignValidSignature(data.commandSigDatas);
       if (!hasQuickSignValidSignature) {
         returnErrorMessage('QuickSign fail: wallet public key not found');
         return;
       }
       const signedResponses = [];
       const account = await getSelectedWallet(true);
-      for (let i = 0; i < data.reqs.length; i += 1) {
+      for (let i = 0; i < data.commandSigDatas.length; i += 1) {
+        const { cmd, sigs } = data.commandSigDatas[i];
         let signature = null;
-        const { cmd, sigs } = data.reqs[i];
-        const hash = Pact.crypto.hash(cmd);
-        if (account.secretKey.length > 64) {
-          signature = getSignatureFromHash(hash, account.secretKey);
+        let hash = null;
+        const signatureIndex = sigs.findIndex((s) => s.pubKey === account.publicKey);
+        // Account pubKey not present in sigs
+        if (signatureIndex < 0) {
+          signedResponses.push({
+            cmd,
+            sigs,
+            outcome: {
+              result: 'noSig',
+            },
+          });
         } else {
           const parsedCmd = JSON.parse(cmd);
-          const sigIndex = parsedCmd?.signers.findIndex((s) => s.pubKey === account.publicKey);
-          if (sigIndex >= 0) {
-            parsedCmd.signers[sigIndex].secretKey = account.secretKey;
-            const clist = parsedCmd.caps ? parsedCmd.caps.map((c) => c.cap) : [];
+          // find sig index for selected account
+          const commandSigIndex = parsedCmd.signers.findIndex((s) => s.pubKey === account.publicKey);
+          if (commandSigIndex > -1) {
+            parsedCmd.signers[commandSigIndex].secretKey = account.secretKey;
+            const clist = parsedCmd.signers[commandSigIndex]?.clist;
             const keyPairs = {
               publicKey: account.publicKey,
             };
@@ -307,26 +317,48 @@ const kdaRequestQuickSign = async (data, tabId) => {
             if (clist.length > 0) {
               keyPairs.clist = clist;
             }
-            const signedCmd = Pact.api.prepareExecCmd(
-              keyPairs,
-              `${XWALLET_DAPP_SIGN_NONCE}-"${new Date().toISOString()}"`,
-              parsedCmd.payload.exec.code,
-              parsedCmd.payload.exec.data,
-              parsedCmd.meta,
-              parsedCmd.networkId,
-            );
-            signature = (signedCmd?.sigs && signedCmd?.sigs[0] && signedCmd?.sigs[0].sig) || null;
+            try {
+              const signedCmd = Pact.api.prepareExecCmd(
+                keyPairs,
+                `${XWALLET_DAPP_SIGN_NONCE}-"${new Date().toISOString()}"`,
+                parsedCmd.payload.exec.code,
+                parsedCmd.payload.exec.data,
+                parsedCmd.meta,
+                parsedCmd.networkId,
+              );
+              hash = signedCmd.hash;
+              if (account.secretKey.length > 64) {
+                signature = getSignatureFromHash(signedCmd.hash, account.secretKey);
+              } else {
+                signature = (signedCmd?.sigs && signedCmd?.sigs[0] && signedCmd?.sigs[0].sig) || null;
+              }
+            } catch (err) {
+              console.log(`QUICK-SIGN ERROR`, err);
+              signedResponses.push({
+                commandSigData: {
+                  cmd,
+                  sigs,
+                },
+                outcome: {
+                  result: 'failure',
+                  msg: 'Error to sign cmd',
+                },
+              });
+            }
           }
+
+          sigs[signatureIndex].sig = signature;
+          signedResponses.push({
+            commandSigData: {
+              cmd,
+              sigs,
+            },
+            outcome: {
+              result: 'success',
+              hash,
+            },
+          });
         }
-        const signatureIndex = sigs.findIndex((s) => s && s[0] === account.publicKey);
-        if (signatureIndex >= 0) {
-          sigs[signatureIndex][1] = signature;
-        }
-        signedResponses.push({
-          cmd,
-          sigs,
-          hash,
-        });
       }
       showQuickSignPopup({ ...data, tabId, quickSignData: signedResponses });
     } else {
