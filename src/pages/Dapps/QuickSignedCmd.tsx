@@ -1,19 +1,41 @@
 import images from 'src/images';
+import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import ReactJson from 'react-json-view';
 import { getLocalQuickSignedCmd, getLocalSelectedNetwork } from 'src/utils/storage';
 import Button from 'src/components/Buttons';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
-import { DivFlex, SecondaryLabel } from 'src/components';
+import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import { updateQuickSignedCmdMessage } from 'src/utils/message';
-import { DappContentWrapper, DappDescription, DappLogo, DappWrapper } from './SignedCmd';
+import { DappDescription, DappLogo, DappWrapper } from './SignedCmd';
+
+const CommandListWrapper = styled.div`
+  padding: 10px;
+  word-break: break-word;
+`;
+const CodeWrapper = styled.div`
+  font-family: monospace;
+  max-height: 100px;
+  overflow: auto;
+  background: #d6d6d6;
+  padding: 10px;
+  &::-webkit-scrollbar {
+    width: 2px;
+  }
+  &::-webkit-scrollbar-track {
+    background: rgb(226, 226, 226);
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgb(186, 186, 186);
+    border-radius: 2px;
+  }
+`;
 
 const QuickSignedCmd = () => {
   const [domain, setDomain] = useState('example.com.vn');
   const [tabId, setTabId] = useState(null);
   const [quickSignData, setQuickSignData] = useState<any>([]);
   const stateWallet = useCurrentWallet();
-  console.log(`🚀 !!! ~ quickSignData`, quickSignData);
 
   useEffect(() => {
     getLocalQuickSignedCmd(
@@ -58,12 +80,11 @@ const QuickSignedCmd = () => {
     <DappWrapper>
       <DappLogo src={images.xWalletIcon} alt="logo" />
       <DappDescription>{domain}</DappDescription>
-      <SecondaryLabel style={{ textAlign: 'center', marginBottom: 20 }} uppercase>
+      <CommonLabel textCenter fontWeight={800} style={{ marginBottom: 20 }}>
         QUICK SIGN REQUEST
-      </SecondaryLabel>
+      </CommonLabel>
       {quickSignData?.map(({ commandSigData, outcome }, iCmd) => {
         const cmd = JSON.parse(commandSigData?.cmd || {});
-        console.log(`🚀 !!! ~ cmd`, cmd);
         const signData = {
           cmd,
           hash: outcome?.hash,
@@ -72,12 +93,43 @@ const QuickSignedCmd = () => {
         const caps = cmd?.signers?.find((s) => s?.pubKey === stateWallet?.publicKey)?.clist;
         return (
           <>
-            <SecondaryLabel fontSIze={10} style={{ textAlign: 'center' }} uppercase>
+            <CommonLabel textCenter fontWeight={800} style={{ marginBottom: 15 }}>
               COMMAND {iCmd + 1}/{quickSignData?.length}
-            </SecondaryLabel>
-            <DappContentWrapper>
+            </CommonLabel>
+            <SecondaryLabel textCenter>CODE</SecondaryLabel>
+            <CommandListWrapper>
+              <CodeWrapper fontWeight={600}>{cmd?.payload?.exec?.code}</CodeWrapper>
+              {caps?.length ? (
+                <DivFlex flexDirection="column">
+                  <SecondaryLabel textCenter style={{ marginTop: 15 }}>
+                    CAPABILITIES ({caps?.length})
+                  </SecondaryLabel>
+                  <DivFlex flexDirection="column">
+                    {caps?.map((cap, i) => (
+                      <div style={{ margin: '10px 0' }}>
+                        <ReactJson
+                          name={cap.name}
+                          src={cap?.args}
+                          enableClipboard={false}
+                          displayObjectSize={false}
+                          displayDataTypes={false}
+                          quotesOnKeys={false}
+                          collapsed
+                          indentWidth={2}
+                          collapseStringsAfterLength={false}
+                        />
+                      </div>
+                    ))}
+                  </DivFlex>
+                </DivFlex>
+              ) : null}
+              <DivFlex flexDirection="column">
+                <SecondaryLabel textCenter style={{ marginTop: 15 }}>
+                  RAW DATA
+                </SecondaryLabel>
+              </DivFlex>
               <ReactJson
-                name="quickSignedCmd"
+                name="rawCmd"
                 src={signData}
                 enableClipboard={false}
                 displayObjectSize={false}
@@ -88,25 +140,10 @@ const QuickSignedCmd = () => {
                 style={{ paddingBottom: 40 }}
                 collapseStringsAfterLength={false}
               />
-            </DappContentWrapper>
-            {caps?.length ? (
-              <>
-                <SecondaryLabel style={{ textAlign: 'center' }}>CAPABILITIES</SecondaryLabel>
-                <DivFlex flexDirection="column">
-                  {caps?.map((cap, i) => (
-                    <DivFlex flexDirection="column">
-                      <SecondaryLabel>
-                        {cap.name || '-'}: {cap?.args?.length ? cap?.args?.join(',') : null}
-                      </SecondaryLabel>
-                    </DivFlex>
-                  ))}
-                </DivFlex>
-              </>
-            ) : null}
+            </CommandListWrapper>
           </>
         );
       })}
-
       <DivFlex gap="10px" padding="24px">
         <Button size="full" label="Reject" variant="disabled" onClick={onClose} />
         <Button size="full" label="Confirm" onClick={onSave} />
@@ -116,7 +153,3 @@ const QuickSignedCmd = () => {
 };
 
 export default QuickSignedCmd;
-
-/**
- * CONSOLE TEST
- */
