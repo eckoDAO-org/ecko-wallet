@@ -16,6 +16,7 @@ export const DivFlex = styled.div`
 
 export const CommonLabel = styled.span`
   text-transform: ${(props) => props.uppercase && 'uppercase'};
+  text-align: ${(props) => props.textCenter && 'center'};
   color: ${($props) => $props.color || '#000000'};
   font-weight: ${($props) => $props.fontWeight};
   font-size: ${($props) => $props.fontSize}px;
@@ -25,6 +26,7 @@ export const CommonLabel = styled.span`
 
 export const PrimaryLabel = styled.span`
   text-transform: ${(props) => props.uppercase && 'uppercase'};
+  text-align: ${(props) => props.textCenter && 'center'};
   color: ${($props) => $props.color || '#000000'};
   font-weight: ${($props) => $props.fontWeight || '500'};
   font-size: ${($props) => $props.fontSize || '45'}px;
@@ -33,6 +35,7 @@ export const PrimaryLabel = styled.span`
 
 export const SecondaryLabel = styled.span`
   text-transform: ${(props) => props.uppercase && 'uppercase'};
+  text-align: ${(props) => props.textCenter && 'center'};
   color: ${($props) => $props.color || '#787b8e'};
   font-weight: ${($props) => $props.fontWeight || '600'};
   font-size: ${($props) => $props.fontSize || '12'}px;

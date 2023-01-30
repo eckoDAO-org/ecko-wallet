@@ -117,6 +117,9 @@ chrome.runtime.onConnect.addListener(async (port) => {
       case 'kda_requestSign':
         kdaRequestSign(payload.data, originTabId);
         break;
+      case 'kda_requestQuickSign':
+        kdaRequestQuickSign(payload.data, originTabId);
+        break;
       case 'kda_checkStatus':
         checkStatus(payload.data, originTabId);
         break;
@@ -219,7 +222,6 @@ const kdaRequestSign = async (data, tabId) => {
           meta,
           signingCmd.networkId,
         );
-
         if (account.secretKey.length > 64) {
           const signature = getSignatureFromHash(signedCmd.hash, account.secretKey);
           const sigs = [{ sig: signature }];
@@ -244,6 +246,124 @@ const kdaRequestSign = async (data, tabId) => {
     }
   } else {
     checkStatus(data, tabId);
+  }
+};
+
+const checkIsValidQuickSignPayload = (payload) =>
+  payload &&
+  payload.commandSigDatas &&
+  Array.isArray(payload.commandSigDatas) &&
+  payload.commandSigDatas.every((r) => Array.isArray(r.sigs) && r.cmd);
+
+const checkHasQuickSignValidSignature = async (commandSigDatas) => {
+  const { publicKey } = await getSelectedWallet();
+  return commandSigDatas && commandSigDatas.filter((r) => r.sigs?.some((s) => s.pubKey === publicKey))?.length > 0;
+};
+
+const kdaRequestQuickSign = async (data, tabId) => {
+  const returnErrorMessage = (message) => {
+    sendToConnectedPorts({
+      result: {
+        status: 'fail',
+        error: message,
+      },
+      target: 'kda.content',
+      action: 'res_requestQuickSign',
+    });
+  };
+  const isValidNetwork = await verifyNetwork(data.networkId);
+  if (isValidNetwork) {
+    const isValid = await checkValid(data);
+    if (isValid) {
+      const isValidPayload = checkIsValidQuickSignPayload(data);
+      if (!isValidPayload) {
+        returnErrorMessage('QuickSign fail: your data structure is invalid');
+        return;
+      }
+      const hasQuickSignValidSignature = await checkHasQuickSignValidSignature(data.commandSigDatas);
+      if (!hasQuickSignValidSignature) {
+        returnErrorMessage('QuickSign fail: wallet public key not found');
+        return;
+      }
+      const signedResponses = [];
+      const account = await getSelectedWallet(true);
+      for (let i = 0; i < data.commandSigDatas.length; i += 1) {
+        const { cmd, sigs } = data.commandSigDatas[i];
+        let signature = null;
+        let hash = null;
+        const signatureIndex = sigs.findIndex((s) => s.pubKey === account.publicKey);
+        // Account pubKey not present in sigs
+        if (signatureIndex < 0) {
+          signedResponses.push({
+            cmd,
+            sigs,
+            outcome: {
+              result: 'noSig',
+            },
+          });
+        } else {
+          const parsedCmd = JSON.parse(cmd);
+          // find sig index for selected account
+          const commandSigIndex = parsedCmd.signers.findIndex((s) => s.pubKey === account.publicKey);
+          if (commandSigIndex > -1) {
+            parsedCmd.signers[commandSigIndex].secretKey = account.secretKey;
+            const clist = parsedCmd.signers[commandSigIndex]?.clist;
+            const keyPairs = {
+              publicKey: account.publicKey,
+            };
+            if (account.secretKey.length === 64) {
+              keyPairs.secretKey = account.secretKey;
+            }
+            if (clist.length > 0) {
+              keyPairs.clist = clist;
+            }
+            try {
+              const signedCmd = Pact.api.prepareExecCmd(
+                keyPairs,
+                `${XWALLET_DAPP_SIGN_NONCE}-"${new Date().toISOString()}"`,
+                parsedCmd.payload.exec.code,
+                parsedCmd.payload.exec.data,
+                parsedCmd.meta,
+                parsedCmd.networkId,
+              );
+              hash = signedCmd.hash;
+              if (account.secretKey.length > 64) {
+                signature = getSignatureFromHash(signedCmd.hash, account.secretKey);
+              } else {
+                signature = (signedCmd?.sigs && signedCmd?.sigs[0] && signedCmd?.sigs[0].sig) || null;
+              }
+            } catch (err) {
+              console.log(`QUICK-SIGN ERROR`, err);
+              signedResponses.push({
+                commandSigData: {
+                  cmd,
+                  sigs,
+                },
+                outcome: {
+                  result: 'failure',
+                  msg: 'Error to sign cmd',
+                },
+              });
+            }
+          }
+
+          sigs[signatureIndex].sig = signature;
+          signedResponses.push({
+            commandSigData: {
+              cmd,
+              sigs,
+            },
+            outcome: {
+              result: 'success',
+              hash,
+            },
+          });
+        }
+      }
+      showQuickSignPopup({ ...data, tabId, quickSignData: signedResponses });
+    } else {
+      checkStatus(data, tabId);
+    }
   }
 };
 
@@ -476,6 +596,31 @@ const showSignPopup = async (data = {}) => {
   };
 
   chrome.storage.local.set({ signedCmd });
+
+  chrome.windows.create(options);
+};
+
+const showQuickSignPopup = async (data = {}) => {
+  const lastFocused = await getLastFocusedWindow();
+
+  const options = {
+    url: 'index.html#/quick-signed-cmd',
+    type: 'popup',
+    top: lastFocused.top,
+    left: lastFocused.left + (lastFocused.width - 360),
+    width: 368,
+    height: 610,
+  };
+
+  const quickSignedCmd = {
+    networkId: data.networkId,
+    domain: data.domain,
+    icon: data.icon,
+    quickSignData: data.quickSignData,
+    tabId: data.tabId,
+  };
+
+  chrome.storage.local.set({ quickSignedCmd });
 
   chrome.windows.create(options);
 };

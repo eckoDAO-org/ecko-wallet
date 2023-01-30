@@ -24,6 +24,7 @@ import DappSignIn from './pages/Dapps/DappSignIn';
 import LoginDapp from './pages/SignIn/LoginDapp';
 import DappPrivateRoute from './components/Route/DappPrivateRoute';
 import SignedCmd from './pages/Dapps/SignedCmd';
+import QuickSignedCmd from './pages/Dapps/QuickSignedCmd';
 import SeedPhrase from './pages/SeedPhrase';
 import InitSeedPhrase from './pages/InitSeedPhrase';
 import ExportSeedPhrase from './pages/Setting/ExportSeedPhrase';
@@ -63,6 +64,7 @@ const AppContainer = () => {
         <DappPrivateRoute path="/connected-dapps" component={ConnectedDapp} />
         <DappPrivateRoute path="/sign-dapps" component={DappSignIn} />
         <DappPrivateRoute path="/signed-cmd" component={SignedCmd} />
+        <DappPrivateRoute path="/quick-signed-cmd" component={QuickSignedCmd} />
         <Route isSignIn path="/login-dapps" component={LoginDapp} />
         <DappPrivateRoute path="/dapps-transfer" component={DappTransfer} />
         <PrivateRoute path="/contact" component={PageContact} />

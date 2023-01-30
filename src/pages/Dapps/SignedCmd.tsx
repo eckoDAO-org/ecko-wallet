@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import ReactJson from 'react-json-view';
 import { getLocalSelectedNetwork, getLocalSignedCmd } from 'src/utils/storage';
 import Button from 'src/components/Buttons';
-import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
+import { DivFlex, SecondaryLabel } from 'src/components';
 import { updateSignedCmdMessage } from 'src/utils/message';
 
 export const DappWrapper = styled.div`

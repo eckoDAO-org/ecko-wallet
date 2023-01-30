@@ -86,6 +86,9 @@ window.kadena = {
       case 'kda_requestSign':
         return kdaRequestSign({ ...options.data, domain });
 
+      case 'kda_requestQuickSign':
+        return kdaRequestQuickSign({ ...options.data, domain });
+
       case 'kda_sendKadena':
         return sendKadena({ ...options.data, domain });
 
@@ -154,6 +157,18 @@ const kdaRequestSign = async (data) => {
   });
 
   const response = await listener.on('res_requestSign');
+  return response.result;
+};
+
+const kdaRequestQuickSign = async (data) => {
+  const listener = new Listener('kda_requestQuickSign');
+  listener.send({
+    target: 'kda.content',
+    action: listener.name,
+    data,
+  });
+
+  const response = await listener.on('res_requestQuickSign');
   return response.result;
 };
 
