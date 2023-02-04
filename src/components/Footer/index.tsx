@@ -7,7 +7,6 @@ import {
   hideFetching,
   setActiveTab,
   setContacts,
-  setExpiredTime,
   setExtensionPassword,
   setIsHaveSeedPhrase,
   setNetworks,
@@ -15,11 +14,11 @@ import {
   setSelectedNetwork,
   showFetching,
 } from 'src/stores/extensions';
+import { useSettingsContext } from 'src/contexts/SettingsContext';
 import { setCurrentWallet, setWallets } from 'src/stores/wallet';
 import { decryptKey } from 'src/utils/security';
 import {
   getLocalContacts,
-  getLocalExpiredTime,
   getLocalNetworks,
   getLocalPassword,
   getLocalRecent,
@@ -89,7 +88,7 @@ const ActionBarElement = styled.div`
 
 const Footer = () => {
   const rootState = useSelector((state) => state);
-  const { passwordHash, selectedNetwork, networks, expiredTime, activeTab } = rootState.extensions;
+  const { passwordHash, selectedNetwork, networks, activeTab } = rootState.extensions;
   const { account } = rootState.wallet;
   const location = useLocation().pathname;
   const locationExtension = window.location.hash;
@@ -102,6 +101,7 @@ const Footer = () => {
     locationExtension.substr(1) === '/history' ||
     locationExtension.substr(1) === '/setting';
   const isFooter = (isFooterWeb || isFooterExtenstion) && account !== null && account !== '' && account !== undefined;
+  const { isLocked } = useSettingsContext();
 
   const isDappUrl =
     location.includes('connected-dapps') || location.includes('dapps-transfer') || location.includes('sign-dapps') || location.includes('signed-cmd');
@@ -163,12 +163,6 @@ const Footer = () => {
       () => {
         setIsHaveSeedPhrase(false);
       },
-    );
-    getLocalExpiredTime(
-      (newExpiredTime) => {
-        setExpiredTime(newExpiredTime);
-      },
-      () => {},
     );
     getLocalPassword(
       (accountPassword) => {
@@ -250,39 +244,11 @@ const Footer = () => {
                   secretKey: decryptKey(selectedWallet.secretKey, accountPassword),
                   connectedSites: selectedWallet.connectedSites,
                 });
-                getLocalExpiredTime(
-                  () => {
-                    if (!isDappUrl) {
-                      history.push('/');
-                      setActiveTab(ACTIVE_TAB.HOME);
-                    }
-                  },
-                  () => {
-                    if (hash.includes('init')) {
-                      history.push('/');
-                      setActiveTab(ACTIVE_TAB.HOME);
-                    }
-                  },
-                );
               },
               () => {
                 const newWallet = newWallets[0];
                 setCurrentWallet(newWallet);
                 setLocalSelectedWallet(data[0]);
-                getLocalExpiredTime(
-                  () => {
-                    if (!isDappUrl) {
-                      history.push('/');
-                      setActiveTab(ACTIVE_TAB.HOME);
-                    }
-                  },
-                  () => {
-                    if (hash.includes('init')) {
-                      history.push('/');
-                      setActiveTab(ACTIVE_TAB.HOME);
-                    }
-                  },
-                );
               },
             );
             hideFetching();
@@ -329,7 +295,7 @@ const Footer = () => {
     );
   };
 
-  const isLoggedIn = expiredTime;
+  const isLoggedIn = !isLocked;
   const setIconHomeActive = () => {
     history.push('/');
     setActiveTab(ACTIVE_TAB.HOME);

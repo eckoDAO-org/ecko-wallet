@@ -11,8 +11,7 @@ import { ReactComponent as Padlock } from 'src/images/padlock.svg';
 import { ReactComponent as ExpandView } from 'src/images/expand-view.svg';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import { DISCORD_INVITATION_LINK, WEBSITE_LINK } from 'src/utils/config';
-import { setExpiredTime } from 'src/stores/extensions';
-import { setLocalExpiredTime } from 'src/utils/storage';
+import { useSettingsContext } from 'src/contexts/SettingsContext';
 
 interface ISettingsMenu {
   img: React.ReactNode;
@@ -52,11 +51,11 @@ const AboutDiv = styled(DivFlex)`
 const PageSetting = () => {
   const history = useHistory();
   const rootState = useSelector((state) => state);
+  const { setIsLocked } = useSettingsContext();
   const { secretKey } = rootState?.wallet;
 
   const lockWallet = () => {
-    setExpiredTime(null);
-    setLocalExpiredTime(null);
+    setIsLocked(true);
   };
 
   const settingsMenu: ISettingsMenu[] = [

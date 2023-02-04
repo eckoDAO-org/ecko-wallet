@@ -4,10 +4,9 @@ import bcrypt from 'bcryptjs';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { setExpiredTime } from 'src/stores/extensions';
-import { setLocalExpiredTime } from 'src/utils/storage';
 import images from 'src/images';
 import Button from 'src/components/Buttons';
+import { useSettingsContext } from 'src/contexts/SettingsContext';
 
 const CreatePasswordWrapper = styled.div`
   padding: 0 20px;
@@ -71,6 +70,7 @@ const LoginDapp = (props: any) => {
     clearErrors,
   } = useForm();
   const extensions = useSelector((state) => state.extensions);
+  const { setIsLocked } = useSettingsContext();
   const { location } = props;
   const { state } = location;
   const { from } = state;
@@ -79,11 +79,7 @@ const LoginDapp = (props: any) => {
     const password = getValues('password');
     bcrypt.compare(password, extensions.passwordHash, (_errors, isValid) => {
       if (isValid) {
-        const now = new Date();
-        const time = now.getTime();
-        const expiredTime = time + 1000 * 1800;
-        setExpiredTime(expiredTime);
-        setLocalExpiredTime(expiredTime);
+        setIsLocked(false);
         history.push(from);
       } else {
         setError('password', { type: 'manual', message: 'Invalid Passwords' });

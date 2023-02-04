@@ -10,7 +10,6 @@ import { updateSignedCmdMessage } from 'src/utils/message';
 export const DappWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  position: fixed;
   top: 0;
   left: 0;
   bottom: 0;
