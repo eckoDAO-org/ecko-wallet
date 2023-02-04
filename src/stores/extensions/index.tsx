@@ -58,7 +58,6 @@ interface RawExtension {
   recent: any[];
   selectedNetwork: RawNetwork;
   networks: RawNetwork[];
-  expiredTime: any;
   isHaveSeedPhrase: boolean;
   isCreateSeedPhrase: boolean;
   activeTab: string;
@@ -72,7 +71,6 @@ const initialState: RawExtension = {
   recent: [],
   selectedNetwork,
   networks: defaultNetworks,
-  expiredTime: null,
   isHaveSeedPhrase: false,
   isCreateSeedPhrase: false,
   activeTab: ACTIVE_TAB.HOME,
@@ -85,10 +83,6 @@ const storeExtensions = createSlice({
     setExtensionPassword: (state, action: PayloadAction<any>) => {
       const passwordHash = action.payload;
       return { ...state, passwordHash };
-    },
-    setExpiredTime: (state, action: PayloadAction<any>) => {
-      const expiredTime = action.payload;
-      return { ...state, expiredTime };
     },
     setIsHaveSeedPhrase: (state, action: PayloadAction<any>) => {
       const isHaveSeedPhrase = action.payload;
@@ -151,10 +145,6 @@ export const restoreNetworks = () => {
 
 export const setRecent = (recent: any) => {
   customStore && customStore.dispatch(storeExtensions.actions.setRecent(recent));
-};
-
-export const setExpiredTime = (expiredTime: any) => {
-  customStore && customStore.dispatch(storeExtensions.actions.setExpiredTime(expiredTime));
 };
 
 export const setIsHaveSeedPhrase = (isHaveSeedPhrase: any) => {

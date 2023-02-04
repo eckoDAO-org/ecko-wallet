@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Redirect, Route } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { useSettingsContext } from 'src/contexts/SettingsContext';
 
 type Props = {
   component: any;
@@ -25,8 +26,9 @@ const PrivateRoute = (props: Props) => {
   const { component: Component, path, isFirstInstall, isSignIn, isHome, isSeedPhrase } = props;
   const rootState = useSelector((state) => state);
   const { extensions, wallet } = rootState;
-  const { passwordHash, expiredTime, isFetching, isHaveSeedPhrase } = extensions;
-  const isLoggedIn = expiredTime;
+  const { passwordHash, isFetching, isHaveSeedPhrase } = extensions;
+  const { isLocked } = useSettingsContext();
+  const isLoggedIn = !isLocked;
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     if (!isFetching) {

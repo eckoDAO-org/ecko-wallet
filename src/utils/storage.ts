@@ -83,20 +83,6 @@ export const getLocalPassword = (successCallback, failCallback) => {
   });
 };
 
-// Session
-export const setLocalExpiredTime = (expiredTime) => {
-  (window as any)?.chrome?.storage?.local?.set({ expiredTime });
-};
-export const getLocalExpiredTime = (successCallback, failCallback) => {
-  (window as any)?.chrome?.storage?.local?.get('expiredTime', (result) => {
-    if (result && result.expiredTime) {
-      successCallback(result.expiredTime);
-    } else {
-      failCallback();
-    }
-  });
-};
-
 // Networks
 export const setLocalSelectedNetwork = (selectedNetwork) => {
   (window as any)?.chrome?.storage?.local?.set({ selectedNetwork });

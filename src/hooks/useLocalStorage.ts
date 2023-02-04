@@ -55,7 +55,7 @@ function useLocalStorage<S>(key: string, initialValue: S): [S | null, (value: an
 
   useEffect(() => {
     const onChange = (changes) => {
-      if (changes[key] && changes[key].newValue) {
+      if (changes[key] && changes[key].newValue !== undefined) {
         setStoredValue(changes[key].newValue);
       }
     };
