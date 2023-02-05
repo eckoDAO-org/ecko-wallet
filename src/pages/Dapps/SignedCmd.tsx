@@ -4,13 +4,12 @@ import { useEffect, useState } from 'react';
 import ReactJson from 'react-json-view';
 import { getLocalSelectedNetwork, getLocalSignedCmd } from 'src/utils/storage';
 import Button from 'src/components/Buttons';
-import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
+import { DivFlex, SecondaryLabel } from 'src/components';
 import { updateSignedCmdMessage } from 'src/utils/message';
 
 export const DappWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  position: fixed;
   top: 0;
   left: 0;
   bottom: 0;

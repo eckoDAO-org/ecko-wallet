@@ -112,6 +112,7 @@ const RemoveWalletPopup = (props: Props) => {
           setCurrentWallet(newWallets[0]);
           const newLocalWallets = newWallets.map((w: any) => ({
             account: encryptKey(w.account, passwordHash),
+            alias: w.alias,
             publicKey: encryptKey(w.publicKey, passwordHash),
             secretKey: encryptKey(w.secretKey, passwordHash),
             chainId: w.chainId,

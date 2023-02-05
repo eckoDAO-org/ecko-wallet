@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import useLocalStorage from './useLocalStorage';
 
 const useIdleTimeout = () => {
-  const [lastActivity, setLastActivity, getValueAsync] = useLocalStorage<number>('lastActivityTime', 0);
+  const [lastActivity, setLastActivity] = useLocalStorage<number>('lastActivityTime', 0);
 
   const onSetLastActivity = () => {
     setLastActivity(new Date().getTime());

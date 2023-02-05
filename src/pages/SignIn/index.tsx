@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import bcrypt from 'bcryptjs';
@@ -5,10 +6,11 @@ import images from 'src/images';
 import Button from 'src/components/Buttons';
 import { CommonLabel, DivFlex } from 'src/components';
 import { BaseTextInput, InputError } from 'src/baseComponent';
+import { useSettingsContext } from 'src/contexts/SettingsContext';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { setActiveTab, setExpiredTime } from 'src/stores/extensions';
-import { getLocalSelectedWallet, setLocalExpiredTime } from 'src/utils/storage';
+import { setActiveTab } from 'src/stores/extensions';
+import { getLocalSelectedWallet } from 'src/utils/storage';
 import { ACTIVE_TAB } from 'src/utils/constant';
 import { DivError } from '../Setting/Contact/views/style';
 import { WelcomeBackground } from '../InitSeedPhrase';
@@ -43,16 +45,13 @@ const SignIn = () => {
     clearErrors,
   } = useForm();
   const extensions = useSelector((state) => state.extensions);
+  const { setIsLocked, isLocked } = useSettingsContext();
 
   const handleSignIn = () => {
     const password = getValues('password');
     bcrypt.compare(password, extensions.passwordHash, (_errors, isValid) => {
       if (isValid) {
-        const now = new Date();
-        const time = now.getTime();
-        const expiredTime = time + 1000 * 1800;
-        setExpiredTime(expiredTime);
-        setLocalExpiredTime(expiredTime);
+        setIsLocked(false);
         getLocalSelectedWallet(
           () => {
             history.push('/');
@@ -71,6 +70,14 @@ const SignIn = () => {
       }
     });
   };
+
+  useEffect(() => {
+    if (isLocked === false) {
+      history.push('/');
+      setActiveTab(ACTIVE_TAB.HOME);
+    }
+  }, [isLocked]);
+
   const history = useHistory();
   return (
     <WelcomeBackground>

@@ -1,9 +1,7 @@
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useState } from 'react';
 import useLocalStorage from 'src/hooks/useLocalStorage';
 import useIdleTimeout from 'src/hooks/useIdleTimeout';
 import { CONFIG } from 'src/utils/config';
-import { setExpiredTime } from 'src/stores/extensions';
-import { setLocalExpiredTime } from 'src/utils/storage';
 
 export interface TxSettings {
   gasLimit?: number;
@@ -17,10 +15,13 @@ export interface TxSettings {
 export interface SettingsContextData {
   txSettings: TxSettings;
   lockTime: number | null;
+  isLocked: boolean | null;
 }
 
 interface SettingsContextValue {
   data: SettingsContextData | null;
+  isLocked: boolean | null;
+  setIsLocked: (isLocked: boolean) => any;
   setSettings: (value: any) => any;
   setTxSettings: (value: any) => any;
   getSettingsAsync: () => Promise<SettingsContextData>;
@@ -36,10 +37,13 @@ const defaultSettingsContextValue: SettingsContextData = {
     xChainTTL: CONFIG.X_CHAIN_TTL,
   },
   lockTime: null,
+  isLocked: false,
 };
 
 export const SettingsContext = createContext<SettingsContextValue>({
   data: defaultSettingsContextValue,
+  isLocked: false,
+  setIsLocked: () => {},
   setSettings: () => {},
   setTxSettings: () => {},
   getSettingsAsync: async () => defaultSettingsContextValue,
@@ -47,16 +51,18 @@ export const SettingsContext = createContext<SettingsContextValue>({
 
 export const SettingsProvider = ({ children }: any) => {
   const lastActivityTimeout = useIdleTimeout();
+  const [isLocked, setLocalIsLocked] = useLocalStorage<boolean>('SETTINGS_IS_LOCKED', false);
+
+  const setIsLocked = (value: boolean) => setLocalIsLocked(value);
 
   const lockWallet = () => {
-    setExpiredTime(null);
-    setLocalExpiredTime(null);
+    setLocalIsLocked(true);
   };
   const diff = lastActivityTimeout ? (new Date().getTime() - lastActivityTimeout) / 1000 : 0;
 
   const [settings, setSettings, getSettingsAsync] = useLocalStorage<SettingsContextData>('settingsV2', defaultSettingsContextValue);
 
-  if (settings?.lockTime && diff > settings?.lockTime) {
+  if (settings?.lockTime && diff > settings?.lockTime && !isLocked) {
     lockWallet();
   }
 
@@ -71,6 +77,8 @@ export const SettingsProvider = ({ children }: any) => {
     <SettingsContext.Provider
       value={{
         data: settings,
+        isLocked: typeof isLocked === 'boolean' && isLocked,
+        setIsLocked,
         setSettings,
         setTxSettings,
         getSettingsAsync,
