@@ -17,7 +17,7 @@ import { fetchLocal } from 'src/utils/chainweb';
 import { getLocalContacts, setLocalContacts } from 'src/utils/storage';
 import { useSelector } from 'react-redux';
 import ModalCustom from 'src/components/Modal/ModalCustom';
-import QrReader from 'react-qr-reader';
+// import QrReader from 'react-qr-reader';
 import { DivFlex } from 'src/components';
 import { BodyModal, TitleModal, DivChild, DivError, DivChildButton, ItemWrapperContact } from './style';
 
@@ -210,7 +210,7 @@ const ContactForm = (props: Props) => {
             )}
           </ItemWrapperContact>
         </form>
-        {isScanAccountName && (
+        {/* {isScanAccountName && (
           <ModalCustom isOpen={isScanAccountName} onCloseModal={() => setIsScanAccountName(false)}>
             <BodyModal>
               <TitleModal>Scan QR Code</TitleModal>
@@ -227,7 +227,7 @@ const ContactForm = (props: Props) => {
               <DivChild>Place the QR code in front of your camera</DivChild>
             </BodyModal>
           </ModalCustom>
-        )}
+        )} */}
       </InfoWrapper>
 
       <DivChildButton>

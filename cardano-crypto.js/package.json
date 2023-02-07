@@ -1,0 +1,31 @@
+{
+  "name": "cardano-crypto.js",
+  "version": "6.0.0",
+  "description": "input-output-hk/cardano-crypto compiled to pure javascript using Emscripten",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vacuumlabs/cardano-crypto.js"
+  },
+  "keywords": [
+    "ed25519",
+    "cardano",
+    "signature"
+  ],
+  "author": "refi93",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vacuumlabs/cardano-crypto.js/issues"
+  },
+  "homepage": "https://github.com/vacuumlabs/cardano-crypto.js#readme",
+  "devDependencies": {
+    "tape": "^4.11.0"
+  },
+  "dependencies": {
+    "bech32": "^1.1.4",
+    "bip39": "^3.0.2",
+    "borc": "^2.1.1",
+    "buffer": "^6.0.3",
+    "pbkdf2": "^3.0.17"
+  }
+}

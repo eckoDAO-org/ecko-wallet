@@ -5,7 +5,7 @@ import { BaseSelect, BaseTextInput, BaseModalSelect, InputError } from 'src/base
 import { useSelector } from 'react-redux';
 import { Controller, useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
-import QrReader from 'react-qr-reader';
+// import QrReader from 'react-qr-reader';
 import images from 'src/images';
 import { toast } from 'react-toastify';
 import { ReactComponent as AlertIconSVG } from 'src/images/icon-alert.svg';
@@ -403,7 +403,7 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
         <Button onClick={handleSubmit(onNext)} label="Continue" size="full" style={{ width: '90%', maxWidth: 890 }} />
       </StickyFooter>
 
-      {isScanSearching && (
+      {/* {isScanSearching && (
         <ModalCustom isOpen={isScanSearching} onCloseModal={() => setIsScanSearching(false)}>
           <BodyModal>
             <TitleModal>Scan QR Code</TitleModal>
@@ -420,7 +420,7 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
             <DivChild>Place the QR code in front of your camera</DivChild>
           </BodyModal>
         </ModalCustom>
-      )}
+      )} */}
       {isOpenConfirmModal && (
         <ModalCustom isOpen={isOpenConfirmModal} title="Warning" onCloseModal={() => setIsOpenConfirmModal(false)} closeOnOverlayClick={false}>
           <div style={{ padding: '0 24px' }}>

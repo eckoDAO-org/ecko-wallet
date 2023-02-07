@@ -1,5 +1,7 @@
 /* eslint no-use-before-define: 0 */
 import Pact from 'pact-lang-api';
+import { Core } from '@walletconnect/core';
+import { Web3Wallet } from '@walletconnect/web3wallet';
 import 'regenerator-runtime/runtime';
 import { get } from 'lodash';
 import { decryptKey } from '../../src/utils/security';

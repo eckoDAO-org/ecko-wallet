@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { BaseTextInput, BaseSelect, InputError } from 'src/baseComponent';
 import { useSelector } from 'react-redux';
-import QrReader from 'react-qr-reader';
+// import QrReader from 'react-qr-reader';
 import ModalCustom from 'src/components/Modal/ModalCustom';
 import { hideLoading, setActiveTab, showLoading } from 'src/stores/extensions';
 import { toast } from 'react-toastify';
@@ -270,7 +270,7 @@ const ImportAccount = () => {
           </DivBody>
         </form>
       </Body>
-      {isScanAccount && (
+      {/* {isScanAccount && (
         <ModalCustom isOpen={isScanAccount} onCloseModal={() => setScanAccount(false)}>
           <Body>
             <TitleModal>Scan QR Code</TitleModal>
@@ -287,8 +287,8 @@ const ImportAccount = () => {
             <DivChild>Place the QR code in front of your camera</DivChild>
           </Body>
         </ModalCustom>
-      )}
-      {isScanPrivateKey && (
+      )} */}
+      {/* {isScanPrivateKey && (
         <ModalCustom isOpen={isScanPrivateKey} onCloseModal={() => setScanPrivateKey(false)}>
           <Body>
             <TitleModal>Scan QR Code</TitleModal>
@@ -305,7 +305,7 @@ const ImportAccount = () => {
             <DivChild>Place the QR code in front of your camera</DivChild>
           </Body>
         </ModalCustom>
-      )}
+      )} */}
       <Footer>
         <Button label="Import wallet" size="full" form="import-wallet-form" />
       </Footer>

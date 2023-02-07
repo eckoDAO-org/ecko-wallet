@@ -38,6 +38,7 @@
     "no-confusing-arrow": "off",
     "operator-linebreak": "off",
     "indent": "off",
+    "react/prop-types": 0,
     "function-paren-newline": "off",
     "quotes": "warn",
     "import/extensions": [
