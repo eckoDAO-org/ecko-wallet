@@ -29,7 +29,7 @@ export const StartBackground = styled.div`
   flex-direction: column;
   justify-content: space-around;
   height: 100%;
-  background-image: url('/image/background-init.svg');
+  background-image: url('/image/init-background.png');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
@@ -54,7 +54,7 @@ const HomePage = () => {
     <StartBackground>
       <Wrapper>
         <DivImage marginBottom="120px">
-          <Image src={images.xWalletLogoSquare} size={200} width={200} alt="logo" />
+          <Image src={images.eckoWalletLogo} size={200} width={200} alt="logo" />
           <SecondaryLabel>The evolution of DeFi on Kadena</SecondaryLabel>
         </DivImage>
       </Wrapper>

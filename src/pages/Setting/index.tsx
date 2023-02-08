@@ -83,7 +83,7 @@ const PageSetting = () => {
     {
       title: 'Expand View',
       img: <ExpandView />,
-      description: 'Open X Wallet in a new window',
+      description: 'Open eckoWallet in a new window',
       onClick: () => (window as any)?.chrome?.tabs?.create({ url: '/index.html#/' }),
     },
     {
@@ -119,7 +119,7 @@ const PageSetting = () => {
       {settingsMenu.map((menuItem) => !menuItem.isHidden && getSettingsItem(menuItem))}
       <AboutDiv marginTop="48px" alignItems="center">
         <SecondaryLabel fontWeight={500}>
-          X Wallet V. 2.1.0
+          eckoWallet V. 2.1.0
           <br />
           <br />
           The evolution of DeFi on Kadena

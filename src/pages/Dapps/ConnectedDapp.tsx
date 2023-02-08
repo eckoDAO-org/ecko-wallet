@@ -322,12 +322,12 @@ const ConnectedDapp = () => {
             </Div>
             <CenterImage src={images.connectedDapps} alt="logo" />
             <Div>
-              <Image src={images.xWalletIcon} alt="logo" />
+              <Image src={images.eckoWalletLogoRounded} alt="logo" />
             </Div>
           </ConnectItem>
           <ConnectItem alignTop>
             <Div>{domain}</Div>
-            <Div>X Wallet extension</Div>
+            <Div>eckoWallet extension</Div>
           </ConnectItem>
           <ConnectInfo>{`${domain} would like to connect to your account`}</ConnectInfo>
           <div>
@@ -341,9 +341,9 @@ const ConnectedDapp = () => {
         </CompleteWrapper>
       ) : (
         <>
-          <Logo src={images.xWalletIcon} alt="logo" />
+          <Logo src={images.eckoWalletLogoRounded} alt="logo" />
           <DappDescription>{domain}</DappDescription>
-          <DappTitle>Connect with X Wallet</DappTitle>
+          <DappTitle>Connect with eckoWallet</DappTitle>
           <DappDescription>Connect all wallets</DappDescription>
           <Brick />
           {data.length > 0 ? (

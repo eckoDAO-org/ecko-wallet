@@ -1,5 +1,5 @@
 {
-  "name": "X-Wallet",
+  "name": "eckoWallet",
   "description": "The best web extension wallet for the Kadena blockchain. Powered by Kaddex",
   "version": "2.1.0",
   "manifest_version": 3,

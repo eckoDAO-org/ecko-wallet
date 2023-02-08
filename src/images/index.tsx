@@ -26,7 +26,6 @@ import iconAlert from './icon-alert.svg';
 import loadMore from './load-more.svg';
 import qrCode from './frame.png';
 import add from './add.png';
-import logo from './logo.svg';
 import lockImg from './lock-seed-phrase.svg';
 import iconLockOpen from './icon-lock-open.svg';
 import toastFail from './toast-fail.svg';
@@ -34,7 +33,6 @@ import toastSuccess from './toast-success.svg';
 import moreWhite from './more-white.png';
 import moreIcon from './more-icon.svg';
 import checkbox from './checkbox.png';
-import logoDapps from './logo-dapps.svg';
 import connectedDapps from './connected-dapps.svg';
 import dappsLogo from './dapps-logo.svg';
 import accountNotFound from './account-not-found.svg';
@@ -98,15 +96,12 @@ import kdaIcon from './kda-icons.svg';
 import logoWallet from './logo-wallet.svg';
 import iconSend from './arrow-down.svg';
 import iconReceive from './arrow-up.svg';
-import logoHome from './logo-home.svg';
 import logoWalletKadena from './logo-wallet-kaden.svg';
 import iconKadenaToken from './icon-kadena-token.svg';
 import iconHome from './icon-home.svg';
 import iconHistory from './history-icon.svg';
 import iconHistoryActive from './icon-history-active.svg';
 import iconSettingActive from './icon-setting-active.svg';
-import iconHomeActive from './x-wallet-icon.svg';
-import iconHomeDisabled from './x-wallet-icon-disabled.svg';
 import iconNft from './nft-icon.svg';
 import iconLockMini from './lock-mini.svg';
 import iconNetwork from './icon-network.svg';
@@ -119,9 +114,9 @@ import arrayDropdownPurple from './arrow-down-purple.svg';
 import iconMorePurple from './more-purple.svg';
 import iconDropDown from './icon-dropdown.svg';
 import iconCreate from './icon-create.svg';
-import xWalletLogo from './x-wallet.svg';
-import xWalletLogoSquare from './x-wallet-footer.svg';
-import xWalletIcon from './x-wallet-icon.png';
+import eckoWalletLogo from './ecko-wallet-logo.svg';
+import eckoWalletLogoRounded from './ecko-wallet-rounded.png';
+import eckoWalletIcon from './ecko-wallet-icon.svg';
 
 const wallet = {
   checked,
@@ -253,25 +248,20 @@ const images = {
   checkbox,
   radioChecked,
   radioUnchecked,
-  logo,
   settings,
-  logoDapps,
   connectedDapps,
   dappsLogo,
   toast,
   search,
   settingWhite,
   logoWallet,
-  logoHome,
   iconHome,
   iconHistory,
   iconHistoryActive,
   iconSettingActive,
-  iconHomeActive,
-  iconHomeDisabled,
-  xWalletIcon,
-  xWalletLogo,
-  xWalletLogoSquare,
+  eckoWalletIcon,
+  eckoWalletLogo,
+  eckoWalletLogoRounded,
 };
 
 export default images;

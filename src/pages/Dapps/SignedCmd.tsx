@@ -94,7 +94,7 @@ const SignedCmd = () => {
   const newCmd = cmd.cmd ? { ...cmd, cmd: JSON.parse(cmd.cmd) } : {};
   return (
     <DappWrapper>
-      <DappLogo src={images.xWalletIcon} alt="logo" />
+      <DappLogo src={images.eckoWalletLogoRounded} alt="logo" />
       <DappDescription>{domain}</DappDescription>
       <SecondaryLabel style={{ textAlign: 'center' }} uppercase>
         signed command

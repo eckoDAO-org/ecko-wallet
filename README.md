@@ -1,8 +1,8 @@
-# X Wallet - by Kaddex
+# eckoWallet - by Kaddex
 
 ## Installation instructions
 
-### Install [emscripten](http://kripken.github.io/emscripten-site/docs/getting_started/downloads.html#installation-instructions) first (required for cardano-crypto.js lib, used by x-wallet).
+### Install [emscripten](http://kripken.github.io/emscripten-site/docs/getting_started/downloads.html#installation-instructions) first (required for cardano-crypto.js lib, used by eckoWallet).
 
 ###
 
@@ -16,7 +16,7 @@ cd emsdk
 source ./emsdk_env.sh
 ```
 
-### X-Wallet build
+### ecko-Wallet build
 
 ```
 cp .env.example .env

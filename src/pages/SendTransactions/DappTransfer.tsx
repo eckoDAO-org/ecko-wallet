@@ -113,7 +113,7 @@ const DappTransfer = () => {
     <DappWrapper>
       {!loading && (
         <>
-          <DappLogo src={images.xWalletIcon} alt="logo" />
+          <DappLogo src={images.eckoWalletLogoRounded} alt="logo" />
           <SecondaryLabel style={{ textAlign: 'center' }} uppercase>
             {selectedNetwork.networkId}
           </SecondaryLabel>

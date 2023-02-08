@@ -13,7 +13,7 @@ export const WelcomeBackground = styled.div`
   justify-content: space-evenly;
   height: 100%;
   color: white;
-  background-image: url('/image/background-welcome.svg');
+  background-image: url('/image/start-background.png');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
@@ -84,7 +84,7 @@ const InitSeedPhrase = () => {
   return (
     <WelcomeBackground>
       <Div>
-        <Image src={images.xWalletLogoSquare} size={200} width={200} alt="logo" />
+        <Image src={images.eckoWalletIcon} size={200} width={200} alt="logo" />
       </Div>
       <DivBody>
         <Radio isChecked={isChecked} label={getCheckboxLabel()} onClick={() => setIsChecked((prev) => !prev)} />
@@ -96,7 +96,7 @@ const InitSeedPhrase = () => {
             <CommonLabel color="#fff" fontWeight={600} fontSize={18}>
               Create New Wallet
             </CommonLabel>
-            <SecondaryLabel>Setup new xWallet account</SecondaryLabel>
+            <SecondaryLabel>Setup new eckoWallet account</SecondaryLabel>
           </DivFlex>
         </StartButton>
         <StartButton onClick={() => goToCreatePassword(true)} marginTop="20px" style={{ cursor: isChecked ? 'pointer' : 'default' }}>

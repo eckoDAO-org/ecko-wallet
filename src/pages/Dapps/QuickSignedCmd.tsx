@@ -78,7 +78,7 @@ const QuickSignedCmd = () => {
 
   return (
     <DappWrapper>
-      <DappLogo src={images.xWalletIcon} alt="logo" />
+      <DappLogo src={images.eckoWalletLogoRounded} alt="logo" />
       <DappDescription>{domain}</DappDescription>
       <CommonLabel textCenter fontWeight={800} style={{ marginBottom: 20 }}>
         QUICK SIGN REQUEST

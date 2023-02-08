@@ -162,12 +162,12 @@ const DappSignIn = () => {
           </Div>
           <CenterImage src={images.connectedDapps} alt="logo" />
           <Div>
-            <Image src={images.xWalletIcon} alt="logo" />
+            <Image src={images.eckoWalletIcon} alt="logo" />
           </Div>
         </ConnectItem>
         <ConnectItem alignTop>
           <Div>{domain}</Div>
-          <Div>X Wallet extension</Div>
+          <Div>eckoWallet extension</Div>
         </ConnectItem>
         <ConnectInfo>{`${domain} would like to connect to your account`}</ConnectInfo>
         <div>
