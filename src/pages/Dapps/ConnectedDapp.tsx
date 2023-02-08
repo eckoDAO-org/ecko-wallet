@@ -327,7 +327,7 @@ const ConnectedDapp = () => {
           </ConnectItem>
           <ConnectItem alignTop>
             <Div>{domain}</Div>
-            <Div>eckoWallet extension</Div>
+            <Div>eckoWALLET extension</Div>
           </ConnectItem>
           <ConnectInfo>{`${domain} would like to connect to your account`}</ConnectInfo>
           <div>
@@ -343,7 +343,7 @@ const ConnectedDapp = () => {
         <>
           <Logo src={images.eckoWalletLogoRounded} alt="logo" />
           <DappDescription>{domain}</DappDescription>
-          <DappTitle>Connect with eckoWallet</DappTitle>
+          <DappTitle>Connect with eckoWALLET</DappTitle>
           <DappDescription>Connect all wallets</DappDescription>
           <Brick />
           {data.length > 0 ? (

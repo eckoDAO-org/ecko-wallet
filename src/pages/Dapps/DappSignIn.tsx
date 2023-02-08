@@ -167,7 +167,7 @@ const DappSignIn = () => {
         </ConnectItem>
         <ConnectItem alignTop>
           <Div>{domain}</Div>
-          <Div>eckoWallet extension</Div>
+          <Div>eckoWALLET extension</Div>
         </ConnectItem>
         <ConnectInfo>{`${domain} would like to connect to your account`}</ConnectInfo>
         <div>

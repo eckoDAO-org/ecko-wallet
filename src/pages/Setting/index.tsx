@@ -83,7 +83,7 @@ const PageSetting = () => {
     {
       title: 'Expand View',
       img: <ExpandView />,
-      description: 'Open eckoWallet in a new window',
+      description: 'Open eckoWALLET in a new window',
       onClick: () => (window as any)?.chrome?.tabs?.create({ url: '/index.html#/' }),
     },
     {
@@ -119,10 +119,10 @@ const PageSetting = () => {
       {settingsMenu.map((menuItem) => !menuItem.isHidden && getSettingsItem(menuItem))}
       <AboutDiv marginTop="48px" alignItems="center">
         <SecondaryLabel fontWeight={500}>
-          eckoWallet V. 2.1.0
+          eckoWALLET V. 2.2.0
           <br />
           <br />
-          The evolution of DeFi on Kadena
+          The Kadena ecosystem gateway
         </SecondaryLabel>
       </AboutDiv>
       <AboutDiv marginTop="30px">

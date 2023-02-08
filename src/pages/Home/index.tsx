@@ -55,7 +55,7 @@ const HomePage = () => {
       <Wrapper>
         <DivImage marginBottom="120px">
           <Image src={images.eckoWalletLogo} size={200} width={200} alt="logo" />
-          <SecondaryLabel>The evolution of DeFi on Kadena</SecondaryLabel>
+          <SecondaryLabel>The Kadena ecosystem gateway</SecondaryLabel>
         </DivImage>
       </Wrapper>
       <StickyFooter style={{ background: 'transparent', padding: '20px 0px' }}>

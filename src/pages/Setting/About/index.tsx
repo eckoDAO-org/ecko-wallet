@@ -20,8 +20,8 @@ const PageAbout = () => {
           <TitleHeaderAbout>{text}</TitleHeaderAbout>
           <div>
             <ContentAbout>
-              <TitleAbout>eckoWallet v2.0.3</TitleAbout>
-              <TitleVersion>The evolution of DeFi on Kadena</TitleVersion>
+              <TitleAbout>eckoWALLET v2.0.3</TitleAbout>
+              <TitleVersion>The Kadena ecosystem gateway</TitleVersion>
             </ContentAbout>
             <ContentAbout>
               <TitleDes fontWeight="700">

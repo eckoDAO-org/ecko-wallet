@@ -1,8 +1,8 @@
-# eckoWallet - by Kaddex
+# eckoWALLET
 
 ## Installation instructions
 
-### Install [emscripten](http://kripken.github.io/emscripten-site/docs/getting_started/downloads.html#installation-instructions) first (required for cardano-crypto.js lib, used by eckoWallet).
+### Install [emscripten](http://kripken.github.io/emscripten-site/docs/getting_started/downloads.html#installation-instructions) first (required for cardano-crypto.js lib, used by eckoWALLET).
 
 ###
 

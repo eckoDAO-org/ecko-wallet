@@ -96,7 +96,7 @@ const InitSeedPhrase = () => {
             <CommonLabel color="#fff" fontWeight={600} fontSize={18}>
               Create New Wallet
             </CommonLabel>
-            <SecondaryLabel>Setup new eckoWallet account</SecondaryLabel>
+            <SecondaryLabel>Setup new eckoWALLET account</SecondaryLabel>
           </DivFlex>
         </StartButton>
         <StartButton onClick={() => goToCreatePassword(true)} marginTop="20px" style={{ cursor: isChecked ? 'pointer' : 'default' }}>

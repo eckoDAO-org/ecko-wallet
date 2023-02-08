@@ -83,7 +83,7 @@ const SignIn = () => {
     <WelcomeBackground>
       <DivFlex flexDirection="column" style={{ height: '100vh', padding: '0 24px' }} justifyContent="center" gap="45px">
         <DivImage marginBottom="30px" marginTop="30px">
-          <Image src={images.eckoWalletIcon} size={200} width={200} alt="logo" />
+          <Image src={images.eckoWalletLogo} size={200} width={200} alt="logo" />
           <CommonLabel color="#fff" fontSize={18} fontWeight={500} style={{ marginTop: 20 }}>
             Login to your account
           </CommonLabel>
