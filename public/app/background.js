@@ -1,9 +1,9 @@
 /* eslint no-use-before-define: 0 */
 import Pact from 'pact-lang-api';
 import 'regenerator-runtime/runtime';
-import { get } from 'lodash';
+import { hash as kadenaJSHash, sign as kadenaJSSign } from '@kadena/cryptography-utils';
 import { decryptKey } from '../../src/utils/security';
-import { fetchLocal, getSignatureFromHash } from '../../src/utils/chainweb';
+import { getSignatureFromHash } from '../../src/utils/chainweb';
 import { getTimestamp } from '../../src/utils';
 import { XWALLET_DAPP_SIGN_NONCE } from '../../src/utils/config';
 
@@ -307,33 +307,15 @@ const kdaRequestQuickSign = async (data, tabId) => {
           const commandSigIndex = parsedCmd.signers.findIndex((s) => s.pubKey === account.publicKey);
           if (commandSigIndex > -1) {
             parsedCmd.signers[commandSigIndex].secretKey = account.secretKey;
-            const clist = parsedCmd.signers[commandSigIndex]?.clist;
-            const keyPairs = {
-              publicKey: account.publicKey,
-            };
-            if (account.secretKey.length === 64) {
-              keyPairs.secretKey = account.secretKey;
-            }
-            if (clist.length > 0) {
-              keyPairs.clist = clist;
-            }
             try {
-              const signedCmd = Pact.api.prepareExecCmd(
-                keyPairs,
-                `${XWALLET_DAPP_SIGN_NONCE}-"${new Date().toISOString()}"`,
-                parsedCmd.payload.exec.code,
-                parsedCmd.payload.exec.data,
-                parsedCmd.meta,
-                parsedCmd.networkId,
-              );
-              hash = signedCmd.hash;
+              hash = kadenaJSHash(cmd);
               if (account.secretKey.length > 64) {
-                signature = getSignatureFromHash(signedCmd.hash, account.secretKey);
+                signature = getSignatureFromHash(hash, account.secretKey);
               } else {
-                signature = (signedCmd?.sigs && signedCmd?.sigs[0] && signedCmd?.sigs[0].sig) || null;
+                signature = kadenaJSSign(hash, { secretKey: account.secretKey, publicKey: account.publicKey }).sig;
               }
             } catch (err) {
-              console.log(`QUICK-SIGN ERROR`, err);
+              console.log(`QUICK-SIGN ERROR`);
               signedResponses.push({
                 commandSigData: {
                   cmd,
