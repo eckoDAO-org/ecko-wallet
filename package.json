@@ -1,6 +1,6 @@
 {
   "name": "x-wallet",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "private": true,
   "dependencies": {
     "@babel/core": "^7.15.5",
@@ -8,6 +8,7 @@
     "@babel/runtime": "^7.16.0",
     "@bumaga/tabs": "^0.2.0",
     "@craco/craco": "^6.3.0",
+    "@kadena/cryptography-utils": "^0.1.1",
     "@reduxjs/toolkit": "^1.6.2",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
