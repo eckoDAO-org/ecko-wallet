@@ -59,13 +59,13 @@ const customStyles = {
 const BaseSelect = memo(
   ({ title, options = [], defaultValue, selectProps = {}, height = '44px', isFlex, placeholder = 'Select Chain ID' }: Props) => (
     <SDivRoot height={height} isFlex={isFlex}>
-      <SLabel uppercase>{title}</SLabel>
+      <SLabel>{title}</SLabel>
       <Select options={options} {...selectProps} defaultValue={defaultValue} placeholder={placeholder} styles={customStyles} isSearchable={false} />
     </SDivRoot>
   ),
 );
 
-const SDivRoot = styled.div`
+const SDivRoot = styled.div<{ isFlex?: boolean; height?: string }>`
   display: ${(props) => (props.isFlex ? 'flex' : 'block')};
   height: ${(props) => props.height};
   width: 100%;
@@ -88,7 +88,7 @@ const SDivRoot = styled.div`
   }
 `;
 
-export const SText = styled.title`
+export const SText = styled.title<{ isFlex?: boolean }>`
   display: block;
   width: ${(props) => (props.isFlex ? '31%' : '100%')};
   font-size: 16px;

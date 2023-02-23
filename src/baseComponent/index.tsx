@@ -4,7 +4,7 @@ import BaseTextInput from './BaseTextInput';
 import BaseSelect from './BaseSelect';
 import BaseModalSelect from './BaseModalSelect';
 
-const InputError = styled.div`
+const InputError = styled.div<{ marginTop: string }>`
   color: red;
   font-size: 16px;
   margin-top: ${(props) => (props.marginTop ? props.marginTop : '10px')};

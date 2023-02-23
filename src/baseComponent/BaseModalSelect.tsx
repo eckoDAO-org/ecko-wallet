@@ -11,7 +11,7 @@ interface BaseModalSelectProps {
 
 const BaseModalSelect = memo(({ title, options = [], value, onChange }: BaseModalSelectProps) => (
   <div>
-    <SLabel uppercase>{title}</SLabel>
+    <SLabel>{title}</SLabel>
     <DropdownRadioModal
       value={value}
       modalTitle={title}

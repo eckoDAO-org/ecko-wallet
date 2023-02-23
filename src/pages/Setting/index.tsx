@@ -87,6 +87,12 @@ const PageSetting = () => {
       onClick: () => (window as any)?.chrome?.tabs?.create({ url: '/index.html#/' }),
     },
     {
+      title: 'Theme',
+      img: <Padlock />,
+      description: 'Protect your wallet',
+      onClick: () => history.push('/select-theme'),
+    },
+    {
       title: 'Lock Wallet',
       img: <Padlock />,
       description: 'Protect your wallet',

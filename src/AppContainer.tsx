@@ -15,7 +15,6 @@ import SendTransactions from './pages/SendTransactions';
 import PageSetting from './pages/Setting';
 import PageContact from './pages/Setting/Contact';
 import PageNetworks from './pages/Setting/Networks';
-import PageAbout from './pages/Setting/About';
 import PrivateRoute from './components/Route/PrivateRoute';
 import Loading from './components/Loading';
 import ConnectedDapp from './pages/Dapps/ConnectedDapp';
@@ -31,6 +30,7 @@ import ExportSeedPhrase from './pages/Setting/ExportSeedPhrase';
 import History from './pages/Wallet/views/History';
 import PageTransaction from './pages/Setting/Transaction';
 import PageLockSettings from './pages/Setting/Lock';
+import PageSelectTheme from './pages/Setting/SelectTheme';
 import PageConnectedSites from './pages/Setting/ConnectedSites';
 
 const Container = styled.div`
@@ -72,7 +72,7 @@ const AppContainer = () => {
         <PrivateRoute path="/connected-sites" component={PageConnectedSites} />
         <PrivateRoute path="/tx-settings" component={PageTransaction} />
         <PrivateRoute path="/lock-settings" component={PageLockSettings} />
-        <PrivateRoute path="/about" component={PageAbout} />
+        <PrivateRoute path="/select-theme" component={PageSelectTheme} />
         <PrivateRoute path="/setting" component={PageSetting} />
         <PrivateRoute path="/history" component={History} />
         <PrivateRoute isHome path="/" component={Wallet} />

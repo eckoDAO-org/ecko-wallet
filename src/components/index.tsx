@@ -1,6 +1,17 @@
 import styled from 'styled-components';
 
-export const DivFlex = styled.div`
+export const DivFlex = styled.div<{
+  alignItems?: string;
+  justifyContent?: string;
+  flexDirection?: string;
+  padding?: string;
+  paddingTop?: string;
+  marginBottom?: string;
+  marginLeft?: string;
+  margin?: string;
+  marginTop?: string;
+  gap?: string;
+}>`
   display: flex;
   justify-content: ${(props) => props.justifyContent};
   flex-direction: ${(props) => props.flexDirection || 'row'};
@@ -14,7 +25,9 @@ export const DivFlex = styled.div`
   gap: ${(props) => props.gap};
 `;
 
-export const CommonLabel = styled.span`
+const gg = () => <div style={{ alignItems: 'center' }}>a</div>;
+
+export const CommonLabel = styled.span<LabelProps>`
   text-transform: ${(props) => props.uppercase && 'uppercase'};
   text-align: ${(props) => props.textCenter && 'center'};
   color: ${($props) => $props.color || '#000000'};
@@ -24,7 +37,16 @@ export const CommonLabel = styled.span`
   word-break: ${($props) => $props.wordBreak};
 `;
 
-export const PrimaryLabel = styled.span`
+interface LabelProps {
+  textCenter?: boolean;
+  uppercase?: boolean;
+  fontWeight?: string;
+  fontSize?: number;
+  lineHeight?: string;
+  wordBreak?: string;
+}
+
+export const PrimaryLabel = styled.span<LabelProps>`
   text-transform: ${(props) => props.uppercase && 'uppercase'};
   text-align: ${(props) => props.textCenter && 'center'};
   color: ${($props) => $props.color || '#000000'};
@@ -33,7 +55,7 @@ export const PrimaryLabel = styled.span`
   line-height: 63px;
 `;
 
-export const SecondaryLabel = styled.span`
+export const SecondaryLabel = styled.span<LabelProps>`
   text-transform: ${(props) => props.uppercase && 'uppercase'};
   text-align: ${(props) => props.textCenter && 'center'};
   color: ${($props) => $props.color || '#787b8e'};
@@ -52,7 +74,7 @@ export const StickyFooter = styled(DivFlex)`
   justify-content: center;
 `;
 
-export const PaddedBodyStickyFooter = styled.div`
+export const PaddedBodyStickyFooter = styled.div<{ paddingBottom?: number }>`
   padding-bottom: ${(props) => `${props.paddingBottom}px` || '50px'};
 `;
 

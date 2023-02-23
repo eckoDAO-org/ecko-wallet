@@ -10,7 +10,7 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isDisabled?: boolean;
 }
 
-const ButtonWrapper = styled.button`
+const ButtonWrapper = styled.button<{ size?: string; background?: string; border?: string; svgColor?: string; color?: string }>`
   ${(props) => (props.size === BUTTON_SIZE.NORMAL ? 'padding: 0 30px' : 'width: 100%')};
   height: 50px;
   background: ${(props) => props.background};

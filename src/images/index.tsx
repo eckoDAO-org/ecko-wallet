@@ -1,7 +1,5 @@
-import back from './back.svg';
 import close from './close.svg';
 import closeBlack from './close-black.png';
-import pinkDownArrow from './arrows-down.png';
 import barCode from './barcode-scanner.png';
 import setting from './icon-setting.svg';
 import checked from './checked.png';
@@ -25,7 +23,6 @@ import startUser from './start-user.svg';
 import iconAlert from './icon-alert.svg';
 import loadMore from './load-more.svg';
 import qrCode from './frame.png';
-import add from './add.png';
 import lockImg from './lock-seed-phrase.svg';
 import iconLockOpen from './icon-lock-open.svg';
 import toastFail from './toast-fail.svg';
@@ -36,7 +33,6 @@ import checkbox from './checkbox.png';
 import connectedDapps from './connected-dapps.svg';
 import dappsLogo from './dapps-logo.svg';
 import accountNotFound from './account-not-found.svg';
-import arrowDownViolet from './arrow-down-violet.svg';
 import lock from './padlock.svg';
 import lockWhite from './lock.svg';
 import search from './search.svg';
@@ -95,7 +91,6 @@ import trashViolet from './trash-violet.svg';
 import kdaIcon from './kda-icons.svg';
 import logoWallet from './logo-wallet.svg';
 import iconSend from './arrow-down.svg';
-import iconReceive from './arrow-up.svg';
 import logoWalletKadena from './logo-wallet-kaden.svg';
 import iconKadenaToken from './icon-kadena-token.svg';
 import iconHome from './icon-home.svg';
@@ -110,7 +105,6 @@ import iconTrash from './trash-icon.svg';
 import iconShare from './share-icon.svg';
 import iconEdit from './icon-edit.svg';
 import iconDownload from './icon-download.svg';
-import arrayDropdownPurple from './arrow-down-purple.svg';
 import iconMorePurple from './more-purple.svg';
 import iconDropDown from './icon-dropdown.svg';
 import iconCreate from './icon-create.svg';
@@ -159,10 +153,8 @@ const wallet = {
   checkedV,
   kdaIcon,
   iconSend,
-  iconReceive,
   logoWalletKadena,
   iconKadenaToken,
-  arrayDropdownPurple,
   iconMorePurple,
   iconDropDown,
   iconCreate,
@@ -200,11 +192,9 @@ const generateAccount = {
   download,
 };
 const transfer = {
-  pinkDownArrow,
   barCode,
   transferArrow,
   accountNotFound,
-  arrowDownViolet,
   info,
   violetAdd,
 };
@@ -234,14 +224,12 @@ const toast = {
 };
 const images = {
   wallet,
-  back,
   logoName,
   initPage,
   generateAccount,
   transfer,
   received,
   setting,
-  add,
   close,
   moreWhite,
   moreIcon,

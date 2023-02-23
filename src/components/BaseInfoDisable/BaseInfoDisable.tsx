@@ -9,17 +9,17 @@ type ImageProps = {
 type Props = {
   title: String;
   label: String;
-  image?: ImageProps;
+  image?: ImageProps | any;
 };
 const BaseInfoDisable = (props: Props) => {
   const { image, title, label } = props;
   return (
     <DivRoot>
       <Title>{title}</Title>
-      <AdrressBox>
+      <AddressBox>
         <AddressText>{label}</AddressText>
         {image && <Image {...image} src={image?.src} alt="copy" onClick={image?.callback} />}
-      </AdrressBox>
+      </AddressBox>
     </DivRoot>
   );
 };
@@ -30,7 +30,7 @@ const Title = styled.div`
 
   margin-bottom: 10px;
 `;
-const AdrressBox = styled.div`
+const AddressBox = styled.div`
   display: flex;
   gap: 10px;
   justify-content: space-between;

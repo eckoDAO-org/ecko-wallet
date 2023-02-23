@@ -8,7 +8,7 @@ const DropdownCustom = styled.div`
 const DropdownBtn = styled.div`
   cursor: pointer;
 `;
-const DropdownContent = styled.div`
+const DropdownContent = styled.div<{ display?: string; placement?: string; trianglePositionBottom?: string }>`
   margin-top: 10px;
   display: ${(props) => (props.display ? 'block' : 'none')};
   position: absolute;
@@ -42,7 +42,7 @@ const DropdownContent = styled.div`
 const DivChild = styled.div`
   padding: 5px;
 `;
-const Triangle = styled.div`
+const Triangle = styled.div<{ trianglePosition?: string; display?: string; trianglePositionBottom?: string }>`
   border-color: transparent transparent rgba(0, 0, 0, 0.8) transparent;
   border-style: solid;
   border-width: 0px 10px 10px 10px;

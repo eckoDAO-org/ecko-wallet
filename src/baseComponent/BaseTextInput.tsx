@@ -54,7 +54,7 @@ const BaseTextInput = memo(
     }
     return (
       <SDivRoot height={height} isFlex={isFlex}>
-        <SLabel uppercase>{title}</SLabel>
+        <SLabel>{title}</SLabel>
         <InputWrapper isFlex={isFlex} readOnly={readOnly} style={wrapperStyle}>
           {typeInput === 'password' ? (
             <>
@@ -70,7 +70,7 @@ const BaseTextInput = memo(
                 onBlur={onBlur}
                 type={type}
               />
-              <ImageWrapper readOnly={readOnly}>
+              <ImageWrapper>
                 <SImage
                   src={type === 'password' ? images.initPage.eyeHidden : images.initPage.eye}
                   alt="image"
@@ -92,18 +92,18 @@ const BaseTextInput = memo(
             />
           )}
           {image && (
-            <ImageWrapper readOnly={readOnly}>
+            <ImageWrapper>
               <SImage {...image} src={image.src} alt="image" onClick={image.callback} />
             </ImageWrapper>
           )}
-          {numberOptions && <ImageWrapper readOnly={readOnly}>{numberOptions.content}</ImageWrapper>}
+          {numberOptions && <ImageWrapper>{numberOptions.content}</ImageWrapper>}
         </InputWrapper>
       </SDivRoot>
     );
   },
 );
 
-const SDivRoot = styled.div<{ height: string }>`
+const SDivRoot = styled.div<{ height?: string; isFlex?: boolean }>`
   display: block;
   height: ${($props) => $props.height};
   ${(props) => (props.isFlex ? 'display: flex' : '')};
@@ -111,7 +111,7 @@ const SDivRoot = styled.div<{ height: string }>`
   border-radius: 10px;
   width: 100%;
 `;
-const InputWrapper = styled.div`
+const InputWrapper = styled.div<{ isFlex?: boolean; readOnly?: boolean; border?: string }>`
   position: relative;
   display: flex;
   align-items: center;
@@ -144,7 +144,7 @@ export const SLabel = styled(SecondaryLabel)`
   font-weight: 700;
 `;
 
-export const SInput = styled.input`
+export const SInput = styled.input<{ background: string }>`
   width: 100%;
   background: ${(props) => props.background};
   color: ${(props) => props.color};
