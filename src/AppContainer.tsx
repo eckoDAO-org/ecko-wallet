@@ -32,9 +32,11 @@ import PageTransaction from './pages/Setting/Transaction';
 import PageLockSettings from './pages/Setting/Lock';
 import PageSelectTheme from './pages/Setting/SelectTheme';
 import PageConnectedSites from './pages/Setting/ConnectedSites';
+import { useAppThemeContext } from './contexts/AppThemeContext';
 
 const Container = styled.div`
   width: 1000px;
+  background: ${(props) => props.theme?.background || 'white'};
   box-shadow: 0 0 7px 7px rgb(0 0 0 / 8%);
   min-height: 100vh;
   @media screen and (max-width: 1024px) {
@@ -46,6 +48,7 @@ const Container = styled.div`
 
 const AppContainer = () => {
   const rootState = useSelector((state) => state);
+  const { theme } = useAppThemeContext();
   const { isLoading } = rootState.extensions;
   return (
     <Container>
@@ -79,7 +82,7 @@ const AppContainer = () => {
         <Redirect to="/" />
       </Switch>
       <Footer />
-      {isLoading && <Loading type="spin" color="#20264E" />}
+      {isLoading && <Loading type="spin" color={theme.footer?.primary ?? '#20264e'} />}
     </Container>
   );
 };

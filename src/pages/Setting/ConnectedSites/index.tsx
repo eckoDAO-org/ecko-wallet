@@ -4,6 +4,8 @@ import { useSelector } from 'react-redux';
 import { decryptKey } from 'src/utils/security';
 import Toast from 'src/components/Toast/Toast';
 import { toast } from 'react-toastify';
+import { useAppThemeContext } from 'src/contexts/AppThemeContext';
+import { RoundedArrow } from 'src/pages/Wallet/views/FinishTransferItem';
 import { ConfirmModal } from 'src/components/ConfirmModal';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import { CommonLabel, DivFlex } from 'src/components';
@@ -20,13 +22,14 @@ import { Body } from '../../SendTransactions/styles';
 const RightAction = styled(DivFlex)`
   svg {
     path {
-      fill: #20264e;
+      fill: ${({ theme }) => theme.text.secondary};
     }
   }
 `;
 
 const PageConnectedSites = () => {
   const history = useHistory();
+  const { theme } = useAppThemeContext();
   const { openModal, closeModal } = useModalContext();
   const stateWallet = useCurrentWallet();
   const rootState = useSelector((state) => state);
@@ -74,8 +77,10 @@ const PageConnectedSites = () => {
     connectedSites.map((item) => (
       <DivFlex key={item} justifyContent="space-between" alignItems="center" padding="10px 24px" style={{ cursor: 'pointer' }}>
         <DivFlex alignItems="center" gap="5px">
-          <IconNetwork />
-          <CommonLabel color="#20264E">{item}</CommonLabel>
+          <RoundedArrow margin="0px 5px 0px 0px" color={theme.footer?.primary}>
+            <IconNetwork />
+          </RoundedArrow>
+          <CommonLabel>{item}</CommonLabel>
         </DivFlex>
         <RightAction>
           <TrashIcon

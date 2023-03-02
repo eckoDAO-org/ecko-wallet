@@ -31,12 +31,14 @@ const Content = styled.div`
 `;
 const ToastWrapper = styled.div`
   .Toastify__toast-theme--light.Toastify__toast--success {
+    background: ${({ theme }) => theme.iconBackground};
     border-left: 4px solid #25d366;
     border-radius: 4px;
     width: 90%;
     margin: 10px auto;
   }
   .Toastify__toast-theme--light.Toastify__toast--error {
+    background: ${({ theme }) => theme.iconBackground};
     border-left: 4px solid #e74c3c;
     border-radius: 4px;
     width: 90%;

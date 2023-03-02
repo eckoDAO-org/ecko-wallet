@@ -100,6 +100,7 @@ import iconSettingActive from './icon-setting-active.svg';
 import iconNft from './nft-icon.svg';
 import iconLockMini from './lock-mini.svg';
 import iconNetwork from './icon-network.svg';
+import iconTheme from './icon-theme.svg';
 import iconGear from './gear-icon.svg';
 import iconTrash from './trash-icon.svg';
 import iconShare from './share-icon.svg';
@@ -214,6 +215,7 @@ const settings = {
   iconShare,
   iconLockMini,
   iconNetwork,
+  iconTheme,
 };
 const toast = {
   toastSuccess,

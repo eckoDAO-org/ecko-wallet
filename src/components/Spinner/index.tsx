@@ -6,7 +6,7 @@ const SpinnerWrapper = styled.div`
   height: ${(props) => props.size}px;
   border: ${(props) => props.weight}px solid ${(props) => props.color};
   border-radius: 50%;
-  border-top-color: #fff;
+  border-top-color: ${({ theme }) => theme.background};
   animation: spin 1s ease-in-out infinite;
   -webkit-animation: spin 1s ease-in-out infinite;
 `;

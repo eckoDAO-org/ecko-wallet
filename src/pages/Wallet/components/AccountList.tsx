@@ -8,6 +8,7 @@ import { DivFlex, SecondaryLabel } from 'src/components';
 const AccountLabel = styled.span`
   font-weight: ${(props) => (props.isSelected ? 'bold' : 500)};
   font-size: 16px;
+  color: ${($props) => $props.theme?.text?.primary || '#000000'};
 `;
 
 export const AccountList = ({ onSelectWallet }: { onSelectWallet: any }) => {

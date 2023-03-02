@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { BUTTON_SIZE, BUTTON_TYPE } from 'src/utils/constant';
+import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: 'normal' | 'full';
@@ -34,25 +35,27 @@ const ButtonWrapper = styled.button<{ size?: string; background?: string; border
 `;
 
 const Button = (props: Props) => {
+  const { theme } = useAppThemeContext();
+
   const { size = BUTTON_SIZE.NORMAL, variant = 'primary', label, onClick, isDisabled } = props;
-  let buttonType = { color: 'white', background: '#20264E', border: 'none' };
+  let buttonType: any = { color: 'white', background: theme.button?.primary, border: 'none' };
   if (isDisabled) {
     buttonType = {
-      color: '#20264E',
+      color: theme.button?.primary,
       background: 'white',
-      border: '1px solid #20264E',
+      border: `1px solid ${theme.button?.primary}`,
     };
   } else if (variant === BUTTON_TYPE.DISABLE) {
     buttonType = {
-      color: '#20264E',
+      color: theme.button?.primary,
       background: 'white',
-      border: '1px solid #20264E',
+      border: `1px solid ${theme.button?.primary}`,
     };
   } else if (variant === BUTTON_TYPE.TRANSPARENT) {
     buttonType = {
-      color: '#20264E',
+      color: theme.button?.primary,
       background: 'none',
-      border: '1px solid #20264E',
+      border: `1px solid ${theme.button?.primary}`,
     };
   } else if (variant === BUTTON_TYPE.REMOVE) {
     buttonType = {
@@ -62,8 +65,8 @@ const Button = (props: Props) => {
     };
   } else if (variant === 'secondary') {
     buttonType = {
-      color: '#20264E',
-      background: '#ECECF5',
+      color: theme.text?.primary,
+      background: theme.button?.secondary,
       border: 'none',
     };
   } else if (variant === 'grey') {

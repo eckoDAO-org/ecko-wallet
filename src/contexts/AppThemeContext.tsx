@@ -1,25 +1,12 @@
 import { createContext, useContext } from 'react';
 import useLocalStorage from 'src/hooks/useLocalStorage';
+import { AppThemeEnum, appThemes, IAppTheme } from 'src/themes';
 import { ThemeProvider } from 'styled-components';
 
-export enum AppThemeEnum {
-  LIGHT = 'LIGHT',
-  DARK = 'DARK',
-}
-
-const themes = {
-  [AppThemeEnum.LIGHT]: {
-    mainColor: 'blue',
-  },
-  [AppThemeEnum.DARK]: {
-    mainColor: 'red',
-  },
-};
-
 interface AppThemeContextValue {
-  theme: object;
+  theme: IAppTheme;
   selectedTheme: AppThemeEnum | null;
-  setTheme: (t: string) => any;
+  setTheme: (t: string) => void;
 }
 
 const defaultAppThemeValue: AppThemeContextValue = {
@@ -35,7 +22,7 @@ export const AppThemeProvider = ({ children }: any) => {
 
   const setTheme = (theme: string) => setSelectedTheme(theme);
 
-  const theme = selectedTheme ? themes[selectedTheme] : themes[AppThemeEnum.LIGHT];
+  const theme = selectedTheme ? appThemes[selectedTheme] : appThemes[AppThemeEnum.LIGHT];
 
   return (
     <AppThemeContext.Provider

@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import Select from 'react-select';
 import { memo } from 'react';
+import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 import { SLabel } from './BaseTextInput';
 
 interface Props {
@@ -12,57 +13,68 @@ interface Props {
   isFlex?: boolean;
   placeholder?: string;
 }
-const customStyles = {
-  control: (provided) => ({
-    ...provided,
-    borderColor: '#c4c4c4',
-    borderRadius: '4px',
-    minHeight: '44px',
-    height: '44px',
-  }),
-  option: (provided) => ({
-    ...provided,
-    color: '#20264E',
-    '&:hover': {
-      background: '#999999',
-    },
-  }),
-  valueContainer: (provided) => ({
-    ...provided,
-    height: '44px',
-    color: '#20264E',
-  }),
-
-  input: (provided) => ({
-    ...provided,
-    margin: '0px',
-  }),
-  indicatorsContainer: (provided) => ({
-    ...provided,
-    height: '44px',
-  }),
-  indicatorSeparator: (provided) => ({
-    ...provided,
-    display: 'none',
-  }),
-  container: (provided) => ({
-    ...provided,
-    fontSize: '16px',
-    flexGrow: 1,
-  }),
-  placeholder: (defaultStyles) => ({
-    ...defaultStyles,
-    color: '#cecaca',
-  }),
-};
 
 const BaseSelect = memo(
-  ({ title, options = [], defaultValue, selectProps = {}, height = '44px', isFlex, placeholder = 'Select Chain ID' }: Props) => (
-    <SDivRoot height={height} isFlex={isFlex}>
-      <SLabel>{title}</SLabel>
-      <Select options={options} {...selectProps} defaultValue={defaultValue} placeholder={placeholder} styles={customStyles} isSearchable={false} />
-    </SDivRoot>
-  ),
+  ({ title, options = [], defaultValue, selectProps = {}, height = '44px', isFlex, placeholder = 'Select Chain ID' }: Props) => {
+    const { theme } = useAppThemeContext();
+    return (
+      <SDivRoot height={height} isFlex={isFlex}>
+        <SLabel>{title}</SLabel>
+        <Select
+          options={options}
+          {...selectProps}
+          defaultValue={defaultValue}
+          placeholder={placeholder}
+          styles={{
+            control: (provided) => ({
+              ...provided,
+              borderColor: '#c4c4c4',
+              borderRadius: '8px',
+              minHeight: '44px',
+              height: '44px',
+              background: theme.input?.background,
+            }),
+            option: (provided, { isSelected }) => ({
+              ...provided,
+              color: isSelected ? theme.selectMenu?.selectedColor : theme.selectMenu?.color,
+              background: isSelected ? theme.selectMenu?.selectedBackground : theme.selectMenu?.background,
+              '&:hover': {
+                background: '#999999',
+              },
+            }),
+            valueContainer: (provided) => ({
+              ...provided,
+              height: '44px',
+              color: '#20264E',
+            }),
+
+            input: (provided) => ({
+              ...provided,
+              margin: '0px',
+            }),
+            indicatorsContainer: (provided) => ({
+              ...provided,
+              height: '44px',
+            }),
+            indicatorSeparator: (provided) => ({
+              ...provided,
+              display: 'none',
+            }),
+            container: (provided) => ({
+              ...provided,
+              fontSize: '16px',
+              flexGrow: 1,
+            }),
+            placeholder: (defaultStyles) => ({
+              ...defaultStyles,
+              color: theme.input?.color,
+            }),
+          }}
+          isSearchable={false}
+        />
+      </SDivRoot>
+    );
+  },
 );
 
 const SDivRoot = styled.div<{ isFlex?: boolean; height?: string }>`
@@ -78,9 +90,13 @@ const SDivRoot = styled.div<{ isFlex?: boolean; height?: string }>`
     margin-right: 8px;
   }
   .css-qc6sy-singleValue {
+    color: ${(props) => props.theme.input.color};
+  }
+  .css-26l3qy-menu {
+    background: ${(props) => props.theme.input.background};
   }
   .css-417lad-placeholder {
-    color: #20264e;
+    color: ${(props) => props.theme.input.placeholder};
     grid-area: 1 / 1 / 2 / 3;
     margin-left: 2px;
     margin-right: 2px;

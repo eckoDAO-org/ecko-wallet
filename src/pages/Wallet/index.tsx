@@ -20,6 +20,7 @@ import { extractDecimal } from 'src/utils/chainweb';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import useLocalStorage from 'src/hooks/useLocalStorage';
 import { useModalContext } from 'src/contexts/ModalContext';
+import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 import { useAccountBalanceContext } from 'src/contexts/AccountBalanceContext';
 import ReceiveModal from './views/ReceiveModal';
 import { IFungibleToken, LOCAL_KEY_FUNGIBLE_TOKENS } from '../ImportToken';
@@ -46,7 +47,7 @@ const DivAsset = styled.div`
 `;
 const DivAssetList = styled.div`
   .token-element {
-    border-top: 1px solid #dfdfed;
+    border-top: 1px solid ${({ theme }) => theme?.border};
   }
   .token-element:first-child {
     border-top: none;
@@ -166,13 +167,19 @@ const Wallet = () => {
     );
   };
 
+  const { theme } = useAppThemeContext();
+
   return (
     <div>
       <Header />
       <DivFlex justifyContent="space-between" padding="15px 20px">
         <SecondaryLabel>NET WORTH</SecondaryLabel>
-        <SecondaryLabel color="black">
-          {isLoadingBalances ? <Spinner size={10} color="black" weight={2} /> : `$ ${humanReadableNumber(getAllChainUsdBalance().toFixed(2), 2)}`}
+        <SecondaryLabel color={theme.text?.primary}>
+          {isLoadingBalances ? (
+            <Spinner size={10} color={theme.text?.primary} weight={2} />
+          ) : (
+            `$ ${humanReadableNumber(getAllChainUsdBalance().toFixed(2), 2)}`
+          )}
         </SecondaryLabel>
       </DivFlex>
       <DivBottomShadow justifyContent="center" flexDirection="column" alignItems="center" padding="20px">

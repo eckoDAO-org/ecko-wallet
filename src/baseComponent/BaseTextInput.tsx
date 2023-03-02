@@ -2,6 +2,7 @@ import React, { memo, useState } from 'react';
 import styled from 'styled-components';
 import images from 'src/images';
 import { SecondaryLabel } from 'src/components';
+import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 
 type ImageProps = {
   width: string;
@@ -38,12 +39,13 @@ const BaseTextInput = memo(
     onBlur,
     wrapperStyle,
   }: Props) => {
+    const { theme } = useAppThemeContext();
     const [type, setType] = useState('password');
     const { readOnly } = inputProps;
     let styles = {
       border: '1px solid #c4c4c4',
       background: 'none',
-      color: '#000000',
+      color: theme.input?.color,
     };
     if (readOnly) {
       styles = {
@@ -117,9 +119,14 @@ const InputWrapper = styled.div<{ isFlex?: boolean; readOnly?: boolean; border?:
   align-items: center;
   justify-content: space-between;
   border: ${(props) => props.border};
-  border-radius: 4px;
+  border-radius: 8px;
   ${(props) => (props.isFlex ? 'flex-grow: 1' : '')};
-  background: ${(props) => (props.readOnly ? '#ECECF5' : '#F6F6FA')};
+  background: ${(props) => {
+    if (props.readOnly !== undefined) {
+      return props.readOnly ? '#ECECF5' : '#F6F6FA';
+    }
+    return props.theme.input.background;
+  }};
 `;
 const ImageWrapper = styled.div`
   height: 34px;
@@ -142,15 +149,17 @@ const SImage = styled.img`
 export const SLabel = styled(SecondaryLabel)`
   line-height: 30px;
   font-weight: 700;
+  text-transform: uppercase;
 `;
 
 export const SInput = styled.input<{ background: string }>`
   width: 100%;
-  background: ${(props) => props.background};
-  color: ${(props) => props.color};
+  background: ${(props) => props.background || props.theme.input.background};
+  color: ${(props) => props.color || props.theme.input.color};
   box-sizing: border-box;
   font-size: 16px;
   height: 40px;
+  border-radius: 8px;
   padding: 0 0 0 13px;
   font-family: 'Montserrat', sans-serif;
   outline: none;

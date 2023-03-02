@@ -2,8 +2,10 @@ import React from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 import { ReactComponent as ContactsIcon } from 'src/images/settings-contacts.svg';
 import { ReactComponent as NetworksIcon } from 'src/images/settings-networks.svg';
+import { ReactComponent as ThemeIcon } from 'src/images/icon-theme.svg';
 import { ReactComponent as KeyIcon } from 'src/images/settings-export-key.svg';
 import { ReactComponent as DiscordIcon } from 'src/images/discord-icon.svg';
 import { ReactComponent as GlobeIcon } from 'src/images/globe-icon.svg';
@@ -12,6 +14,7 @@ import { ReactComponent as ExpandView } from 'src/images/expand-view.svg';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import { DISCORD_INVITATION_LINK, WEBSITE_LINK } from 'src/utils/config';
 import { useSettingsContext } from 'src/contexts/SettingsContext';
+import { RoundedArrow } from '../Wallet/views/FinishTransferItem';
 
 interface ISettingsMenu {
   img: React.ReactNode;
@@ -34,6 +37,11 @@ const SettingsContainer = styled.div`
 
 const SettingMenu = styled(DivFlex)`
   cursor: pointer;
+  svg {
+    circle {
+      fill: ${({ theme }) => theme.iconSettingsBackground};
+    }
+  }
   border-bottom: '1px solid #dfdfed';
 `;
 
@@ -53,6 +61,7 @@ const PageSetting = () => {
   const rootState = useSelector((state) => state);
   const { setIsLocked } = useSettingsContext();
   const { secretKey } = rootState?.wallet;
+  const { theme } = useAppThemeContext();
 
   const lockWallet = () => {
     setIsLocked(true);
@@ -88,8 +97,12 @@ const PageSetting = () => {
     },
     {
       title: 'Theme',
-      img: <Padlock />,
-      description: 'Protect your wallet',
+      img: (
+        <RoundedArrow margin="0px 5px 0px 0px" background={theme.iconSettingsBackground}>
+          <ThemeIcon style={{ width: 20 }} />
+        </RoundedArrow>
+      ),
+      description: 'Set Wallet Theme',
       onClick: () => history.push('/select-theme'),
     },
     {

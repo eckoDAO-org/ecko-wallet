@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 import Toast from 'src/components/Toast/Toast';
-import { DivFlex } from 'src/components';
+import { DivFlex, SecondaryLabel } from 'src/components';
 import { convertNetworks, getTimestamp } from 'src/utils';
 import { getLocalNetworks, setLocalNetworks } from 'src/utils/storage';
 import { setNetworks } from 'src/stores/extensions';
@@ -298,15 +298,16 @@ const EditNetwork = (props: Props) => {
               <Button size="full" label="Save" variant="primary" form="save-network" />
             </DivFlex>
             {isModalRemoveNetwork && (
-              <ModalCustom isOpen={isModalRemoveNetwork} showCloseIcon={false} closeOnOverlayClick>
-                <BodyModal>
-                  <TitleModal>Remove Network?</TitleModal>
-                  <DescriptionModal>Are you sure you want to remove this network?</DescriptionModal>
+              <ModalCustom isOpen={isModalRemoveNetwork} title="Remove this Network?" showCloseIcon={false} closeOnOverlayClick>
+                <DivFlex flexDirection="column">
+                  <SecondaryLabel fontSize={16} textCenter style={{ flex: 1 }}>
+                    Are you sure you want to remove this network?
+                  </SecondaryLabel>
                   <DivFlex padding="24px" gap="10px">
                     <Button size="full" label="Cancel" variant="disabled" onClick={() => setModalRemoveNetwork(false)} />
                     <Button size="full" label="Confirm" variant="primary" onClick={deleteNetwork} />
                   </DivFlex>
-                </BodyModal>
+                </DivFlex>
               </ModalCustom>
             )}
           </>

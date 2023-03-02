@@ -4,7 +4,7 @@ import moment from 'moment';
 import { get, groupBy } from 'lodash';
 import Pact from 'pact-lang-api';
 import { useSelector } from 'react-redux';
-import { SecondaryLabel } from 'src/components';
+import { DivFlex, SecondaryLabel } from 'src/components';
 import { getApiUrl } from 'src/utils/chainweb';
 import { setLocalActivities, getLocalActivities } from 'src/utils/storage';
 import PopupDetailTransaction from './PopupDetailTransaction';
@@ -21,19 +21,6 @@ const DivChild = styled.div`
 
 const DivScroll = styled.div`
   display: block;
-`;
-
-const NoData = styled.div`
-  text-align: center;
-  font-size: 13px;
-  color: #a187ab;
-  height: 47vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  @media screen and (max-width: 1024px) {
-    height: 21vh;
-  }
 `;
 
 const DayLabel = styled(SecondaryLabel)`
@@ -217,7 +204,11 @@ const Activities = () => {
           </DivChild>
         </>
       ) : (
-        <NoData>You have no transactions</NoData>
+        <DivFlex marginTop="200px">
+          <SecondaryLabel textCenter style={{ flex: 1 }}>
+            You have no transactions
+          </SecondaryLabel>
+        </DivFlex>
       )}
       {isShowDetailTxPopup && (
         <PopupDetailTransaction

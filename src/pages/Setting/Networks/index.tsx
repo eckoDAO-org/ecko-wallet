@@ -3,13 +3,15 @@ import { useSelector } from 'react-redux';
 import { useState } from 'react';
 import images from 'src/images';
 import Button from 'src/components/Buttons';
+import { RoundedArrow } from 'src/pages/Wallet/views/FinishTransferItem';
+import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 import { CommonLabel, DivFlex, StickyFooter } from 'src/components';
 import { ReactComponent as IconNetwork } from 'src/images/icon-network.svg';
 import { NavigationHeader } from 'src/components/NavigationHeader';
 import { ContactBody } from '../Contact/style';
 import { ImageLock } from './style';
-import { ImageNetworks, SettingBody, Content } from '../style';
-import { Body, Footer } from '../../SendTransactions/styles';
+import { ImageNetworks, SettingBody } from '../style';
+import { Body } from '../../SendTransactions/styles';
 import EditNetwork from './views/EditNetwork';
 import ViewNetwork from './views/ViewNetwork';
 
@@ -21,6 +23,7 @@ const networkDefault = {
 };
 const PageNetworks = () => {
   const history = useHistory();
+  const { theme } = useAppThemeContext();
   const networks = useSelector((state) => state.extensions.networks);
   const [isEdit, setIsEdit] = useState(false);
   const [isNormal, setIsNormal] = useState(true);
@@ -70,8 +73,10 @@ const PageNetworks = () => {
         style={{ cursor: 'pointer' }}
       >
         <DivFlex alignItems="center" gap="5px">
-          <IconNetwork />
-          <CommonLabel color="#20264E">{item.name}</CommonLabel>
+          <RoundedArrow margin="0px 5px 0px 0px" color={theme.footer?.primary}>
+            <IconNetwork />
+          </RoundedArrow>
+          <CommonLabel>{item.name}</CommonLabel>
         </DivFlex>
         <DivFlex>
           {item.isDefault && <ImageLock src={images.settings.iconLockMini} alt="lock" />}
