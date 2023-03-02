@@ -90,7 +90,11 @@ const PageContact = () => {
             </DivFlex>
           ))
         ) : (
-          <TitleMessage>No contacts</TitleMessage>
+          <DivFlex justifyContent="center" marginTop="40px">
+            <SecondaryLabel fontSize={12} fontWeight={600} uppercase>
+              No contacts
+            </SecondaryLabel>
+          </DivFlex>
         )}
         <StickyFooter>
           <Button size="full" label="Add New Contact" onClick={onAddAccount} style={{ width: '90%', maxWidth: 890 }} />

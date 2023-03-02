@@ -102,7 +102,7 @@ export const appThemes = {
     border: '#313232',
     modalBackground: '#1f1f1f',
     iconBackground: '#2a2a2a',
-    iconSettingsBackground: '#2a2a2a',
+    iconSettingsBackground: '#24224c',
     boxShadow: `background: rgba(31, 31, 31, 1) 0% 0% no-repeat padding-box;
     box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.16);
     opacity: 1;`,
