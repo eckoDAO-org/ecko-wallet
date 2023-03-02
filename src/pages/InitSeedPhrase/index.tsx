@@ -63,13 +63,13 @@ const StartButton = styled(DivFlex)`
 `;
 
 const getCheckboxLabel = () => (
-  <>
+  <CommonLabel color="white">
     I have read and agree to the&nbsp;
     <TermsBr />
     <Term href={TERM_LINK} target="_blank" rel="noreferrer">
       Terms of Use
     </Term>
-  </>
+  </CommonLabel>
 );
 
 const InitSeedPhrase = () => {

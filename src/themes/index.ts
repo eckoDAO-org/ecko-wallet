@@ -9,6 +9,7 @@ export interface IPrimarySecondary {
   disabled?: string;
 }
 export interface IAppTheme {
+  isDark?: boolean;
   background?: string;
   border?: string;
   text?: IPrimarySecondary;
@@ -26,6 +27,7 @@ export interface IAppTheme {
 
 export const appThemes = {
   [AppThemeEnum.LIGHT]: {
+    isDark: false,
     background: '#FFFFFF',
     text: {
       primary: '#000000',
@@ -65,6 +67,7 @@ export const appThemes = {
     box-shadow: rgb(31 31 31 / 1%) 0px 167px 67px, rgb(31 31 31 / 3%) 0px 94px 57px, rgb(31 31 31 / 6%) 0px 42px 42px, rgb(31 31 31 / 6%) 0px 10px 23px, rgb(31 31 31 / 7%) 0px 0px 0px;`,
   },
   [AppThemeEnum.DARK]: {
+    isDark: true,
     background: '#1f1f1f',
     text: {
       primary: '#f6f7f9',

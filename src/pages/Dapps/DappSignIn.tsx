@@ -52,6 +52,7 @@ const ConnectItem = styled.div`
   align-items: ${(props) => (props.alignTop ? 'flex-start' : 'center')};
 `;
 const Div = styled.div`
+  color: ${({ theme }) => theme.text.primary};
   display: flex;
   align-items: center;
   width: 32%;
@@ -61,6 +62,7 @@ const Div = styled.div`
 `;
 const FooterWrapper = styled(Footer)``;
 const ConnectInfo = styled.div`
+  color: ${({ theme }) => theme.text.primary};
   font-size: 16px;
   font-weight: 700;
   margin: 40px 0;
