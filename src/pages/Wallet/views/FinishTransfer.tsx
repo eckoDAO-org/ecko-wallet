@@ -3,6 +3,7 @@ import { useState, useContext } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import images from 'src/images';
+import { SecondaryLabel } from 'src/components';
 import { CrossChainContext } from 'src/contexts/CrossChainContext';
 import ModalCustom from 'src/components/Modal/ModalCustom';
 import BigNumber from 'bignumber.js';
@@ -39,18 +40,6 @@ const Hr = styled.hr`
   height: 2px;
   transform: matrix(1, 0, 0, -1, 0, 0);
   border: none;
-`;
-const NoData = styled.div`
-  text-align: center;
-  font-size: 13px;
-  color: #a187ab;
-  height: 47vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  @media screen and (max-width: 1024px) {
-    height: 21vh;
-  }
 `;
 const FinishTransfer = () => {
   const [isOpenFinishTransferModal, setIsOpenFinishTransferModal] = useState(false);
@@ -97,7 +86,11 @@ const FinishTransfer = () => {
           <DivScroll>{renderItem(filterCrossChain)}</DivScroll>
         </DivChild>
       ) : (
-        <NoData>You have no transactions</NoData>
+        <DivFlex marginTop="200px">
+          <SecondaryLabel textCenter style={{ flex: 1 }}>
+            You have no transactions
+          </SecondaryLabel>
+        </DivFlex>
       )}
       {isOpenFinishTransferModal && (
         <ModalCustom

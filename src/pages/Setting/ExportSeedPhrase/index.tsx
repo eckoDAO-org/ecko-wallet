@@ -49,6 +49,7 @@ const CustomButton = styled.div`
 
 const SPText = styled.div`
   ${(props) => (props.isBlur ? 'filter: blur(4px);' : '')};
+  color: ${({ theme }) => theme.text.primary};
   font-weight: 400;
   line-height: 48px;
   font-family: monospace;

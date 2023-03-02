@@ -4,7 +4,7 @@ import { ACTIVE_TAB } from 'src/utils/constant';
 import { useHistory } from 'react-router-dom';
 import { convertRecent, getTimestamp, humanReadableNumber } from 'src/utils';
 import { getApiUrl, getSignatureFromHash, fetchLocal, pollRequestKey } from 'src/utils/chainweb';
-import { CONFIG, XWALLET_SEND_TX_NONCE } from 'src/utils/config';
+import { CONFIG, ECKO_WALLET_SEND_TX_NONCE } from 'src/utils/config';
 import { getFloatPrecision } from 'src/utils/numbers';
 import { toast } from 'react-toastify';
 import { ReactComponent as AlertIconSVG } from 'src/images/icon-alert.svg';
@@ -188,7 +188,7 @@ const PopupConfirm = (props: Props) => {
       const meta = Pact.lang.mkMeta(senderName, senderChainId.toString(), validGasPrice, validGasLimit, getTimestamp(), CONFIG.X_CHAIN_TTL);
       const sendCmd: any = Pact.api.prepareExecCmd(
         cmd.keyPairs,
-        `"${XWALLET_SEND_TX_NONCE}-${new Date().toISOString()}"`,
+        `"${ECKO_WALLET_SEND_TX_NONCE}-${new Date().toISOString()}"`,
         cmd.pactCode,
         cmd.envData,
         meta,

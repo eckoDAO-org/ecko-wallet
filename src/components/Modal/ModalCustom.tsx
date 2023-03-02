@@ -6,7 +6,7 @@ import images from 'src/images';
 const Modal = styled.div`
   position: fixed;
   bottom: -150vh;
-  background-color: #fff;
+  background-color: ${({ theme }) => theme.modalBackground};
   border-top-left-radius: 25px;
   border-top-right-radius: 25px;
   width: 100%;
@@ -54,12 +54,13 @@ const DivFooter = styled.div`
   padding: 1rem;
 `;
 const TitleHeader = styled.div`
+  color: ${({ theme }) => theme?.text?.primary};
   text-align: center;
   font-weight: 700;
   margin-bottom: 15px;
   font-size: 16px;
   padding: 27px 0px;
-  border-bottom: 1px solid #dfdfed;
+  border-bottom: 1px solid ${({ theme }) => theme?.border};
   word-break: break-word;
   position: relative;
   ${(props) => props.roundIcon && 'padding-top: 60px'}

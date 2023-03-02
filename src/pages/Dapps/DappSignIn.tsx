@@ -52,6 +52,7 @@ const ConnectItem = styled.div`
   align-items: ${(props) => (props.alignTop ? 'flex-start' : 'center')};
 `;
 const Div = styled.div`
+  color: ${({ theme }) => theme.text.primary};
   display: flex;
   align-items: center;
   width: 32%;
@@ -61,6 +62,7 @@ const Div = styled.div`
 `;
 const FooterWrapper = styled(Footer)``;
 const ConnectInfo = styled.div`
+  color: ${({ theme }) => theme.text.primary};
   font-size: 16px;
   font-weight: 700;
   margin: 40px 0;
@@ -162,12 +164,12 @@ const DappSignIn = () => {
           </Div>
           <CenterImage src={images.connectedDapps} alt="logo" />
           <Div>
-            <Image src={images.xWalletIcon} alt="logo" />
+            <Image src={images.eckoWalletIcon} alt="logo" />
           </Div>
         </ConnectItem>
         <ConnectItem alignTop>
           <Div>{domain}</Div>
-          <Div>X Wallet extension</Div>
+          <Div>eckoWALLET extension</Div>
         </ConnectItem>
         <ConnectInfo>{`${domain} would like to connect to your account`}</ConnectInfo>
         <div>

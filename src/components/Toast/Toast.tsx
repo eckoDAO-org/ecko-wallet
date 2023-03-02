@@ -9,6 +9,7 @@ const ToastWrapper = styled.div`
   position: relative;
 `;
 const ToastLabel = styled.div`
+  color: ${({ theme }) => theme.text.primary};
   font-weight: 700;
   font-size: 12px;
 `;

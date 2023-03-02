@@ -4,10 +4,11 @@ import { shortenAddress } from 'src/utils';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import moment from 'moment';
 
-const RoundedArrow = styled.div`
+export const RoundedArrow = styled.div`
   box-shadow: 0px 167px 67px rgba(36, 8, 43, 0.01), 0px 94px 57px rgba(36, 8, 43, 0.03), 0px 42px 42px rgba(36, 8, 43, 0.06),
     0px 10px 23px rgba(36, 8, 43, 0.06), 0px 0px 0px rgba(36, 8, 43, 0.07);
   border-radius: 30px;
+  background: ${({ theme, background }) => background || theme.iconBackground};
   width: 41px;
   height: 41px;
   display: flex;

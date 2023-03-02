@@ -38,8 +38,8 @@ export const GAS_CONFIGS = {
     GAS_LIMIT,
   },
 };
-export const XWALLET_SEND_TX_NONCE = 'XE';
-export const XWALLET_DAPP_SIGN_NONCE = 'XEDS';
+export const ECKO_WALLET_SEND_TX_NONCE = 'XE';
+export const ECKO_WALLET_DAPP_SIGN_NONCE = 'XEDS';
 
 export const autoLockOptions = [
   {

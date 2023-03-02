@@ -6,6 +6,7 @@ import { getLocalSelectedNetwork, getLocalSignedCmd } from 'src/utils/storage';
 import Button from 'src/components/Buttons';
 import { DivFlex, SecondaryLabel } from 'src/components';
 import { updateSignedCmdMessage } from 'src/utils/message';
+import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 
 export const DappWrapper = styled.div`
   display: flex;
@@ -37,6 +38,7 @@ export const DappContentWrapper = styled.div`
   word-break: break-word;
 `;
 export const DappDescription = styled.div`
+  color: ${({ theme }) => theme.text.primary};
   text-align: center;
   margin: 20px 0;
 `;
@@ -50,6 +52,8 @@ const SignedCmd = () => {
   const [tabId, setTabId] = useState(null);
   const [cmd, setCmd] = useState<any>({});
   const [caps, setCaps] = useState<any[]>([]);
+
+  const { theme } = useAppThemeContext();
 
   useEffect(() => {
     getLocalSignedCmd(
@@ -94,7 +98,7 @@ const SignedCmd = () => {
   const newCmd = cmd.cmd ? { ...cmd, cmd: JSON.parse(cmd.cmd) } : {};
   return (
     <DappWrapper>
-      <DappLogo src={images.xWalletIcon} alt="logo" />
+      <DappLogo src={images.eckoWalletLogoRounded} alt="logo" />
       <DappDescription>{domain}</DappDescription>
       <SecondaryLabel style={{ textAlign: 'center' }} uppercase>
         signed command
@@ -110,6 +114,7 @@ const SignedCmd = () => {
           collapsed
           indentWidth={2}
           style={{ paddingBottom: 40 }}
+          theme={theme.isDark ? 'twilight' : 'rjv-default'}
           collapseStringsAfterLength={false}
         />
       </DappContentWrapper>
@@ -129,6 +134,7 @@ const SignedCmd = () => {
                     quotesOnKeys={false}
                     collapsed
                     indentWidth={2}
+                    theme={theme.isDark ? 'twilight' : 'rjv-default'}
                     collapseStringsAfterLength={false}
                   />
                 </DappContentWrapper>

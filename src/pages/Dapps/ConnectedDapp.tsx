@@ -35,7 +35,7 @@ const Wrapper = styled.div`
   &::-webkit-scrollbar {
     width: 2px;
   }
-
+  background: ${({ theme }) => theme.background};
   &::-webkit-scrollbar-track {
     background: rgb(226, 226, 226);
   }
@@ -60,6 +60,7 @@ const ConnectItem = styled.div`
   align-items: ${(props) => (props.alignTop ? 'flex-start' : 'center')};
 `;
 const Div = styled.div`
+  color: ${({ theme }) => theme.text.primary};
   display: flex;
   align-items: center;
   width: 32%;
@@ -88,10 +89,12 @@ const Brick = styled.div`
   transform: matrix(1, 0, 0, -1, 0, 0);
 `;
 const DappDescription = styled.div`
+  color: ${({ theme }) => theme.text.primary};
   text-align: center;
   margin: 20px 0;
 `;
 const ConnectInfo = styled.div`
+  color: ${({ theme }) => theme.text.primary};
   font-size: 16px;
   font-weight: 700;
   margin: 40px 0;
@@ -100,6 +103,7 @@ const ConnectInfo = styled.div`
   word-break: break-word;
 `;
 const DappTitle = styled.div`
+  color: ${({ theme }) => theme.text.primary};
   text-align: center;
   font-weight: 700;
   font-size: 18px;
@@ -120,7 +124,6 @@ const CenterImage = styled.img`
 const ConnectedDapp = () => {
   const [networkId, setNetworkId] = useState('testnet04');
   const [step, setStep] = useState(1);
-  const [disabledBtn, setDisabledBtn] = useState(false);
   const [domain, setDomain] = useState('example.com.vn');
   const [tabId, setTabId] = useState(null);
   const [icon, setIcon] = useState(images.dappsLogo);
@@ -189,16 +192,11 @@ const ConnectedDapp = () => {
       ...d,
       isSelected: d.account === item.account ? value : d.isSelected,
     }));
-    const selectedIndex = newData.findIndex((d) => d.isSelected);
-    if (selectedIndex > -1) {
-      setDisabledBtn(false);
-    } else {
-      setDisabledBtn(true);
-    }
     setData(newData);
   };
+
   const onSave = () => {
-    if (disabledBtn) return;
+    if (!data.some((item) => item.isSelected)) return;
     getLocalWallets(
       networkId,
       (wallets) => {
@@ -307,6 +305,17 @@ const ConnectedDapp = () => {
     </Label>
   );
 
+  const areAllSelected = () => data.every((item) => item.isSelected);
+
+  const selectUnselectAll = () => {
+    setData(
+      data.map((d) => ({
+        ...d,
+        isSelected: !areAllSelected(),
+      })),
+    );
+  };
+
   const renderCheckbox = (item) => (
     <CheckboxWrapper>
       <Radio key={item.account} isChecked={item.isSelected} onClick={() => onSelectChange(item, !item.isSelected)} label={getCheckboxLabel(item)} />
@@ -322,12 +331,12 @@ const ConnectedDapp = () => {
             </Div>
             <CenterImage src={images.connectedDapps} alt="logo" />
             <Div>
-              <Image src={images.xWalletIcon} alt="logo" />
+              <Image src={images.eckoWalletLogoRounded} alt="logo" />
             </Div>
           </ConnectItem>
           <ConnectItem alignTop>
             <Div>{domain}</Div>
-            <Div>X Wallet extension</Div>
+            <Div>eckoWALLET extension</Div>
           </ConnectItem>
           <ConnectInfo>{`${domain} would like to connect to your account`}</ConnectInfo>
           <div>
@@ -341,17 +350,25 @@ const ConnectedDapp = () => {
         </CompleteWrapper>
       ) : (
         <>
-          <Logo src={images.xWalletIcon} alt="logo" />
+          <Logo src={images.eckoWalletLogoRounded} alt="logo" />
           <DappDescription>{domain}</DappDescription>
-          <DappTitle>Connect with X Wallet</DappTitle>
+          <DappTitle>Connect with eckoWALLET</DappTitle>
           <DappDescription>Connect all wallets</DappDescription>
           <Brick />
           {data.length > 0 ? (
             <>
-              <ContentWrapper>{data.map((item) => renderCheckbox(item))}</ContentWrapper>
+              <ContentWrapper>
+                <DivFlex justifyContent="center">
+                  <SecondaryLabel uppercase onClick={() => selectUnselectAll()} style={{ cursor: 'pointer', marginBottom: 10 }}>
+                    {areAllSelected() ? 'Unselect All' : 'Select All'}
+                  </SecondaryLabel>
+                </DivFlex>
+
+                {data.map((item) => renderCheckbox(item))}
+              </ContentWrapper>
               <DivFlex padding="24px" gap="10px">
                 <Button size="full" label="Cancel" variant="disabled" onClick={onReject} />
-                <Button size="full" label="Save" onClick={onSave} isDisabled={disabledBtn} />
+                <Button size="full" label="Save" onClick={onSave} isDisabled={!data.some((item) => item.isSelected)} />
               </DivFlex>
             </>
           ) : (

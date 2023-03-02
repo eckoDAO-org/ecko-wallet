@@ -28,7 +28,7 @@ const PageContact = () => {
   const history = useHistory();
   const groupedContacts = groupBy(
     contacts?.filter((c) => c.accountName),
-    (c) => c.aliasName[0],
+    (c) => c.aliasName[0].toLowerCase(),
   );
   const sortedKeys = Object.keys(groupedContacts).sort((a, b) => a.localeCompare(b));
   const { openModal } = useModalContext();
@@ -75,7 +75,7 @@ const PageContact = () => {
                               account={contact.accountName}
                               renderAccount={(acc) => (
                                 <DivFlex flexDirection="column">
-                                  <CommonLabel color="#20264E" fontWeight={700} fontSize={14}>
+                                  <CommonLabel fontWeight={700} fontSize={14}>
                                     {contact.aliasName}
                                   </CommonLabel>
                                   <SecondaryLabel fontWeight={500}>{shortenAddress(acc)}</SecondaryLabel>
@@ -90,7 +90,11 @@ const PageContact = () => {
             </DivFlex>
           ))
         ) : (
-          <TitleMessage>No contacts</TitleMessage>
+          <DivFlex justifyContent="center" marginTop="40px">
+            <SecondaryLabel fontSize={12} fontWeight={600} uppercase>
+              No contacts
+            </SecondaryLabel>
+          </DivFlex>
         )}
         <StickyFooter>
           <Button size="full" label="Add New Contact" onClick={onAddAccount} style={{ width: '90%', maxWidth: 890 }} />

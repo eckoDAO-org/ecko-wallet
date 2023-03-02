@@ -2,6 +2,7 @@ import React, { memo, useState } from 'react';
 import styled from 'styled-components';
 import images from 'src/images';
 import { SecondaryLabel } from 'src/components';
+import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 
 type ImageProps = {
   width: string;
@@ -38,12 +39,13 @@ const BaseTextInput = memo(
     onBlur,
     wrapperStyle,
   }: Props) => {
+    const { theme } = useAppThemeContext();
     const [type, setType] = useState('password');
     const { readOnly } = inputProps;
     let styles = {
       border: '1px solid #c4c4c4',
       background: 'none',
-      color: '#000000',
+      color: theme.input?.color,
     };
     if (readOnly) {
       styles = {
@@ -54,7 +56,7 @@ const BaseTextInput = memo(
     }
     return (
       <SDivRoot height={height} isFlex={isFlex}>
-        <SLabel uppercase>{title}</SLabel>
+        <SLabel>{title}</SLabel>
         <InputWrapper isFlex={isFlex} readOnly={readOnly} style={wrapperStyle}>
           {typeInput === 'password' ? (
             <>
@@ -70,7 +72,7 @@ const BaseTextInput = memo(
                 onBlur={onBlur}
                 type={type}
               />
-              <ImageWrapper readOnly={readOnly}>
+              <ImageWrapper>
                 <SImage
                   src={type === 'password' ? images.initPage.eyeHidden : images.initPage.eye}
                   alt="image"
@@ -92,18 +94,18 @@ const BaseTextInput = memo(
             />
           )}
           {image && (
-            <ImageWrapper readOnly={readOnly}>
+            <ImageWrapper>
               <SImage {...image} src={image.src} alt="image" onClick={image.callback} />
             </ImageWrapper>
           )}
-          {numberOptions && <ImageWrapper readOnly={readOnly}>{numberOptions.content}</ImageWrapper>}
+          {numberOptions && <ImageWrapper>{numberOptions.content}</ImageWrapper>}
         </InputWrapper>
       </SDivRoot>
     );
   },
 );
 
-const SDivRoot = styled.div<{ height: string }>`
+const SDivRoot = styled.div<{ height?: string; isFlex?: boolean }>`
   display: block;
   height: ${($props) => $props.height};
   ${(props) => (props.isFlex ? 'display: flex' : '')};
@@ -111,15 +113,20 @@ const SDivRoot = styled.div<{ height: string }>`
   border-radius: 10px;
   width: 100%;
 `;
-const InputWrapper = styled.div`
+const InputWrapper = styled.div<{ isFlex?: boolean; readOnly?: boolean; border?: string }>`
   position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
   border: ${(props) => props.border};
-  border-radius: 4px;
+  border-radius: 8px;
   ${(props) => (props.isFlex ? 'flex-grow: 1' : '')};
-  background: ${(props) => (props.readOnly ? '#ECECF5' : '#F6F6FA')};
+  background: ${(props) => {
+    if (props.readOnly !== undefined) {
+      return props.readOnly ? '#ECECF5' : '#F6F6FA';
+    }
+    return props.theme.input.background;
+  }};
 `;
 const ImageWrapper = styled.div`
   height: 34px;
@@ -142,15 +149,17 @@ const SImage = styled.img`
 export const SLabel = styled(SecondaryLabel)`
   line-height: 30px;
   font-weight: 700;
+  text-transform: uppercase;
 `;
 
-export const SInput = styled.input`
+export const SInput = styled.input<{ background: string }>`
   width: 100%;
-  background: ${(props) => props.background};
-  color: ${(props) => props.color};
+  background: ${(props) => props.background || props.theme.input.background};
+  color: ${(props) => props.color || props.theme.input.color};
   box-sizing: border-box;
   font-size: 16px;
   height: 40px;
+  border-radius: 8px;
   padding: 0 0 0 13px;
   font-family: 'Montserrat', sans-serif;
   outline: none;

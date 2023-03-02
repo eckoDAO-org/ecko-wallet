@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { getLocalDapps } from 'src/utils/storage';
-import { CommonLabel, DivFlex, PrimaryLabel, SecondaryLabel } from 'src/components';
+import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import { get } from 'lodash';
 import { useSelector } from 'react-redux';
 import { fetchLocal } from 'src/utils/chainweb';
@@ -9,18 +9,7 @@ import { hideLoading, showLoading } from 'src/stores/extensions';
 import images from 'src/images';
 import Button from 'src/components/Buttons';
 import Transfer from './views/Transfer';
-import { TransactionWrapper, FormSend } from './styles';
-import { DappContentWrapper, DappDescription, DappLogo, DappWrapper } from '../Dapps/SignedCmd';
-
-const Wrapper = styled(TransactionWrapper)`
-  padding: 0;
-`;
-const Header = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 14px 20px;
-  box-shadow: 0px 2px 12px rgba(0, 0, 0, 0.12);
-`;
+import { DappContentWrapper, DappLogo, DappWrapper } from '../Dapps/SignedCmd';
 
 const NotFound = styled.div`
   display: flex;
@@ -33,13 +22,6 @@ const NotFoundImage = styled.img`
   width: 80px;
   height: 80px;
   margin: 110px auto 32px auto;
-`;
-const NotFoundDescription = styled.div`
-  font-size: 18px;
-
-  text-align: center;
-  word-break: break-word;
-  margin-bottom: 222px;
 `;
 export const PageSendTransaction = styled.div`
   display: block;
@@ -74,7 +56,6 @@ const DappTransfer = () => {
   useEffect(() => {
     getLocalDapps(
       (dapps) => {
-        console.log(`🚀 !!! ~ dapps`, dapps);
         const { account, chainId, sourceChainId } = dapps;
         const pactCode = `(coin.details "${account}")`;
         showLoading();
@@ -113,7 +94,7 @@ const DappTransfer = () => {
     <DappWrapper>
       {!loading && (
         <>
-          <DappLogo src={images.xWalletIcon} alt="logo" />
+          <DappLogo src={images.eckoWalletLogoRounded} alt="logo" />
           <SecondaryLabel style={{ textAlign: 'center' }} uppercase>
             {selectedNetwork.networkId}
           </SecondaryLabel>
@@ -135,9 +116,8 @@ const DappTransfer = () => {
               </>
             ) : (
               <NotFound>
-                <NotFoundImage src={images.transfer.accountNotFound} />
-                <NotFoundDescription>Destination account not found</NotFoundDescription>
-                <Button label="Close" onClick={() => window.close()} />
+                <CommonLabel style={{ marginBottom: 20, marginTop: 40 }}>Destination account not found</CommonLabel>
+                <Button variant="primary" size="full" label="Close" onClick={() => window.close()} />
               </NotFound>
             )}
           </DappContentWrapper>

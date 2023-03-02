@@ -2,11 +2,11 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useContext } from 'react';
 import styled from 'styled-components';
-import images from 'src/images';
 import { ModalContext } from 'src/contexts/ModalContext';
+import { ReactComponent as ArrowDropdown } from 'src/images/arrow-dropdown.svg';
 
 const DropdownContainer = styled.div`
-  border: 1px solid rgba(65, 31, 84, 0.15);
+  border: 1px solid ${({ theme }) => theme?.text?.secondary || 'rgba(65, 31, 84, 0.15)'};
   height: 32px;
   border-radius: 60px;
   font-size: 12px;
@@ -17,10 +17,20 @@ const DropdownContainer = styled.div`
   padding: 0px;
   line-height: 30px;
   min-width: 120px;
+  svg.arrowDropdown {
+    path {
+      fill: ${({ theme }) => theme?.text?.secondary || 'rgba(65, 31, 84, 0.15)'};
+    }
+  }
 `;
 
 const DropdownImg = styled.img`
   width: 10px;
+`;
+
+const DropdownTitle = styled.span`
+  padding: 2px 10px;
+  color: ${({ theme }) => theme?.text?.primary};
 `;
 
 export const DropdownModal = ({
@@ -44,7 +54,7 @@ export const DropdownModal = ({
 
   return (
     <DropdownContainer onClick={onClick || onOpenModal} style={containerStyle}>
-      <span style={{ padding: '3px 10px', ...titleStyle }}>{title}</span>
+      <DropdownTitle style={{ ...titleStyle }}>{title}</DropdownTitle>
       <div
         style={{ padding: '2px 10px', ...iconContainerStyle }}
         onClick={(e) => {
@@ -58,7 +68,7 @@ export const DropdownModal = ({
           }
         }}
       >
-        {iconComponent || <DropdownImg src={iconSrc || images.wallet.arrayDropdown} />}
+        {iconComponent || (iconSrc ? <DropdownImg src={iconSrc} /> : <ArrowDropdown className="arrowDropdown" />)}
       </div>
     </DropdownContainer>
   );

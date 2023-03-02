@@ -30,7 +30,7 @@ import {
   setLocalSelectedNetwork,
   setLocalSelectedWallet,
 } from 'src/utils/storage';
-import { ReactComponent as XWalletLogoBar } from 'src/images/x-wallet-icon.svg';
+import { ReactComponent as EckoWalletLogoBar } from 'src/images/ecko-wallet-icon.svg';
 import { ReactComponent as HistoryIcon } from 'src/images/history-icon.svg';
 import { ReactComponent as GearIcon } from 'src/images/gear-icon.svg';
 import { ReactComponent as SWAPIcon } from 'src/images/swap-icon.svg';
@@ -43,7 +43,7 @@ const Wrapper = styled.div`
   position: fixed;
   bottom: 0;
   width: inherit;
-  background: white;
+  background: ${({ theme }) => theme.background};
 `;
 
 const ActionBarElement = styled.div`
@@ -57,6 +57,7 @@ const ActionBarElement = styled.div`
   font-weight: 700;
   span {
     font-size: 10px;
+    color: ${({ theme }) => theme?.footer?.secondary} !important;
   }
   span:first-child {
     margin-bottom: 3px;
@@ -69,19 +70,25 @@ const ActionBarElement = styled.div`
     border-top: 2px solid #ffa900;
     margin-top: -2px;
     span {
-      color: #404a8d !important;
+      color: ${({ theme }) => theme?.footer?.primary} !important;
     }
     &:not(.xLogo) {
       svg {
         path {
-          fill: #404a8d;
+          fill: ${({ theme }) => theme?.footer?.primary};
         }
       }
     }
   }
   &.disabled {
+    cursor: default;
+    svg {
+      path.toFill {
+        fill: ${({ theme }) => theme?.footer?.disabled};
+      }
+    }
     span {
-      color: #dadada !important;
+      color: ${({ theme }) => theme?.footer?.disabled} !important;
     }
   }
 `;
@@ -314,7 +321,7 @@ const Footer = () => {
       <DivFlex justifyContent="space-between" style={{ borderTop: '1px solid #DFDFED' }}>
         <ActionBarElement className={['xLogo', activeTab === ACTIVE_TAB.HOME && 'active']} onClick={setIconHomeActive}>
           <span>
-            <XWalletLogoBar />
+            <EckoWalletLogoBar style={{ width: 24, height: 24 }} />
           </span>
           <SecondaryLabel fontWeight={700}>WALLET</SecondaryLabel>
         </ActionBarElement>
