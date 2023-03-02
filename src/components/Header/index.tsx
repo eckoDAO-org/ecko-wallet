@@ -31,7 +31,7 @@ import { DropdownRadioModal } from '../DropdownRadioModal';
 
 const HeaderWallet = styled(DivFlex)`
   padding: 20px;
-  border-bottom: 1px solid #dfdfed;
+  border-bottom: 1px solid ${({ theme }) => theme?.border};
 `;
 
 export const Header = ({ hideAccounts }: { hideAccounts?: boolean }) => {

@@ -5,6 +5,7 @@ import { hideLoading, showLoading } from 'src/stores/extensions';
 import { ReactComponent as AddIconSVG } from 'src/images/add-round.svg';
 import { ReactComponent as AlertIconSVG } from 'src/images/icon-alert.svg';
 import { ReactComponent as GearIconSVG } from 'src/images/gear-icon.svg';
+import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 import { fetchListLocal, fetchLocal, getBalanceFromChainwebApiResponse } from 'src/utils/chainweb';
 import { getLocalContacts, getExistContacts } from 'src/utils/storage';
 import ModalCustom from 'src/components/Modal/ModalCustom';
@@ -25,7 +26,7 @@ import { IFungibleToken } from 'src/pages/ImportToken';
 import Button from 'src/components/Buttons';
 import AddContact from './AddContact';
 import { Warning, Footer, Error, GasItem, ErrorWrapper } from '../styles';
-import { TransferImage, AmountWrapper, AccountTransferDetail } from './style';
+import { TransferImage, AmountWrapper, AccountTransferDetail, TransferAccountSpan } from './style';
 
 type Props = {
   isDappTransfer?: boolean;
@@ -65,7 +66,7 @@ export const renderTransactionInfo = (info: TransactionInfo, containerStyle?: Re
         account={info.sender}
         renderAccount={(acc) => (
           <DivFlex flexDirection="column">
-            <span style={{ fontWeight: 500, fontSize: 12 }}>{shortenAddress(acc)}</span>
+            <TransferAccountSpan>{shortenAddress(acc)}</TransferAccountSpan>
             <SecondaryLabel uppercase>chain {info.senderChainId}</SecondaryLabel>
           </DivFlex>
         )}
@@ -77,7 +78,7 @@ export const renderTransactionInfo = (info: TransactionInfo, containerStyle?: Re
         account={info.receiver}
         renderAccount={(acc) => (
           <DivFlex flexDirection="column">
-            <span style={{ fontWeight: 500, fontSize: 12 }}>{shortenAddress(acc)}</span>
+            <TransferAccountSpan>{shortenAddress(acc)}</TransferAccountSpan>
             <SecondaryLabel uppercase>chain {info.receiverChainId}</SecondaryLabel>
           </DivFlex>
         )}
@@ -100,6 +101,8 @@ const Transfer = (props: Props) => {
   const [isOpenTransferModal, setIsOpenTransferModal] = useState(false);
   const [isOpenAddContactModal, setIsOpenAddContactModal] = useState(false);
   const [isOpenGasOptionsModal, setIsOpenGasOptionsModal] = useState(false);
+
+  const { theme } = useAppThemeContext();
 
   const checkTokenExists = async () => {
     showLoading();
@@ -426,7 +429,7 @@ const Transfer = (props: Props) => {
             account={rootState.wallet.account}
             renderAccount={(acc) => (
               <DivFlex flexDirection="column">
-                <span style={{ fontWeight: 500, fontSize: 12 }}>{shortenAddress(acc)}</span>
+                <TransferAccountSpan>{shortenAddress(acc)}</TransferAccountSpan>
                 <SecondaryLabel uppercase>chain {sourceChainId}</SecondaryLabel>
               </DivFlex>
             )}
@@ -438,7 +441,7 @@ const Transfer = (props: Props) => {
             account={destinationAccount.accountName}
             renderAccount={(acc) => (
               <DivFlex flexDirection="column">
-                <span style={{ fontWeight: 500, fontSize: 12 }}>{shortenAddress(acc)}</span>
+                <TransferAccountSpan>{shortenAddress(acc)}</TransferAccountSpan>
                 <SecondaryLabel uppercase>chain {destinationAccount.chainId}</SecondaryLabel>
               </DivFlex>
             )}
@@ -487,6 +490,7 @@ const Transfer = (props: Props) => {
                 fontSize: 45,
                 fontWeight: 500,
                 padding: '0px 5px 0px 13px',
+                background: theme.background,
               }}
               value={destinationAccount?.dappAmount}
               {...register('amount', {
@@ -524,6 +528,7 @@ const Transfer = (props: Props) => {
                 fontSize: getInputFontSize(amount?.toString().length || 40),
                 fontWeight: 500,
                 padding: '0px 5px 0px 0px',
+                background: theme.background,
               }}
               onWheel={(event) => event.currentTarget.blur()}
               {...register('amount', {
@@ -598,7 +603,7 @@ const Transfer = (props: Props) => {
             </div>
           </Warning>
         )}
-        <DivBottomShadow margin="0 -20px 20px 0" />
+        <DivBottomShadow margin="0 -20px 20px -20px" />
         <DivFlex justifyContent="space-between">
           <SecondaryLabel fontSize={12} fontWeight={600} uppercase>
             transaction parameters

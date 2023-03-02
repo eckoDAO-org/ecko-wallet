@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect, useRef } from 'react';
 import { hideLoading, showLoading } from 'src/stores/extensions';
 import { extractDecimal, fetchListLocal } from 'src/utils/chainweb';
 import { BaseSelect, BaseTextInput, BaseModalSelect, InputError } from 'src/baseComponent';
@@ -14,6 +14,7 @@ import { useModalContext } from 'src/contexts/ModalContext';
 import { JazzAccount } from 'src/components/JazzAccount';
 import { NON_TRANSFERABLE_TOKENS } from 'src/utils/constant';
 import { useAccountBalanceContext } from 'src/contexts/AccountBalanceContext';
+import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 import { SettingsContext } from 'src/contexts/SettingsContext';
 import { useWindowResizeMobile } from 'src/hooks/useWindowResizeMobile';
 import Toast from 'src/components/Toast/Toast';
@@ -55,6 +56,7 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
   const txSettings = settings?.txSettings;
   const { selectedAccountBalance, usdPrices } = useAccountBalanceContext();
   const { openModal, closeModal } = useModalContext();
+  const { theme } = useAppThemeContext();
 
   const [isMobile] = useWindowResizeMobile(420);
   const [isSearching, setIsSearching] = useState(false);
@@ -95,6 +97,9 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
       publicKey: '',
     },
   });
+
+  const destinationAccountInputRef = useRef<HTMLInputElement>(null);
+  const rect = destinationAccountInputRef?.current?.getBoundingClientRect();
 
   const accountName = getValues('accountName');
 
@@ -237,7 +242,7 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
             contact.aliasName &&
             ((acc) => (
               <DivFlex flexDirection="column">
-                <CommonLabel color="#20264E" fontWeight={700} fontSize={14}>
+                <CommonLabel color={theme.footer?.primary} fontWeight={700} fontSize={14}>
                   {contact.aliasName}
                 </CommonLabel>
                 <SecondaryLabel fontWeight={500}>{shortenAddress(acc)}</SecondaryLabel>
@@ -322,7 +327,10 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
                 <SecondaryLabel>{humanReadableNumber(usdPrices[fungibleToken?.contractAddress] * selectedChainBalance)} USD</SecondaryLabel>
               ) : null}
             </InputWrapper>
-            <InputWrapper style={{ borderTop: '1px solid #DFDFED', paddingTop: 10, marginTop: 30, position: 'relative' }}>
+            <InputWrapper
+              ref={destinationAccountInputRef}
+              style={{ borderTop: '1px solid #DFDFED', paddingTop: 10, marginTop: 30, position: 'relative' }}
+            >
               <BaseTextInput
                 inputProps={{
                   ...register('accountName', {
@@ -355,7 +363,7 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
               />
               {errors.accountName && <InputError>{errors.accountName.message}</InputError>}
               {isOpenContactSuggestion && accountName ? (
-                <ContactSuggestion className="lightScrollbar">
+                <ContactSuggestion style={{ width: rect?.width ? rect?.width - 10 : '100%' }} className="lightScrollbar">
                   {getTabContent(sortedContacts?.filter((c) => c.aliasName?.includes(accountName)))}
                 </ContactSuggestion>
               ) : null}
@@ -432,7 +440,7 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
                   account.accountName &&
                   ((acc) => (
                     <DivFlex flexDirection="column">
-                      <CommonLabel color="#20264E" fontWeight={700} fontSize={14}>
+                      <CommonLabel color={theme.footer?.primary} fontWeight={700} fontSize={14}>
                         {acc}
                       </CommonLabel>
                       <SecondaryLabel fontWeight={500}>CHAIN {account.chainId}</SecondaryLabel>

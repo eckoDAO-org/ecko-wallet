@@ -21,7 +21,7 @@ const DivChild = styled.div`
   font-weight: ${(props) => props.fontWeight};
   margin: ${(props) => props.margin};
   padding: ${(props) => props.padding};
-  color: ${(props) => props.color};
+  color: ${(props) => props.theme.text.primary};
 `;
 const CustomDiv = styled(DivChild)`
   font-weight: bold;

@@ -5,7 +5,7 @@ import { hash as kadenaJSHash, sign as kadenaJSSign } from '@kadena/cryptography
 import { decryptKey } from '../../src/utils/security';
 import { getSignatureFromHash } from '../../src/utils/chainweb';
 import { getTimestamp } from '../../src/utils';
-import { XWALLET_DAPP_SIGN_NONCE } from '../../src/utils/config';
+import { ECKO_WALLET_DAPP_SIGN_NONCE } from '../../src/utils/config';
 
 let contentPort = null;
 const portMap = new Map();
@@ -216,7 +216,7 @@ const kdaRequestSign = async (data, tabId) => {
         }
         const signedCmd = Pact.api.prepareExecCmd(
           keyPairs,
-          `${XWALLET_DAPP_SIGN_NONCE}-"${new Date().toISOString()}"`,
+          `${ECKO_WALLET_DAPP_SIGN_NONCE}-"${new Date().toISOString()}"`,
           signingCmd.pactCode,
           signingCmd.envData,
           meta,

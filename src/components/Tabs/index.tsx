@@ -14,7 +14,7 @@ const Wrapper = styled.div`
 `;
 const Header = styled.div`
   display: flex;
-  background: #ececf5;
+  background: ${({ theme }) => theme.button.secondary};
   box-sizing: border-box;
   border-radius: 10px;
   margin: 20px;
@@ -28,7 +28,10 @@ const TabHeader = styled.div`
   font-weight: 500;
   font-size: 14px;
   border-radius: 10px;
-  ${(props) => (props.isActive ? 'color: #FFFFFF; border: 1px solid #20264E; background: #20264E;' : 'color: #20264E')};
+  ${(props) =>
+    props.isActive
+      ? `color: #FFFFFF; border: 1px solid ${props.theme.button.primary}; background: ${props.theme.button.primary};`
+      : `color: ${props.theme.footer.primary}`};
   cursor: pointer;
   height: 50px;
   line-height: 50px;

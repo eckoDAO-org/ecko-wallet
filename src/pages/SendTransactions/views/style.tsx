@@ -60,8 +60,10 @@ export const SelectChain = styled.div`
 `;
 export const LoadingTitle = styled.div`
   text-align: center;
-  font-weight: 700;
+  color: ${({ theme }) => theme.text.primary};
+  font-weight: 400;
   line-height: 18.75px;
+  font-size: 14px;
   margin: ${(props) => (props.isTop ? '60px 0 0 0' : '0 0 70px 0')};
 `;
 export const SpinnerWrapper = styled.div`
@@ -212,7 +214,8 @@ export const TransferImage = styled.img<{ size: string; top: string; width: stri
   padding: 4px;
   width: 25px;
   height: 25px;
-  border: 1px solid #dfdfed;
+  border: 1px solid ${({ theme }) => theme.transferIcon.border};
+  background: ${({ theme }) => theme.transferIcon.background};
   border-radius: 50px;
 `;
 export const TransferName = styled.div`
@@ -273,10 +276,18 @@ export const AmountWrapper = styled(DivFlex)`
 `;
 
 export const ContactSuggestion = styled.div`
-  background: white;
+  background: ${({ theme }) => theme.input.background};
   position: absolute;
-  width: 100%;
   max-height: 200px;
   overflow: auto;
-  padding: 0 10px;
+  top: 70px;
+  padding-left: 10px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+`;
+
+export const TransferAccountSpan = styled.span`
+  font-weight: 500;
+  font-size: 12px;
+  color: ${({ theme }) => theme.text.primary};
 `;

@@ -139,8 +139,8 @@ export const FormItem = styled.div`
 export const Warning = styled.div`
   margin-bottom: 24px;
   text-align: ${(props) => (props.isContact ? 'left' : 'center')};
-  background: ${(props) => (props.type === 'danger' ? '#f4c7c7' : '#fff7e6')};
-  color: ${(props) => (props.type === 'danger' ? '#000000' : '#ce8900')};
+  background: ${(props) => (props.type === 'danger' ? '#f4c7c7' : props.theme.alert.background)};
+  color: ${(props) => (props.type === 'danger' ? '#000000' : props.theme.alert.color)};
   padding: 10px;
   cursor: ${(props) => (props.isContact ? 'pointer' : 'default')};
   justify-content: ${(props) => props.justifyContent || 'default'};
@@ -208,8 +208,8 @@ export const ErrorWrapper = styled.div`
 export const GasItem = styled.div`
   height: 50px;
   border-radius: 10px;
-  background: ${(props) => (props.isActive ? '#20264E' : '#ECECF5')};
-  color: ${(props) => (props.isActive ? 'white' : '#20264E')};
+  background: ${(props) => (props.isActive ? props.theme.button.primary : props.theme.input.background)};
+  color: ${(props) => (props.isActive ? '#fff' : props.theme.footer.primary)};
   font-size: 16px;
   font-weight: 500;
   display: flex;

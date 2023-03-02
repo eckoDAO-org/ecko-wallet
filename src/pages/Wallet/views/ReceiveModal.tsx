@@ -10,7 +10,7 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 const Label = styled.span`
   font-weight: 500;
   font-size: 14px;
-  color: #000000;
+  color: ${($props) => $props.color || $props.theme?.text?.primary || '#000000'};
   word-break: break-word;
 `;
 
@@ -22,7 +22,7 @@ export const ReceiveTitle = styled(SecondaryLabel)`
   font-size: 10px;
 `;
 export const ReceiveSection = styled.div`
-  border-top: 1px solid #dfdfed;
+  border-top: ${($props) => $props.theme?.border};
   padding: 24px;
 `;
 
@@ -37,7 +37,9 @@ const ReceiveModal = () => {
   return (
     <>
       <DivFlex alignItems="center" justifyContent="center" style={{ paddingBottom: 30 }}>
-        <QRCode id="receive" value={account} size={200} level="H" />
+        <div style={{ background: 'white', padding: 10 }}>
+          <QRCode id="receive" value={account} size={200} level="H" />
+        </div>
       </DivFlex>
       <ReceiveSection style={{ marginBottom: 30 }}>
         <DivFlex justifyContent="space-between" alignItems="center" style={{ marginBottom: 20 }}>

@@ -9,6 +9,12 @@ const AccountListWrapper = styled(DivFlex)`
   cursor: pointer;
 `;
 
+const AccountLabel = styled.span`
+  font-weight: ${(props) => (props.isSelected ? 'bold' : 500)};
+  font-size: 16px;
+  color: ${($props) => $props.color || $props.theme?.text?.primary || '#000000'};
+`;
+
 export const JazzAccount = ({
   account,
   diameter,
@@ -30,10 +36,6 @@ export const JazzAccount = ({
         seed={jsNumberForAddress(account)}
         paperStyles={{ marginRight: 10, border: isSelected ? '2px solid #20264e' : null, padding: !isSelected ? 1 : 0 }}
       />
-      {renderAccount ? (
-        renderAccount(account)
-      ) : (
-        <span style={{ fontWeight: isSelected ? 'bold' : 500, fontSize: 16 }}>{shortenAddress(account)}</span>
-      )}
+      {renderAccount ? renderAccount(account) : <AccountLabel isSelected={isSelected}>{shortenAddress(account)}</AccountLabel>}
     </AccountListWrapper>
   ) : null;

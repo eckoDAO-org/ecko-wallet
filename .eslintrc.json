@@ -28,6 +28,7 @@
     "react/button-has-type": "off",
     "max-len": "off",
     "import/no-unresolved": "off",
+    "no-shadow": "warn",
     "no-unused-vars": "warn",
     "import/prefer-default-export": "off",
     "react/jsx-props-no-spreading": "off",

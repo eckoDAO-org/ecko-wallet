@@ -10,7 +10,7 @@ const LoadingWrapper = styled.div`
     position: absolute;
     width: 0.1em;
     height: 0.3em;
-    background: #20264e;
+    background: ${({ theme }) => theme.footer.primary};
     border-radius: 0.05em;
     left: 50%;
     top: 50%;

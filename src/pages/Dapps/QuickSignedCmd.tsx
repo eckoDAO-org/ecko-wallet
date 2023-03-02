@@ -2,6 +2,7 @@ import images from 'src/images';
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import ReactJson from 'react-json-view';
+import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 import { getLocalQuickSignedCmd, getLocalSelectedNetwork } from 'src/utils/storage';
 import Button from 'src/components/Buttons';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
@@ -36,6 +37,8 @@ const QuickSignedCmd = () => {
   const [tabId, setTabId] = useState(null);
   const [quickSignData, setQuickSignData] = useState<any>([]);
   const stateWallet = useCurrentWallet();
+
+  const { theme } = useAppThemeContext();
 
   useEffect(() => {
     getLocalQuickSignedCmd(
@@ -78,7 +81,7 @@ const QuickSignedCmd = () => {
 
   return (
     <DappWrapper>
-      <DappLogo src={images.xWalletIcon} alt="logo" />
+      <DappLogo src={images.eckoWalletLogoRounded} alt="logo" />
       <DappDescription>{domain}</DappDescription>
       <CommonLabel textCenter fontWeight={800} style={{ marginBottom: 20 }}>
         QUICK SIGN REQUEST
@@ -116,6 +119,7 @@ const QuickSignedCmd = () => {
                           quotesOnKeys={false}
                           collapsed
                           indentWidth={2}
+                          theme={theme.isDark ? 'twilight' : 'rjv-default'}
                           collapseStringsAfterLength={false}
                         />
                       </div>
@@ -138,6 +142,7 @@ const QuickSignedCmd = () => {
                 collapsed
                 indentWidth={2}
                 style={{ paddingBottom: 40 }}
+                theme={theme.isDark ? 'twilight' : 'rjv-default'}
                 collapseStringsAfterLength={false}
               />
             </CommandListWrapper>
