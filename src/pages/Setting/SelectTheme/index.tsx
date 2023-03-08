@@ -20,10 +20,10 @@ const PageSelectTheme = () => {
 
   return (
     <Wrapper>
-      <NavigationHeader title="Contacts" onBack={goBack} />
+      <NavigationHeader title="Themes" onBack={goBack} />
       <Body style={{ marginBottom: 100 }}>
         {Object.keys(AppThemeEnum).map((t) => (
-          <Radio isChecked={t === selectedTheme} label={t} onClick={() => setTheme(t)} style={{ marginBottom: 20 }} />
+          <Radio isChecked={t === selectedTheme} label={t?.replace('_', ' ')} onClick={() => setTheme(t)} style={{ marginBottom: 20 }} />
         ))}
       </Body>
     </Wrapper>

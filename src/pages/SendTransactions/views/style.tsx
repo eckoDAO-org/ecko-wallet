@@ -280,7 +280,7 @@ export const ContactSuggestion = styled.div`
   position: absolute;
   max-height: 200px;
   overflow: auto;
-  top: 70px;
+  top: 88px;
   padding-left: 10px;
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;

@@ -10,6 +10,7 @@ import images from 'src/images';
 import { toast } from 'react-toastify';
 import { ReactComponent as AlertIconSVG } from 'src/images/icon-alert.svg';
 import { SInput, SLabel } from 'src/baseComponent/BaseTextInput';
+import Spinner from 'src/components/Spinner';
 import { useModalContext } from 'src/contexts/ModalContext';
 import { JazzAccount } from 'src/components/JazzAccount';
 import { NON_TRANSFERABLE_TOKENS } from 'src/utils/constant';
@@ -17,12 +18,13 @@ import { useAccountBalanceContext } from 'src/contexts/AccountBalanceContext';
 import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 import { SettingsContext } from 'src/contexts/SettingsContext';
 import { useWindowResizeMobile } from 'src/hooks/useWindowResizeMobile';
+import { useDebounce } from 'src/hooks/useDebounce';
+import useChainIdOptions from 'src/hooks/useChainIdOptions';
 import Toast from 'src/components/Toast/Toast';
 import { humanReadableNumber, shortenAddress } from 'src/utils';
 import ModalCustom from 'src/components/Modal/ModalCustom';
 import { get } from 'lodash';
 import { CommonLabel, DivBottomShadow, DivFlex, SecondaryLabel, StickyFooter } from 'src/components';
-import useChainIdOptions from 'src/hooks/useChainIdOptions';
 import Button from 'src/components/Buttons';
 import { IFungibleToken } from 'src/pages/ImportToken';
 import { BodyModal, TitleModal, DivChild, InputWrapper, Warning } from '../styles';
@@ -65,6 +67,8 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
   const [account, setAccount] = useState<any>({});
   const [pKeys, setPKeys] = useState<any>([]);
   const [isOpenContactSuggestion, setIsOpenContactSuggestion] = useState<boolean>(true);
+  const [isLoadingKadenaName, setIsLoadingKadenaName] = useState<boolean>(false);
+  const [convertedAccountName, setConvertedAccountName] = useState<string>('');
 
   const getSourceChainBalance = (chainId: number) => {
     if (selectedAccountBalance) {
@@ -103,8 +107,29 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
 
   const accountName = getValues('accountName');
 
+  const debouncedAccountName = useDebounce(accountName, 500);
+
+  useEffect(() => {
+    if (debouncedAccountName?.endsWith('.kda')) {
+      setIsLoadingKadenaName(true);
+      fetch(`https://www.kadenanames.com/api/v1/address/${debouncedAccountName}`)
+        .then(async (res) => {
+          const data = await res.json();
+          if (data?.address) {
+            setConvertedAccountName(data.address);
+          }
+          setIsLoadingKadenaName(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          setIsLoadingKadenaName(false);
+        });
+    }
+  }, [debouncedAccountName]);
+
   const onNext = () => {
-    const receiver: string = getValues('accountName');
+    const receiver: string = convertedAccountName || getValues('accountName');
+    const aliasName = receiver !== getValues('accountName') ? getValues('accountName') : null;
     const chainId: any = getValues('chainId')?.value;
     const sourceChainIdValue: any = getValues('sourceChainId')?.value;
     if (chainId === null) {
@@ -128,6 +153,7 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
           if (exist) {
             const destinationAccount = {
               accountName: receiver,
+              aliasName,
               chainId,
               pred,
               keys,
@@ -136,6 +162,7 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
           } else if (receiver.startsWith('k:')) {
             const destinationAccount = {
               accountName: receiver,
+              aliasName,
               chainId,
               pred: predList[0].value,
               keys: [receiver.substring(2)],
@@ -232,7 +259,7 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
     </KeyWrapper>
   );
 
-  const getTabContent = (data) =>
+  const getTabContent = (data, isRecent = false) =>
     data
       ?.filter((value, index, self) => index === self.findIndex((t) => t.accountName === value.accountName))
       .map((contact: any) => (
@@ -250,7 +277,13 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
             ))
           }
           onClick={() => {
-            setValue('accountName', contact.accountName);
+            if (!isRecent) {
+              setValue('accountName', contact.aliasName);
+              setConvertedAccountName(contact.accountName);
+            } else {
+              setValue('accountName', contact.accountName);
+              setConvertedAccountName('');
+            }
             setIsOpenContactSuggestion(false);
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
@@ -296,7 +329,7 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
             </Warning>
           ) : null}
           <DivBottomShadow justifyContent="center" flexDirection="column" padding="20px" margin="0 -20px">
-            <InputWrapper>
+            <InputWrapper style={{ marginTop: 0 }}>
               <Controller
                 control={control}
                 name="sourceChainId"
@@ -347,16 +380,28 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
                     },
                   }),
                 }}
+                subtitle={convertedAccountName}
                 title="Destination Account"
                 height="auto"
                 image={{
                   width: '20px',
                   height: '20px',
+                  marginTop: '25px',
                   src: images.initPage.qrcode,
                   callback: () => setIsScanSearching(true),
                 }}
+                imageComponent={
+                  isLoadingKadenaName ? (
+                    <Spinner size={10} color={theme.text?.primary} weight={2} style={{ top: 25, position: 'absolute', right: 10 }} />
+                  ) : null
+                }
+                wrapperStyle={{
+                  alignItems: 'flex-start',
+                  height: 70,
+                }}
                 onChange={(e) => {
                   clearErrors('accountName');
+                  setConvertedAccountName('');
                   setIsOpenContactSuggestion(true);
                   setValue('accountName', e.target.value);
                 }}
@@ -364,7 +409,7 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
               {errors.accountName && <InputError>{errors.accountName.message}</InputError>}
               {isOpenContactSuggestion && accountName ? (
                 <ContactSuggestion style={{ width: rect?.width ? rect?.width - 10 : '100%' }} className="lightScrollbar">
-                  {getTabContent(sortedContacts?.filter((c) => c.aliasName?.includes(accountName)))}
+                  {getTabContent(sortedContacts?.filter((c) => c.aliasName?.toLocaleLowerCase()?.includes(accountName)))}
                 </ContactSuggestion>
               ) : null}
             </InputWrapper>
@@ -395,7 +440,10 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
             {recent.length > 0 && (
               <div>
                 <SecondaryLabel>RECENT</SecondaryLabel>
-                {getTabContent(recent.filter((r, i) => i < 5))}
+                {getTabContent(
+                  recent.filter((r, i) => i < 5),
+                  true,
+                )}
               </div>
             )}
             {contacts.length > 0 && (

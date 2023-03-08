@@ -32,7 +32,7 @@ const Title = styled.div`
   font-weight: 700;
   font-size: 24px;
   line-height: 25px;
-
+  color: ${({ theme }) => theme.text.primary};
   text-align: left;
   margin-bottom: 50px;
 `;
