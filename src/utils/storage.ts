@@ -223,10 +223,10 @@ export const getLocalActiveDapps = (successCallback, failCallback) => {
   });
 };
 
-export const getLocalSignedCmd = (successCallback, failCallback) => {
-  (window as any)?.chrome?.storage?.local?.get('signedCmd', (result) => {
-    if (result && result.signedCmd) {
-      successCallback(result.signedCmd);
+export const getLocalSigningCmd = (successCallback, failCallback) => {
+  (window as any)?.chrome?.storage?.local?.get('signingCmd', (result) => {
+    if (result && result.signingCmd) {
+      successCallback(result.signingCmd);
     } else {
       failCallback();
     }

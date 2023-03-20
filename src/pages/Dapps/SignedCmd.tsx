@@ -1,12 +1,17 @@
 import images from 'src/images';
+import Pact from 'pact-lang-api';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import ReactJson from 'react-json-view';
-import { getLocalSelectedNetwork, getLocalSignedCmd } from 'src/utils/storage';
+import { getLocalSelectedNetwork, getLocalSigningCmd } from 'src/utils/storage';
 import Button from 'src/components/Buttons';
 import { DivFlex, SecondaryLabel } from 'src/components';
 import { updateSignedCmdMessage } from 'src/utils/message';
 import { useAppThemeContext } from 'src/contexts/AppThemeContext';
+import { getTimestamp } from 'src/utils';
+import { ECKO_WALLET_DAPP_SIGN_NONCE } from 'src/utils/config';
+import { getSignatureFromHash } from 'src/utils/chainweb';
 
 export const DappWrapper = styled.div`
   display: flex;
@@ -53,26 +58,74 @@ const SignedCmd = () => {
   const [cmd, setCmd] = useState<any>({});
   const [caps, setCaps] = useState<any[]>([]);
 
+  const rootState = useSelector((state) => state);
+  const { publicKey, secretKey } = rootState.wallet;
+
   const { theme } = useAppThemeContext();
 
   useEffect(() => {
-    getLocalSignedCmd(
-      (signedCmd) => {
-        getLocalSelectedNetwork(
-          (selectedNetwork) => {
-            if (selectedNetwork.networkId === signedCmd.networkId) {
-              setDomain(signedCmd.domain);
-              setCmd(signedCmd.cmd);
-              setTabId(signedCmd.tabId);
-              setCaps(signedCmd.caps);
-            }
-          },
-          () => {},
-        );
+    getLocalSigningCmd(
+      (signingCmd) => {
+        console.log(`🚀 ~ signingCmd:`, signingCmd);
+        const signedResponse = signCommand(signingCmd?.signingCmd);
+        console.log(`🚀 ~ signedResponse:`, signedResponse);
+        if (signedResponse?.signingCmd && signedResponse.signedCmd) {
+          getLocalSelectedNetwork(
+            (selectedNetwork) => {
+              if (selectedNetwork.networkId === signedResponse?.signingCmd.networkId) {
+                setDomain(signedResponse?.signingCmd.domain);
+                setCmd(signedResponse?.signedCmd.cmd);
+                setTabId(signedResponse?.signingCmd.tabId);
+                setCaps(signedResponse?.signingCmd.caps);
+              }
+            },
+            () => {},
+          );
+        }
       },
       () => {},
     );
   }, []);
+
+  const signCommand = (signingCmd) => {
+    try {
+      const meta = Pact.lang.mkMeta(
+        signingCmd.sender,
+        signingCmd.chainId.toString(),
+        signingCmd.gasPrice,
+        signingCmd.gasLimit,
+        getTimestamp(),
+        signingCmd.ttl,
+      );
+      const clist = signingCmd.caps ? signingCmd.caps.map((c) => c.cap) : [];
+      const keyPairs: any = {
+        publicKey,
+      };
+      if (secretKey.length === 64) {
+        keyPairs.secretKey = secretKey;
+      }
+      if (clist.length > 0) {
+        keyPairs.clist = clist;
+      }
+      const signedCmd = Pact.api.prepareExecCmd(
+        keyPairs,
+        `${ECKO_WALLET_DAPP_SIGN_NONCE}-"${new Date().toISOString()}"`,
+        signingCmd.pactCode,
+        signingCmd.envData,
+        meta,
+        signingCmd.networkId,
+      );
+      if (secretKey.length > 64) {
+        const signature = getSignatureFromHash(signedCmd.hash, secretKey);
+        const sigs = [{ sig: signature }];
+        signedCmd.sigs = sigs;
+      }
+      return { signedCmd, signingCmd };
+    } catch (err) {
+      console.log(`Signing cmd err:`, err);
+      return null;
+    }
+  };
 
   const onSave = () => {
     const result = {
@@ -84,6 +137,7 @@ const SignedCmd = () => {
       window.close();
     }, 300);
   };
+
   const onClose = () => {
     const result = {
       status: 'fail',
@@ -95,7 +149,7 @@ const SignedCmd = () => {
     }, 300);
   };
 
-  const newCmd = cmd.cmd ? { ...cmd, cmd: JSON.parse(cmd.cmd) } : {};
+  const newCmd = cmd ? { cmd: JSON.parse(cmd) } : {};
   return (
     <DappWrapper>
       <DappLogo src={images.eckoWalletLogoRounded} alt="logo" />

@@ -4,8 +4,6 @@ import 'regenerator-runtime/runtime';
 import { hash as kadenaJSHash, sign as kadenaJSSign } from '@kadena/cryptography-utils';
 import { decryptKey } from '../../src/utils/security';
 import { getSignatureFromHash } from '../../src/utils/chainweb';
-import { getTimestamp } from '../../src/utils';
-import { ECKO_WALLET_DAPP_SIGN_NONCE } from '../../src/utils/config';
 
 let contentPort = null;
 const portMap = new Map();
@@ -193,54 +191,8 @@ const kdaRequestSign = async (data, tabId) => {
   if (isValidNetwork) {
     const isValid = await checkValid(data);
     if (isValid) {
-      try {
-        const account = await getSelectedWallet(true);
-        const { signingCmd } = data;
-        const meta = Pact.lang.mkMeta(
-          signingCmd.sender,
-          signingCmd.chainId.toString(),
-          signingCmd.gasPrice,
-          signingCmd.gasLimit,
-          getTimestamp(),
-          signingCmd.ttl,
-        );
-        const clist = signingCmd.caps ? signingCmd.caps.map((c) => c.cap) : [];
-        const keyPairs = {
-          publicKey: account.publicKey,
-        };
-        if (account.secretKey.length === 64) {
-          keyPairs.secretKey = account.secretKey;
-        }
-        if (clist.length > 0) {
-          keyPairs.clist = clist;
-        }
-        const signedCmd = Pact.api.prepareExecCmd(
-          keyPairs,
-          `${ECKO_WALLET_DAPP_SIGN_NONCE}-"${new Date().toISOString()}"`,
-          signingCmd.pactCode,
-          signingCmd.envData,
-          meta,
-          signingCmd.networkId,
-        );
-        if (account.secretKey.length > 64) {
-          const signature = getSignatureFromHash(signedCmd.hash, account.secretKey);
-          const sigs = [{ sig: signature }];
-          signedCmd.sigs = sigs;
-        }
-
-        data.signedCmd = signedCmd;
-        data.tabId = tabId;
-        showSignPopup(data);
-      } catch {
-        sendToConnectedPorts({
-          result: {
-            status: 'fail',
-            message: 'Fail to get signedCmd',
-          },
-          target: 'kda.content',
-          action: 'res_requestSign',
-        });
-      }
+      data.tabId = tabId;
+      showSignPopup(data);
     } else {
       checkStatus(data, tabId);
     }
@@ -439,20 +391,15 @@ const getSelectedWallet = async (isHaveSecret = false) => {
         const { selectedWallet } = wallet;
         chrome.storage.session.get('accountPassword', (password) => {
           const { accountPassword } = password;
-          if (!accountPassword) {
-            console.log('not logged');
-            // showPopup({}, 'sign-in');
-          } else {
-            const newWallet = {
-              account: decryptKey(selectedWallet.account, accountPassword),
-              publicKey: decryptKey(selectedWallet.publicKey, accountPassword),
-              connectedSites: selectedWallet.connectedSites,
-            };
-            if (isHaveSecret) {
-              newWallet.secretKey = decryptKey(selectedWallet.secretKey, accountPassword);
-            }
-            resolve(newWallet);
+          const newWallet = {
+            account: accountPassword ? decryptKey(selectedWallet.account, accountPassword) : null,
+            publicKey: accountPassword ? decryptKey(selectedWallet.publicKey, accountPassword) : null,
+            connectedSites: selectedWallet.connectedSites,
+          };
+          if (isHaveSecret) {
+            newWallet.secretKey = decryptKey(selectedWallet.secretKey, accountPassword);
           }
+          resolve(newWallet);
         });
       } else {
         resolve({
@@ -573,16 +520,17 @@ const showSignPopup = async (data = {}) => {
     height: 610,
   };
 
-  const signedCmd = {
-    networkId: data.networkId,
-    domain: data.domain,
-    icon: data.icon,
-    cmd: data.signedCmd,
-    tabId: data.tabId,
-    caps: data?.signingCmd?.caps,
+  const signingCmd = {
+    signingCmd: {
+      ...data.signingCmd,
+      tabId: data.tabId,
+      networkId: data.networkId,
+      domain: data.domain,
+      icon: data.icon,
+    },
   };
 
-  chrome.storage.local.set({ signedCmd });
+  chrome.storage.local.set({ signingCmd });
 
   chrome.windows.create(options);
 };
