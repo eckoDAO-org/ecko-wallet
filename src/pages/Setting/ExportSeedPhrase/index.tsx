@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import Button from 'src/components/Buttons';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import bcrypt from 'bcryptjs';
+import { hash as kadenaHash } from '@kadena/cryptography-utils';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
 import { getLocalSeedPhrase } from 'src/utils/storage';
@@ -103,10 +103,14 @@ const ExportSeedPhrase = () => {
     return result;
   };
 
-  const showSP = () => {
+  const showSP = (hashInput) => {
     setIsHiddenSP(false);
-    const plainSeedPhrase = decryptKey(seedPhraseHash, passwordHash);
-    setSP(plainSeedPhrase);
+    try {
+      const plainSeedPhrase = decryptKey(seedPhraseHash, hashInput);
+      setSP(plainSeedPhrase);
+    } catch (err) {
+      console.error('Invalid hash');
+    }
   };
 
   const onDownload = () => {
@@ -132,13 +136,13 @@ const ExportSeedPhrase = () => {
     if (!passwordInput) {
       setErrorEmpty(true);
     } else {
-      bcrypt.compare(passwordInput, passwordHash, (_errors, isValid) => {
-        if (isValid) {
-          showSP();
-        } else {
-          setErrorVerify(true);
-        }
-      });
+      const hashInput = kadenaHash(passwordInput);
+      const isValid = hashInput === passwordHash;
+      if (isValid) {
+        showSP(hashInput);
+      } else {
+        setErrorVerify(true);
+      }
     }
   };
   return (

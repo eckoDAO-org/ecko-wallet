@@ -53,13 +53,13 @@ const AppContainer = () => {
   return (
     <Container>
       <Switch>
+        <Route isSignIn path="/sign-in" component={SignIn} />
         <PrivateRoute isFirstInstall path="/create-password" component={CreatePassword} />
         <PrivateRoute isFirstInstall path="/home-page" component={HomePage} />
         <PrivateRoute isFirstInstall path="/term-condition" component={Condition} />
         <PrivateRoute isFirstInstall path="/init-seed-phrase" component={InitSeedPhrase} />
         <PrivateRoute isSeedPhrase isSignIn path="/seed-phrase" component={SeedPhrase} />
         <PrivateRoute path="/export-seed-phrase" component={ExportSeedPhrase} />
-        <PrivateRoute isSignIn path="/sign-in" component={SignIn} />
         <PrivateRoute path="/import-wallet" component={ImportAccount} />
         <PrivateRoute path="/import-token" component={importToken} />
         <PrivateRoute path="/transfer" component={SendTransactions} />

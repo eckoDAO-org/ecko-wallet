@@ -3,11 +3,11 @@ import { useForm } from 'react-hook-form';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import lib from 'cardano-crypto.js/kadena-crypto';
 import { useSelector } from 'react-redux';
-import bcrypt from 'bcryptjs';
+import { hash as kadenaHash } from '@kadena/cryptography-utils';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { setExtensionPassword, setIsHaveSeedPhrase } from 'src/stores/extensions';
-import { getLocalWallets, setLocalPassword, setLocalSeedPhrase, setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
+import { setIsHaveSeedPhrase } from 'src/stores/extensions';
+import { getLocalWallets, setLocalPassword, setLocalSeedPhrase, setLocalSelectedWallet, setLocalWallets, updateWallets } from 'src/utils/storage';
 import Toast from 'src/components/Toast/Toast';
 import { encryptKey } from 'src/utils/security';
 import { getKeyPairsFromSeedPhrase } from 'src/utils/chainweb';
@@ -32,14 +32,6 @@ const DivBody = styled.div`
   align-items: center;
   margin-top: 20px;
 `;
-const Title = styled.div`
-  font-weight: 700;
-  font-size: 24px;
-  line-height: 25px;
-
-  text-align: left;
-  margin: 20px 0 30px 0;
-`;
 const Footer = styled.div`
   width: 100%;
   height: 3em;
@@ -48,7 +40,6 @@ const Footer = styled.div`
 const Wrapper = styled.form`
   display: block;
 `;
-const SALT_ROUNDS = 10;
 
 const CreatePassword = () => {
   const {
@@ -65,62 +56,61 @@ const CreatePassword = () => {
   const history = useHistory();
 
   const onStorePassword = (data, path) => {
-    bcrypt.hash(data.password, SALT_ROUNDS, (_error, hash) => {
-      setExtensionPassword(hash);
-      setLocalPassword(hash);
-      toast.success(<Toast type="success" content="Create new password successfully" />);
-      if (isCreateSeedPhrase) {
-        const keyPairs = getKeyPairsFromSeedPhrase(data.seedPhrase, 0);
-        const { publicKey, secretKey } = keyPairs;
-        const accountName = `k:${publicKey}`;
-        const wallet = {
-          account: encryptKey(accountName, hash),
-          publicKey: encryptKey(publicKey, hash),
-          secretKey: encryptKey(secretKey, hash),
-          chainId: '0',
-          connectedSites: [],
-        };
-        getLocalWallets(
-          selectedNetwork.networkId,
-          (item) => {
-            const newData = [...item, wallet];
-            setLocalWallets(selectedNetwork.networkId, newData);
-          },
-          () => {
-            setLocalWallets(selectedNetwork.networkId, [wallet]);
-          },
-        );
-        getLocalWallets(
-          'testnet04',
-          (item) => {
-            const newData = [...item, wallet];
-            setLocalWallets('testnet04', newData);
-          },
-          () => {
-            setLocalWallets('testnet04', [wallet]);
-          },
-        );
-        const newStateWallet = {
-          chainId: '0',
-          account: accountName,
-          publicKey,
-          secretKey,
-          connectedSites: [],
-        };
-        const newWallets = [newStateWallet];
-        setWallets(newWallets);
-        setLocalSelectedWallet(wallet);
-        setCurrentWallet(newStateWallet);
-        setIsHaveSeedPhrase(true);
-        const seedPhraseHash = encryptKey(data.seedPhrase, hash);
-        setLocalSeedPhrase(seedPhraseHash);
-        updateData(hash, path, newStateWallet);
-        history.push('/sign-in');
-      } else {
-        history.push(path);
-        updateData(hash, path, null);
-      }
-    });
+    const hash = kadenaHash(data.password);
+    setLocalPassword(hash);
+    toast.success(<Toast type="success" content="Create new password successfully" />);
+    if (isCreateSeedPhrase) {
+      const keyPairs = getKeyPairsFromSeedPhrase(data.seedPhrase, 0);
+      const { publicKey, secretKey } = keyPairs;
+      const accountName = `k:${publicKey}`;
+      const wallet = {
+        account: encryptKey(accountName, hash),
+        publicKey: encryptKey(publicKey, hash),
+        secretKey: encryptKey(secretKey, hash),
+        chainId: '0',
+        connectedSites: [],
+      };
+      getLocalWallets(
+        selectedNetwork.networkId,
+        (item) => {
+          const newData = [...item, wallet];
+          setLocalWallets(selectedNetwork.networkId, newData);
+        },
+        () => {
+          setLocalWallets(selectedNetwork.networkId, [wallet]);
+        },
+      );
+      getLocalWallets(
+        'testnet04',
+        (item) => {
+          const newData = [...item, wallet];
+          setLocalWallets('testnet04', newData);
+        },
+        () => {
+          setLocalWallets('testnet04', [wallet]);
+        },
+      );
+      const newStateWallet = {
+        chainId: '0',
+        account: accountName,
+        publicKey,
+        secretKey,
+        connectedSites: [],
+      };
+      const newWallets = [newStateWallet];
+      setWallets(newWallets);
+      setLocalSelectedWallet(wallet);
+      setCurrentWallet(newStateWallet);
+      setIsHaveSeedPhrase(true);
+      const seedPhraseHash = encryptKey(data.seedPhrase, hash);
+      setLocalSeedPhrase(seedPhraseHash);
+      updateData(hash, path, newStateWallet);
+      history.push('/sign-in');
+    } else {
+      updateWallets(selectedNetwork.networkId);
+      history.push(path);
+      updateData(hash, path, null);
+    }
   };
   const updateData = (hash, path, wallet) => {
     setTimeout(() => {

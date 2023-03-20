@@ -437,17 +437,22 @@ const getSelectedWallet = async (isHaveSecret = false) => {
     chrome.storage.local.get('selectedWallet', (wallet) => {
       if (wallet && wallet.selectedWallet && wallet.selectedWallet.account) {
         const { selectedWallet } = wallet;
-        chrome.storage.local.get('accountPassword', (password) => {
+        chrome.storage.session.get('accountPassword', (password) => {
           const { accountPassword } = password;
-          const newWallet = {
-            account: decryptKey(selectedWallet.account, accountPassword),
-            publicKey: decryptKey(selectedWallet.publicKey, accountPassword),
-            connectedSites: selectedWallet.connectedSites,
-          };
-          if (isHaveSecret) {
-            newWallet.secretKey = decryptKey(selectedWallet.secretKey, accountPassword);
+          if (!accountPassword) {
+            console.log('not logged');
+            // showPopup({}, 'sign-in');
+          } else {
+            const newWallet = {
+              account: decryptKey(selectedWallet.account, accountPassword),
+              publicKey: decryptKey(selectedWallet.publicKey, accountPassword),
+              connectedSites: selectedWallet.connectedSites,
+            };
+            if (isHaveSecret) {
+              newWallet.secretKey = decryptKey(selectedWallet.secretKey, accountPassword);
+            }
+            resolve(newWallet);
           }
-          resolve(newWallet);
         });
       } else {
         resolve({
@@ -633,7 +638,7 @@ const getSelectedChain = async (tabId) => {
 
 const getSelectedAccount = async (tabId) => {
   chrome.storage.local.get('selectedWallet', (result) => {
-    chrome.storage.local.get('accountPassword', (password) => {
+    chrome.storage.session.get('accountPassword', (password) => {
       const { accountPassword } = password;
       sendToConnectedPorts({
         target: 'kda.content',

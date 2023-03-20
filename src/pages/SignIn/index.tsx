@@ -1,16 +1,27 @@
 import { useEffect } from 'react';
 import styled from 'styled-components';
+import { useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import bcrypt from 'bcryptjs';
+import { hash } from '@kadena/cryptography-utils';
 import images from 'src/images';
 import Button from 'src/components/Buttons';
 import { CommonLabel, DivFlex } from 'src/components';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import { useSettingsContext } from 'src/contexts/SettingsContext';
 import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { checkIsValidOldPassword, decryptKey, encryptKey } from 'src/utils/security';
 import { setActiveTab } from 'src/stores/extensions';
-import { getLocalSelectedWallet } from 'src/utils/storage';
+import {
+  getLocalPassword,
+  getLocalSeedPhrase,
+  getLocalSelectedWallet,
+  getLocalWallets,
+  getOldLocalPassword,
+  initDataFromLocal,
+  removeOldLocalPassword,
+  setLocalPassword,
+  setLocalSeedPhrase,
+} from 'src/utils/storage';
 import { ACTIVE_TAB } from 'src/utils/constant';
 import { DivError } from '../Setting/Contact/views/style';
 import { WelcomeBackground } from '../InitSeedPhrase';
@@ -44,39 +55,107 @@ const SignIn = () => {
     setValue,
     clearErrors,
   } = useForm();
-  const extensions = useSelector((state) => state.extensions);
-  const { setIsLocked, isLocked } = useSettingsContext();
 
-  const handleSignIn = () => {
-    const password = getValues('password');
-    bcrypt.compare(password, extensions.passwordHash, (_errors, isValid) => {
-      if (isValid) {
-        setIsLocked(false);
-        getLocalSelectedWallet(
-          () => {
-            history.push('/');
-            setActiveTab(ACTIVE_TAB.HOME);
-          },
-          () => {
-            history.push('/init');
-          },
-        );
-        (window as any).chrome.runtime.sendMessage({
-          target: 'kda.extension',
-          action: 'sync_data',
-        });
-      } else {
-        setError('password', { type: 'manual', message: 'Invalid Passwords' });
-      }
+  const rootState = useSelector((state) => state);
+  const { selectedNetwork, networks } = rootState.extensions;
+  const { setIsLocked } = useSettingsContext();
+
+  useEffect(() => {
+    getLocalPassword(
+      (p) => {
+        if (p) {
+          history.push('/');
+          setActiveTab(ACTIVE_TAB.HOME);
+        }
+      },
+      () => {},
+    );
+  }, []);
+
+  const saveSessionPassword = (password) => {
+    const hashPassword = hash(password);
+    setLocalPassword(hashPassword);
+    initDataFromLocal(selectedNetwork, networks);
+  };
+
+  const isValidPassword = async (password) => {
+    const hashPassword = hash(password);
+    return new Promise<Boolean>((resolve, reject) => {
+      getLocalSelectedWallet(
+        (w) => {
+          try {
+            const decryptedAccount = decryptKey(w.account, hashPassword);
+            if (typeof decryptedAccount === 'string' && decryptedAccount?.length) {
+              resolve(true);
+            } else {
+              resolve(false);
+            }
+          } catch (err) {
+            resolve(false);
+          }
+        },
+        () => {
+          resolve(false);
+        },
+      );
     });
   };
 
-  useEffect(() => {
-    if (isLocked === false) {
-      history.push('/');
-      setActiveTab(ACTIVE_TAB.HOME);
-    }
-  }, [isLocked]);
+  const unlockWallet = () => {
+    setIsLocked(false);
+    getLocalSelectedWallet(
+      () => {
+        history.push('/');
+        setActiveTab(ACTIVE_TAB.HOME);
+      },
+      () => {
+        history.push('/init');
+      },
+    );
+    (window as any).chrome.runtime.sendMessage({
+      target: 'kda.extension',
+      action: 'sync_data',
+    });
+  };
+
+  const handleSignIn = () => {
+    const password = getValues('password');
+    getOldLocalPassword(
+      (oldHashPassword) => {
+        // old password found
+        // check if is correct
+        const isValidOldPassword = checkIsValidOldPassword(password, oldHashPassword);
+        if (isValidOldPassword) {
+          // get seedphrase and store again
+          getLocalSeedPhrase(
+            (secretKey) => {
+              const plainSeedPhrase = decryptKey(secretKey, oldHashPassword);
+              // save new hashed secretKey
+              const hashPassword = hash(password);
+              const encryptedSeedphrase = encryptKey(plainSeedPhrase, hashPassword);
+              setLocalSeedPhrase(encryptedSeedphrase);
+              removeOldLocalPassword();
+              saveSessionPassword(password);
+              unlockWallet();
+            },
+            () => {},
+          );
+        } else {
+          setError('password', { type: 'manual', message: 'Invalid Password' });
+        }
+      },
+      //
+      async () => {
+        const isValid = await isValidPassword(password);
+        if (!isValid) {
+          setError('password', { type: 'manual', message: 'Invalid Password' });
+        } else {
+          saveSessionPassword(password);
+          unlockWallet();
+        }
+      },
+    );
+  };
 
   const history = useHistory();
   return (

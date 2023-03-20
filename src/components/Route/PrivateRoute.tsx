@@ -25,10 +25,11 @@ const FetchingWrapper = styled.div`
 const PrivateRoute = (props: Props) => {
   const { component: Component, path, isFirstInstall, isSignIn, isHome, isSeedPhrase } = props;
   const rootState = useSelector((state) => state);
+  const { isLocked } = useSettingsContext();
   const { extensions, wallet } = rootState;
   const { passwordHash, isFetching, isHaveSeedPhrase } = extensions;
-  const { isLocked } = useSettingsContext();
   const isLoggedIn = !isLocked;
+  const hasPassword = !!passwordHash;
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     if (!isFetching) {
@@ -38,7 +39,9 @@ const PrivateRoute = (props: Props) => {
   if (loading) return <FetchingWrapper />;
 
   let RenderComponent = <Component />;
-  if (!isHaveSeedPhrase) {
+  if (!hasPassword && isHaveSeedPhrase) {
+    RenderComponent = <Redirect to="/sign-in" />;
+  } else if (!isHaveSeedPhrase) {
     if (passwordHash) {
       if (!isSeedPhrase) {
         RenderComponent = <Redirect to="/seed-phrase" />;

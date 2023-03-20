@@ -26,6 +26,7 @@ import {
   getLocalSelectedNetwork,
   getLocalSelectedWallet,
   getLocalWallets,
+  initDataFromLocal,
   setLocalNetworks,
   setLocalSelectedNetwork,
   setLocalSelectedWallet,
@@ -95,7 +96,7 @@ const ActionBarElement = styled.div`
 
 const Footer = () => {
   const rootState = useSelector((state) => state);
-  const { passwordHash, selectedNetwork, networks, activeTab } = rootState.extensions;
+  const { selectedNetwork, networks, activeTab } = rootState.extensions;
   const { account } = rootState.wallet;
   const location = useLocation().pathname;
   const locationExtension = window.location.hash;
@@ -120,7 +121,7 @@ const Footer = () => {
     };
 
     setupListener();
-    initDataFromLocal();
+    initDataFromLocal(selectedNetwork, networks);
     return () => {
       // Unbind the event listener on clean up
       (window as any)?.chrome?.runtime?.onMessage?.removeListener(handleMessage);
@@ -157,149 +158,9 @@ const Footer = () => {
           () => {},
         );
         // Account changed
-        initDataFromLocal();
+        initDataFromLocal(selectedNetwork, networks);
       }
     }
-  };
-  const initDataFromLocal = () => {
-    showFetching();
-    getLocalSeedPhrase(
-      () => {
-        setIsHaveSeedPhrase(true);
-      },
-      () => {
-        setIsHaveSeedPhrase(false);
-      },
-    );
-    getLocalPassword(
-      (accountPassword) => {
-        setExtensionPassword(accountPassword);
-      },
-      () => {},
-    );
-    getLocalSelectedNetwork(
-      (network) => {
-        const defaultFounded = defaultNetworks.find((dfNet) => dfNet.id && dfNet.id === network?.id);
-        if (defaultFounded) {
-          network = defaultFounded;
-        }
-        setSelectedNetwork({
-          name: network.name,
-          url: network.url,
-          explorer: network.explorer,
-          networkId: network.networkId,
-          id: network.id,
-          isDefault: network.isDefault,
-        });
-        updateContacts(network.networkId);
-        updateRecent(network.networkId);
-        updateWallets(network.networkId);
-      },
-      () => {
-        setLocalSelectedNetwork(selectedNetwork);
-        updateRecent(selectedNetwork.networkId);
-        updateContacts(selectedNetwork.networkId);
-        updateWallets(selectedNetwork.networkId);
-      },
-    );
-    getLocalNetworks(
-      (localNetworks) => {
-        const saveNetworks = [...convertNetworks(localNetworks ?? [])?.filter((n) => !n.isDefault), ...defaultNetworks];
-        setNetworks(convertNetworks(saveNetworks));
-      },
-      () => {
-        const newNetworks = revertNetworks([...networks, ...defaultNetworks]);
-        setLocalNetworks(newNetworks);
-      },
-    );
-  };
-
-  const updateContacts = (networkId) => {
-    getLocalContacts(
-      networkId,
-      (data) => {
-        const contacts = convertContacts(data);
-        setContacts(contacts);
-      },
-      () => {},
-    );
-  };
-
-  const updateWallets = (networkId) => {
-    getLocalPassword(
-      (accountPassword) => {
-        getLocalWallets(
-          networkId,
-          (data) => {
-            const newWallets = data.map((item) => ({
-              chainId: item.chainId,
-              alias: item.alias,
-              account: decryptKey(item.account, accountPassword),
-              publicKey: decryptKey(item.publicKey, accountPassword),
-              secretKey: decryptKey(item.secretKey, accountPassword),
-              connectedSites: item.connectedSites,
-            }));
-            setWallets(newWallets);
-            const { hash } = window.location;
-            getLocalSelectedWallet(
-              (selectedWallet) => {
-                setCurrentWallet({
-                  chainId: selectedWallet.chainId,
-                  alias: selectedWallet.alias,
-                  account: decryptKey(selectedWallet.account, accountPassword),
-                  publicKey: decryptKey(selectedWallet.publicKey, accountPassword),
-                  secretKey: decryptKey(selectedWallet.secretKey, accountPassword),
-                  connectedSites: selectedWallet.connectedSites,
-                });
-              },
-              () => {
-                const newWallet = newWallets[0];
-                setCurrentWallet(newWallet);
-                setLocalSelectedWallet(data[0]);
-              },
-            );
-            hideFetching();
-          },
-          () => {
-            setWallets([]);
-            setCurrentWallet({
-              chainId: 0,
-              account: '',
-              alias: '',
-              publicKey: '',
-              secretKey: '',
-              connectedSites: [],
-            });
-            setLocalSelectedWallet({
-              chainId: 0,
-              account: '',
-              alias: '',
-              publicKey: '',
-              secretKey: '',
-              connectedSites: [],
-            });
-            if (!isDappUrl) {
-              history.push('/init');
-            }
-            hideFetching();
-          },
-        );
-      },
-      () => {
-        hideFetching();
-      },
-    );
-  };
-
-  const updateRecent = (networkId) => {
-    getLocalRecent(
-      networkId,
-      (data) => {
-        const recent = convertRecent(data);
-        setRecent(recent);
-      },
-      () => {},
-    );
   };
 
   const isLoggedIn = !isLocked;
@@ -339,7 +200,7 @@ const Footer = () => {
         </ActionBarElement>
         <ActionBarElement
           className={activeTab === ACTIVE_TAB.SETTINGS && 'active'}
-          isShow={passwordHash && isLoggedIn && showSettingAndSelectNetworks}
+          isShow={isLoggedIn && showSettingAndSelectNetworks}
           onClick={setIconSettingActive}
         >
           <span>
