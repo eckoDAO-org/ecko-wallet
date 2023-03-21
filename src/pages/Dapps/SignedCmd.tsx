@@ -66,16 +66,14 @@ const SignedCmd = () => {
   useEffect(() => {
     getLocalSigningCmd(
       (signingCmd) => {
-        console.log(`🚀 ~ signingCmd:`, signingCmd);
+        setTabId(signingCmd?.signingCmd?.tabId);
         const signedResponse = signCommand(signingCmd?.signingCmd);
-        console.log(`🚀 ~ signedResponse:`, signedResponse);
         if (signedResponse?.signingCmd && signedResponse.signedCmd) {
           getLocalSelectedNetwork(
             (selectedNetwork) => {
               if (selectedNetwork.networkId === signedResponse?.signingCmd.networkId) {
                 setDomain(signedResponse?.signingCmd.domain);
-                setCmd(signedResponse?.signedCmd.cmd);
-                setTabId(signedResponse?.signingCmd.tabId);
+                setCmd(signedResponse?.signedCmd);
                 setCaps(signedResponse?.signingCmd.caps);
               }
             },
@@ -85,7 +83,7 @@ const SignedCmd = () => {
       },
       () => {},
     );
-  }, []);
+  }, [secretKey]);
 
   const signCommand = (signingCmd) => {
     try {
@@ -123,6 +121,11 @@ const SignedCmd = () => {
       return { signedCmd, signingCmd };
     } catch (err) {
       console.log(`Signing cmd err:`, err);
+      const result = {
+        status: 'fail',
+        message: 'Signing cmd error',
+      };
+      updateSignedCmdMessage(result, tabId);
       return null;
     }
   };
@@ -149,7 +152,7 @@ const SignedCmd = () => {
     }, 300);
   };
 
-  const newCmd = cmd ? { cmd: JSON.parse(cmd) } : {};
+  const newCmd = cmd.cmd ? { ...cmd, cmd: JSON.parse(cmd.cmd) } : {};
   return (
     <DappWrapper>
       <DappLogo src={images.eckoWalletLogoRounded} alt="logo" />

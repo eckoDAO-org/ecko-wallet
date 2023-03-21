@@ -2,40 +2,14 @@ import { useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import {
-  defaultNetworks,
-  hideFetching,
-  setActiveTab,
-  setContacts,
-  setExtensionPassword,
-  setIsHaveSeedPhrase,
-  setNetworks,
-  setRecent,
-  setSelectedNetwork,
-  showFetching,
-} from 'src/stores/extensions';
+import { setActiveTab, setExtensionPassword, setIsHaveSeedPhrase } from 'src/stores/extensions';
 import { useSettingsContext } from 'src/contexts/SettingsContext';
 import { setCurrentWallet, setWallets } from 'src/stores/wallet';
-import { decryptKey } from 'src/utils/security';
-import {
-  getLocalContacts,
-  getLocalNetworks,
-  getLocalPassword,
-  getLocalRecent,
-  getLocalSeedPhrase,
-  getLocalSelectedNetwork,
-  getLocalSelectedWallet,
-  getLocalWallets,
-  initDataFromLocal,
-  setLocalNetworks,
-  setLocalSelectedNetwork,
-  setLocalSelectedWallet,
-} from 'src/utils/storage';
+import { getLocalSeedPhrase, initDataFromLocal } from 'src/utils/storage';
 import { ReactComponent as EckoWalletLogoBar } from 'src/images/ecko-wallet-icon.svg';
 import { ReactComponent as HistoryIcon } from 'src/images/history-icon.svg';
 import { ReactComponent as GearIcon } from 'src/images/gear-icon.svg';
 import { ReactComponent as SWAPIcon } from 'src/images/swap-icon.svg';
-import { convertContacts, convertNetworks, convertRecent, revertNetworks } from 'src/utils';
 import { ACTIVE_TAB } from 'src/utils/constant';
 import { DivFlex, SecondaryLabel } from '..';
 

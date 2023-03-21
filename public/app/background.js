@@ -1,9 +1,6 @@
 /* eslint no-use-before-define: 0 */
-import Pact from 'pact-lang-api';
 import 'regenerator-runtime/runtime';
-import { hash as kadenaJSHash, sign as kadenaJSSign } from '@kadena/cryptography-utils';
 import { decryptKey } from '../../src/utils/security';
-import { getSignatureFromHash } from '../../src/utils/chainweb';
 
 let contentPort = null;
 const portMap = new Map();
@@ -201,100 +198,12 @@ const kdaRequestSign = async (data, tabId) => {
   }
 };
 
-const checkIsValidQuickSignPayload = (payload) =>
-  payload &&
-  payload.commandSigDatas &&
-  Array.isArray(payload.commandSigDatas) &&
-  payload.commandSigDatas.every((r) => Array.isArray(r.sigs) && r.cmd);
-
-const checkHasQuickSignValidSignature = async (commandSigDatas) => {
-  const { publicKey } = await getSelectedWallet();
-  return commandSigDatas && commandSigDatas.filter((r) => r.sigs?.some((s) => s.pubKey === publicKey))?.length > 0;
-};
-
 const kdaRequestQuickSign = async (data, tabId) => {
-  const returnErrorMessage = (message) => {
-    sendToConnectedPorts({
-      result: {
-        status: 'fail',
-        error: message,
-      },
-      target: 'kda.content',
-      action: 'res_requestQuickSign',
-    });
-  };
   const isValidNetwork = await verifyNetwork(data.networkId);
   if (isValidNetwork) {
     const isValid = await checkValid(data);
     if (isValid) {
-      const isValidPayload = checkIsValidQuickSignPayload(data);
-      if (!isValidPayload) {
-        returnErrorMessage('QuickSign fail: your data structure is invalid');
-        return;
-      }
-      const hasQuickSignValidSignature = await checkHasQuickSignValidSignature(data.commandSigDatas);
-      if (!hasQuickSignValidSignature) {
-        returnErrorMessage('QuickSign fail: wallet public key not found');
-        return;
-      }
-      const signedResponses = [];
-      const account = await getSelectedWallet(true);
-      for (let i = 0; i < data.commandSigDatas.length; i += 1) {
-        const { cmd, sigs } = data.commandSigDatas[i];
-        let signature = null;
-        let hash = null;
-        const signatureIndex = sigs.findIndex((s) => s.pubKey === account.publicKey);
-        // Account pubKey not present in sigs
-        if (signatureIndex < 0) {
-          signedResponses.push({
-            cmd,
-            sigs,
-            outcome: {
-              result: 'noSig',
-            },
-          });
-        } else {
-          const parsedCmd = JSON.parse(cmd);
-          // find sig index for selected account
-          const commandSigIndex = parsedCmd.signers.findIndex((s) => s.pubKey === account.publicKey);
-          if (commandSigIndex > -1) {
-            parsedCmd.signers[commandSigIndex].secretKey = account.secretKey;
-            try {
-              hash = kadenaJSHash(cmd);
-              if (account.secretKey.length > 64) {
-                signature = getSignatureFromHash(hash, account.secretKey);
-              } else {
-                signature = kadenaJSSign(hash, { secretKey: account.secretKey, publicKey: account.publicKey }).sig;
-              }
-            } catch (err) {
-              console.log(`QUICK-SIGN ERROR`);
-              signedResponses.push({
-                commandSigData: {
-                  cmd,
-                  sigs,
-                },
-                outcome: {
-                  result: 'failure',
-                  msg: 'Error to sign cmd',
-                },
-              });
-            }
-          }
-
-          sigs[signatureIndex].sig = signature;
-          signedResponses.push({
-            commandSigData: {
-              cmd,
-              sigs,
-            },
-            outcome: {
-              result: 'success',
-              hash,
-            },
-          });
-        }
-      }
-      showQuickSignPopup({ ...data, tabId, quickSignData: signedResponses });
+      showQuickSignPopup({ ...data, tabId });
     } else {
       checkStatus(data, tabId);
     }
@@ -547,15 +456,7 @@ const showQuickSignPopup = async (data = {}) => {
     height: 610,
   };
 
-  const quickSignedCmd = {
-    networkId: data.networkId,
-    domain: data.domain,
-    icon: data.icon,
-    quickSignData: data.quickSignData,
-    tabId: data.tabId,
-  };
-
-  chrome.storage.local.set({ quickSignedCmd });
+  chrome.storage.local.set({ quickSignedCmd: data });
 
   chrome.windows.create(options);
 };

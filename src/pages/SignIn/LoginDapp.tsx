@@ -1,12 +1,14 @@
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
-import bcrypt from 'bcryptjs';
+import { useSelector } from 'react-redux';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 import images from 'src/images';
+import { hash } from '@kadena/cryptography-utils';
+import { initDataFromLocal, setLocalPassword } from 'src/utils/storage';
 import Button from 'src/components/Buttons';
 import { useSettingsContext } from 'src/contexts/SettingsContext';
+import { isValidPassword } from '.';
 
 const CreatePasswordWrapper = styled.div`
   padding: 0 20px;
@@ -69,22 +71,26 @@ const LoginDapp = (props: any) => {
     setValue,
     clearErrors,
   } = useForm();
-  const extensions = useSelector((state) => state.extensions);
   const { setIsLocked } = useSettingsContext();
   const { location } = props;
   const { state } = location;
+  const rootState = useSelector((s) => s);
+  const { selectedNetwork, networks } = rootState.extensions;
   const { from } = state;
 
-  const handleSignIn = () => {
+  const handleSignIn = async () => {
     const password = getValues('password');
-    bcrypt.compare(password, extensions.passwordHash, (_errors, isValid) => {
-      if (isValid) {
-        setIsLocked(false);
-        history.push(from);
-      } else {
-        setError('password', { type: 'manual', message: 'Invalid Passwords' });
-      }
-    });
+    const isValid = await isValidPassword(password);
+    if (isValid) {
+      const hashPassword = hash(password);
+      setLocalPassword(hashPassword);
+      initDataFromLocal(selectedNetwork, networks);
+      setIsLocked(false);
+
+      history.push(from);
+    } else {
+      setError('password', { type: 'manual', message: 'Invalid Passwords' });
+    }
   };
   const history = useHistory();
   return (

@@ -1,11 +1,13 @@
 import images from 'src/images';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import ReactJson from 'react-json-view';
+import { hash as kadenaJSHash, sign as kadenaJSSign } from '@kadena/cryptography-utils';
 import { useAppThemeContext } from 'src/contexts/AppThemeContext';
+import { getSignatureFromHash } from 'src/utils/chainweb';
 import { getLocalQuickSignedCmd, getLocalSelectedNetwork } from 'src/utils/storage';
 import Button from 'src/components/Buttons';
-import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import { updateQuickSignedCmdMessage } from 'src/utils/message';
 import { DappDescription, DappLogo, DappWrapper } from './SignedCmd';
@@ -33,30 +35,127 @@ const CodeWrapper = styled.div`
 `;
 
 const QuickSignedCmd = () => {
-  const [domain, setDomain] = useState('example.com.vn');
+  const [domain, setDomain] = useState('');
   const [tabId, setTabId] = useState(null);
   const [quickSignData, setQuickSignData] = useState<any>([]);
-  const stateWallet = useCurrentWallet();
+
+  const rootState = useSelector((state) => state);
+  const { publicKey, secretKey } = rootState.wallet;
 
   const { theme } = useAppThemeContext();
 
   useEffect(() => {
     getLocalQuickSignedCmd(
-      (quickSignedCmd) => {
-        getLocalSelectedNetwork(
-          (selectedNetwork) => {
-            if (selectedNetwork.networkId === quickSignedCmd.networkId) {
-              setDomain(quickSignedCmd.domain);
-              setQuickSignData(quickSignedCmd.quickSignData);
-              setTabId(quickSignedCmd.tabId);
-            }
-          },
-          () => {},
-        );
+      async (toQuickSignData) => {
+        setTabId(toQuickSignData.tabId);
+        setDomain(toQuickSignData.domain);
+        const signedResponse = await quickSignCmd(toQuickSignData);
+        if (signedResponse?.length) {
+          getLocalSelectedNetwork(
+            (selectedNetwork) => {
+              if (selectedNetwork.networkId === toQuickSignData.networkId) {
+                setQuickSignData(signedResponse);
+              }
+            },
+            () => {},
+          );
+        }
       },
       () => {},
     );
-  }, []);
+  }, [publicKey]);
+
+  const checkIsValidQuickSignPayload = (payload) =>
+    payload &&
+    payload.commandSigDatas &&
+    Array.isArray(payload.commandSigDatas) &&
+    payload.commandSigDatas.every((r) => Array.isArray(r.sigs) && r.cmd);
+
+  const checkHasQuickSignValidSignature = async (commandSigDatas) =>
+    commandSigDatas && commandSigDatas.filter((r) => r.sigs?.some((s) => s.pubKey === publicKey))?.length > 0;
+
+  const returnErrorMessage = (message, tabID) => {
+    updateQuickSignedCmdMessage(
+      {
+        status: 'fail',
+        error: message,
+      },
+      tabID,
+    );
+    setTimeout(() => {
+      window.close();
+    }, 300);
+  };
+
+  const quickSignCmd = async (data) => {
+    const isValidPayload = checkIsValidQuickSignPayload(data);
+    if (!isValidPayload) {
+      returnErrorMessage('QuickSign fail: your data structure is invalid', data.tabId);
+      return null;
+    }
+    const hasQuickSignValidSignature = await checkHasQuickSignValidSignature(data.commandSigDatas);
+    if (!hasQuickSignValidSignature) {
+      returnErrorMessage('QuickSign fail: wallet public key not found', data.tabId);
+      return null;
+    }
+    const signedResponses: any[] = [];
+    for (let i = 0; i < data.commandSigDatas.length; i += 1) {
+      const { cmd, sigs } = data.commandSigDatas[i];
+      let signature: any = null;
+      let hash: string | null = null;
+      const signatureIndex = sigs.findIndex((s) => s.pubKey === publicKey);
+      // Account pubKey not present in sigs
+      if (signatureIndex < 0) {
+        signedResponses.push({
+          cmd,
+          sigs,
+          outcome: {
+            result: 'noSig',
+          },
+        });
+      } else {
+        const parsedCmd = JSON.parse(cmd);
+        // find sig index for selected account
+        const commandSigIndex = parsedCmd.signers.findIndex((s) => s.pubKey === publicKey);
+        if (commandSigIndex > -1) {
+          parsedCmd.signers[commandSigIndex].secretKey = secretKey;
+          try {
+            hash = kadenaJSHash(cmd);
+            if (secretKey.length > 64) {
+              signature = getSignatureFromHash(hash, secretKey);
+            } else {
+              signature = kadenaJSSign(hash, { secretKey, publicKey }).sig;
+            }
+          } catch (err) {
+            console.log(`QUICK-SIGN ERROR`);
+            signedResponses.push({
+              commandSigData: {
+                cmd,
+                sigs,
+              },
+              outcome: {
+                result: 'failure',
+                msg: 'Error to sign cmd',
+              },
+            });
+          }
+        }
+
+        sigs[signatureIndex].sig = signature;
+        signedResponses.push({
+          commandSigData: {
+            cmd,
+            sigs,
+          },
+          outcome: {
+            result: 'success',
+            hash,
+          },
+        });
+      }
+    }
+    return signedResponses;
+  };
 
   const onSave = () => {
     const result = {
@@ -93,7 +192,7 @@ const QuickSignedCmd = () => {
           hash: outcome?.hash,
           sigs: commandSigData?.sigs,
         };
-        const caps = cmd?.signers?.find((s) => s?.pubKey === stateWallet?.publicKey)?.clist;
+        const caps = cmd?.signers?.find((s) => s?.pubKey === publicKey)?.clist;
         return (
           <>
             <CommonLabel textCenter fontWeight={800} style={{ marginBottom: 15 }}>

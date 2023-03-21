@@ -21,7 +21,7 @@ const DappPrivateRoute = (props: Props) => {
   const rootState = useSelector((state) => state);
   const { isLocked } = useSettingsContext();
   const { extensions } = rootState;
-  const { isFetching } = extensions;
+  const { isFetching, passwordHash } = extensions;
   const isLoggedIn = !isLocked;
   const [loading, setLoading] = useState(true);
 
@@ -33,7 +33,7 @@ const DappPrivateRoute = (props: Props) => {
   if (loading) return <FetchingWrapper />;
 
   let RenderComponent = <Component />;
-  if (!isLoggedIn) {
+  if (!isLoggedIn || !passwordHash) {
     RenderComponent = <Redirect to={{ pathname: '/login-dapps', state: { from: path } }} />;
   }
 

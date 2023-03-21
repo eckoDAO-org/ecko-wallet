@@ -15,7 +15,6 @@ import {
   getLocalPassword,
   getLocalSeedPhrase,
   getLocalSelectedWallet,
-  getLocalWallets,
   getOldLocalPassword,
   initDataFromLocal,
   removeOldLocalPassword,
@@ -25,6 +24,29 @@ import {
 import { ACTIVE_TAB } from 'src/utils/constant';
 import { DivError } from '../Setting/Contact/views/style';
 import { WelcomeBackground } from '../InitSeedPhrase';
+
+export const isValidPassword = async (password) => {
+  const hashPassword = hash(password);
+  return new Promise<Boolean>((resolve, reject) => {
+    getLocalSelectedWallet(
+      (w) => {
+        try {
+          const decryptedAccount = decryptKey(w.account, hashPassword);
+          if (typeof decryptedAccount === 'string' && decryptedAccount?.length) {
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        } catch (err) {
+          resolve(false);
+        }
+      },
+      () => {
+        resolve(false);
+      },
+    );
+  });
+};
 
 const DivImage = styled.div`
   font-size: ${(props) => props.fontSize};
@@ -76,29 +98,6 @@ const SignIn = () => {
     const hashPassword = hash(password);
     setLocalPassword(hashPassword);
     initDataFromLocal(selectedNetwork, networks);
-  };
-
-  const isValidPassword = async (password) => {
-    const hashPassword = hash(password);
-    return new Promise<Boolean>((resolve, reject) => {
-      getLocalSelectedWallet(
-        (w) => {
-          try {
-            const decryptedAccount = decryptKey(w.account, hashPassword);
-            if (typeof decryptedAccount === 'string' && decryptedAccount?.length) {
-              resolve(true);
-            } else {
-              resolve(false);
-            }
-          } catch (err) {
-            resolve(false);
-          }
-        },
-        () => {
-          resolve(false);
-        },
-      );
-    });
   };
 
   const unlockWallet = () => {
