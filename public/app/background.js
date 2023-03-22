@@ -100,9 +100,6 @@ chrome.runtime.onConnect.addListener(async (port) => {
       case 'kda_getNetwork':
         getNetwork(originTabId);
         break;
-      case 'kda_getChain':
-        getSelectedChain(originTabId);
-        break;
       case 'kda_getSelectedAccount':
         getSelectedAccount(originTabId);
         break;
@@ -230,17 +227,21 @@ const checkStatus = async (data, tabId) => {
     const isValid = await checkValid(data);
     if (isValid) {
       const account = await getSelectedWallet();
-      const msg = {
-        result: {
-          status: 'success',
-          message: 'Connected successfully',
-          account,
-        },
-        target: 'kda.content',
-        action: 'res_checkStatus',
-        tabId,
-      };
-      sendToConnectedPorts(msg);
+      if (!account.account) {
+        showPopup({ tabId, message: 'res_checkStatus' }, 'login-dapps');
+      } else {
+        const msg = {
+          result: {
+            status: 'success',
+            message: 'Connected successfully',
+            account,
+          },
+          target: 'kda.content',
+          action: 'res_checkStatus',
+          tabId,
+        };
+        sendToConnectedPorts(msg);
+      }
     } else {
       const msg = {
         result: {
@@ -293,6 +294,20 @@ const getActiveDomains = async () => {
   return domains;
 };
 
+const getConnectedSites = async () => {
+  const newSelectedWallet = await new Promise((resolve) => {
+    chrome.storage.local.get('selectedWallet', (wallet) => {
+      if (wallet && wallet.selectedWallet && wallet.selectedWallet.account) {
+        const { selectedWallet } = wallet;
+        resolve(selectedWallet.connectedSites);
+      } else {
+        resolve([]);
+      }
+    });
+  });
+  return newSelectedWallet;
+};
+
 const getSelectedWallet = async (isHaveSecret = false) => {
   const newSelectedWallet = await new Promise((resolve) => {
     chrome.storage.local.get('selectedWallet', (wallet) => {
@@ -323,9 +338,8 @@ const getSelectedWallet = async (isHaveSecret = false) => {
 };
 
 const checkValid = async (data) => {
-  const account = await getSelectedWallet();
   const activeDomains = await getActiveDomains();
-  const connectedSites = account.connectedSites || [];
+  const connectedSites = await getConnectedSites();
   if (connectedSites.includes(data.domain)) {
     if (activeDomains.includes(data.domain)) {
       return true;
@@ -410,6 +424,7 @@ const showPopup = async (data = {}, popupUrl) => {
     domain: data.domain,
     icon: data.icon,
     tabId: data.tabId,
+    message: data.message,
   };
 
   chrome.storage.local.set({ dapps });
@@ -474,17 +489,6 @@ const getNetwork = async (tabId) => {
   });
 };
 
-const getSelectedChain = async (tabId) => {
-  chrome.storage.local.get('selectedWallet', (result) => {
-    sendToConnectedPorts({
-      chainId: result?.selectedWallet?.chainId,
-      target: 'kda.content',
-      action: 'res_getChain',
-      tabId,
-    });
-  });
-};
-
 const getSelectedAccount = async (tabId) => {
   chrome.storage.local.get('selectedWallet', (result) => {
     chrome.storage.session.get('accountPassword', (password) => {
@@ -513,16 +517,20 @@ const getAccountSelected = async (data, tabId) => {
     const isValid = await checkValid(data);
     if (isValid) {
       const account = await getSelectedWallet();
-      sendToConnectedPorts({
-        result: {
-          status: 'success',
-          message: 'Get account information successfully',
-          wallet: account,
-        },
-        target: 'kda.content',
-        action: 'res_requestAccount',
-        tabId,
-      });
+      if (account?.account) {
+        sendToConnectedPorts({
+          result: {
+            status: 'success',
+            message: 'Get account information successfully',
+            wallet: account,
+          },
+          target: 'kda.content',
+          action: 'res_requestAccount',
+          tabId,
+        });
+      } else {
+        showPopup({ tabId }, 'login-dapps');
+      }
     } else {
       sendToConnectedPorts({
         result: {

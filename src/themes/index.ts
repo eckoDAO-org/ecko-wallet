@@ -143,7 +143,7 @@ export const appThemes = {
     alert: { color: '#ffba33', background: '#362f21' },
     border: '#81878F80',
     modalBackground: '#1A1E3E',
-    iconBackground: '#FFFFFF1A',
+    iconBackground: '#2a2a2a',
     iconSettingsBackground: '#363F82',
     boxShadow: `box-shadow: 0px 29px 48px rgb(0 0 0 / 40%);
     opacity: 1;`,

@@ -1,11 +1,13 @@
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import { useHistory } from 'react-router-dom';
 import images from 'src/images';
+import { updateAccountMessage, updateCheckStatusMessage } from 'src/utils/message';
 import { hash } from '@kadena/cryptography-utils';
-import { initDataFromLocal, setLocalPassword } from 'src/utils/storage';
+import { getLocalDapps, initDataFromLocal, setLocalPassword } from 'src/utils/storage';
 import Button from 'src/components/Buttons';
 import { useSettingsContext } from 'src/contexts/SettingsContext';
 import { isValidPassword } from '.';
@@ -61,6 +63,12 @@ const Image = styled.img<{ size: string; top: string; width: string }>`
   margin-top: ${(props) => props.marginTop};
 `;
 
+interface WalletData {
+  account: string;
+  publicKey: string;
+  connectedSites: string[];
+}
+
 const LoginDapp = (props: any) => {
   const {
     register,
@@ -75,8 +83,55 @@ const LoginDapp = (props: any) => {
   const { location } = props;
   const { state } = location;
   const rootState = useSelector((s) => s);
-  const { selectedNetwork, networks } = rootState.extensions;
-  const { from } = state;
+  const { selectedNetwork, networks, passwordHash } = rootState.extensions;
+  const { publicKey, account, connectedSites } = rootState.wallet;
+  const from = state?.from ?? null;
+
+  useEffect(() => {
+    if (passwordHash) {
+      if (from) {
+        history.push(from);
+      } else {
+        const walletData: WalletData = {
+          account,
+          publicKey,
+          connectedSites,
+        };
+        getLocalDapps(
+          (dapps) => {
+            switch (dapps?.message) {
+              case 'res_checkStatus': {
+                updateCheckStatusMessage(
+                  {
+                    account: walletData,
+                    message: 'Connected successfully',
+                    status: 'success',
+                  },
+                  dapps.tabId,
+                );
+                break;
+              }
+              default: {
+                updateAccountMessage(
+                  {
+                    wallet: walletData,
+                    message: 'Get account information successfully',
+                    status: 'success',
+                  },
+                  dapps.tabId,
+                );
+              }
+            }
+
+            setTimeout(() => {
+              window.close();
+            }, 300);
+          },
+          () => {},
+        );
+      }
+    }
+  }, [publicKey, account, connectedSites]);
 
   const handleSignIn = async () => {
     const password = getValues('password');
@@ -86,8 +141,6 @@ const LoginDapp = (props: any) => {
       setLocalPassword(hashPassword);
       initDataFromLocal(selectedNetwork, networks);
       setIsLocked(false);
-
-      history.push(from);
     } else {
       setError('password', { type: 'manual', message: 'Invalid Passwords' });
     }
