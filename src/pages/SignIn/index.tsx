@@ -5,11 +5,12 @@ import { useForm } from 'react-hook-form';
 import { hash } from '@kadena/cryptography-utils';
 import images from 'src/images';
 import Button from 'src/components/Buttons';
+import { delay } from 'src/utils';
 import { CommonLabel, DivFlex } from 'src/components';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import { useSettingsContext } from 'src/contexts/SettingsContext';
 import { useHistory } from 'react-router-dom';
-import { checkIsValidOldPassword, decryptKey, encryptKey } from 'src/utils/security';
+import { checkIsValidOldPassword, decryptKey } from 'src/utils/security';
 import { setActiveTab } from 'src/stores/extensions';
 import {
   getLocalPassword,
@@ -17,9 +18,9 @@ import {
   getLocalSelectedWallet,
   getOldLocalPassword,
   initDataFromLocal,
+  initLocalWallet,
   removeOldLocalPassword,
   setLocalPassword,
-  setLocalSeedPhrase,
 } from 'src/utils/storage';
 import { ACTIVE_TAB } from 'src/utils/constant';
 import { DivError } from '../Setting/Contact/views/style';
@@ -120,19 +121,21 @@ const SignIn = () => {
   const handleSignIn = () => {
     const password = getValues('password');
     getOldLocalPassword(
-      (oldHashPassword) => {
+      async (oldHashPassword) => {
+        console.log(`🚀 ~ HAS oldHashPassword:`, oldHashPassword);
         // old password found
         // check if is correct
         const isValidOldPassword = checkIsValidOldPassword(password, oldHashPassword);
         if (isValidOldPassword) {
           // get seedphrase and store again
           getLocalSeedPhrase(
-            (secretKey) => {
+            async (secretKey) => {
               const plainSeedPhrase = decryptKey(secretKey, oldHashPassword);
+              console.log(`🚀 ~ plainSeedPhrase:`, plainSeedPhrase);
               // save new hashed secretKey
               const hashPassword = hash(password);
-              const encryptedSeedphrase = encryptKey(plainSeedPhrase, hashPassword);
-              setLocalSeedPhrase(encryptedSeedphrase);
+              console.log(`🚀 ~ new hashPassword:`, hashPassword);
+              initLocalWallet(plainSeedPhrase, hashPassword);
               removeOldLocalPassword();
               saveSessionPassword(password);
               unlockWallet();

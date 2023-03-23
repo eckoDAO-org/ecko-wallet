@@ -12,7 +12,8 @@ import {
 } from 'src/stores/extensions';
 import { setCurrentWallet, setWallets } from 'src/stores/wallet';
 import { convertContacts, convertNetworks, convertRecent, revertNetworks } from '.';
-import { decryptKey } from './security';
+import { getKeyPairsFromSeedPhrase } from './chainweb';
+import { decryptKey, encryptKey } from './security';
 
 export const STORAGE_PASSWORD_KEY = 'accountPassword';
 
@@ -51,7 +52,63 @@ export const getLocalWallets = (network, successCallback, failCallback) => {
   });
 };
 
-export const setLocalSelectedWallet = (selectedWallet) => {
+export const initLocalWallet = (seedPhrase: string, passwordHash: string) => {
+  const keyPairs = getKeyPairsFromSeedPhrase(seedPhrase, 0);
+  console.log(`🚀 ~ keyPairs:`, keyPairs);
+  const { publicKey, secretKey } = keyPairs;
+  const accountName = `k:${publicKey}`;
+  const wallet = {
+    account: encryptKey(accountName, passwordHash),
+    publicKey: encryptKey(publicKey, passwordHash),
+    secretKey: encryptKey(secretKey, passwordHash),
+    chainId: '0',
+    connectedSites: [],
+  };
+  getLocalWallets(
+    'mainnet01',
+    (item) => {
+      const newData = [...item, wallet];
+      setLocalWallets('mainnet01', newData);
+    },
+    () => {
+      setLocalWallets('mainnet01', [wallet]);
+    },
+  );
+  getLocalWallets(
+    'testnet04',
+    (item) => {
+      const newData = [...item, wallet];
+      setLocalWallets('testnet04', newData);
+    },
+    () => {
+      setLocalWallets('testnet04', [wallet]);
+    },
+  );
+  const newStateWallet = {
+    chainId: '0',
+    account: accountName,
+    publicKey,
+    secretKey,
+    connectedSites: [],
+  };
+  const newWallets = [newStateWallet];
+  setWallets(newWallets);
+  setLocalSelectedWallet(wallet);
+  setCurrentWallet(newStateWallet);
+  setIsHaveSeedPhrase(true);
+  const seedPhraseHash = encryptKey(seedPhrase, passwordHash);
+  setLocalSeedPhrase(seedPhraseHash);
+  return newStateWallet;
+};
+
+export const setLocalSelectedWallet = (selectedWallet: {
+  account: string;
+  connectedSites?: string[];
+  publicKey: string;
+  secretKey: string;
+  alias?: string;
+  chainId?: string | number;
+}) => {
   (window as any)?.chrome?.storage?.local?.set({ selectedWallet });
 };
 

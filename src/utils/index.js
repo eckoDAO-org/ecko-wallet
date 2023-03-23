@@ -101,3 +101,5 @@ export const toFixedDown = (num, fixed) => {
   const re = new RegExp(`^-?\\d+(?:.\\d{0,${fixed || -1}})?`);
   return num.toString().match(re)[0];
 };
+
+export const delay = (ms) => new Promise((res) => setTimeout(res, ms));

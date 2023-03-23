@@ -151,7 +151,6 @@ export const Header = ({ hideAccounts }: { hideAccounts?: boolean }) => {
       connectedSites: [],
     });
     setLocalSelectedWallet({
-      chainId: 0,
       account: '',
       alias: '',
       publicKey: '',
