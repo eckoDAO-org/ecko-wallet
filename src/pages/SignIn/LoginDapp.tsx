@@ -5,9 +5,18 @@ import { useSelector } from 'react-redux';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import { useHistory } from 'react-router-dom';
 import images from 'src/images';
+import { checkIsValidOldPassword, decryptKey } from 'src/utils/security';
 import { updateAccountMessage, updateCheckStatusMessage } from 'src/utils/message';
 import { hash } from '@kadena/cryptography-utils';
-import { getLocalDapps, initDataFromLocal, setLocalPassword } from 'src/utils/storage';
+import {
+  getLocalDapps,
+  getLocalSeedPhrase,
+  getOldLocalPassword,
+  initDataFromLocal,
+  initLocalWallet,
+  removeOldLocalPassword,
+  setLocalPassword,
+} from 'src/utils/storage';
 import Button from 'src/components/Buttons';
 import { useSettingsContext } from 'src/contexts/SettingsContext';
 import { isValidPassword } from '.';
@@ -135,15 +144,43 @@ const LoginDapp = (props: any) => {
 
   const handleSignIn = async () => {
     const password = getValues('password');
-    const isValid = await isValidPassword(password);
-    if (isValid) {
-      const hashPassword = hash(password);
-      setLocalPassword(hashPassword);
-      initDataFromLocal(selectedNetwork, networks);
-      setIsLocked(false);
-    } else {
-      setError('password', { type: 'manual', message: 'Invalid Passwords' });
-    }
+    getOldLocalPassword(
+      async (oldHashPassword) => {
+        // old password found
+        // check if is correct
+        const isValidOldPassword = checkIsValidOldPassword(password, oldHashPassword);
+        if (isValidOldPassword) {
+          // get seedphrase and store again
+          getLocalSeedPhrase(
+            async (secretKey) => {
+              const plainSeedPhrase = decryptKey(secretKey, oldHashPassword);
+              // save new hashed secretKey
+              const hashPassword = hash(password);
+              setLocalPassword(hashPassword);
+              initLocalWallet(plainSeedPhrase, hashPassword);
+              removeOldLocalPassword();
+              // restore data
+              window.location.reload();
+            },
+            () => {},
+          );
+        } else {
+          setError('password', { type: 'manual', message: 'Invalid Password' });
+        }
+      },
+      //
+      async () => {
+        const isValid = await isValidPassword(password);
+        if (isValid) {
+          const hashPassword = hash(password);
+          setLocalPassword(hashPassword);
+          initDataFromLocal(selectedNetwork, networks);
+          setIsLocked(false);
+        } else {
+          setError('password', { type: 'manual', message: 'Invalid Passwords' });
+        }
+      },
+    );
   };
   const history = useHistory();
   return (

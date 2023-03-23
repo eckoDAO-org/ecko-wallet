@@ -6,20 +6,8 @@ import { useSelector } from 'react-redux';
 import { hash as kadenaHash } from '@kadena/cryptography-utils';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { setIsHaveSeedPhrase } from 'src/stores/extensions';
-import {
-  getLocalWallets,
-  initLocalWallet,
-  setLocalPassword,
-  setLocalSeedPhrase,
-  setLocalSelectedWallet,
-  setLocalWallets,
-  updateWallets,
-} from 'src/utils/storage';
+import { initLocalWallet, setLocalPassword, updateWallets } from 'src/utils/storage';
 import Toast from 'src/components/Toast/Toast';
-import { encryptKey } from 'src/utils/security';
-import { getKeyPairsFromSeedPhrase } from 'src/utils/chainweb';
-import { setCurrentWallet, setWallets } from 'src/stores/wallet';
 import { NavigationHeader } from 'src/components/NavigationHeader';
 import Button from 'src/components/Buttons';
 

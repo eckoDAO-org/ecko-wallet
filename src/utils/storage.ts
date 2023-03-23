@@ -54,7 +54,6 @@ export const getLocalWallets = (network, successCallback, failCallback) => {
 
 export const initLocalWallet = (seedPhrase: string, passwordHash: string) => {
   const keyPairs = getKeyPairsFromSeedPhrase(seedPhrase, 0);
-  console.log(`🚀 ~ keyPairs:`, keyPairs);
   const { publicKey, secretKey } = keyPairs;
   const accountName = `k:${publicKey}`;
   const wallet = {
@@ -64,41 +63,11 @@ export const initLocalWallet = (seedPhrase: string, passwordHash: string) => {
     chainId: '0',
     connectedSites: [],
   };
-  getLocalWallets(
-    'mainnet01',
-    (item) => {
-      const newData = [...item, wallet];
-      setLocalWallets('mainnet01', newData);
-    },
-    () => {
-      setLocalWallets('mainnet01', [wallet]);
-    },
-  );
-  getLocalWallets(
-    'testnet04',
-    (item) => {
-      const newData = [...item, wallet];
-      setLocalWallets('testnet04', newData);
-    },
-    () => {
-      setLocalWallets('testnet04', [wallet]);
-    },
-  );
-  const newStateWallet = {
-    chainId: '0',
-    account: accountName,
-    publicKey,
-    secretKey,
-    connectedSites: [],
-  };
-  const newWallets = [newStateWallet];
-  setWallets(newWallets);
+  setLocalWallets('mainnet01', [wallet]);
+  setLocalWallets('testnet04', [wallet]);
   setLocalSelectedWallet(wallet);
-  setCurrentWallet(newStateWallet);
-  setIsHaveSeedPhrase(true);
   const seedPhraseHash = encryptKey(seedPhrase, passwordHash);
   setLocalSeedPhrase(seedPhraseHash);
-  return newStateWallet;
 };
 
 export const setLocalSelectedWallet = (selectedWallet: {

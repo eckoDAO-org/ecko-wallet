@@ -122,7 +122,6 @@ const SignIn = () => {
     const password = getValues('password');
     getOldLocalPassword(
       async (oldHashPassword) => {
-        console.log(`🚀 ~ HAS oldHashPassword:`, oldHashPassword);
         // old password found
         // check if is correct
         const isValidOldPassword = checkIsValidOldPassword(password, oldHashPassword);
@@ -131,14 +130,13 @@ const SignIn = () => {
           getLocalSeedPhrase(
             async (secretKey) => {
               const plainSeedPhrase = decryptKey(secretKey, oldHashPassword);
-              console.log(`🚀 ~ plainSeedPhrase:`, plainSeedPhrase);
               // save new hashed secretKey
               const hashPassword = hash(password);
-              console.log(`🚀 ~ new hashPassword:`, hashPassword);
+              setLocalPassword(hashPassword);
               initLocalWallet(plainSeedPhrase, hashPassword);
               removeOldLocalPassword();
-              saveSessionPassword(password);
-              unlockWallet();
+              // restore data
+              window.location.reload();
             },
             () => {},
           );
