@@ -1,4 +1,21 @@
 import { get } from 'lodash';
+import {
+  defaultNetworks,
+  hideFetching,
+  setContacts,
+  setExtensionPassword,
+  setIsHaveSeedPhrase,
+  setNetworks,
+  setRecent,
+  setSelectedNetwork,
+  showFetching,
+} from 'src/stores/extensions';
+import { setCurrentWallet, setWallets } from 'src/stores/wallet';
+import { convertContacts, convertNetworks, convertRecent, revertNetworks } from '.';
+import { getKeyPairsFromSeedPhrase } from './chainweb';
+import { decryptKey, encryptKey } from './security';
+
+export const STORAGE_PASSWORD_KEY = 'accountPassword';
 
 export const getLocalStorageData = (key, successCallback, failCallback?) => {
   (window as any)?.chrome?.storage?.local?.get(key, (result) => {
@@ -35,7 +52,32 @@ export const getLocalWallets = (network, successCallback, failCallback) => {
   });
 };
 
-export const setLocalSelectedWallet = (selectedWallet) => {
+export const initLocalWallet = (seedPhrase: string, passwordHash: string) => {
+  const keyPairs = getKeyPairsFromSeedPhrase(seedPhrase, 0);
+  const { publicKey, secretKey } = keyPairs;
+  const accountName = `k:${publicKey}`;
+  const wallet = {
+    account: encryptKey(accountName, passwordHash),
+    publicKey: encryptKey(publicKey, passwordHash),
+    secretKey: encryptKey(secretKey, passwordHash),
+    chainId: '0',
+    connectedSites: [],
+  };
+  setLocalWallets('mainnet01', [wallet]);
+  setLocalWallets('testnet04', [wallet]);
+  setLocalSelectedWallet(wallet);
+  const seedPhraseHash = encryptKey(seedPhrase, passwordHash);
+  setLocalSeedPhrase(seedPhraseHash);
+};
+
+export const setLocalSelectedWallet = (selectedWallet: {
+  account: string;
+  connectedSites?: string[];
+  publicKey: string;
+  secretKey: string;
+  alias?: string;
+  chainId?: string | number;
+}) => {
   (window as any)?.chrome?.storage?.local?.set({ selectedWallet });
 };
 
@@ -70,17 +112,30 @@ export const getLocalActivities = (network, account, successCallback, failCallba
 
 // Password
 export const setLocalPassword = (passwordHash) => {
-  (window as any)?.chrome?.storage?.local?.set({ accountPassword: passwordHash });
+  (window as any)?.chrome?.storage?.session?.set({ accountPassword: passwordHash });
 };
 
 export const getLocalPassword = (successCallback, failCallback) => {
-  (window as any)?.chrome?.storage?.local?.get('accountPassword', (result) => {
+  (window as any)?.chrome?.storage?.session?.get(STORAGE_PASSWORD_KEY, (result) => {
     if (result && result.accountPassword) {
       successCallback(result.accountPassword);
     } else {
       failCallback();
     }
   });
+};
+
+export const getOldLocalPassword = (successCallback, failCallback) => {
+  (window as any)?.chrome?.storage?.local?.get(STORAGE_PASSWORD_KEY, (result) => {
+    if (result && result.accountPassword) {
+      successCallback(result.accountPassword);
+    } else {
+      failCallback();
+    }
+  });
+};
+export const removeOldLocalPassword = () => {
+  (window as any)?.chrome?.storage?.local?.remove(STORAGE_PASSWORD_KEY);
 };
 
 // Networks
@@ -194,10 +249,10 @@ export const getLocalActiveDapps = (successCallback, failCallback) => {
   });
 };
 
-export const getLocalSignedCmd = (successCallback, failCallback) => {
-  (window as any)?.chrome?.storage?.local?.get('signedCmd', (result) => {
-    if (result && result.signedCmd) {
-      successCallback(result.signedCmd);
+export const getLocalSigningCmd = (successCallback, failCallback) => {
+  (window as any)?.chrome?.storage?.local?.get('signingCmd', (result) => {
+    if (result && result.signingCmd) {
+      successCallback(result.signingCmd);
     } else {
       failCallback();
     }
@@ -212,4 +267,144 @@ export const getLocalQuickSignedCmd = (successCallback, failCallback) => {
       failCallback();
     }
   });
+};
+
+export const initDataFromLocal = (selectedNetwork, networks) => {
+  showFetching();
+  getLocalSeedPhrase(
+    () => {
+      setIsHaveSeedPhrase(true);
+    },
+    () => {
+      setIsHaveSeedPhrase(false);
+    },
+  );
+  getLocalPassword(
+    (accountPassword) => {
+      setExtensionPassword(accountPassword);
+    },
+    () => {},
+  );
+  getLocalSelectedNetwork(
+    (network) => {
+      const defaultFounded = defaultNetworks.find((dfNet) => dfNet.id && dfNet.id === network?.id);
+      if (defaultFounded) {
+        network = defaultFounded;
+      }
+      setSelectedNetwork({
+        name: network.name,
+        url: network.url,
+        explorer: network.explorer,
+        networkId: network.networkId,
+        id: network.id,
+        isDefault: network.isDefault,
+      });
+      updateContacts(network.networkId);
+      updateRecent(network.networkId);
+      updateWallets(network.networkId);
+    },
+    () => {
+      setLocalSelectedNetwork(selectedNetwork);
+      updateRecent(selectedNetwork.networkId);
+      updateContacts(selectedNetwork.networkId);
+      updateWallets(selectedNetwork.networkId);
+    },
+  );
+  getLocalNetworks(
+    (localNetworks) => {
+      const saveNetworks = [...convertNetworks(localNetworks ?? [])?.filter((n) => !n.isDefault), ...defaultNetworks];
+      setNetworks(convertNetworks(saveNetworks));
+    },
+    () => {
+      const newNetworks = revertNetworks([...networks, ...defaultNetworks]);
+      setLocalNetworks(newNetworks);
+    },
+  );
+};
+
+export const updateContacts = (networkId) => {
+  getLocalContacts(
+    networkId,
+    (data) => {
+      const contacts = convertContacts(data);
+      setContacts(contacts);
+    },
+    () => {},
+  );
+};
+
+export const updateWallets = (networkId) => {
+  getLocalPassword(
+    (accountPassword) => {
+      getLocalWallets(
+        networkId,
+        (data) => {
+          const newWallets = data.map((item) => ({
+            chainId: item.chainId,
+            alias: item.alias,
+            account: decryptKey(item.account, accountPassword),
+            publicKey: decryptKey(item.publicKey, accountPassword),
+            secretKey: decryptKey(item.secretKey, accountPassword),
+            connectedSites: item.connectedSites,
+          }));
+          setWallets(newWallets);
+          getLocalSelectedWallet(
+            (selectedWallet) => {
+              setCurrentWallet({
+                chainId: selectedWallet.chainId,
+                alias: selectedWallet.alias,
+                account: decryptKey(selectedWallet.account, accountPassword),
+                publicKey: decryptKey(selectedWallet.publicKey, accountPassword),
+                secretKey: decryptKey(selectedWallet.secretKey, accountPassword),
+                connectedSites: selectedWallet.connectedSites,
+              });
+            },
+            () => {
+              const newWallet = newWallets[0];
+              setCurrentWallet(newWallet);
+              setLocalSelectedWallet(data[0]);
+            },
+          );
+          hideFetching();
+        },
+        () => {
+          setWallets([]);
+          setCurrentWallet({
+            chainId: 0,
+            account: '',
+            alias: '',
+            publicKey: '',
+            secretKey: '',
+            connectedSites: [],
+          });
+          setLocalSelectedWallet({
+            chainId: 0,
+            account: '',
+            alias: '',
+            publicKey: '',
+            secretKey: '',
+            connectedSites: [],
+          });
+          // if (!isDappUrl) {
+          //   history.push('/init');
+          // }
+          hideFetching();
+        },
+      );
+    },
+    () => {
+      hideFetching();
+    },
+  );
+};
+
+export const updateRecent = (networkId) => {
+  getLocalRecent(
+    networkId,
+    (data) => {
+      const recent = convertRecent(data);
+      setRecent(recent);
+    },
+    () => {},
+  );
 };

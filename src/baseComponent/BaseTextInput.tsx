@@ -7,6 +7,7 @@ import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 type ImageProps = {
   width: string;
   height: string;
+  marginTop?: string;
   src: string;
   callback: () => void;
 };
@@ -14,7 +15,10 @@ type Props = {
   title: any;
   inputProps?: any;
   height?: string;
+  isTextArea?: boolean;
+  subtitle?: string;
   image?: ImageProps;
+  imageComponent?: React.ReactNode;
   isFlex?: boolean;
   onChange?: any;
   numberOptions?: any;
@@ -28,8 +32,11 @@ const BaseTextInput = memo(
   ({
     title,
     inputProps = {},
+    isTextArea,
+    subtitle,
     typeInput,
     image,
+    imageComponent,
     height = '44px',
     isFlex,
     onChange,
@@ -54,6 +61,7 @@ const BaseTextInput = memo(
         color: '#787B8E',
       };
     }
+    const InputComponent = isTextArea ? STextArea : SInput;
     return (
       <SDivRoot height={height} isFlex={isFlex}>
         <SLabel>{title}</SLabel>
@@ -81,7 +89,7 @@ const BaseTextInput = memo(
               </ImageWrapper>
             </>
           ) : (
-            <SInput
+            <InputComponent
               {...inputProps}
               border={styles.border}
               background={styles.background}
@@ -93,12 +101,14 @@ const BaseTextInput = memo(
               onBlur={onBlur}
             />
           )}
-          {image && (
-            <ImageWrapper>
-              <SImage {...image} src={image.src} alt="image" onClick={image.callback} />
-            </ImageWrapper>
-          )}
+          {image &&
+            (imageComponent || (
+              <ImageWrapper>
+                <SImage {...image} src={image.src} alt="image" onClick={image.callback} />
+              </ImageWrapper>
+            ))}
           {numberOptions && <ImageWrapper>{numberOptions.content}</ImageWrapper>}
+          {subtitle && <InputSubtitle>{subtitle}</InputSubtitle>}
         </InputWrapper>
       </SDivRoot>
     );
@@ -128,8 +138,18 @@ const InputWrapper = styled.div<{ isFlex?: boolean; readOnly?: boolean; border?:
     return props.theme.input.background;
   }};
 `;
+const InputSubtitle = styled.span`
+  position: absolute;
+  bottom: 7px;
+  color: ${({ theme }) => theme.text.secondary};
+  font-size: 12px;
+  left: 13px;
+  line-height: 12px;
+  word-break: break-all;
+  font-weight: 800;
+  max-width: 85%;
+`;
 const ImageWrapper = styled.div`
-  height: 34px;
   overflow: hidden;
   right: 2px;
   top: 3px;
@@ -143,6 +163,7 @@ const ImageWrapper = styled.div`
 const SImage = styled.img`
   height: ${(props) => props.width};
   width: ${(props) => props.height};
+  margin-top: ${(props) => props.marginTop};
   cursor: pointer;
 `;
 
@@ -153,6 +174,25 @@ export const SLabel = styled(SecondaryLabel)`
 `;
 
 export const SInput = styled.input<{ background: string }>`
+  width: 100%;
+  background: ${(props) => props.background || props.theme.input.background};
+  color: ${(props) => props.color || props.theme.input.color};
+  box-sizing: border-box;
+  font-size: 16px;
+  height: 40px;
+  border-radius: 8px;
+  padding: 0 0 0 13px;
+  font-family: 'Montserrat', sans-serif;
+  outline: none;
+  border: none;
+  &::placeholder {
+    color: #787b8e;
+    font-weight: 500;
+    font-size: 16px;
+  }
+`;
+
+export const STextArea = styled.textarea<{ background: string }>`
   width: 100%;
   background: ${(props) => props.background || props.theme.input.background};
   color: ${(props) => props.color || props.theme.input.color};

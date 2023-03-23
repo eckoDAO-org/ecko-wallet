@@ -1,11 +1,6 @@
 /* eslint no-use-before-define: 0 */
-import Pact from 'pact-lang-api';
 import 'regenerator-runtime/runtime';
-import { hash as kadenaJSHash, sign as kadenaJSSign } from '@kadena/cryptography-utils';
 import { decryptKey } from '../../src/utils/security';
-import { getSignatureFromHash } from '../../src/utils/chainweb';
-import { getTimestamp } from '../../src/utils';
-import { ECKO_WALLET_DAPP_SIGN_NONCE } from '../../src/utils/config';
 
 let contentPort = null;
 const portMap = new Map();
@@ -105,9 +100,6 @@ chrome.runtime.onConnect.addListener(async (port) => {
       case 'kda_getNetwork':
         getNetwork(originTabId);
         break;
-      case 'kda_getChain':
-        getSelectedChain(originTabId);
-        break;
       case 'kda_getSelectedAccount':
         getSelectedAccount(originTabId);
         break;
@@ -193,54 +185,8 @@ const kdaRequestSign = async (data, tabId) => {
   if (isValidNetwork) {
     const isValid = await checkValid(data);
     if (isValid) {
-      try {
-        const account = await getSelectedWallet(true);
-        const { signingCmd } = data;
-        const meta = Pact.lang.mkMeta(
-          signingCmd.sender,
-          signingCmd.chainId.toString(),
-          signingCmd.gasPrice,
-          signingCmd.gasLimit,
-          getTimestamp(),
-          signingCmd.ttl,
-        );
-        const clist = signingCmd.caps ? signingCmd.caps.map((c) => c.cap) : [];
-        const keyPairs = {
-          publicKey: account.publicKey,
-        };
-        if (account.secretKey.length === 64) {
-          keyPairs.secretKey = account.secretKey;
-        }
-        if (clist.length > 0) {
-          keyPairs.clist = clist;
-        }
-        const signedCmd = Pact.api.prepareExecCmd(
-          keyPairs,
-          `${ECKO_WALLET_DAPP_SIGN_NONCE}-"${new Date().toISOString()}"`,
-          signingCmd.pactCode,
-          signingCmd.envData,
-          meta,
-          signingCmd.networkId,
-        );
-        if (account.secretKey.length > 64) {
-          const signature = getSignatureFromHash(signedCmd.hash, account.secretKey);
-          const sigs = [{ sig: signature }];
-          signedCmd.sigs = sigs;
-        }
-
-        data.signedCmd = signedCmd;
-        data.tabId = tabId;
-        showSignPopup(data);
-      } catch {
-        sendToConnectedPorts({
-          result: {
-            status: 'fail',
-            message: 'Fail to get signedCmd',
-          },
-          target: 'kda.content',
-          action: 'res_requestSign',
-        });
-      }
+      data.tabId = tabId;
+      showSignPopup(data);
     } else {
       checkStatus(data, tabId);
     }
@@ -249,100 +195,12 @@ const kdaRequestSign = async (data, tabId) => {
   }
 };
 
-const checkIsValidQuickSignPayload = (payload) =>
-  payload &&
-  payload.commandSigDatas &&
-  Array.isArray(payload.commandSigDatas) &&
-  payload.commandSigDatas.every((r) => Array.isArray(r.sigs) && r.cmd);
-
-const checkHasQuickSignValidSignature = async (commandSigDatas) => {
-  const { publicKey } = await getSelectedWallet();
-  return commandSigDatas && commandSigDatas.filter((r) => r.sigs?.some((s) => s.pubKey === publicKey))?.length > 0;
-};
-
 const kdaRequestQuickSign = async (data, tabId) => {
-  const returnErrorMessage = (message) => {
-    sendToConnectedPorts({
-      result: {
-        status: 'fail',
-        error: message,
-      },
-      target: 'kda.content',
-      action: 'res_requestQuickSign',
-    });
-  };
   const isValidNetwork = await verifyNetwork(data.networkId);
   if (isValidNetwork) {
     const isValid = await checkValid(data);
     if (isValid) {
-      const isValidPayload = checkIsValidQuickSignPayload(data);
-      if (!isValidPayload) {
-        returnErrorMessage('QuickSign fail: your data structure is invalid');
-        return;
-      }
-      const hasQuickSignValidSignature = await checkHasQuickSignValidSignature(data.commandSigDatas);
-      if (!hasQuickSignValidSignature) {
-        returnErrorMessage('QuickSign fail: wallet public key not found');
-        return;
-      }
-      const signedResponses = [];
-      const account = await getSelectedWallet(true);
-      for (let i = 0; i < data.commandSigDatas.length; i += 1) {
-        const { cmd, sigs } = data.commandSigDatas[i];
-        let signature = null;
-        let hash = null;
-        const signatureIndex = sigs.findIndex((s) => s.pubKey === account.publicKey);
-        // Account pubKey not present in sigs
-        if (signatureIndex < 0) {
-          signedResponses.push({
-            cmd,
-            sigs,
-            outcome: {
-              result: 'noSig',
-            },
-          });
-        } else {
-          const parsedCmd = JSON.parse(cmd);
-          // find sig index for selected account
-          const commandSigIndex = parsedCmd.signers.findIndex((s) => s.pubKey === account.publicKey);
-          if (commandSigIndex > -1) {
-            parsedCmd.signers[commandSigIndex].secretKey = account.secretKey;
-            try {
-              hash = kadenaJSHash(cmd);
-              if (account.secretKey.length > 64) {
-                signature = getSignatureFromHash(hash, account.secretKey);
-              } else {
-                signature = kadenaJSSign(hash, { secretKey: account.secretKey, publicKey: account.publicKey }).sig;
-              }
-            } catch (err) {
-              console.log(`QUICK-SIGN ERROR`);
-              signedResponses.push({
-                commandSigData: {
-                  cmd,
-                  sigs,
-                },
-                outcome: {
-                  result: 'failure',
-                  msg: 'Error to sign cmd',
-                },
-              });
-            }
-          }
-
-          sigs[signatureIndex].sig = signature;
-          signedResponses.push({
-            commandSigData: {
-              cmd,
-              sigs,
-            },
-            outcome: {
-              result: 'success',
-              hash,
-            },
-          });
-        }
-      }
-      showQuickSignPopup({ ...data, tabId, quickSignData: signedResponses });
+      showQuickSignPopup({ ...data, tabId });
     } else {
       checkStatus(data, tabId);
     }
@@ -369,17 +227,21 @@ const checkStatus = async (data, tabId) => {
     const isValid = await checkValid(data);
     if (isValid) {
       const account = await getSelectedWallet();
-      const msg = {
-        result: {
-          status: 'success',
-          message: 'Connected successfully',
-          account,
-        },
-        target: 'kda.content',
-        action: 'res_checkStatus',
-        tabId,
-      };
-      sendToConnectedPorts(msg);
+      if (!account.account) {
+        showPopup({ tabId, message: 'res_checkStatus' }, 'login-dapps');
+      } else {
+        const msg = {
+          result: {
+            status: 'success',
+            message: 'Connected successfully',
+            account,
+          },
+          target: 'kda.content',
+          action: 'res_checkStatus',
+          tabId,
+        };
+        sendToConnectedPorts(msg);
+      }
     } else {
       const msg = {
         result: {
@@ -432,16 +294,30 @@ const getActiveDomains = async () => {
   return domains;
 };
 
+const getConnectedSites = async () => {
+  const newSelectedWallet = await new Promise((resolve) => {
+    chrome.storage.local.get('selectedWallet', (wallet) => {
+      if (wallet && wallet.selectedWallet && wallet.selectedWallet.account) {
+        const { selectedWallet } = wallet;
+        resolve(selectedWallet.connectedSites);
+      } else {
+        resolve([]);
+      }
+    });
+  });
+  return newSelectedWallet;
+};
+
 const getSelectedWallet = async (isHaveSecret = false) => {
   const newSelectedWallet = await new Promise((resolve) => {
     chrome.storage.local.get('selectedWallet', (wallet) => {
       if (wallet && wallet.selectedWallet && wallet.selectedWallet.account) {
         const { selectedWallet } = wallet;
-        chrome.storage.local.get('accountPassword', (password) => {
+        chrome.storage.session.get('accountPassword', (password) => {
           const { accountPassword } = password;
           const newWallet = {
-            account: decryptKey(selectedWallet.account, accountPassword),
-            publicKey: decryptKey(selectedWallet.publicKey, accountPassword),
+            account: accountPassword ? decryptKey(selectedWallet.account, accountPassword) : null,
+            publicKey: accountPassword ? decryptKey(selectedWallet.publicKey, accountPassword) : null,
             connectedSites: selectedWallet.connectedSites,
           };
           if (isHaveSecret) {
@@ -462,9 +338,8 @@ const getSelectedWallet = async (isHaveSecret = false) => {
 };
 
 const checkValid = async (data) => {
-  const account = await getSelectedWallet();
   const activeDomains = await getActiveDomains();
-  const connectedSites = account.connectedSites || [];
+  const connectedSites = await getConnectedSites();
   if (connectedSites.includes(data.domain)) {
     if (activeDomains.includes(data.domain)) {
       return true;
@@ -549,6 +424,7 @@ const showPopup = async (data = {}, popupUrl) => {
     domain: data.domain,
     icon: data.icon,
     tabId: data.tabId,
+    message: data.message,
   };
 
   chrome.storage.local.set({ dapps });
@@ -568,16 +444,17 @@ const showSignPopup = async (data = {}) => {
     height: 610,
   };
 
-  const signedCmd = {
-    networkId: data.networkId,
-    domain: data.domain,
-    icon: data.icon,
-    cmd: data.signedCmd,
-    tabId: data.tabId,
-    caps: data?.signingCmd?.caps,
+  const signingCmd = {
+    signingCmd: {
+      ...data.signingCmd,
+      tabId: data.tabId,
+      networkId: data.networkId,
+      domain: data.domain,
+      icon: data.icon,
+    },
   };
 
-  chrome.storage.local.set({ signedCmd });
+  chrome.storage.local.set({ signingCmd });
 
   chrome.windows.create(options);
 };
@@ -594,15 +471,7 @@ const showQuickSignPopup = async (data = {}) => {
     height: 610,
   };
 
-  const quickSignedCmd = {
-    networkId: data.networkId,
-    domain: data.domain,
-    icon: data.icon,
-    quickSignData: data.quickSignData,
-    tabId: data.tabId,
-  };
-
-  chrome.storage.local.set({ quickSignedCmd });
+  chrome.storage.local.set({ quickSignedCmd: data });
 
   chrome.windows.create(options);
 };
@@ -620,20 +489,9 @@ const getNetwork = async (tabId) => {
   });
 };
 
-const getSelectedChain = async (tabId) => {
-  chrome.storage.local.get('selectedWallet', (result) => {
-    sendToConnectedPorts({
-      chainId: result?.selectedWallet?.chainId,
-      target: 'kda.content',
-      action: 'res_getChain',
-      tabId,
-    });
-  });
-};
-
 const getSelectedAccount = async (tabId) => {
   chrome.storage.local.get('selectedWallet', (result) => {
-    chrome.storage.local.get('accountPassword', (password) => {
+    chrome.storage.session.get('accountPassword', (password) => {
       const { accountPassword } = password;
       sendToConnectedPorts({
         target: 'kda.content',
@@ -659,16 +517,20 @@ const getAccountSelected = async (data, tabId) => {
     const isValid = await checkValid(data);
     if (isValid) {
       const account = await getSelectedWallet();
-      sendToConnectedPorts({
-        result: {
-          status: 'success',
-          message: 'Get account information successfully',
-          wallet: account,
-        },
-        target: 'kda.content',
-        action: 'res_requestAccount',
-        tabId,
-      });
+      if (account?.account) {
+        sendToConnectedPorts({
+          result: {
+            status: 'success',
+            message: 'Get account information successfully',
+            wallet: account,
+          },
+          target: 'kda.content',
+          action: 'res_requestAccount',
+          tabId,
+        });
+      } else {
+        showPopup({ tabId }, 'login-dapps');
+      }
     } else {
       sendToConnectedPorts({
         result: {

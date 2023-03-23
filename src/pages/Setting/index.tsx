@@ -14,6 +14,8 @@ import { ReactComponent as ExpandView } from 'src/images/expand-view.svg';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import { DISCORD_INVITATION_LINK, WEBSITE_LINK } from 'src/utils/config';
 import { useSettingsContext } from 'src/contexts/SettingsContext';
+import useSessionStorage from 'src/hooks/useSessionStorage';
+import { STORAGE_PASSWORD_KEY } from 'src/utils/storage';
 import { RoundedArrow } from '../Wallet/views/FinishTransferItem';
 
 interface ISettingsMenu {
@@ -62,8 +64,10 @@ const PageSetting = () => {
   const { setIsLocked } = useSettingsContext();
   const { secretKey } = rootState?.wallet;
   const { theme } = useAppThemeContext();
+  const [, , , removeAccountPassword] = useSessionStorage(STORAGE_PASSWORD_KEY, null);
 
   const lockWallet = () => {
+    removeAccountPassword();
     setIsLocked(true);
   };
 

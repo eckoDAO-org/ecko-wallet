@@ -2,7 +2,7 @@ import Button from 'src/components/Buttons';
 import Pact from 'pact-lang-api';
 import { ACTIVE_TAB } from 'src/utils/constant';
 import { useHistory } from 'react-router-dom';
-import { convertRecent, getTimestamp, humanReadableNumber } from 'src/utils';
+import { convertRecent, getTimestamp, humanReadableNumber, shortenAddress } from 'src/utils';
 import { getApiUrl, getSignatureFromHash, fetchLocal, pollRequestKey } from 'src/utils/chainweb';
 import { CONFIG, ECKO_WALLET_SEND_TX_NONCE } from 'src/utils/config';
 import { getFloatPrecision } from 'src/utils/numbers';
@@ -216,6 +216,7 @@ const PopupConfirm = (props: Props) => {
             gasPrice,
             sender: senderName,
             domain,
+            aliasName: configs?.aliasName,
             status: 'pending',
           };
           getLocalActivities(
@@ -274,6 +275,7 @@ const PopupConfirm = (props: Props) => {
     senderChainId,
     receiver: receiverName,
     receiverChainId,
+    aliasName: configs?.aliasName,
   };
   if (isLoading) {
     return (
@@ -293,6 +295,12 @@ const PopupConfirm = (props: Props) => {
     <div style={{ padding: '0 20px 20px 20px', marginTop: -15 }}>
       {renderTransactionInfo(info, { borderTop: ' none', margin: '0px -20px 20px' })}
       <div style={{ textAlign: 'center' }}>
+        {configs.aliasName && (
+          <DivFlex margin="10px 0 0 0" justifyContent="space-between" alignItems="center">
+            <SecondaryLabel uppercase>receiver</SecondaryLabel>
+            <SecondaryLabel>{shortenAddress(receiverName)}</SecondaryLabel>
+          </DivFlex>
+        )}
         <DivFlex margin="10px 0px" justifyContent="space-between" alignItems="flex-start">
           <SecondaryLabel uppercase fontSize={16}>
             amount
