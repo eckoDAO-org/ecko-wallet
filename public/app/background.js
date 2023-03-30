@@ -1,6 +1,7 @@
 /* eslint no-use-before-define: 0 */
 import 'regenerator-runtime/runtime';
 import { decryptKey } from '../../src/utils/security';
+import { initWalletConnect } from './wallet-connect';
 
 let contentPort = null;
 const portMap = new Map();
@@ -24,6 +25,9 @@ chrome.runtime.onStartup.addListener(() => {
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   const tabIdResponse = request?.tabId || sender?.tab?.id;
   if (request.target === 'kda.background') {
+    if (request.action === 'initWalletConnect' && request.uri) {
+      initWalletConnect(request.uri, request.accounts);
+    }
     let senderPort = null;
     for (const [tabId, port] of portMap.entries()) {
       if (tabId === tabIdResponse) {
@@ -125,10 +129,39 @@ chrome.runtime.onConnect.addListener(async (port) => {
   });
 });
 
+const getSelectedWalletAsync = async (isHaveSecret = false) => {
+  const newSelectedWallet = await new Promise((resolve) => {
+    chrome?.storage.local.get('selectedWallet', (wallet) => {
+      if (wallet && wallet.selectedWallet && wallet.selectedWallet.account) {
+        const { selectedWallet } = wallet;
+        chrome?.storage.session.get('accountPassword', (password) => {
+          const { accountPassword } = password;
+          const newWallet = {
+            account: accountPassword ? decryptKey(selectedWallet.account, accountPassword) : null,
+            publicKey: accountPassword ? decryptKey(selectedWallet.publicKey, accountPassword) : null,
+            connectedSites: selectedWallet.connectedSites,
+          };
+          if (isHaveSecret) {
+            newWallet.secretKey = decryptKey(selectedWallet.secretKey, accountPassword);
+          }
+          resolve(newWallet);
+        });
+      } else {
+        resolve({
+          account: '',
+          publicKey: '',
+          connectedSites: [],
+        });
+      }
+    });
+  });
+  return newSelectedWallet;
+};
+
 const checkConnect = async (data, tabId) => {
   const isValidNetwork = await verifyNetwork(data.networkId);
   if (isValidNetwork) {
-    const account = await getSelectedWallet();
+    const account = await getSelectedWalletAsync();
     const connectedSites = account.connectedSites || [];
     const activeDomains = await getActiveDomains();
     if (connectedSites.includes(data.domain)) {
@@ -226,7 +259,7 @@ const checkStatus = async (data, tabId) => {
   if (isValidNetwork) {
     const isValid = await checkValid(data);
     if (isValid) {
-      const account = await getSelectedWallet();
+      const account = await getSelectedWalletAsync();
       if (!account.account) {
         showPopup({ tabId, message: 'res_checkStatus' }, 'login-dapps');
       } else {
@@ -302,35 +335,6 @@ const getConnectedSites = async () => {
         resolve(selectedWallet.connectedSites);
       } else {
         resolve([]);
-      }
-    });
-  });
-  return newSelectedWallet;
-};
-
-const getSelectedWallet = async (isHaveSecret = false) => {
-  const newSelectedWallet = await new Promise((resolve) => {
-    chrome.storage.local.get('selectedWallet', (wallet) => {
-      if (wallet && wallet.selectedWallet && wallet.selectedWallet.account) {
-        const { selectedWallet } = wallet;
-        chrome.storage.session.get('accountPassword', (password) => {
-          const { accountPassword } = password;
-          const newWallet = {
-            account: accountPassword ? decryptKey(selectedWallet.account, accountPassword) : null,
-            publicKey: accountPassword ? decryptKey(selectedWallet.publicKey, accountPassword) : null,
-            connectedSites: selectedWallet.connectedSites,
-          };
-          if (isHaveSecret) {
-            newWallet.secretKey = decryptKey(selectedWallet.secretKey, accountPassword);
-          }
-          resolve(newWallet);
-        });
-      } else {
-        resolve({
-          account: '',
-          publicKey: '',
-          connectedSites: [],
-        });
       }
     });
   });
@@ -516,7 +520,7 @@ const getAccountSelected = async (data, tabId) => {
   if (isValidNetwork) {
     const isValid = await checkValid(data);
     if (isValid) {
-      const account = await getSelectedWallet();
+      const account = await getSelectedWalletAsync();
       if (account?.account) {
         sendToConnectedPorts({
           result: {
@@ -579,3 +583,5 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
     }
   }
 });
+
+initWalletConnect();

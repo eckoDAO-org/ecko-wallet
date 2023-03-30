@@ -56,3 +56,12 @@ export const updateCheckStatusMessage = (result, tabId) => {
     tabId,
   });
 };
+
+export const initWalletConnect = (uri: string, accounts: string[]) => {
+  (window as any)?.chrome?.runtime?.sendMessage({
+    uri,
+    accounts,
+    target: 'kda.background',
+    action: 'initWalletConnect',
+  });
+};
