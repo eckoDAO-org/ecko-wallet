@@ -242,9 +242,6 @@ const CreatePassword = () => {
               {errors.passwordDiscouragedConfirm.message}
             </InputError>
           )}
-          <InputAlert>
-            DEBUG STRING - REMOVE ME! Password: <span style={{ backgroundColor: "red", color: "white", whiteSpace: "pre" }}>{password}</span>
-          </InputAlert>
         </Wrapper>
       </Body>
       <Footer>
