@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import { useForm } from 'react-hook-form';
-import { BaseTextInput, InputError } from 'src/baseComponent';
+import { useForm, Controller } from 'react-hook-form';
+import { BaseTextInput, InputAlert, InputError } from 'src/baseComponent';
 import lib from 'cardano-crypto.js/kadena-crypto';
 import { useSelector } from 'react-redux';
 import { hash as kadenaHash } from '@kadena/cryptography-utils';
@@ -10,6 +10,7 @@ import { initLocalWallet, setLocalPassword, updateWallets } from 'src/utils/stor
 import Toast from 'src/components/Toast/Toast';
 import { NavigationHeader } from 'src/components/NavigationHeader';
 import Button from 'src/components/Buttons';
+import { Radio } from 'src/components/Radio';
 
 const CreatePasswordWrapper = styled.div`
   padding: 0 20px;
@@ -45,6 +46,7 @@ const CreatePassword = () => {
     formState: { errors },
     setValue,
     clearErrors,
+    control,
   } = useForm();
   const rootState = useSelector((state) => state);
   const { isCreateSeedPhrase, selectedNetwork } = rootState.extensions;
@@ -95,10 +97,16 @@ const CreatePassword = () => {
     history.push('/init-seed-phrase');
   };
 
-  const checkInValidPassword = (str) => {
-    const pattern = new RegExp('^[À-úa-z0-9A-Z_+!?"-\'.#@,;-\\s]*$');
-    return !!pattern.test(str);
+  const checkPasswordDiscouraged = (str) => {
+    // Check if there are characters that are NOT:
+    // \w words (letters, digits, underscore)
+    // !?"'.,;@# special characters
+    const pattern = /[^\w!?"'.,;@#]/;
+    return pattern.test(str);
   };
+
+  const password = getValues('password');
+  const passwordIsDiscouraged = checkPasswordDiscouraged(password);
 
   return (
     <CreatePasswordWrapper>
@@ -153,10 +161,6 @@ const CreatePassword = () => {
                     value: 256,
                     message: 'Password should be maximum 256 characters.',
                   },
-                  validate: {
-                    match: (val) =>
-                      checkInValidPassword(val) || 'Sorry, only letters(a-z), numbers(0-9), and special characters _!?"\'.#@,;- are allowed.',
-                  },
                 }),
               }}
               typeInput="password"
@@ -164,11 +168,15 @@ const CreatePassword = () => {
               height="auto"
               onChange={(e) => {
                 clearErrors('password');
-                setValue('password', e.target.value.trim());
+                setValue('password', e.target.value);
               }}
             />
           </DivBody>
-          <>{errors.password && <InputError>{errors.password.message}</InputError>}</>
+          {errors.password && (
+            <InputError>
+              {errors.password.message}
+            </InputError>
+          )}
           <DivBody>
             <BaseTextInput
               inputProps={{
@@ -197,7 +205,46 @@ const CreatePassword = () => {
               }}
             />
           </DivBody>
-          <>{errors.confirmPassword && <InputError>{errors.confirmPassword.message}</InputError>}</>
+          {errors.confirmPassword && (
+            <InputError>
+              {errors.confirmPassword.message}
+            </InputError>
+          )}
+          <DivBody>
+            {passwordIsDiscouraged && (
+              <Controller
+                control={control}
+                name="passwordDiscouragedConfirm"
+                rules={{
+                  required: {
+                    value: true,
+                    message: 'This field is required.',
+                  },
+                }}
+                render={({
+                  field: { onChange, value, name },
+                }) => (
+                  <Radio
+                    onClick={() => setValue(name, !value)}
+                    isChecked={value}
+                    label={
+                      <InputAlert>
+                        I understand that I used characters that are unsafe. It is strongly recommended to use only letters(a-z), numbers(0-9), and special characters _!?&quot;&apos;.#@,;-
+                      </InputAlert>
+                    }
+                  />
+                )}
+              />
+            )}
+          </DivBody>
+          {errors.passwordDiscouragedConfirm && (
+            <InputError>
+              {errors.passwordDiscouragedConfirm.message}
+            </InputError>
+          )}
+          <InputAlert>
+            DEBUG STRING - REMOVE ME! Password: <span style={{ backgroundColor: "red", color: "white", whiteSpace: "pre" }}>{password}</span>
+          </InputAlert>
         </Wrapper>
       </Body>
       <Footer>
