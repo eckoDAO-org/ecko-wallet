@@ -3,11 +3,12 @@ import images from 'src/images';
 import styled from 'styled-components';
 import Button from 'src/components/Buttons';
 import { useState } from 'react';
-import { BaseTextInput, InputError } from 'src/baseComponent';
+import { initWalletConnect } from 'src/utils/message';
+import { BaseTextInput } from 'src/baseComponent';
 import { NavigationHeader } from 'src/components/NavigationHeader';
 import { DivFlex, SecondaryLabel } from 'src/components';
-import { useCurrentWallet } from 'src/stores/wallet/hooks';
-import { initWalletConnect } from 'src/utils/message';
+import { useModalContext } from 'src/contexts/ModalContext';
+import SelectAccount from './components/SelectAccount';
 
 const Body = styled.div`
   height: 170px;
@@ -40,17 +41,10 @@ const CustomButton = styled.div`
   margin-top: 20px;
 `;
 
-const DivError = styled.div`
-  margin-top: 10px;
-`;
-
 const PageWalletConnect = () => {
   const history = useHistory();
   const [code, setCode] = useState('');
-  const [isErrorEmpty, setErrorEmpty] = useState(false);
-  const [isErrorVerify, setErrorVerify] = useState(false);
-  const { account } = useCurrentWallet();
-  console.log(`🚀 !!! ~ account:`, account);
+  const { openModal, closeModal } = useModalContext();
 
   const goBack = () => {
     history.goBack();
@@ -61,15 +55,30 @@ const PageWalletConnect = () => {
   };
 
   const handleConfirmCode = async () => {
-    initWalletConnect(code, account);
+    openModal({
+      title: 'Select accounts',
+      content: (
+        <SelectAccount
+          onConfirmAccounts={(accounts) => {
+            initWalletConnect(code, accounts);
+            setTimeout(() => {
+              closeModal();
+              history.push('/');
+            }, 2000);
+          }}
+        />
+      ),
+    });
   };
 
   return (
     <Wrapper>
       <NavigationHeader title="Wallet Connect" onBack={goBack} />
       <DivFlex flexDirection="column" justifyContent="center" alignItems="center" padding="50px 0px">
-        <LockImage src={images.settings.iconLockOpen} alt="lock" />
-        <SecondaryLabel fontWeight={500}>Enter DAPP Wallet Connect code</SecondaryLabel>
+        <LockImage src={images.settings.iconNetwork} alt="network" />
+        <SecondaryLabel fontWeight={500} margin="20px 0">
+          Paste here DAPP Wallet Connect code
+        </SecondaryLabel>
       </DivFlex>
       <Body>
         <BaseTextInput
@@ -83,10 +92,6 @@ const PageWalletConnect = () => {
             }
           }}
         />
-        <DivError>
-          {isErrorEmpty && <InputError marginTop="0">This field is required.</InputError>}
-          {isErrorVerify && <InputError marginTop="0">Invalid code</InputError>}
-        </DivError>
         <CustomButton>
           <Button size="full" variant="primary" onClick={handleConfirmCode} isDisabled={!code} label="Continue" />
         </CustomButton>

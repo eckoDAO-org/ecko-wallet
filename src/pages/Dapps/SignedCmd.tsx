@@ -7,7 +7,7 @@ import ReactJson from 'react-json-view';
 import { getLocalSelectedNetwork, getLocalSigningCmd } from 'src/utils/storage';
 import Button from 'src/components/Buttons';
 import { DivFlex, SecondaryLabel } from 'src/components';
-import { updateSignedCmdMessage } from 'src/utils/message';
+import { sendWalletConnectMessage, updateSignedCmdMessage } from 'src/utils/message';
 import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 import { getTimestamp } from 'src/utils';
 import { ECKO_WALLET_DAPP_SIGN_NONCE } from 'src/utils/config';
@@ -52,21 +52,43 @@ export const DappLogo = styled.img`
   height: 70px;
   margin: 50px auto 20px auto;
 `;
+
+interface WalletConnectParams {
+  id: number;
+  topic: string;
+}
+
 const SignedCmd = () => {
   const [domain, setDomain] = useState('example.com.vn');
   const [tabId, setTabId] = useState(null);
   const [cmd, setCmd] = useState<any>({});
   const [caps, setCaps] = useState<any[]>([]);
+  const [walletConnectParams, setWalletConnectParams] = useState<WalletConnectParams | null>(null);
 
   const rootState = useSelector((state) => state);
   const { publicKey, secretKey } = rootState.wallet;
 
   const { theme } = useAppThemeContext();
 
+  const returnSignedMessage = (result, error?) => {
+    if (walletConnectParams?.topic) {
+      sendWalletConnectMessage(walletConnectParams.id, walletConnectParams.topic, result, error);
+    } else {
+      updateSignedCmdMessage(result, tabId);
+    }
+  };
+
   useEffect(() => {
     getLocalSigningCmd(
       (signingCmd) => {
         setTabId(signingCmd?.signingCmd?.tabId);
+        if (signingCmd?.signingCmd?.isWalletConnect) {
+          const { id, topic } = signingCmd?.signingCmd;
+          setWalletConnectParams({
+            id,
+            topic,
+          });
+        }
         const signedResponse = signCommand(signingCmd?.signingCmd);
         if (signedResponse?.signingCmd && signedResponse.signedCmd) {
           getLocalSelectedNetwork(
@@ -125,7 +147,7 @@ const SignedCmd = () => {
         status: 'fail',
         message: 'Signing cmd error',
       };
-      updateSignedCmdMessage(result, tabId);
+      returnSignedMessage(result);
       return null;
     }
   };
@@ -135,7 +157,7 @@ const SignedCmd = () => {
       status: 'success',
       signedCmd: cmd,
     };
-    updateSignedCmdMessage(result, tabId);
+    returnSignedMessage(result);
     setTimeout(() => {
       window.close();
     }, 300);
@@ -146,7 +168,10 @@ const SignedCmd = () => {
       status: 'fail',
       message: 'Rejected by user',
     };
-    updateSignedCmdMessage(result, tabId);
+    returnSignedMessage(result, {
+      code: 5000,
+      message: 'User rejected.',
+    });
     setTimeout(() => {
       window.close();
     }, 300);

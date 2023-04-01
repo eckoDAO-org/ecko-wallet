@@ -1,10 +1,86 @@
 /* eslint no-use-before-define: 0 */
 import 'regenerator-runtime/runtime';
 import { decryptKey } from '../../src/utils/security';
-import { initWalletConnect } from './wallet-connect';
+import { WalletConnectProvider } from './wallet-connect';
 
 let contentPort = null;
 const portMap = new Map();
+
+const walletConnect = new WalletConnectProvider();
+
+function setWalletConnectEvents(accounts) {
+  walletConnect.wallet.on('session_proposal', async (proposal) => {
+    console.log(`🚀 !!! ~ proposal:`, proposal);
+    let accountsToShare = [];
+    for (let i = 0; i < accounts.length; i += 1) {
+      accountsToShare = [
+        ...accountsToShare,
+        `kadena:mainnet01:${accounts[i]}`,
+        `kadena:mainnet01:k**${accounts[i]}`,
+        `kadena:testnet04:${accounts[i]}`,
+        `kadena:testnet04:k**${accounts[i]}`,
+        `kadena:development:${accounts[i]}`,
+        `kadena:development:k**${accounts[i]}`,
+      ];
+    }
+    const session = await walletConnect.wallet.approveSession({
+      id: proposal.id,
+      namespaces: {
+        kadena: {
+          chains: ['kadena:mainnet01', 'kadena:testnet04', 'kadena:development'],
+          accounts: accountsToShare,
+          methods: [
+            'kadena_getAccounts_v1',
+            'kadena_sign_v1',
+            'kadena_quicksign_v1',
+            // old sign method for swap.ecko.finance
+            'kadena_sign',
+            'kadena_quicksign',
+          ],
+          events: ['account_changed', 'kadena_transaction_updated'],
+          extension: [
+            {
+              accounts: accountsToShare,
+              methods: ['kaddex_sign', 'kaddex_send_transaction', 'kaddex_sign_transaction'],
+              events: ['account_changed'],
+            },
+          ],
+        },
+      },
+    });
+    console.log(`🚀 !!! ~ session`, session);
+    walletConnect.wallet?.on('session_request', (event) => {
+      console.log('session_request', event);
+      const { topic, params, id } = event;
+      const { request } = params;
+      switch (request.method) {
+        // old ecko swap methods
+        case 'kadena_sign': {
+          showSignPopup({
+            signingCmd: request.params,
+            networkId: request.params.networkId,
+            domain: session?.peer?.metadata.url,
+            icon: session?.peer?.metadata?.icons[0],
+            isWalletConnect: true,
+            topic,
+            id,
+          });
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+      if (request.method === 'kadena_sign') {
+        // old request method
+      }
+    });
+  });
+  walletConnect.wallet?.on('session_delete', (event) => console.log('session_delete', event));
+  walletConnect.wallet?.on('session_event', (event) => console.log('session_event', event));
+  walletConnect.wallet?.on('pairing_delete', (event) => console.log('pairing_delete', event));
+  walletConnect.wallet?.on('pairing_expire', (event) => console.log('pairing_expire', event));
+}
 
 chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === 'install') {
@@ -25,8 +101,24 @@ chrome.runtime.onStartup.addListener(() => {
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   const tabIdResponse = request?.tabId || sender?.tab?.id;
   if (request.target === 'kda.background') {
-    if (request.action === 'initWalletConnect' && request.uri) {
-      initWalletConnect(request.uri, request.accounts);
+    if (request.action.includes('walletConnect')) {
+      const wcMethod = request.action?.split(':') && request.action?.split(':')[1];
+      switch (wcMethod) {
+        case 'init': {
+          await walletConnect.init(request.uri);
+          setWalletConnectEvents(request.accounts);
+          break;
+        }
+        case 'response': {
+          console.log(request);
+          console.log(`🚀 !!! ~ request:`, request);
+          await walletConnect.respond(request.topic, request.id, request.message, request.error);
+          break;
+        }
+        default: {
+          break;
+        }
+      }
     }
     let senderPort = null;
     for (const [tabId, port] of portMap.entries()) {
@@ -436,7 +528,7 @@ const showPopup = async (data = {}, popupUrl) => {
   chrome.windows.create(options);
 };
 
-const showSignPopup = async (data = {}) => {
+export const showSignPopup = async (data = {}) => {
   const lastFocused = await getLastFocusedWindow();
 
   const options = {
@@ -455,6 +547,9 @@ const showSignPopup = async (data = {}) => {
       networkId: data.networkId,
       domain: data.domain,
       icon: data.icon,
+      isWalletConnect: data.isWalletConnect || false,
+      topic: data.topic || false,
+      id: data.id || false,
     },
   };
 
@@ -583,5 +678,3 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
     }
   }
 });
-
-initWalletConnect();

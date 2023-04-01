@@ -60,6 +60,7 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build && parcel build public/app/* -d build/app --no-source-maps --no-minify",
+    "parcel:build": "parcel build public/app/* -d build/app --no-source-maps --no-minify",
     "test": "craco test",
     "eject": "react-scripts eject",
     "lint": "eslint ./src",
