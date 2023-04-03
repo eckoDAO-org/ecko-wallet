@@ -10,4 +10,7 @@ module.exports = {
       '@Reducers': path.resolve(__dirname, 'src/reducers'),
     },
   },
+  devServer: {
+    writeToDisk: true,
+  },
 };
