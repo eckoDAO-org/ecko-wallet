@@ -1,7 +1,9 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import useLocalStorage from 'src/hooks/useLocalStorage';
 import useIdleTimeout from 'src/hooks/useIdleTimeout';
 import { CONFIG } from 'src/utils/config';
+import { getLocalPassword, STORAGE_PASSWORD_KEY } from 'src/utils/storage';
+import useSessionStorage from 'src/hooks/useSessionStorage';
 
 export interface TxSettings {
   gasLimit?: number;
@@ -51,16 +53,16 @@ export const SettingsContext = createContext<SettingsContextValue>({
 
 export const SettingsProvider = ({ children }: any) => {
   const lastActivityTimeout = useIdleTimeout();
-  const [isLocked, setLocalIsLocked] = useLocalStorage<boolean>('SETTINGS_IS_LOCKED', false);
-
-  const setIsLocked = (value: boolean) => setLocalIsLocked(value);
-
-  const lockWallet = () => {
-    setLocalIsLocked(true);
-  };
+  const [isLocked, setIsLocked] = useState(false);
   const diff = lastActivityTimeout ? (new Date().getTime() - lastActivityTimeout) / 1000 : 0;
 
   const [settings, setSettings, getSettingsAsync] = useLocalStorage<SettingsContextData>('settingsV2', defaultSettingsContextValue);
+  const [, , , removeAccountPassword] = useSessionStorage(STORAGE_PASSWORD_KEY, null);
+
+  const lockWallet = () => {
+    removeAccountPassword();
+    setIsLocked(true);
+  };
 
   if (settings?.lockTime && diff > settings?.lockTime && !isLocked) {
     lockWallet();

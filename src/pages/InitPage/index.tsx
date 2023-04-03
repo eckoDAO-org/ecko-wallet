@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import images from 'src/images';
 import { useHistory } from 'react-router-dom';
 import { Header } from 'src/components/Header';
+import { PrimaryLabel, SecondaryLabel } from 'src/components';
 
 const CreateInitPageWrapper = styled.div`
   padding: 0 20px;
@@ -17,15 +18,6 @@ const CreateInitPageWrapper = styled.div`
 `;
 const Body = styled.div`
   font-size: 16px;
-`;
-const TextContent = styled.div`
-  text-align: center;
-  padding: 0 20px;
-  margin-bottom: 5px;
-`;
-const TextFooter = styled.div`
-  text-align: center;
-  font-weight: 700;
 `;
 const Image = styled.img`
   height: 155px;
@@ -46,12 +38,13 @@ const InitPage = () => {
       <Header hideAccounts />
       <CreateInitPageWrapper>
         <Body>
-          <TextContent>I have an existing private key.</TextContent>
-          <TextContent>Import your existing private key</TextContent>
+          <SecondaryLabel fontSize={14}>I have an existing private key.</SecondaryLabel>
+          <br />
+          <SecondaryLabel fontSize={14}>Import your existing private key</SecondaryLabel>
           <DivChild>
             <Image src={images.initPage.importPrivateKey} alt="icon-import" onClick={goToImport} />
           </DivChild>
-          <TextFooter>Import</TextFooter>
+          <PrimaryLabel>Import</PrimaryLabel>
         </Body>
       </CreateInitPageWrapper>
     </>

@@ -36,3 +36,23 @@ export const updateQuickSignedCmdMessage = (result, tabId) => {
     tabId,
   });
 };
+
+// Account res
+export const updateAccountMessage = (result, tabId) => {
+  (window as any)?.chrome?.runtime?.sendMessage({
+    result,
+    target: 'kda.background',
+    action: 'res_requestAccount',
+    tabId,
+  });
+};
+
+// Account res_checkStatus
+export const updateCheckStatusMessage = (result, tabId) => {
+  (window as any)?.chrome?.runtime?.sendMessage({
+    result,
+    target: 'kda.background',
+    action: 'res_checkStatus',
+    tabId,
+  });
+};

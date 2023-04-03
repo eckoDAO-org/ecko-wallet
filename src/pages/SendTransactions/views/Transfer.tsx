@@ -56,6 +56,7 @@ interface TransactionInfo {
   sender: string;
   senderChainId: string;
   receiver: string;
+  aliasName?: string;
   receiverChainId: string;
 }
 
@@ -78,7 +79,7 @@ export const renderTransactionInfo = (info: TransactionInfo, containerStyle?: Re
         account={info.receiver}
         renderAccount={(acc) => (
           <DivFlex flexDirection="column">
-            <TransferAccountSpan>{shortenAddress(acc)}</TransferAccountSpan>
+            <TransferAccountSpan>{info.aliasName || shortenAddress(acc)}</TransferAccountSpan>
             <SecondaryLabel uppercase>chain {info.receiverChainId}</SecondaryLabel>
           </DivFlex>
         )}
@@ -246,6 +247,7 @@ const Transfer = (props: Props) => {
     senderChainId: wallet?.chainId,
     senderPublicKey: wallet?.publicKey,
     senderPrivateKey: wallet?.secretKey,
+    aliasName: destinationAccount?.aliasName,
     receiverName: destinationAccount?.accountName,
     domain: destinationAccount?.domain,
     dappAmount: destinationAccount?.dappAmount,

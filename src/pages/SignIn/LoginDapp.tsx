@@ -1,12 +1,25 @@
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
-import bcrypt from 'bcryptjs';
+import { useSelector } from 'react-redux';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 import images from 'src/images';
+import { checkIsValidOldPassword, decryptKey } from 'src/utils/security';
+import { updateAccountMessage, updateCheckStatusMessage } from 'src/utils/message';
+import { hash } from '@kadena/cryptography-utils';
+import {
+  getLocalDapps,
+  getLocalSeedPhrase,
+  getOldLocalPassword,
+  initDataFromLocal,
+  initLocalWallet,
+  removeOldLocalPassword,
+  setLocalPassword,
+} from 'src/utils/storage';
 import Button from 'src/components/Buttons';
 import { useSettingsContext } from 'src/contexts/SettingsContext';
+import { isValidPassword } from '.';
 
 const CreatePasswordWrapper = styled.div`
   padding: 0 20px;
@@ -32,7 +45,7 @@ const Title = styled.div`
   font-weight: 700;
   font-size: 24px;
   line-height: 25px;
-
+  color: ${({ theme }) => theme.text.primary};
   text-align: left;
   margin-bottom: 50px;
 `;
@@ -59,6 +72,12 @@ const Image = styled.img<{ size: string; top: string; width: string }>`
   margin-top: ${(props) => props.marginTop};
 `;
 
+interface WalletData {
+  account: string;
+  publicKey: string;
+  connectedSites: string[];
+}
+
 const LoginDapp = (props: any) => {
   const {
     register,
@@ -69,22 +88,99 @@ const LoginDapp = (props: any) => {
     setValue,
     clearErrors,
   } = useForm();
-  const extensions = useSelector((state) => state.extensions);
   const { setIsLocked } = useSettingsContext();
   const { location } = props;
   const { state } = location;
-  const { from } = state;
+  const rootState = useSelector((s) => s);
+  const { selectedNetwork, networks, passwordHash } = rootState.extensions;
+  const { publicKey, account, connectedSites } = rootState.wallet;
+  const from = state?.from ?? null;
 
-  const handleSignIn = () => {
-    const password = getValues('password');
-    bcrypt.compare(password, extensions.passwordHash, (_errors, isValid) => {
-      if (isValid) {
-        setIsLocked(false);
+  useEffect(() => {
+    if (passwordHash) {
+      if (from) {
         history.push(from);
       } else {
-        setError('password', { type: 'manual', message: 'Invalid Passwords' });
+        const walletData: WalletData = {
+          account,
+          publicKey,
+          connectedSites,
+        };
+        getLocalDapps(
+          (dapps) => {
+            switch (dapps?.message) {
+              case 'res_checkStatus': {
+                updateCheckStatusMessage(
+                  {
+                    account: walletData,
+                    message: 'Connected successfully',
+                    status: 'success',
+                  },
+                  dapps.tabId,
+                );
+                break;
+              }
+              default: {
+                updateAccountMessage(
+                  {
+                    wallet: walletData,
+                    message: 'Get account information successfully',
+                    status: 'success',
+                  },
+                  dapps.tabId,
+                );
+              }
+            }
+
+            setTimeout(() => {
+              window.close();
+            }, 300);
+          },
+          () => {},
+        );
       }
-    });
+    }
+  }, [publicKey, account, connectedSites]);
+
+  const handleSignIn = async () => {
+    const password = getValues('password');
+    getOldLocalPassword(
+      async (oldHashPassword) => {
+        // old password found
+        // check if is correct
+        const isValidOldPassword = checkIsValidOldPassword(password, oldHashPassword);
+        if (isValidOldPassword) {
+          // get seedphrase and store again
+          getLocalSeedPhrase(
+            async (secretKey) => {
+              const plainSeedPhrase = decryptKey(secretKey, oldHashPassword);
+              // save new hashed secretKey
+              const hashPassword = hash(password);
+              setLocalPassword(hashPassword);
+              initLocalWallet(plainSeedPhrase, hashPassword);
+              removeOldLocalPassword();
+              // restore data
+              window.location.reload();
+            },
+            () => {},
+          );
+        } else {
+          setError('password', { type: 'manual', message: 'Invalid Password' });
+        }
+      },
+      //
+      async () => {
+        const isValid = await isValidPassword(password);
+        if (isValid) {
+          const hashPassword = hash(password);
+          setLocalPassword(hashPassword);
+          initDataFromLocal(selectedNetwork, networks);
+          setIsLocked(false);
+        } else {
+          setError('password', { type: 'manual', message: 'Invalid Passwords' });
+        }
+      },
+    );
   };
   const history = useHistory();
   return (

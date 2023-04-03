@@ -1,6 +1,7 @@
 export enum AppThemeEnum {
   LIGHT = 'LIGHT',
   DARK = 'DARK',
+  DARK_BLUE = 'DARK_BLUE',
 }
 
 export interface IPrimarySecondary {
@@ -105,6 +106,46 @@ export const appThemes = {
     iconSettingsBackground: '#24224c',
     boxShadow: `background: rgba(31, 31, 31, 1) 0% 0% no-repeat padding-box;
     box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.16);
+    opacity: 1;`,
+  },
+  [AppThemeEnum.DARK_BLUE]: {
+    isDark: true,
+    background: '#1A1E3E',
+    text: {
+      primary: '#F5F7F9',
+      secondary: '#9FA6AB',
+      disabled: '#46484a',
+    },
+    button: {
+      primary: '#363F82',
+      secondary: '#9FA6AB80',
+    },
+    input: {
+      color: '#fff',
+      background: '#5F5C6D',
+      placeholder: '#9FA6AB',
+    },
+    footer: {
+      primary: '#F5F7F9',
+      secondary: '#9FA6ABBF',
+      disabled: '#9FA6AB4D',
+    },
+    selectMenu: {
+      color: '#fff',
+      background: '#5f6265',
+      selectedColor: '#5f6265',
+      selectedBackground: '#fff',
+    },
+    transferIcon: {
+      border: '#363636',
+      background: '##FFFFFF1A',
+    },
+    alert: { color: '#ffba33', background: '#362f21' },
+    border: '#81878F80',
+    modalBackground: '#1A1E3E',
+    iconBackground: '#2a2a2a',
+    iconSettingsBackground: '#363F82',
+    boxShadow: `box-shadow: 0px 29px 48px rgb(0 0 0 / 40%);
     opacity: 1;`,
   },
 };
