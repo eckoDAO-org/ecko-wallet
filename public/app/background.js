@@ -61,10 +61,38 @@ function setWalletConnectEvents(accounts) {
             networkId: request.params.networkId,
             domain: session?.peer?.metadata.url,
             icon: session?.peer?.metadata?.icons[0],
-            isWalletConnect: true,
+            walletConnectAction: 'kadena_sign',
             topic,
             id,
           });
+          break;
+        }
+        // new methods from https://github.com/kadena-io/KIPs/blob/master/kip-0017.m
+        case 'kadena_sign_v1': {
+          showSignPopup({
+            signingCmd: request.params,
+            networkId: request.params.networkId,
+            domain: session?.peer?.metadata.url,
+            icon: session?.peer?.metadata?.icons[0],
+            walletConnectAction: 'kadena_sign_v1',
+            topic,
+            id,
+          });
+          break;
+        }
+        case 'kadena_quicksign_v1': {
+          const { commandSigDatas } = params;
+          showQuickSignPopup({
+            commandSigDatas,
+            walletConnectAction: 'kadena_quicksign_v1',
+            topic,
+            id,
+          });
+          break;
+        }
+        case 'kadena_getAccounts_v1': {
+          const sessions = walletConnect.getActiveSessions();
+          console.log(`🚀 ~ sessions:`, sessions);
           break;
         }
         default: {
@@ -547,7 +575,7 @@ export const showSignPopup = async (data = {}) => {
       networkId: data.networkId,
       domain: data.domain,
       icon: data.icon,
-      isWalletConnect: data.isWalletConnect || false,
+      walletConnectAction: data.walletConnectAction || false,
       topic: data.topic || false,
       id: data.id || false,
     },
