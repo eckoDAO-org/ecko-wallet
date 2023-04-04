@@ -53,9 +53,10 @@ export const DappLogo = styled.img`
   margin: 50px auto 20px auto;
 `;
 
-interface WalletConnectParams {
+export interface WalletConnectParams {
   id: number;
   topic: string;
+  action: string;
 }
 
 const SignedCmd = () => {
@@ -76,17 +77,21 @@ const SignedCmd = () => {
     } else {
       updateSignedCmdMessage(result, tabId);
     }
+    setTimeout(() => {
+      window.close();
+    }, 300);
   };
 
   useEffect(() => {
     getLocalSigningCmd(
       (signingCmd) => {
         setTabId(signingCmd?.signingCmd?.tabId);
-        if (signingCmd?.signingCmd?.isWalletConnect) {
-          const { id, topic } = signingCmd?.signingCmd;
+        if (signingCmd?.signingCmd?.walletConnectAction) {
+          const { id, topic, walletConnectAction } = signingCmd?.signingCmd;
           setWalletConnectParams({
             id,
             topic,
+            action: walletConnectAction,
           });
         }
         const signedResponse = signCommand(signingCmd?.signingCmd);
@@ -158,9 +163,6 @@ const SignedCmd = () => {
       signedCmd: cmd,
     };
     returnSignedMessage(result);
-    setTimeout(() => {
-      window.close();
-    }, 300);
   };
 
   const onClose = () => {
@@ -172,9 +174,6 @@ const SignedCmd = () => {
       code: 5000,
       message: 'User rejected.',
     });
-    setTimeout(() => {
-      window.close();
-    }, 300);
   };
 
   const newCmd = cmd.cmd ? { ...cmd, cmd: JSON.parse(cmd.cmd) } : {};

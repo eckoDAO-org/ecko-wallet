@@ -9,8 +9,8 @@ import { getSignatureFromHash } from 'src/utils/chainweb';
 import { getLocalQuickSignedCmd, getLocalSelectedNetwork } from 'src/utils/storage';
 import Button from 'src/components/Buttons';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
-import { updateQuickSignedCmdMessage } from 'src/utils/message';
-import { DappDescription, DappLogo, DappWrapper } from './SignedCmd';
+import { sendWalletConnectMessage, updateQuickSignedCmdMessage } from 'src/utils/message';
+import { DappDescription, DappLogo, DappWrapper, WalletConnectParams } from './SignedCmd';
 
 const CommandListWrapper = styled.div`
   padding: 10px;
@@ -38,17 +38,37 @@ const QuickSignedCmd = () => {
   const [domain, setDomain] = useState('');
   const [tabId, setTabId] = useState(null);
   const [quickSignData, setQuickSignData] = useState<any>([]);
+  const [walletConnectParams, setWalletConnectParams] = useState<WalletConnectParams | null>(null);
 
   const rootState = useSelector((state) => state);
   const { publicKey, secretKey } = rootState.wallet;
 
   const { theme } = useAppThemeContext();
 
+  const returnSignedMessage = (result, error?) => {
+    if (walletConnectParams?.topic) {
+      sendWalletConnectMessage(walletConnectParams.id, walletConnectParams.topic, result, error);
+    } else {
+      updateQuickSignedCmdMessage(result, tabId);
+    }
+    setTimeout(() => {
+      window.close();
+    }, 300);
+  };
+
   useEffect(() => {
     getLocalQuickSignedCmd(
       async (toQuickSignData) => {
         setTabId(toQuickSignData.tabId);
         setDomain(toQuickSignData.domain);
+        if (toQuickSignData?.walletConnectAction) {
+          const { id, topic, walletConnectAction } = toQuickSignData;
+          setWalletConnectParams({
+            id,
+            topic,
+            action: walletConnectAction,
+          });
+        }
         const signedResponse = await quickSignCmd(toQuickSignData);
         if (signedResponse?.length) {
           getLocalSelectedNetwork(
@@ -74,28 +94,23 @@ const QuickSignedCmd = () => {
   const checkHasQuickSignValidSignature = async (commandSigDatas) =>
     commandSigDatas && commandSigDatas.filter((r) => r.sigs?.some((s) => s.pubKey === publicKey))?.length > 0;
 
-  const returnErrorMessage = (message, tabID) => {
-    updateQuickSignedCmdMessage(
-      {
-        status: 'fail',
-        error: message,
-      },
-      tabID,
-    );
-    setTimeout(() => {
-      window.close();
-    }, 300);
-  };
-
   const quickSignCmd = async (data) => {
     const isValidPayload = checkIsValidQuickSignPayload(data);
     if (!isValidPayload) {
-      returnErrorMessage('QuickSign fail: your data structure is invalid', data.tabId);
+      const result = {
+        status: 'fail',
+        message: 'QuickSign fail: your data structure is invalid',
+      };
+      returnSignedMessage(result);
       return null;
     }
     const hasQuickSignValidSignature = await checkHasQuickSignValidSignature(data.commandSigDatas);
     if (!hasQuickSignValidSignature) {
-      returnErrorMessage('QuickSign fail: wallet public key not found', data.tabId);
+      const result = {
+        status: 'fail',
+        message: 'QuickSign fail: wallet public key not found',
+      };
+      returnSignedMessage(result);
       return null;
     }
     const signedResponses: any[] = [];
@@ -162,20 +177,14 @@ const QuickSignedCmd = () => {
       status: 'success',
       quickSignData,
     };
-    updateQuickSignedCmdMessage(result, tabId);
-    setTimeout(() => {
-      window.close();
-    }, 300);
+    returnSignedMessage(result);
   };
   const onClose = () => {
     const result = {
       status: 'fail',
       message: 'Rejected by user',
     };
-    updateQuickSignedCmdMessage(result, tabId);
-    setTimeout(() => {
-      window.close();
-    }, 300);
+    returnSignedMessage(result);
   };
 
   return (
