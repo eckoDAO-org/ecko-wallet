@@ -12,6 +12,7 @@ import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 import { getTimestamp } from 'src/utils';
 import { ECKO_WALLET_DAPP_SIGN_NONCE } from 'src/utils/config';
 import { getSignatureFromHash } from 'src/utils/chainweb';
+import { SigningResponse } from './interfaces';
 
 export const DappWrapper = styled.div`
   display: flex;
@@ -63,6 +64,7 @@ const SignedCmd = () => {
   const [domain, setDomain] = useState('example.com.vn');
   const [tabId, setTabId] = useState(null);
   const [cmd, setCmd] = useState<any>({});
+  const [chainId, setChainId] = useState<any>();
   const [caps, setCaps] = useState<any[]>([]);
   const [walletConnectParams, setWalletConnectParams] = useState<WalletConnectParams | null>(null);
 
@@ -86,6 +88,7 @@ const SignedCmd = () => {
     getLocalSigningCmd(
       (signingCmd) => {
         setTabId(signingCmd?.signingCmd?.tabId);
+        setChainId(signingCmd?.signingCmd?.chainId);
         if (signingCmd?.signingCmd?.walletConnectAction) {
           const { id, topic, walletConnectAction } = signingCmd?.signingCmd;
           setWalletConnectParams({
@@ -135,7 +138,7 @@ const SignedCmd = () => {
       const signedCmd = Pact.api.prepareExecCmd(
         keyPairs,
         `${ECKO_WALLET_DAPP_SIGN_NONCE}-"${new Date().toISOString()}"`,
-        signingCmd.pactCode,
+        signingCmd?.pactCode || signingCmd?.code,
         signingCmd.envData,
         meta,
         signingCmd.networkId,
@@ -158,11 +161,25 @@ const SignedCmd = () => {
   };
 
   const onSave = () => {
-    const result = {
-      status: 'success',
-      signedCmd: cmd,
-    };
-    returnSignedMessage(result);
+    if (walletConnectParams?.action === 'kadena_sign') {
+      const result = {
+        status: 'success',
+        signedCmd: cmd,
+      };
+      returnSignedMessage(result);
+    } else if (walletConnectParams?.action === 'kadena_sign_v1') {
+      const result: SigningResponse = {
+        chainId,
+        body: cmd,
+      };
+      returnSignedMessage(result);
+    } else {
+      const result = {
+        status: 'success',
+        signedCmd: cmd,
+      };
+      returnSignedMessage(result);
+    }
   };
 
   const onClose = () => {

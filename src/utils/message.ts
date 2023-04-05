@@ -66,11 +66,11 @@ export const initWalletConnect = (uri: string, accounts: string[]) => {
   });
 };
 
-export const sendWalletConnectMessage = (id, topic, message, error?) => {
+export const sendWalletConnectMessage = (id, topic, response, error?) => {
   (window as any)?.chrome?.runtime?.sendMessage({
     id,
     topic,
-    message,
+    response,
     error,
     target: 'kda.background',
     action: 'walletConnect:response',

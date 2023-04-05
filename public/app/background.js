@@ -10,18 +10,24 @@ const walletConnect = new WalletConnectProvider();
 
 function setWalletConnectEvents(accounts) {
   walletConnect.wallet.on('session_proposal', async (proposal) => {
-    console.log(`🚀 !!! ~ proposal:`, proposal);
     let accountsToShare = [];
     for (let i = 0; i < accounts.length; i += 1) {
-      accountsToShare = [
-        ...accountsToShare,
-        `kadena:mainnet01:${accounts[i]}`,
-        `kadena:mainnet01:k**${accounts[i]}`,
-        `kadena:testnet04:${accounts[i]}`,
-        `kadena:testnet04:k**${accounts[i]}`,
-        `kadena:development:${accounts[i]}`,
-        `kadena:development:k**${accounts[i]}`,
-      ];
+      if (proposal?.params?.proposer?.metadata?.url?.includes('https://swap.ecko.finance')) {
+        // to maintain compatibility with eckoFinance WalletConnect v1 API - remove it after eckoDex WalletConnect api upgrade
+        accountsToShare = [
+          ...accountsToShare,
+          `kadena:mainnet01:k**${accounts[i]}`,
+          `kadena:testnet04:k**${accounts[i]}`,
+          `kadena:development:k**${accounts[i]}`,
+        ];
+      } else {
+        accountsToShare = [
+          ...accountsToShare,
+          `kadena:mainnet01:${accounts[i]}`,
+          `kadena:testnet04:${accounts[i]}`,
+          `kadena:development:${accounts[i]}`,
+        ];
+      }
     }
     const session = await walletConnect.wallet.approveSession({
       id: proposal.id,
@@ -48,7 +54,6 @@ function setWalletConnectEvents(accounts) {
         },
       },
     });
-    console.log(`🚀 !!! ~ session`, session);
     walletConnect.wallet?.on('session_request', (event) => {
       console.log('session_request', event);
       const { topic, params, id } = event;
@@ -70,7 +75,7 @@ function setWalletConnectEvents(accounts) {
         // new methods from https://github.com/kadena-io/KIPs/blob/master/kip-0017.m
         case 'kadena_sign_v1': {
           showSignPopup({
-            signingCmd: request.params,
+            signingCmd: { ...request.params, pactCode: request.code },
             networkId: request.params.networkId,
             domain: session?.peer?.metadata.url,
             icon: session?.peer?.metadata?.icons[0],
@@ -81,9 +86,10 @@ function setWalletConnectEvents(accounts) {
           break;
         }
         case 'kadena_quicksign_v1': {
-          const { commandSigDatas } = params;
+          const commandSigDatas = request?.params?.commandSigDatas;
           showQuickSignPopup({
             commandSigDatas,
+            networkId: params.chainId?.split(':') && params.chainId?.split(':')[1],
             walletConnectAction: 'kadena_quicksign_v1',
             topic,
             id,
@@ -92,15 +98,26 @@ function setWalletConnectEvents(accounts) {
         }
         case 'kadena_getAccounts_v1': {
           const sessions = walletConnect.getActiveSessions();
-          console.log(`🚀 ~ sessions:`, sessions);
+          const isActiveSession = sessions && sessions[topic];
+          if (isActiveSession) {
+            const sessionAccounts = sessions[topic].namespaces?.kadena?.accounts?.map((account) => ({
+              account,
+              publicKey: account.split(':')[2],
+              kadenaAccounts: [
+                {
+                  name: `${account.split(':')[1]}:${account.split(':')[2]}`,
+                  contract: 'coin',
+                  chains: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19'],
+                },
+              ],
+            }));
+            walletConnect.respond(topic, id, { accounts: sessionAccounts });
+          }
           break;
         }
         default: {
           break;
         }
-      }
-      if (request.method === 'kadena_sign') {
-        // old request method
       }
     });
   });
@@ -133,14 +150,13 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
       const wcMethod = request.action?.split(':') && request.action?.split(':')[1];
       switch (wcMethod) {
         case 'init': {
-          await walletConnect.init(request.uri);
+          await walletConnect.init();
+          await walletConnect.pair(request.uri);
           setWalletConnectEvents(request.accounts);
           break;
         }
         case 'response': {
-          console.log(request);
-          console.log(`🚀 !!! ~ request:`, request);
-          await walletConnect.respond(request.topic, request.id, request.message, request.error);
+          await walletConnect.respond(request.topic, request.id, request.response, request.error);
           break;
         }
         default: {
@@ -578,6 +594,7 @@ export const showSignPopup = async (data = {}) => {
       walletConnectAction: data.walletConnectAction || false,
       topic: data.topic || false,
       id: data.id || false,
+      wcMethod: data.wcMethod || null,
     },
   };
 

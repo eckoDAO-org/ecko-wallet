@@ -17,7 +17,7 @@ export class WalletConnectProvider {
     };
   }
 
-  async init(uri) {
+  async init() {
     this.wallet = await Web3Wallet.init({
       core: this.core,
       metadata: {
@@ -27,7 +27,9 @@ export class WalletConnectProvider {
         icons: ['https://swap.ecko.finance/images/crypto/kaddex-crypto.svg'],
       },
     });
+  }
 
+  async pair(uri) {
     await this.wallet.core.pairing.pair({ uri });
   }
 
@@ -38,7 +40,6 @@ export class WalletConnectProvider {
   async respond(topic, id, result, error) {
     const response = { id, result, jsonrpc: '2.0' };
     const sessionResponse = { topic, response, error };
-    console.log(`🚀 !!! ~ WalletConnectProvider ~ sessionResponse:`, sessionResponse);
     await this.wallet.respondSessionRequest(sessionResponse);
   }
 }

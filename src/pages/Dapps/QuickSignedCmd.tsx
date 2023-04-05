@@ -173,11 +173,18 @@ const QuickSignedCmd = () => {
   };
 
   const onSave = () => {
-    const result = {
-      status: 'success',
-      quickSignData,
-    };
-    returnSignedMessage(result);
+    if (walletConnectParams?.action === 'kadena_quicksign_v1') {
+      const result = {
+        responses: quickSignData,
+      };
+      returnSignedMessage(result);
+    } else {
+      const result = {
+        status: 'success',
+        quickSignData,
+      };
+      returnSignedMessage(result);
+    }
   };
   const onClose = () => {
     const result = {
