@@ -30,7 +30,7 @@ const DivError = styled.div`
 `;
 
 interface SeedPhraseRetrivierProps {
-  onSuccess: (seedPhrase: string) => any,
+  onSuccess: (seedPhrase: string, password: string) => any,
   onFail?: () => any,
 }
 
@@ -74,7 +74,7 @@ export const SeedPhraseRetrivier = ({ onSuccess, onFail }: SeedPhraseRetrivierPr
         try {
           const plainSeedPhrase = decryptKey(seedPhraseHash, hashInput);
           setSeedPhrase(plainSeedPhrase);
-          onSuccess(plainSeedPhrase);
+          onSuccess(plainSeedPhrase, passwordInput);
         } catch (err) {
           console.error('Invalid hash');
           onFail?.();
