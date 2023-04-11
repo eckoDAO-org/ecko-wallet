@@ -1,5 +1,6 @@
 import { get } from 'lodash';
 import {
+  RawNetwork,
   defaultNetworks,
   hideFetching,
   setContacts,
@@ -10,10 +11,14 @@ import {
   setSelectedNetwork,
   showFetching,
 } from 'src/stores/extensions';
-import { setCurrentWallet, setWallets } from 'src/stores/wallet';
+import { RawWallet, setCurrentWallet, setWallets } from 'src/stores/wallet';
 import { convertContacts, convertNetworks, convertRecent, revertNetworks } from '.';
 import { getKeyPairsFromSeedPhrase } from './chainweb';
 import { decryptKey, encryptKey } from './security';
+
+type RawWalletsMap = {
+  [key: string]: RawWallet[]
+};
 
 export const STORAGE_PASSWORD_KEY = 'accountPassword';
 
@@ -52,6 +57,12 @@ export const getLocalWallets = (network, successCallback, failCallback) => {
   });
 };
 
+export type GetMultipleLocalWalletsCallback = (wallets: RawWalletsMap) => any;
+export const getMultipleLocalWallets = (networks: string[], callback: GetMultipleLocalWalletsCallback) => {
+  const keys = networks.map((network) => `${network}.wallets`);
+  (window as any)?.chrome?.storage?.local?.get(keys, callback);
+};
+
 export const initLocalWallet = (seedPhrase: string, passwordHash: string) => {
   const keyPairs = getKeyPairsFromSeedPhrase(seedPhrase, 0);
   const { publicKey, secretKey } = keyPairs;
@@ -69,6 +80,174 @@ export const initLocalWallet = (seedPhrase: string, passwordHash: string) => {
   const seedPhraseHash = encryptKey(seedPhrase, passwordHash);
   setLocalSeedPhrase(seedPhraseHash);
 };
+
+const setMultipleObjects = (partialState: object) => {
+  window.chrome.storage.local.set(partialState);
+};
+
+export const updateLocalWallets = (
+  newPasswordHash: string,
+  oldPasswordHash: string,
+  successCallback?: () => any,
+  failCallback?: (error: Error) => any,
+) => {
+  const runUpdate = (networks: RawNetwork[]) => {
+    // Step 1: retrieve and update wallets grouped by network
+    const step1 = () => {
+      retrieveAndUpdateNetworkedWallets(networks, newPasswordHash, oldPasswordHash, step2);
+    };
+
+    // Step 2: retrieve and update selected wallet
+    const step2 = (updatedNetworkedWallets: RawWalletsMap) => {
+      retrieveAndUpdateSelectedWallet(newPasswordHash, oldPasswordHash, (updatedSelectedWallet) => {
+        step3(updatedNetworkedWallets, updatedSelectedWallet);
+      });
+    };
+
+    // Step 3: retrieve and update seed phrase
+    const step3 = (updatedNetworkedWallets: RawWalletsMap, updatedSelectedWallet?: RawWallet) => {
+      // If selected wallet isn't retrieved, use mainnet wallet
+      if (!updatedSelectedWallet) {
+        updatedSelectedWallet = updatedNetworkedWallets.mainnet01?.[0];
+      }
+
+      // If mainnet wallet isn't found, use the first wallet found
+      if (!updatedSelectedWallet) {
+        updatedSelectedWallet = Object.values(updateNetworkedWallets).find((wallets) => wallets[0]);
+      }
+
+      // This should never happend
+      if (updatedSelectedWallet === undefined) {
+        throw new Error("No wallets found");
+      }
+
+      retrieveAndUpdateSeedPhrase(newPasswordHash, oldPasswordHash, (updatedSeedPhrase) => {
+        const newState = {
+          ...updatedNetworkedWallets,
+          selectedWallet: updatedSelectedWallet,
+          seedPhrase: updatedSeedPhrase,
+        };
+
+        setMultipleObjects(newState);
+        setLocalPassword(newPasswordHash);
+        successCallback?.();
+      });
+    };
+
+    step1();
+  };
+
+  try {
+    getLocalNetworks(runUpdate, () => {
+      console.warn("failed to retrieve networks - using default");
+      runUpdate(defaultNetworks);
+    });
+  } catch (error: any) {
+    failCallback?.(error.message);
+  }
+};
+
+// Retrieve and update all wallets grouped by network id
+const retrieveAndUpdateNetworkedWallets = (
+  networks: RawNetwork[],
+  newPasswordHash: string,
+  oldPasswordHash: string,
+  callback: (wallets: RawWalletsMap) => any,
+) => {
+  const networkNames = Object.keys(networks).map((key) => networks[key].networkId);
+  getMultipleLocalWallets(networkNames, (wallets) => {
+    const updatedNetworkedWallets = updateNetworkedWallets(wallets, newPasswordHash, oldPasswordHash);
+    callback(updatedNetworkedWallets);
+  });
+};
+
+const retrieveAndUpdateSelectedWallet = (
+  newPasswordHash: string,
+  oldPasswordHash: string,
+  callback: (wallet?: RawWallet) => any,
+) => {
+  getLocalSelectedWallet((selectedWallet) => {
+    const updatedSelectedWallet = updateWallet(selectedWallet, newPasswordHash, oldPasswordHash);
+    callback(updatedSelectedWallet);
+  }, () => {
+    console.warn("Failed to retrieve selected wallet");
+    callback(undefined);
+  });
+};
+
+const retrieveAndUpdateSeedPhrase = (
+  newPasswordHash: string,
+  oldPasswordHash: string,
+  callback: (seedPhrase: string) => any,
+) => {
+  getLocalSeedPhrase((seedPhrase: string) => {
+    const updatedSeedPhrase = updateSeedPhrase(seedPhrase, newPasswordHash, oldPasswordHash);
+    callback(updatedSeedPhrase);
+  }, () => {
+    // TODO: handle errors
+    console.error("Failed to retrieve seed phrase");
+    throw new Error("Cannot update seed phrase");
+  });
+};
+
+const updateNetworkedWallets = (
+  oldNetworkedWallets: RawWalletsMap,
+  passwordHash: string,
+  oldPasswordHash: string,
+) => {
+  const newNetworkedWallets: RawWalletsMap = {};
+  Object.keys(oldNetworkedWallets).forEach((key) => {
+    const oldWallets = oldNetworkedWallets[key];
+    const newWallets: RawWallet[] = [];
+
+    oldWallets.forEach((wallet) => {
+      newWallets.push(updateWallet(wallet, passwordHash, oldPasswordHash));
+    });
+
+    newNetworkedWallets[key] = newWallets;
+  });
+
+  return newNetworkedWallets;
+};
+
+const updateWallet = (wallet: RawWallet, newPasswordHash: string, oldPasswordHash: string) => {
+  const decryptedWallet = decryptWallet(wallet, oldPasswordHash);
+  const reencryptedWallet = encryptWallet(decryptedWallet, newPasswordHash);
+  const redecryptedWallet = decryptWallet(reencryptedWallet, newPasswordHash);
+
+  if (JSON.stringify(decryptedWallet) !== JSON.stringify(redecryptedWallet)) {
+    throw new Error("New wallet doesn't match old wallet");
+  }
+
+  return reencryptedWallet;
+};
+
+const updateSeedPhrase = (seedPhrase: string, newPasswordHash: string, oldPasswordHash: string) => {
+  const decryptedSeedPhrase = decryptKey(seedPhrase, oldPasswordHash);
+  const reencryptedSeedPhrase = encryptKey(decryptedSeedPhrase, newPasswordHash);
+  const redecryptedSeedPhrase = decryptKey(reencryptedSeedPhrase, newPasswordHash);
+
+  if (JSON.stringify(decryptedSeedPhrase) !== JSON.stringify(redecryptedSeedPhrase)) {
+    throw new Error("New seed phrase doesn't match old seed phrase");
+  }
+
+  return reencryptedSeedPhrase;
+};
+
+// For existing wallets
+const encryptWallet = (wallet: RawWallet, passwordHash: string): RawWallet => ({
+  ...wallet,
+  account: encryptKey(wallet.account, passwordHash),
+  publicKey: encryptKey(wallet.publicKey, passwordHash),
+  secretKey: encryptKey(wallet.secretKey, passwordHash),
+});
+
+const decryptWallet = (wallet: RawWallet, passwordHash: string): RawWallet => ({
+    ...wallet,
+    account: decryptKey(wallet.account, passwordHash),
+    publicKey: decryptKey(wallet.publicKey, passwordHash),
+    secretKey: decryptKey(wallet.secretKey, passwordHash),
+});
 
 export const setLocalSelectedWallet = (selectedWallet: {
   account: string;
