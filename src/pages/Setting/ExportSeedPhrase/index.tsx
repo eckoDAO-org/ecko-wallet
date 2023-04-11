@@ -64,7 +64,7 @@ const ExportSeedPhrase = () => {
     return result;
   };
 
-  const onSeedPhraseRetrivied = (seedPhrase) => setSeedPhrase(seedPhrase);
+  const onSeedPhraseRetrivied = (retriviedSeedPhrase) => setSeedPhrase(retriviedSeedPhrase);
 
   const onDownload = () => {
     const element = document.createElement('a');
