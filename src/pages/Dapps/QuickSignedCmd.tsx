@@ -45,24 +45,26 @@ const QuickSignedCmd = () => {
   const { theme } = useAppThemeContext();
 
   useEffect(() => {
-    getLocalQuickSignedCmd(
-      async (toQuickSignData) => {
-        setTabId(toQuickSignData.tabId);
-        setDomain(toQuickSignData.domain);
-        const signedResponse = await quickSignCmd(toQuickSignData);
-        if (signedResponse?.length) {
-          getLocalSelectedNetwork(
-            (selectedNetwork) => {
-              if (selectedNetwork.networkId === toQuickSignData.networkId) {
-                setQuickSignData(signedResponse);
-              }
-            },
-            () => {},
-          );
-        }
-      },
-      () => {},
-    );
+    if (publicKey) {
+      getLocalQuickSignedCmd(
+        async (toQuickSignData) => {
+          setTabId(toQuickSignData.tabId);
+          setDomain(toQuickSignData.domain);
+          const signedResponse = await quickSignCmd(toQuickSignData);
+          if (signedResponse?.length) {
+            getLocalSelectedNetwork(
+              (selectedNetwork) => {
+                if (selectedNetwork.networkId === toQuickSignData.networkId) {
+                  setQuickSignData(signedResponse);
+                }
+              },
+              () => {},
+            );
+          }
+        },
+        () => {},
+      );
+    }
   }, [publicKey]);
 
   const checkIsValidQuickSignPayload = (payload) =>
