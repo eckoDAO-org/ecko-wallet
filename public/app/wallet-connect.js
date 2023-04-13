@@ -4,7 +4,7 @@ import { Web3Wallet } from '@walletconnect/web3wallet';
 export class WalletConnectProvider {
   core;
 
-  wallet;
+  wallet = null;
 
   constructor() {
     this.core = new Core({
@@ -15,6 +15,10 @@ export class WalletConnectProvider {
         this.onerror = clb;
       }
     };
+  }
+
+  isInitialized() {
+    return this.wallet !== null;
   }
 
   async init() {
@@ -31,6 +35,10 @@ export class WalletConnectProvider {
 
   async pair(uri) {
     await this.wallet.core.pairing.pair({ uri });
+  }
+
+  async disconnectSession(topic) {
+    await this.wallet.disconnectSession({ topic, reason: 'USER DISCONNECTED' });
   }
 
   getActiveSessions() {

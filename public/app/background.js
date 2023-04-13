@@ -1,12 +1,21 @@
 /* eslint no-use-before-define: 0 */
 import 'regenerator-runtime/runtime';
 import { decryptKey } from '../../src/utils/security';
+import { INTERNAL_MESSAGE_PREFIX } from '../../src/utils/message';
 import { WalletConnectProvider } from './wallet-connect';
 
 let contentPort = null;
 const portMap = new Map();
 
 const walletConnect = new WalletConnectProvider();
+
+function sendInternalMessage(action, data = null) {
+  chrome.runtime.sendMessage({
+    target: 'kda.extension',
+    action,
+    data,
+  });
+}
 
 function setWalletConnectEvents(accounts) {
   walletConnect.wallet.on('session_proposal', async (proposal) => {
@@ -20,14 +29,13 @@ function setWalletConnectEvents(accounts) {
           `kadena:testnet04:k**${accounts[i]}`,
           `kadena:development:k**${accounts[i]}`,
         ];
-      } else {
-        accountsToShare = [
-          ...accountsToShare,
-          `kadena:mainnet01:${accounts[i]}`,
-          `kadena:testnet04:${accounts[i]}`,
-          `kadena:development:${accounts[i]}`,
-        ];
       }
+      accountsToShare = [
+        ...accountsToShare,
+        `kadena:mainnet01:${accounts[i]}`,
+        `kadena:testnet04:${accounts[i]}`,
+        `kadena:development:${accounts[i]}`,
+      ];
     }
     const session = await walletConnect.wallet.approveSession({
       id: proposal.id,
@@ -54,10 +62,16 @@ function setWalletConnectEvents(accounts) {
         },
       },
     });
-    walletConnect.wallet?.on('session_request', (event) => {
-      console.log('session_request', event);
+    walletConnect.wallet?.on('session_request', async (event) => {
       const { topic, params, id } = event;
-      const { request } = params;
+      const { request, chainId } = params;
+      const networkId = chainId?.split('kadena:')[1];
+      const isValidNetwork = await verifyNetwork(networkId);
+      if (!isValidNetwork) {
+        const error = 'Invalid Network';
+        await walletConnect.respond(topic, id, { error }, error);
+        return;
+      }
       switch (request.method) {
         // old ecko swap methods
         case 'kadena_sign': {
@@ -146,21 +160,38 @@ chrome.runtime.onStartup.addListener(() => {
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   const tabIdResponse = request?.tabId || sender?.tab?.id;
   if (request.target === 'kda.background') {
-    if (request.action.includes('walletConnect')) {
-      const wcMethod = request.action?.split(':') && request.action?.split(':')[1];
-      switch (wcMethod) {
-        case 'init': {
+    if (request.action.includes(INTERNAL_MESSAGE_PREFIX)) {
+      const internalMethod = request.action?.split(INTERNAL_MESSAGE_PREFIX) && request.action?.split(INTERNAL_MESSAGE_PREFIX)[1];
+      switch (internalMethod) {
+        case 'walletConnect:init': {
           await walletConnect.init();
           await walletConnect.pair(request.uri);
           setWalletConnectEvents(request.accounts);
-          break;
+          return;
         }
-        case 'response': {
-          await walletConnect.respond(request.topic, request.id, request.response, request.error);
-          break;
+        case 'walletConnect:response': {
+          if (walletConnect.isInitialized()) {
+            await walletConnect.respond(request.topic, request.id, request.response, request.error);
+          }
+          return;
+        }
+        case 'walletConnect:sessions': {
+          if (walletConnect.isInitialized()) {
+            const sessions = await walletConnect.getActiveSessions();
+            sendInternalMessage('walletConnect:sessions', sessions);
+          } else {
+            sendInternalMessage('walletConnect:sessions', []);
+          }
+          return;
+        }
+        case 'walletConnect:disconnect': {
+          if (walletConnect.isInitialized()) {
+            await walletConnect.disconnectSession(request?.topic);
+          }
+          return;
         }
         default: {
-          break;
+          return;
         }
       }
     }
@@ -716,10 +747,7 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
       setTimeout(() => {
         sendToConnectedPorts(successMsg);
       }, 500);
-      chrome.runtime.sendMessage({
-        target: 'kda.extension',
-        action: 'sync_data',
-      });
+      sendInternalMessage('sync_data');
     }
   }
 });

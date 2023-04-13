@@ -61,8 +61,6 @@ const PrivateRoute = (props: Props) => {
     if (!isSignIn) {
       RenderComponent = <Redirect to="/sign-in" />;
     }
-  } else if (isHome && (!wallet.wallets || wallet.wallets.length < 1)) {
-    RenderComponent = <Redirect to="/init" />;
   } else if (isSeedPhrase && isHaveSeedPhrase) {
     if (isLoggedIn) {
       RenderComponent = <Redirect to="/" />;
