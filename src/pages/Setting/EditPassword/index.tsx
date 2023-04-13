@@ -34,7 +34,7 @@ const Footer = styled.div`
   margin-top: 35px;
 `;
 
-const ExportSeedPhrase = () => {
+const EditPassword = () => {
   const history = useHistory();
   const [oldPassword, setOldPassword] = useState('');
   const [, , , removeAccountPassword] = useSessionStorage(STORAGE_PASSWORD_KEY, null);
@@ -106,4 +106,4 @@ const ExportSeedPhrase = () => {
     </Container>
   );
 };
-export default ExportSeedPhrase;
+export default EditPassword;
