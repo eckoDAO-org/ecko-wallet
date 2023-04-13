@@ -27,6 +27,7 @@ import QuickSignedCmd from './pages/Dapps/QuickSignedCmd';
 import SeedPhrase from './pages/SeedPhrase';
 import InitSeedPhrase from './pages/InitSeedPhrase';
 import ExportSeedPhrase from './pages/Setting/ExportSeedPhrase';
+import EditPassword from './pages/Setting/EditPassword';
 import History from './pages/Wallet/views/History';
 import PageTransaction from './pages/Setting/Transaction';
 import PageLockSettings from './pages/Setting/Lock';
@@ -60,6 +61,7 @@ const AppContainer = () => {
         <PrivateRoute isFirstInstall path="/init-seed-phrase" component={InitSeedPhrase} />
         <PrivateRoute isSeedPhrase isSignIn path="/seed-phrase" component={SeedPhrase} />
         <PrivateRoute path="/export-seed-phrase" component={ExportSeedPhrase} />
+        <PrivateRoute path="/edit-password" component={EditPassword} />
         <PrivateRoute path="/import-wallet" component={ImportAccount} />
         <PrivateRoute path="/import-token" component={importToken} />
         <PrivateRoute path="/transfer" component={SendTransactions} />

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import { useForm, Controller } from 'react-hook-form';
-import { BaseTextInput, InputAlert, InputError } from 'src/baseComponent';
+import { useForm } from 'react-hook-form';
+import { BaseTextInput, InputError } from 'src/baseComponent';
 import lib from 'cardano-crypto.js/kadena-crypto';
 import { useSelector } from 'react-redux';
 import { hash as kadenaHash } from '@kadena/cryptography-utils';
@@ -10,7 +10,7 @@ import { initLocalWallet, setLocalPassword, updateWallets } from 'src/utils/stor
 import Toast from 'src/components/Toast/Toast';
 import { NavigationHeader } from 'src/components/NavigationHeader';
 import Button from 'src/components/Buttons';
-import { Radio } from 'src/components/Radio';
+import { PasswordForm } from 'src/components/PasswordForm';
 
 const CreatePasswordWrapper = styled.div`
   padding: 0 20px;
@@ -97,17 +97,6 @@ const CreatePassword = () => {
     history.push('/init-seed-phrase');
   };
 
-  const checkPasswordDiscouraged = (str) => {
-    // Check if there are characters that are NOT:
-    // \w words (letters, digits, underscore)
-    // !?"'.,;@# special characters
-    const pattern = /[^\w!?"'.,;@#]/;
-    return pattern.test(str);
-  };
-
-  const password = getValues('password');
-  const passwordIsDiscouraged = checkPasswordDiscouraged(password);
-
   return (
     <CreatePasswordWrapper>
       <NavigationHeader title={isCreateSeedPhrase ? 'Import From Recovery Phrase' : 'Create Password'} onBack={goBack} />
@@ -143,105 +132,14 @@ const CreatePassword = () => {
               <>{errors.seedPhrase && <InputError>{errors.seedPhrase.message}</InputError>}</>
             </>
           )}
-          <DivBody>
-            <BaseTextInput
-              inputProps={{
-                type: 'password',
-                placeholder: 'Input Password',
-                ...register('password', {
-                  required: {
-                    value: true,
-                    message: 'This field is required.',
-                  },
-                  minLength: {
-                    value: 8,
-                    message: 'Password should be minimum 8 characters.',
-                  },
-                  maxLength: {
-                    value: 256,
-                    message: 'Password should be maximum 256 characters.',
-                  },
-                }),
-              }}
-              typeInput="password"
-              title="New Password (min 8 chars)"
-              height="auto"
-              onChange={(e) => {
-                clearErrors('password');
-                setValue('password', e.target.value);
-              }}
-            />
-          </DivBody>
-          {errors.password && (
-            <InputError>
-              {errors.password.message}
-            </InputError>
-          )}
-          <DivBody>
-            <BaseTextInput
-              inputProps={{
-                type: 'password',
-                placeholder: 'Input Confirm Password',
-                ...register('confirmPassword', {
-                  required: {
-                    value: true,
-                    message: 'This field is required.',
-                  },
-                  maxLength: {
-                    value: 256,
-                    message: 'Password should be maximum 256 characters.',
-                  },
-                  validate: {
-                    match: (v) => v === getValues('password') || 'Password does not match',
-                  },
-                }),
-              }}
-              typeInput="password"
-              title="Confirm Password"
-              height="auto"
-              onChange={(e) => {
-                clearErrors('confirmPassword');
-                setValue('confirmPassword', e.target.value);
-              }}
-            />
-          </DivBody>
-          {errors.confirmPassword && (
-            <InputError>
-              {errors.confirmPassword.message}
-            </InputError>
-          )}
-          <DivBody>
-            {passwordIsDiscouraged && (
-              <Controller
-                control={control}
-                name="passwordDiscouragedConfirm"
-                rules={{
-                  required: {
-                    value: true,
-                    message: 'This field is required.',
-                  },
-                }}
-                render={({
-                  field: { onChange, value, name },
-                }) => (
-                  <Radio
-                    onClick={() => setValue(name, !value)}
-                    isChecked={value}
-                    label={
-                      <InputAlert>
-                        I understand that I used characters that are unsafe. It is strongly recommended to use only letters(a-z), numbers(0-9), and special characters _!?&quot;&apos;.#@,;-
-                      </InputAlert>
-                    }
-                  />
-                )}
-              />
-            )}
-          </DivBody>
-          {errors.passwordDiscouragedConfirm && (
-            <InputError>
-              {errors.passwordDiscouragedConfirm.message}
-            </InputError>
-          )}
+          <PasswordForm
+            clearErrors={clearErrors}
+            control={control}
+            errors={errors}
+            getValues={getValues}
+            register={register}
+            setValue={setValue}
+          />
         </Wrapper>
       </Body>
       <Footer>
