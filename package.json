@@ -24,6 +24,7 @@
     "bignumber.js": "^9.0.1",
     "bip39": "^3.0.4",
     "cardano-crypto.js": "https://github.com/kadena-io/cardano-crypto.js.git#jam@chainweaver-keygen",
+    "copyfiles": "^2.4.1",
     "crypto-js": "^4.1.1",
     "eslint-import-resolver-typescript": "^2.5.0",
     "jspdf": "^2.4.0",
@@ -58,7 +59,7 @@
     "webpack": "^4.44.2"
   },
   "scripts": {
-    "start": "craco start",
+    "start": "copyfiles -u 1 \"public/**/*\" dist && craco start",
     "build": "craco build && parcel build public/app/* -d build/app --no-source-maps --no-minify",
     "parcel:build": "parcel build public/app/* -d build/app --no-source-maps --no-minify",
     "test": "craco test",

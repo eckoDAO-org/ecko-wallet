@@ -100,6 +100,12 @@ const PageSetting = () => {
       isHidden: secretKey?.length !== 256,
     },
     {
+      title: 'Edit Password',
+      img: <KeyIcon />,
+      description: 'Change your wallet password',
+      onClick: () => history.push('/edit-password'),
+    },
+    {
       title: 'Expand View',
       img: <ExpandView />,
       description: 'Open eckoWALLET in a new window',

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, Store } from '@reduxjs/toolkit';
 
-interface RawWallet {
+export interface RawWallet {
   chainId: string | number;
   account: string;
   alias?: string;

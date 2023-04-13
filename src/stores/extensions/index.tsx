@@ -42,7 +42,7 @@ export const defaultNetworks: RawNetwork[] = [
   },
 ];
 
-interface RawNetwork {
+export interface RawNetwork {
   name: string;
   url: string;
   explorer: string;
