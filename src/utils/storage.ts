@@ -81,9 +81,13 @@ export const initLocalWallet = (seedPhrase: string, passwordHash: string) => {
   setLocalSeedPhrase(seedPhraseHash);
 };
 
-const setMultipleObjects = (partialState: object) => {
-  window.chrome.storage.local.set(partialState);
-};
+const setMultipleObjects = (partialState: object) => (
+  window.chrome.storage.local.set(partialState)
+);
+
+const getMultipleObjects = (keyorKeys: string|string[]) => (
+  window.chrome.storage.local.get(keyorKeys)
+);
 
 export const updateLocalWallets = (
   newPasswordHash: string,
@@ -248,6 +252,19 @@ const decryptWallet = (wallet: RawWallet, passwordHash: string): RawWallet => ({
     publicKey: decryptKey(wallet.publicKey, passwordHash),
     secretKey: decryptKey(wallet.secretKey, passwordHash),
 });
+
+export const setTOTPSharedKey = (sharedKey: string, passwordHash: string) => {
+  const encryptedSharedKey = encryptKey(sharedKey, passwordHash);
+  return setMultipleObjects({
+    totpSharedKey: encryptedSharedKey,
+  });
+};
+
+export const hasTOTPSharedKey = () => (
+  getMultipleObjects(['totpSharedKey']).then(
+    ({ totpSharedKey }) => !!totpSharedKey,
+  )
+);
 
 export const setLocalSelectedWallet = (selectedWallet: {
   account: string;

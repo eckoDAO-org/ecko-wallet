@@ -11,14 +11,14 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isDisabled?: boolean;
 }
 
-const ButtonWrapper = styled.button<{ size?: string; background?: string; border?: string; svgColor?: string; color?: string }>`
+const ButtonWrapper = styled.button<{ size?: string; background?: string; border?: string; svgColor?: string; color?: string, cursor?: string }>`
   ${(props) => (props.size === BUTTON_SIZE.NORMAL ? 'padding: 0 30px' : 'width: 100%')};
   height: 50px;
   background: ${(props) => props.background};
   border: ${(props) => props.border};
   color: ${(props) => props.color};
   border-radius: 30px;
-  cursor: pointer;
+  cursor: ${(props) => props.cursor || 'pointer'};
   font-family: 'Montserrat';
   font-style: normal;
   font-weight: 700;
@@ -44,12 +44,14 @@ const Button = (props: Props) => {
       color: theme.button?.primary,
       background: 'white',
       border: `1px solid ${theme.button?.primary}`,
+      cursor: 'default',
     };
   } else if (variant === BUTTON_TYPE.DISABLE) {
     buttonType = {
       color: theme.button?.primary,
       background: 'white',
       border: `1px solid ${theme.button?.primary}`,
+      cursor: 'default',
     };
   } else if (variant === BUTTON_TYPE.TRANSPARENT) {
     buttonType = {
@@ -77,7 +79,7 @@ const Button = (props: Props) => {
     };
   }
   return (
-    <ButtonWrapper onClick={onClick} size={size} color={buttonType.color} background={buttonType.background} border={buttonType.border} {...props}>
+    <ButtonWrapper onClick={onClick} size={size} color={buttonType.color} background={buttonType.background} border={buttonType.border} cursor={buttonType.cursor} {...props}>
       {label}
     </ButtonWrapper>
   );

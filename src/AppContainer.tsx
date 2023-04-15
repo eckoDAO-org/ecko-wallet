@@ -1,4 +1,3 @@
-import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Switch, Redirect, Route } from 'react-router-dom';
@@ -28,6 +27,7 @@ import SeedPhrase from './pages/SeedPhrase';
 import InitSeedPhrase from './pages/InitSeedPhrase';
 import ExportSeedPhrase from './pages/Setting/ExportSeedPhrase';
 import EditPassword from './pages/Setting/EditPassword';
+import TwoFactorAuth from './pages/Setting/TwoFactorAuth';
 import History from './pages/Wallet/views/History';
 import PageTransaction from './pages/Setting/Transaction';
 import PageLockSettings from './pages/Setting/Lock';
@@ -62,6 +62,7 @@ const AppContainer = () => {
         <PrivateRoute isSeedPhrase isSignIn path="/seed-phrase" component={SeedPhrase} />
         <PrivateRoute path="/export-seed-phrase" component={ExportSeedPhrase} />
         <PrivateRoute path="/edit-password" component={EditPassword} />
+        <PrivateRoute path="/2fa" component={TwoFactorAuth} />
         <PrivateRoute path="/import-wallet" component={ImportAccount} />
         <PrivateRoute path="/import-token" component={importToken} />
         <PrivateRoute path="/transfer" component={SendTransactions} />
