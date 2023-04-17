@@ -5,6 +5,7 @@ import { CommonLabel } from 'src/components';
 import { NavigationHeader } from 'src/components/NavigationHeader';
 import { hasTOTPSharedKey } from "src/utils/storage";
 import TOTPSetup from "./TOTPSetup";
+import TOTPDisabler from './TOTPDisabler';
 
 const Container = styled.div`
 padding: 0 20px;
@@ -39,14 +40,7 @@ const TwoFactorAuth = () => {
   }
 
   return (
-    <Container>
-      <NavigationHeader title="Two-Factor Authentication" onBack={goBack} />
-      <Body>
-        <CommonLabel fontSize={18}>
-          2FA already setupped.
-        </CommonLabel>
-      </Body>
-    </Container>
+    <TOTPDisabler />
   );
 };
 

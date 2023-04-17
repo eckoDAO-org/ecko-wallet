@@ -89,6 +89,10 @@ const getMultipleObjects = (keyorKeys: string|string[]) => (
   window.chrome.storage.local.get(keyorKeys)
 );
 
+const removeMultipleObjects = (keyorKeys: string|string[]) => (
+  window.chrome.storage.local.remove(keyorKeys)
+);
+
 export const updateLocalWallets = (
   newPasswordHash: string,
   oldPasswordHash: string,
@@ -264,6 +268,10 @@ export const hasTOTPSharedKey = () => (
   getMultipleObjects(['totpSharedKey']).then(
     ({ totpSharedKey }) => !!totpSharedKey,
   )
+);
+
+export const removeTOTPSharedKey = () => (
+  removeMultipleObjects(['totpSharedKey'])
 );
 
 export const setLocalSelectedWallet = (selectedWallet: {
