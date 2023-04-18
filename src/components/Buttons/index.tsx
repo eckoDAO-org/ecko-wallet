@@ -79,7 +79,7 @@ const Button = (props: Props) => {
     };
   }
   return (
-    <ButtonWrapper onClick={onClick} size={size} color={buttonType.color} background={buttonType.background} border={buttonType.border} cursor={buttonType.cursor} {...props}>
+    <ButtonWrapper disabled={isDisabled} onClick={onClick} size={size} color={buttonType.color} background={buttonType.background} border={buttonType.border} cursor={buttonType.cursor} {...props}>
       {label}
     </ButtonWrapper>
   );
