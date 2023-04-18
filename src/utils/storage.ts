@@ -81,16 +81,16 @@ export const initLocalWallet = (seedPhrase: string, passwordHash: string) => {
   setLocalSeedPhrase(seedPhraseHash);
 };
 
-const setMultipleObjects = (partialState: object) => (
-  window.chrome.storage.local.set(partialState)
+const setMultipleObjects = (partialState: object, inSession: boolean = false) => (
+  window.chrome.storage[inSession ? 'session' : 'local'].set(partialState)
 );
 
-const getMultipleObjects = (keyorKeys: string|string[]) => (
-  window.chrome.storage.local.get(keyorKeys)
+const getMultipleObjects = (keyorKeys: string|string[], inSession: boolean = false) => (
+  window.chrome.storage[inSession ? 'session' : 'local'].get(keyorKeys)
 );
 
-const removeMultipleObjects = (keyorKeys: string|string[]) => (
-  window.chrome.storage.local.remove(keyorKeys)
+const removeMultipleObjects = (keyorKeys: string|string[], inSession: boolean = false) => (
+  window.chrome.storage[inSession ? 'session' : 'local'].remove(keyorKeys)
 );
 
 export const updateLocalWallets = (
@@ -257,23 +257,6 @@ const decryptWallet = (wallet: RawWallet, passwordHash: string): RawWallet => ({
     secretKey: decryptKey(wallet.secretKey, passwordHash),
 });
 
-export const setTOTPSharedKey = (sharedKey: string, passwordHash: string) => {
-  const encryptedSharedKey = encryptKey(sharedKey, passwordHash);
-  return setMultipleObjects({
-    totpSharedKey: encryptedSharedKey,
-  });
-};
-
-export const hasTOTPSharedKey = () => (
-  getMultipleObjects(['totpSharedKey']).then(
-    ({ totpSharedKey }) => !!totpSharedKey,
-  )
-);
-
-export const removeTOTPSharedKey = () => (
-  removeMultipleObjects(['totpSharedKey'])
-);
-
 export const setLocalSelectedWallet = (selectedWallet: {
   account: string;
   connectedSites?: string[];
@@ -294,6 +277,32 @@ export const getLocalSelectedWallet = (successCallback, failCallback) => {
     }
   });
 };
+
+// 2FA
+export const setTOTPSharedKey = (sharedKey: string, passwordHash: string) => {
+  const encryptedSharedKey = encryptKey(sharedKey, passwordHash);
+  return setMultipleObjects({
+    totpSharedKey: encryptedSharedKey,
+  });
+};
+
+export const getTOTPSharedKey = (passwordHash: string) => (
+  getMultipleObjects(['totpSharedKey']).then(
+    ({ totpSharedKey }) => (
+      decryptKey(totpSharedKey, passwordHash)
+    ),
+  )
+);
+
+export const hasTOTPSharedKey = () => (
+  getMultipleObjects(['totpSharedKey']).then(
+    ({ totpSharedKey }) => !!totpSharedKey,
+  )
+);
+
+export const removeTOTPSharedKey = () => (
+  removeMultipleObjects(['totpSharedKey'])
+);
 
 // Activities
 export const setLocalActivities = (network, account, activities) => {

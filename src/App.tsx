@@ -1,8 +1,9 @@
 import './App.scss';
 import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
 import styled from 'styled-components';
 import { ToastContainer } from 'react-toastify';
-import store from './stores';
+import store, { persistor } from './stores';
 import 'react-toastify/dist/ReactToastify.css';
 import AppContainer from './AppContainer';
 import { ModalProvider, ModalConsumer } from './contexts/ModalContext';
@@ -51,44 +52,46 @@ const ToastWrapper = styled.div`
 
 const App = () => (
   <Provider store={store}>
-    <AppThemeProvider>
-      <AppWrapper>
-        <Content>
-          <ModalProvider>
-            <ModalConsumer>
-              {({ isOpen, title, content, footer, closeModal, roundIcon }) => (
-                <ModalCustom isOpen={isOpen || false} title={title} footer={footer} onCloseModal={closeModal} roundIcon={roundIcon}>
-                  {content}
-                </ModalCustom>
-              )}
-            </ModalConsumer>
-            <SettingsProvider>
-              <AccountBalanceProvider>
-                <CrossChainProvider>
-                  <AppContainer />
-                </CrossChainProvider>
-              </AccountBalanceProvider>
-            </SettingsProvider>
-          </ModalProvider>
-        </Content>
-      </AppWrapper>
-      <ToastWrapper>
-        <ToastContainer
-          position="top-center"
-          autoClose={3000}
-          hideProgressBar
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          icon={false}
-          closeButton={false}
-          pauseOnFocusLoss
-          draggable
-          theme="light"
-          pauseOnHover
-        />
-      </ToastWrapper>
-    </AppThemeProvider>
+    <PersistGate persistor={persistor}>
+      <AppThemeProvider>
+        <AppWrapper>
+          <Content>
+            <ModalProvider>
+              <ModalConsumer>
+                {({ isOpen, title, content, footer, closeModal, roundIcon }) => (
+                  <ModalCustom isOpen={isOpen || false} title={title} footer={footer} onCloseModal={closeModal} roundIcon={roundIcon}>
+                    {content}
+                  </ModalCustom>
+                )}
+              </ModalConsumer>
+              <SettingsProvider>
+                <AccountBalanceProvider>
+                  <CrossChainProvider>
+                    <AppContainer />
+                  </CrossChainProvider>
+                </AccountBalanceProvider>
+              </SettingsProvider>
+            </ModalProvider>
+          </Content>
+        </AppWrapper>
+        <ToastWrapper>
+          <ToastContainer
+            position="top-center"
+            autoClose={3000}
+            hideProgressBar
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            icon={false}
+            closeButton={false}
+            pauseOnFocusLoss
+            draggable
+            theme="light"
+            pauseOnHover
+          />
+        </ToastWrapper>
+      </AppThemeProvider>
+    </PersistGate>
   </Provider>
 );
 
