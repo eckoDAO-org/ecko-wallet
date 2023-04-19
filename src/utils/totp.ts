@@ -10,7 +10,6 @@ export const generateSharedKey = (length = 64) => {
 
 export const initTOTP = (_secret?: string) => {
   const secret = _secret || generateSharedKey();
-
   const totp = new TOTP({
     issuer: "eckoWALLET",
     label: "eckoWALLET",
@@ -30,3 +29,9 @@ export const encryptSharedKey = (sharedKey: string, key: string) => (
 export const decryptSharedKey = (encryptedSharedKey: string, key: string) => (
   decryptKey(encryptedSharedKey, key)
 );
+
+export const reencryptSharedKey = (encryptedSharedKey: string, oldKey: string, newKey: string) => {
+  const sharedKey = decryptSharedKey(encryptedSharedKey, oldKey);
+  const reencryptedSharedKey = encryptSharedKey(sharedKey, newKey);
+  return reencryptedSharedKey;
+};
