@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
+import { disable2FA } from 'src/stores/auth';
 import { CommonLabel } from 'src/components';
 import Button from 'src/components/Buttons';
 import { NavigationHeader } from 'src/components/NavigationHeader';
 import Toast from 'src/components/Toast/Toast';
-import { removeTOTPSharedKey } from 'src/utils/storage';
+import { useAppDispatch } from 'src/stores/hooks';
 
 const Container = styled.div`
 padding: 0 20px;
@@ -27,6 +28,7 @@ const Footer = styled.div`
 const TOTPDisabler = () => {
   const history = useHistory();
   const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useAppDispatch();
 
   const goBack = () => {
     history.goBack();
@@ -36,10 +38,9 @@ const TOTPDisabler = () => {
     if (isLoading) return;
     setIsLoading(true);
 
-    removeTOTPSharedKey().then(() => {
-      goBack();
-      toast.success(<Toast type="success" content="2FA removed successfully" />);
-    });
+    dispatch(disable2FA());
+    goBack();
+    toast.success(<Toast type="success" content="2FA removed successfully" />);
   };
 
   return (

@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import { TOTP } from "otpauth";
+import { decryptKey, encryptKey } from "./security";
 
 export const generateSharedKey = (length = 64) => {
   let buffer = crypto.randomBytes(length * 2).toString('hex');
@@ -21,3 +22,11 @@ export const initTOTP = (_secret?: string) => {
 
   return totp;
 };
+
+export const encryptSharedKey = (sharedKey: string, key: string) => (
+  encryptKey(sharedKey, key)
+);
+
+export const decryptSharedKey = (encryptedSharedKey: string, key: string) => (
+  decryptKey(encryptedSharedKey, key)
+);

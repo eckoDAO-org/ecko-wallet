@@ -11,8 +11,9 @@ import Button from 'src/components/Buttons';
 import { NavigationHeader } from 'src/components/NavigationHeader';
 import { SeedPhraseRetrivier } from 'src/components/SeedPhraseRetrivier';
 import Toast from 'src/components/Toast/Toast';
-import { setTOTPSharedKey } from 'src/utils/storage';
-import { generateSharedKey, initTOTP } from 'src/utils/totp';
+import { encryptSharedKey, generateSharedKey, initTOTP } from 'src/utils/totp';
+import { useAppDispatch } from 'src/stores/hooks';
+import { setTOTPSharedKey } from 'src/stores/auth';
 
  const GA_LINK = 'https://support.google.com/accounts/answer/1066447?hl=en';
 
@@ -64,6 +65,7 @@ const TOTPSetup = () => {
   const [sharedKey, setSharedKey] = useState('');
   const [token, setToken] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (!sharedKey) {
@@ -76,7 +78,7 @@ const TOTPSetup = () => {
     history.goBack();
   };
 
-  const onSeedPhraseRetrivied = (_seedPhrase, password) => setPassword(password);
+  const onSeedPhraseRetrivied = (_seedPhrase, _password) => setPassword(_password);
 
   const onChangeInput = (e) => {
     // Remove non-numeric characters
@@ -101,10 +103,10 @@ const TOTPSetup = () => {
     setIsLoading(true);
 
     const passwordHash = hash(password);
-    setTOTPSharedKey(sharedKey, passwordHash).then(() => {
-      goBack();
-      toast.success(<Toast type="success" content="2FA setupped successfully" />);
-    });
+    const encryptedSharedKey = encryptSharedKey(sharedKey, passwordHash);
+    dispatch(setTOTPSharedKey(encryptedSharedKey));
+    goBack();
+    toast.success(<Toast type="success" content="2FA setupped successfully" />);
   };
 
   return (

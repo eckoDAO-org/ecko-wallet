@@ -29,7 +29,6 @@ const TwoFactorAuthenticator: React.FC<Props> = ({ children }) => {
   };
 
   const handleVerified = () => {
-    console.log("2fa completed!");
     dispatch(unrequire2FA());
   };
 

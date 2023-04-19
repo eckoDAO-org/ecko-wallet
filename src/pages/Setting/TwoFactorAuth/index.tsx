@@ -1,28 +1,12 @@
-import { useEffect, useState } from 'react';
-import { hasTOTPSharedKey } from "src/utils/storage";
+import { useAppSelector } from 'src/stores/hooks';
+import { hasTOTPSharedKey } from 'src/stores/auth';
 import TOTPSetup from "./TOTPSetup";
 import TOTPDisabler from './TOTPDisabler';
 
 const TwoFactorAuth = () => {
-  const [isSetupped, setIsSetupped] = useState<boolean|undefined>(undefined);
+  const isSetupped = useAppSelector(hasTOTPSharedKey);
 
-  useEffect(() => {
-    if (isSetupped === undefined) {
-      hasTOTPSharedKey().then(
-        (_isSetupped) => setIsSetupped(_isSetupped),
-      );
-    }
-  }, [isSetupped]);
-
-  if (isSetupped === false) {
-    return (
-      <TOTPSetup />
-    );
-  }
-
-  return (
-    <TOTPDisabler />
-  );
+  return isSetupped ? <TOTPDisabler /> : <TOTPSetup />;
 };
 
 export default TwoFactorAuth;

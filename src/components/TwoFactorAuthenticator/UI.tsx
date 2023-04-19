@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { getLocalPassword } from 'src/utils/storage';
+import { decryptSharedKey, initTOTP } from 'src/utils/totp';
+import { useAppSelector } from 'src/stores/hooks';
+import { getTOTPSharedKey } from 'src/stores/auth';
 import { InputError } from 'src/baseComponent';
 import { SInput } from 'src/baseComponent/BaseTextInput';
 import { CommonLabel } from 'src/components';
 import Button from 'src/components/Buttons';
-import { getLocalPassword, getTOTPSharedKey, removeTOTPSharedKey } from 'src/utils/storage';
-import { initTOTP } from 'src/utils/totp';
 
 const Container = styled.div`
   padding: 20px;
@@ -53,26 +55,31 @@ interface TOTPSetupProps {
 }
 
 const TOTPSetup = ({ handleVerified, handleFailed }: TOTPSetupProps) => {
+  const encryptedSharedKey = useAppSelector(getTOTPSharedKey);
   const [sharedKey, setSharedKey] = useState('');
   const [token, setToken] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (!sharedKey) {
+    if (!sharedKey && encryptedSharedKey) {
       getLocalPassword(
         // Password retrieved - decrypt shared key
         (passwordHash) => {
-          getTOTPSharedKey(passwordHash).then((sharedKey) => {
-            setSharedKey(sharedKey);
-          });
+          const decryptedSharedKey = decryptSharedKey(encryptedSharedKey, passwordHash);
+          setSharedKey(decryptedSharedKey);
         },
         // Password not retrieved
         handleFailed,
       );
     }
-  }, [sharedKey]);
+  }, [sharedKey, encryptedSharedKey]);
 
   if (!sharedKey) {
+    return <>Loading...</>;
+  }
+
+  if (!encryptedSharedKey) {
+    handleFailed();
     return <>Loading...</>;
   }
 

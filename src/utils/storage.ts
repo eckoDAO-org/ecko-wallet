@@ -278,32 +278,6 @@ export const getLocalSelectedWallet = (successCallback, failCallback) => {
   });
 };
 
-// 2FA
-export const setTOTPSharedKey = (sharedKey: string, passwordHash: string) => {
-  const encryptedSharedKey = encryptKey(sharedKey, passwordHash);
-  return setMultipleObjects({
-    totpSharedKey: encryptedSharedKey,
-  });
-};
-
-export const getTOTPSharedKey = (passwordHash: string) => (
-  getMultipleObjects(['totpSharedKey']).then(
-    ({ totpSharedKey }) => (
-      decryptKey(totpSharedKey, passwordHash)
-    ),
-  )
-);
-
-export const hasTOTPSharedKey = () => (
-  getMultipleObjects(['totpSharedKey']).then(
-    ({ totpSharedKey }) => !!totpSharedKey,
-  )
-);
-
-export const removeTOTPSharedKey = () => (
-  removeMultipleObjects(['totpSharedKey'])
-);
-
 // Activities
 export const setLocalActivities = (network, account, activities) => {
   const key = `${network}.activities.${account}`;
