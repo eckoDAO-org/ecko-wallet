@@ -66,7 +66,14 @@ const TOTPSetup = ({ handleVerified, handleFailed }: TOTPSetupProps) => {
         // Password retrieved - decrypt shared key
         (passwordHash) => {
           const decryptedSharedKey = decryptSharedKey(encryptedSharedKey, passwordHash);
-          setSharedKey(decryptedSharedKey);
+
+          if (!decryptedSharedKey) {
+            // This should never happen. If it happens, user won't be able to login anymore.
+            // In that case, user must reinstall the wallet and reimport the seed phrase.
+            handleFailed();
+          } else {
+            setSharedKey(decryptedSharedKey);
+          }
         },
         // Password not retrieved
         handleFailed,
