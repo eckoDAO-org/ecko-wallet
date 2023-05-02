@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
+import { useAppDispatch, useAppSelector } from 'src/stores/hooks';
+import { getTOTPSharedKey, setTOTPSharedKey } from 'src/stores/auth';
+import { reencryptSharedKey } from 'src/utils/totp';
 import Button from 'src/components/Buttons';
 import { NavigationHeader } from 'src/components/NavigationHeader';
 import { PasswordForm } from 'src/components/PasswordForm';
@@ -34,11 +37,13 @@ const Footer = styled.div`
   margin-top: 35px;
 `;
 
-const ExportSeedPhrase = () => {
+const EditPassword = () => {
   const history = useHistory();
   const [oldPassword, setOldPassword] = useState('');
   const [, , , removeAccountPassword] = useSessionStorage(STORAGE_PASSWORD_KEY, null);
   const { setIsLocked } = useSettingsContext();
+  const dispatch = useAppDispatch();
+  const encryptedSharedKey = useAppSelector(getTOTPSharedKey);
 
   const {
     register,
@@ -57,11 +62,19 @@ const ExportSeedPhrase = () => {
 
   const onSeedPhraseRetrivied = (_seedPhrase, password) => setOldPassword(password);
 
+  const handle2FA = (oldKey: string, newKey: string) => {
+    if (encryptedSharedKey) {
+      const reencryptedSharedKey = reencryptSharedKey(encryptedSharedKey, oldKey, newKey);
+      dispatch(setTOTPSharedKey(reencryptedSharedKey));
+    }
+  };
+
   const onSubmit = (data) => {
     const { password } = data;
     const oldPasswordHash = hash(oldPassword);
     const newPasswordHash = hash(password);
     updateLocalWallets(newPasswordHash, oldPasswordHash, () => {
+      handle2FA(oldPasswordHash, newPasswordHash);
       removeAccountPassword();
       setIsLocked(true);
       toast.success(<Toast type="success" content="Password modified successfully" />);
@@ -106,4 +119,4 @@ const ExportSeedPhrase = () => {
     </Container>
   );
 };
-export default ExportSeedPhrase;
+export default EditPassword;

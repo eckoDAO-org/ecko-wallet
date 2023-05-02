@@ -1,10 +1,11 @@
 import { Store } from '@reduxjs/toolkit';
 import { applyMiddleware, combineReducers, createStore } from 'redux';
-import { persistStore } from 'redux-persist';
+import { persistReducer, persistStore } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import { RootState } from './types';
 import { setStoreWallet, storeWallet } from './wallet';
 import { setStoreExtensions, storeExtensions } from './extensions';
+import { authSlice } from './auth';
 
 let customStore: Store | undefined;
 
@@ -23,6 +24,7 @@ export const getStore = (): Store<RootState> => {
 const appReducer = combineReducers({
   wallet: storeWallet.reducer,
   extensions: storeExtensions.reducer,
+  auth: authSlice.reducer,
 });
 
 const rootReducer = (state: any, action: any) => appReducer(state, action);
@@ -31,11 +33,24 @@ const middlewares: any[] = [];
 
 const enhancer = composeWithDevTools(applyMiddleware(...middlewares));
 
-export const store = createStore(rootReducer, enhancer);
+const persistConfig = {
+  key: 'root',
+  storage,
+  whitelist: ['auth'],
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+export const store = createStore(persistedReducer, enhancer);
 
 export const persistor = persistStore(store);
 
 export default store;
+
+// Infer the `RootState` and `AppDispatch` types from the store itself
+export type RootState = ReturnType<typeof appReducer>
+// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
+export type AppDispatch = typeof store.dispatch
 
 setStore(store);
 setStoreWallet(store);

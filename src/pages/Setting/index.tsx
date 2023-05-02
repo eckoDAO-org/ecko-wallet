@@ -100,6 +100,12 @@ const PageSetting = () => {
       onClick: () => history.push('/edit-password'),
     },
     {
+      title: '2FA',
+      img: <KeyIcon />,
+      description: 'Manager two-factor authentication',
+      onClick: () => history.push('/2fa'),
+    },
+    {
       title: 'Expand View',
       img: <ExpandView />,
       description: 'Open eckoWALLET in a new window',
