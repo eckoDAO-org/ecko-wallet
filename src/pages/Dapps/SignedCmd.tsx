@@ -10,7 +10,7 @@ import { DivFlex, SecondaryLabel } from 'src/components';
 import { sendWalletConnectMessage, updateSignedCmdMessage } from 'src/utils/message';
 import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 import { getTimestamp } from 'src/utils';
-import { ECKO_WALLET_DAPP_SIGN_NONCE } from 'src/utils/config';
+import { ECKO_WALLET_DAPP_SIGN_NONCE, WALLET_CONNECT_SIGN_METHOD } from 'src/utils/config';
 import { getSignatureFromHash } from 'src/utils/chainweb';
 import { SigningResponse } from './interfaces';
 
@@ -161,13 +161,7 @@ const SignedCmd = () => {
   };
 
   const onSave = () => {
-    if (walletConnectParams?.action === 'kadena_sign') {
-      const result = {
-        status: 'success',
-        signedCmd: cmd,
-      };
-      returnSignedMessage(result);
-    } else if (walletConnectParams?.action === 'kadena_sign_v1') {
+    if (walletConnectParams?.action === WALLET_CONNECT_SIGN_METHOD) {
       const result: SigningResponse = {
         chainId,
         body: cmd,

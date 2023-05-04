@@ -6,6 +6,7 @@ import ReactJson from 'react-json-view';
 import { hash as kadenaJSHash, sign as kadenaJSSign } from '@kadena/cryptography-utils';
 import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 import { getSignatureFromHash } from 'src/utils/chainweb';
+import { WALLET_CONNECT_QUICKSIGN_METHOD } from 'src/utils/config';
 import { getLocalQuickSignedCmd, getLocalSelectedNetwork } from 'src/utils/storage';
 import Button from 'src/components/Buttons';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
@@ -175,7 +176,7 @@ const QuickSignedCmd = () => {
   };
 
   const onSave = () => {
-    if (walletConnectParams?.action === 'kadena_quicksign_v1') {
+    if (walletConnectParams?.action === WALLET_CONNECT_QUICKSIGN_METHOD) {
       const result = {
         responses: quickSignData,
       };
