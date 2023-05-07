@@ -3,6 +3,7 @@ import 'regenerator-runtime/runtime';
 import { decryptKey } from '../../src/utils/security';
 import { WALLET_CONNECT_SIGN_METHOD, WALLET_CONNECT_QUICKSIGN_METHOD, WALLET_CONNECT_GET_ACCOUNTS_METHOD } from '../../src/utils/config';
 import { INTERNAL_MESSAGE_PREFIX } from '../../src/utils/message';
+import { getAccountExistsChains } from '../../src/utils/chainweb';
 import { WalletConnectProvider } from './wallet-connect';
 
 let contentPort = null;
@@ -49,15 +50,12 @@ function setWalletConnectEvents(accounts) {
       },
     });
     walletConnect.wallet?.on('session_request', async (event) => {
-      console.log(`🚀 !!! ~ event:`, event);
       const { topic, params, id } = event;
-      console.log(`🚀 !!! ~ requestIds BEFORE:`, requestIds);
       // check if REQUEST id is already processed
       if (requestIds.includes(id)) {
         return;
       }
       requestIds.push(id);
-      console.log(`🚀 !!! ~ requestIds AFTER:`, requestIds);
       const { request, chainId } = params;
       const networkId = chainId?.split('kadena:')[1];
       const isValidNetwork = await verifyNetwork(networkId);
@@ -100,24 +98,34 @@ function setWalletConnectEvents(accounts) {
           const sessions = walletConnect.getActiveSessions();
           const isActiveSession = sessions && sessions[topic];
           if (isActiveSession) {
-            const sessionAccounts = sessions[topic].namespaces?.kadena?.accounts
-              ?.filter((acc) => acc.includes(chainId))
-              ?.map((account) => {
-                console.log('account', account);
-                return {
-                  account,
-                  publicKey: account.split(':')[2],
-                  kadenaAccounts: [
-                    {
-                      name: `k:${account.split(':')[2]}`,
-                      contract: 'coin',
-                      // return only the chains where the account exists
-                      chains: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19'],
-                    },
-                  ],
-                };
-              });
-            walletConnect.respond(topic, id, { accounts: sessionAccounts });
+            chrome.storage.local.get('selectedNetwork', async ({ selectedNetwork }) => {
+              if (selectedNetwork) {
+                const walletConnectAccounts = sessions[topic].namespaces?.kadena?.accounts?.filter((acc) => acc.includes(selectedNetwork.networkId));
+                const activeAccountsChains = await getAccountExistsChains(
+                  walletConnectAccounts.map((acc) => `k:${acc.split(':')[2]}`),
+                  selectedNetwork.url,
+                  selectedNetwork.networkId,
+                );
+                const sessionAccounts = walletConnectAccounts
+                  ?.filter((acc) => acc.includes(chainId))
+                  ?.map((account) => {
+                    const publicKey = account.split(':')[2];
+                    const cleanAccount = `k:${publicKey}`;
+                    return {
+                      account,
+                      publicKey,
+                      kadenaAccounts: [
+                        {
+                          name: cleanAccount,
+                          contract: 'coin',
+                          chains: activeAccountsChains[cleanAccount] ?? [],
+                        },
+                      ],
+                    };
+                  });
+                walletConnect.respond(topic, id, { accounts: sessionAccounts });
+              }
+            });
           }
           break;
         }

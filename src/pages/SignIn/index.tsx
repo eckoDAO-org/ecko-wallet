@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form';
 import { hash } from '@kadena/cryptography-utils';
 import images from 'src/images';
 import Button from 'src/components/Buttons';
-import { delay } from 'src/utils';
 import { CommonLabel, DivFlex } from 'src/components';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import { useSettingsContext } from 'src/contexts/SettingsContext';

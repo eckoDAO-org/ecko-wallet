@@ -6,7 +6,7 @@ import images from 'src/images';
 import styled from 'styled-components';
 import Button from 'src/components/Buttons';
 import { getWalletConnectActiveSessions, initWalletConnect, removeWalletConnectSession } from 'src/utils/message';
-import { BaseTextInput } from 'src/baseComponent';
+import { BaseTextInput, InputError } from 'src/baseComponent';
 import ModalCustom from 'src/components/Modal/ModalCustom';
 import { ConfirmModal } from 'src/components/ConfirmModal';
 import { ReactComponent as TrashIcon } from 'src/images/trash-icon.svg';
@@ -41,6 +41,7 @@ const CustomButton = styled.div`
 const PageWalletConnect = () => {
   const history = useHistory();
   const [code, setCode] = useState('');
+  const [errorCode, setErrorCode] = useState('');
   const [isCodeModalOpen, setIsOpenCodeModal] = useState(false);
   const [walletConnectSessions, setWalletConnectSessions] = useState<any[]>([]);
   const { openModal, closeModal } = useModalContext();
@@ -80,19 +81,26 @@ const PageWalletConnect = () => {
   }, []);
 
   const onSelectAccounts = (accounts) => {
-    initWalletConnect(code, accounts);
-    setTimeout(() => {
-      closeModal();
-      history.push('/setting');
-    }, 2000);
+    if (accounts.length) {
+      initWalletConnect(code, accounts);
+      setTimeout(() => {
+        closeModal();
+        history.push('/setting');
+      }, 2000);
+    }
   };
 
   const handleConfirmCode = async () => {
-    setIsOpenCodeModal(false);
-    openModal({
-      title: 'Select accounts',
-      content: <SelectAccount onConfirmAccounts={(accounts) => onSelectAccounts(accounts)} />,
-    });
+    setErrorCode('');
+    if (code !== '') {
+      openModal({
+        title: 'Select accounts',
+        content: <SelectAccount onConfirmAccounts={(accounts) => onSelectAccounts(accounts)} />,
+      });
+      setIsOpenCodeModal(false);
+    } else {
+      setErrorCode('Invalid URL');
+    }
   };
 
   const onRemoveWalletConnectSession = (topic) => {
@@ -163,6 +171,7 @@ const PageWalletConnect = () => {
               }
             }}
           />
+          {errorCode && <InputError>{errorCode}</InputError>}
           <CustomButton>
             <Button size="full" variant="primary" onClick={() => handleConfirmCode()} isDisabled={!code} label="Continue" />
           </CustomButton>

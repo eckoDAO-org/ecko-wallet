@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import Pact from 'pact-lang-api';
 import lib from 'cardano-crypto.js/kadena-crypto';
-import { CHAIN_AVAILABLE_TOKENS_FIXTURE } from './constant';
+import { CHAIN_AVAILABLE_TOKENS_FIXTURE, CHAIN_COUNT } from './constant';
 import { CONFIG, KADDEX_ANALYTICS_API } from './config';
 import { getTimestamp } from './index';
 
@@ -119,4 +119,39 @@ export const getTokenList = async (chainId) => {
     uniqueAllChainTokens = [...new Set([...tokens, ...uniqueAllChainTokens])];
   });
   return chainId ? allChainTokens[Number(chainId)] : uniqueAllChainTokens;
+};
+
+/**
+ *
+ * @param {string[]} accounts
+ */
+export const getAccountExistsChains = async (accounts, networkUrl, networkId) => {
+  const code = `
+  (
+    let* (                
+      ${accounts.map((account, j) => `(coin_balance_${j} (try "not-exists" (coin.get-balance "${account}")))`).join('')}
+
+          )
+          {${accounts.map((acc, j) => `"${acc}": coin_balance_${j}`)}}
+  )
+  `;
+  const accountResponse = {};
+  for (let chainId = 0; chainId < CHAIN_COUNT; chainId += 1) {
+    try {
+      const res = await fetchListLocal(code, networkUrl, networkId, chainId);
+      if (res.result?.status === 'success') {
+        const data = res.result?.data;
+        Object.keys(data).forEach((acc) => {
+          if (data[acc] !== 'not-exists') {
+            accountResponse[acc] = [...(accountResponse[acc] ?? []), chainId.toString()];
+          }
+        });
+      } else {
+        console.log(`getAccountExistsChains error chainId ${chainId}:`, res);
+      }
+    } catch (err) {
+      console.log(`getAccountExistsChains error chainId ${chainId}:`, err);
+    }
+  }
+  return accountResponse;
 };
