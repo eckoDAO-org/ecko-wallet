@@ -66,12 +66,6 @@ function setWalletConnectEvents(accounts) {
       }
       switch (request.method) {
         case WALLET_CONNECT_SIGN_METHOD: {
-          const account = await getSelectedWalletAsync();
-          if (account?.publicKey !== request?.params?.signingPubKey) {
-            const error = 'Invalid account';
-            await walletConnect.respond(topic, id, { error }, error);
-            return;
-          }
           showSignPopup({
             signingCmd: { ...request.params, pactCode: request.code },
             networkId: request.params.networkId,
