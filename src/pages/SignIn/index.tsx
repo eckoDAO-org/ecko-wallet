@@ -3,9 +3,10 @@ import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { hash } from '@kadena/cryptography-utils';
+import { useAppDispatch } from 'src/stores/hooks';
+import { require2FA } from 'src/stores/auth';
 import images from 'src/images';
 import Button from 'src/components/Buttons';
-import { delay } from 'src/utils';
 import { CommonLabel, DivFlex } from 'src/components';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import { useSettingsContext } from 'src/contexts/SettingsContext';
@@ -82,6 +83,7 @@ const SignIn = () => {
   const rootState = useSelector((state) => state);
   const { selectedNetwork, networks } = rootState.extensions;
   const { setIsLocked } = useSettingsContext();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     getLocalPassword(
@@ -98,6 +100,7 @@ const SignIn = () => {
   const saveSessionPassword = (password) => {
     const hashPassword = hash(password);
     setLocalPassword(hashPassword);
+    dispatch(require2FA());
     initDataFromLocal(selectedNetwork, networks);
   };
 
@@ -133,6 +136,7 @@ const SignIn = () => {
               // save new hashed secretKey
               const hashPassword = hash(password);
               setLocalPassword(hashPassword);
+              dispatch(require2FA());
               initLocalWallet(plainSeedPhrase, hashPassword);
               removeOldLocalPassword();
               // restore data

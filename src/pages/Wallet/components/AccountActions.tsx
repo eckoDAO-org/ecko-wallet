@@ -64,31 +64,33 @@ export const AccountActions = ({
     );
   };
 
+  const actions = [
+    {
+      src: images.settings.iconShare,
+      label: 'Share Wallet',
+      onClick: () => {
+        closeModal();
+        navigator.clipboard.writeText(stateWallet?.account);
+        toast.success(<Toast type="success" content="Copied!" />);
+      },
+    },
+    { src: images.settings.iconShare, label: 'Export Recovery Phrase', onClick: () => onActionClick(history.push('/export-seed-phrase')) },
+    {
+      src: images.settings.iconEdit,
+      label: 'Edit Account Alias',
+      onClick: () => setIsOpenAliasModal(true),
+      style: { marginLeft: -2, marginRight: 10, width: 22 },
+    },
+  ];
+  if (wallets?.length > 1) {
+    actions.push({ src: images.settings.iconTrash, label: 'Remove Selected Wallet', onClick: onRemoveWallet });
+  }
+
   return (
     <>
       <DoubleFooter style={{ padding: '1rem 1rem 2rem 1rem' }}>
         <DivFlex flexDirection="column">
-          <ActionList
-            actions={[
-              {
-                src: images.settings.iconShare,
-                label: 'Share Wallet',
-                onClick: () => {
-                  closeModal();
-                  navigator.clipboard.writeText(stateWallet?.account);
-                  toast.success(<Toast type="success" content="Copied!" />);
-                },
-              },
-              { src: images.settings.iconShare, label: 'Export Recovery Phrase', onClick: () => onActionClick(history.push('/export-seed-phrase')) },
-              {
-                src: images.settings.iconEdit,
-                label: 'Edit Account Alias',
-                onClick: () => setIsOpenAliasModal(true),
-                style: { marginLeft: -2, marginRight: 10, width: 22 },
-              },
-              { src: images.settings.iconTrash, label: 'Remove Selected Wallet', onClick: onRemoveWallet },
-            ]}
-          />
+          <ActionList actions={actions} />
         </DivFlex>
       </DoubleFooter>
       <DoubleFooter style={{ borderTop: ' 1px solid #dfdfed' }}>

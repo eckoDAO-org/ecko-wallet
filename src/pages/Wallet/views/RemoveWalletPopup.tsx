@@ -12,6 +12,7 @@ import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { CrossChainContext } from 'src/contexts/CrossChainContext';
 import { DivFlex } from 'src/components';
+import { isValidPassword } from 'src/pages/SignIn';
 
 const DivChild = styled.div`
   font-size: ${(props) => props.fontSize};
@@ -79,54 +80,53 @@ const RemoveWalletPopup = (props: Props) => {
     setPasswordInput(e.target.value);
     setValue('password', e.target.value);
   };
-  const confirm = () => {
-    bcrypt.compare(passwordInput, passwordHash, (_errors, isValid) => {
-      if (isValid) {
-        const newWallets = wallets.filter((w: any) => w.account !== account);
-        const sameAccountWallet: any = newWallets.find((w: any) => w.account === account);
-        if (sameAccountWallet && sameAccountWallet.account) {
-          const requests = crossChainRequests?.filter((r: any) => r.sender !== account);
-          setCrossChainRequest(requests);
-        }
-        if (newWallets.length === 0) {
-          setCurrentWallet({
-            chainId: '0',
-            account: '',
-            publicKey: '',
-            secretKey: '',
-            connectedSites: [],
-          });
-          setLocalSelectedWallet({
-            chainId: '0',
-            account: '',
-            publicKey: '',
-            secretKey: '',
-            connectedSites: [],
-          });
-          setLocalWallets(selectedNetwork.networkId, []);
-          setWallets([]);
-          setLocalActivities(selectedNetwork.networkId, account, []);
-          history.push('/init');
-        } else {
-          setWallets(newWallets);
-          setCurrentWallet(newWallets[0]);
-          const newLocalWallets = newWallets.map((w: any) => ({
-            account: encryptKey(w.account, passwordHash),
-            alias: w.alias,
-            publicKey: encryptKey(w.publicKey, passwordHash),
-            secretKey: encryptKey(w.secretKey, passwordHash),
-            chainId: w.chainId,
-            connectedSites: w.connectedSites,
-          }));
-          setLocalSelectedWallet(newLocalWallets[0]);
-          setLocalWallets(selectedNetwork.networkId, newLocalWallets);
-          setLocalActivities(selectedNetwork.networkId, account, []);
-        }
-        onClose();
-      } else {
-        setError('password', { type: 'manual', message: 'Invalid Passwords' });
+  const confirm = async () => {
+    const isValid = await isValidPassword(passwordInput);
+    if (isValid) {
+      const newWallets = wallets.filter((w: any) => w.account !== account);
+      const sameAccountWallet: any = newWallets.find((w: any) => w.account === account);
+      if (sameAccountWallet && sameAccountWallet.account) {
+        const requests = crossChainRequests?.filter((r: any) => r.sender !== account);
+        setCrossChainRequest(requests);
       }
-    });
+      if (newWallets.length === 0) {
+        setCurrentWallet({
+          chainId: '0',
+          account: '',
+          publicKey: '',
+          secretKey: '',
+          connectedSites: [],
+        });
+        setLocalSelectedWallet({
+          chainId: '0',
+          account: '',
+          publicKey: '',
+          secretKey: '',
+          connectedSites: [],
+        });
+        setLocalWallets(selectedNetwork.networkId, []);
+        setWallets([]);
+        setLocalActivities(selectedNetwork.networkId, account, []);
+        history.push('/init');
+      } else {
+        setWallets(newWallets);
+        setCurrentWallet(newWallets[0]);
+        const newLocalWallets = newWallets.map((w: any) => ({
+          account: encryptKey(w.account, passwordHash),
+          alias: w.alias,
+          publicKey: encryptKey(w.publicKey, passwordHash),
+          secretKey: encryptKey(w.secretKey, passwordHash),
+          chainId: w.chainId,
+          connectedSites: w.connectedSites,
+        }));
+        setLocalSelectedWallet(newLocalWallets[0]);
+        setLocalWallets(selectedNetwork.networkId, newLocalWallets);
+        setLocalActivities(selectedNetwork.networkId, account, []);
+      }
+      onClose();
+    } else {
+      setError('password', { type: 'manual', message: 'Invalid Passwords' });
+    }
   };
   const onError = (err) => {
     console.log('err', err);

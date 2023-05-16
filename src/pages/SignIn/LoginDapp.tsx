@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
+import { require2FA } from 'src/stores/auth';
+import { useAppDispatch } from 'src/stores/hooks';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import { useHistory } from 'react-router-dom';
 import images from 'src/images';
@@ -92,6 +94,7 @@ const LoginDapp = (props: any) => {
   const { location } = props;
   const { state } = location;
   const rootState = useSelector((s) => s);
+  const dispatch = useAppDispatch();
   const { selectedNetwork, networks, passwordHash } = rootState.extensions;
   const { publicKey, account, connectedSites } = rootState.wallet;
   const from = state?.from ?? null;
@@ -157,6 +160,7 @@ const LoginDapp = (props: any) => {
               // save new hashed secretKey
               const hashPassword = hash(password);
               setLocalPassword(hashPassword);
+              dispatch(require2FA());
               initLocalWallet(plainSeedPhrase, hashPassword);
               removeOldLocalPassword();
               // restore data
@@ -174,6 +178,7 @@ const LoginDapp = (props: any) => {
         if (isValid) {
           const hashPassword = hash(password);
           setLocalPassword(hashPassword);
+          dispatch(require2FA());
           initDataFromLocal(selectedNetwork, networks);
           setIsLocked(false);
         } else {

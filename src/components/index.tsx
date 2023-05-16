@@ -50,6 +50,7 @@ export const PrimaryLabel = styled.span<LabelProps>`
   color: ${($props) => $props.color || $props.theme?.text?.primary || '#000000'};
   font-weight: ${($props) => $props.fontWeight || '500'};
   font-size: ${($props) => $props.fontSize || '45'}px;
+  margin: ${($props) => $props.margin};
   line-height: 63px;
 `;
 
@@ -59,6 +60,7 @@ export const SecondaryLabel = styled.span<LabelProps>`
   color: ${($props) => $props.color || $props.theme?.text?.secondary || '#787b8e'};
   font-weight: ${($props) => $props.fontWeight || '600'};
   font-size: ${($props) => $props.fontSize || '12'}px;
+  margin: ${($props) => $props.margin};
   line-height: 20px;
 `;
 

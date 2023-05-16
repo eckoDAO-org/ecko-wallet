@@ -81,6 +81,12 @@ const PageSetting = () => {
       onClick: () => history.push('/connected-sites'),
     },
     {
+      title: 'Wallet Connect',
+      img: <NetworksIcon />,
+      description: 'Connect with WalletConnect',
+      onClick: () => history.push('/wallet-connect'),
+    },
+    {
       title: 'Transaction Settings',
       img: <NetworksIcon />,
       description: 'Set your gas preferences',
@@ -92,6 +98,18 @@ const PageSetting = () => {
       description: 'Protect your wallet',
       onClick: () => history.push('/export-seed-phrase'),
       isHidden: secretKey?.length !== 256,
+    },
+    {
+      title: 'Edit Password',
+      img: <KeyIcon />,
+      description: 'Change your wallet password',
+      onClick: () => history.push('/edit-password'),
+    },
+    {
+      title: '2FA',
+      img: <KeyIcon />,
+      description: 'Manager two-factor authentication',
+      onClick: () => history.push('/2fa'),
     },
     {
       title: 'Expand View',

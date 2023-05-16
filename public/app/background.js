@@ -1,9 +1,139 @@
 /* eslint no-use-before-define: 0 */
 import 'regenerator-runtime/runtime';
 import { decryptKey } from '../../src/utils/security';
+import { WALLET_CONNECT_SIGN_METHOD, WALLET_CONNECT_QUICKSIGN_METHOD, WALLET_CONNECT_GET_ACCOUNTS_METHOD } from '../../src/utils/config';
+import { INTERNAL_MESSAGE_PREFIX } from '../../src/utils/message';
+import { getAccountExistsChains } from '../../src/utils/chainweb';
+import { WalletConnectProvider } from './wallet-connect';
 
 let contentPort = null;
 const portMap = new Map();
+
+const walletConnect = new WalletConnectProvider();
+
+function sendInternalMessage(action, data = null) {
+  chrome.runtime.sendMessage({
+    target: 'kda.extension',
+    action,
+    data,
+  });
+}
+
+function setWalletConnectEvents(accounts) {
+  const requestIds = [];
+  walletConnect.wallet.on('session_proposal', async (proposal) => {
+    let accountsToShare = [];
+    for (let i = 0; i < accounts.length; i += 1) {
+      accountsToShare = [
+        ...accountsToShare,
+        `kadena:mainnet01:${accounts[i]}`,
+        `kadena:testnet04:${accounts[i]}`,
+        `kadena:development:${accounts[i]}`,
+      ];
+    }
+    const session = await walletConnect.wallet.approveSession({
+      id: proposal.id,
+      namespaces: {
+        kadena: {
+          chains: ['kadena:mainnet01', 'kadena:testnet04', 'kadena:development'],
+          accounts: accountsToShare,
+          methods: [WALLET_CONNECT_GET_ACCOUNTS_METHOD, WALLET_CONNECT_SIGN_METHOD, WALLET_CONNECT_QUICKSIGN_METHOD],
+          events: ['account_changed', 'kadena_transaction_updated'],
+          extension: [
+            {
+              accounts: accountsToShare,
+              methods: ['kaddex_sign', 'kaddex_send_transaction', 'kaddex_sign_transaction'],
+              events: ['account_changed'],
+            },
+          ],
+        },
+      },
+    });
+    walletConnect.wallet?.on('session_request', async (event) => {
+      const { topic, params, id } = event;
+      // check if REQUEST id is already processed
+      if (requestIds.includes(id)) {
+        return;
+      }
+      requestIds.push(id);
+      const { request, chainId } = params;
+      const networkId = chainId?.split('kadena:')[1];
+      const isValidNetwork = await verifyNetwork(networkId);
+      if (!isValidNetwork) {
+        const error = 'Invalid Network';
+        await walletConnect.respond(topic, id, { error }, error);
+        return;
+      }
+      switch (request.method) {
+        case WALLET_CONNECT_SIGN_METHOD: {
+          showSignPopup({
+            signingCmd: { ...request.params, pactCode: request.code },
+            networkId: request.params.networkId,
+            domain: session?.peer?.metadata.url,
+            icon: session?.peer?.metadata?.icons[0],
+            walletConnectAction: WALLET_CONNECT_SIGN_METHOD,
+            topic,
+            id,
+          });
+          break;
+        }
+        case WALLET_CONNECT_QUICKSIGN_METHOD: {
+          const commandSigDatas = request?.params?.commandSigDatas;
+          showQuickSignPopup({
+            commandSigDatas,
+            networkId: params.chainId?.split(':') && params.chainId?.split(':')[1],
+            walletConnectAction: WALLET_CONNECT_QUICKSIGN_METHOD,
+            topic,
+            id,
+          });
+          break;
+        }
+        case WALLET_CONNECT_GET_ACCOUNTS_METHOD: {
+          const sessions = walletConnect.getActiveSessions();
+          const isActiveSession = sessions && sessions[topic];
+          if (isActiveSession) {
+            chrome.storage.local.get('selectedNetwork', async ({ selectedNetwork }) => {
+              if (selectedNetwork) {
+                const walletConnectAccounts = sessions[topic].namespaces?.kadena?.accounts?.filter((acc) => acc.includes(selectedNetwork.networkId));
+                const activeAccountsChains = await getAccountExistsChains(
+                  walletConnectAccounts.map((acc) => `k:${acc.split(':')[2]}`),
+                  selectedNetwork.url,
+                  selectedNetwork.networkId,
+                );
+                const sessionAccounts = walletConnectAccounts
+                  ?.filter((acc) => acc.includes(chainId))
+                  ?.map((account) => {
+                    const publicKey = account.split(':')[2];
+                    const cleanAccount = `k:${publicKey}`;
+                    return {
+                      account,
+                      publicKey,
+                      kadenaAccounts: [
+                        {
+                          name: cleanAccount,
+                          contract: 'coin',
+                          chains: activeAccountsChains[cleanAccount] ?? [],
+                        },
+                      ],
+                    };
+                  });
+                walletConnect.respond(topic, id, { accounts: sessionAccounts });
+              }
+            });
+          }
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+    });
+  });
+  walletConnect.wallet?.on('session_delete', (event) => console.log('session_delete', event));
+  walletConnect.wallet?.on('session_event', (event) => console.log('session_event', event));
+  walletConnect.wallet?.on('pairing_delete', (event) => console.log('pairing_delete', event));
+  walletConnect.wallet?.on('pairing_expire', (event) => console.log('pairing_expire', event));
+}
 
 chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === 'install') {
@@ -24,6 +154,41 @@ chrome.runtime.onStartup.addListener(() => {
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   const tabIdResponse = request?.tabId || sender?.tab?.id;
   if (request.target === 'kda.background') {
+    if (request.action.includes(INTERNAL_MESSAGE_PREFIX)) {
+      const internalMethod = request.action?.split(INTERNAL_MESSAGE_PREFIX) && request.action?.split(INTERNAL_MESSAGE_PREFIX)[1];
+      switch (internalMethod) {
+        case 'walletConnect:init': {
+          await walletConnect.init();
+          await walletConnect.pair(request.uri);
+          setWalletConnectEvents(request.accounts);
+          return;
+        }
+        case 'walletConnect:response': {
+          if (walletConnect.isInitialized()) {
+            await walletConnect.respond(request.topic, request.id, request.response, request.error);
+          }
+          return;
+        }
+        case 'walletConnect:sessions': {
+          if (walletConnect.isInitialized()) {
+            const sessions = await walletConnect.getActiveSessions();
+            sendInternalMessage('walletConnect:sessions', sessions);
+          } else {
+            sendInternalMessage('walletConnect:sessions', []);
+          }
+          return;
+        }
+        case 'walletConnect:disconnect': {
+          if (walletConnect.isInitialized()) {
+            await walletConnect.disconnectSession(request?.topic);
+          }
+          return;
+        }
+        default: {
+          return;
+        }
+      }
+    }
     let senderPort = null;
     for (const [tabId, port] of portMap.entries()) {
       if (tabId === tabIdResponse) {
@@ -125,10 +290,39 @@ chrome.runtime.onConnect.addListener(async (port) => {
   });
 });
 
+const getSelectedWalletAsync = async (isHaveSecret = false) => {
+  const newSelectedWallet = await new Promise((resolve) => {
+    chrome?.storage.local.get('selectedWallet', (wallet) => {
+      if (wallet && wallet.selectedWallet && wallet.selectedWallet.account) {
+        const { selectedWallet } = wallet;
+        chrome?.storage.session.get('accountPassword', (password) => {
+          const { accountPassword } = password;
+          const newWallet = {
+            account: accountPassword ? decryptKey(selectedWallet.account, accountPassword) : null,
+            publicKey: accountPassword ? decryptKey(selectedWallet.publicKey, accountPassword) : null,
+            connectedSites: selectedWallet.connectedSites,
+          };
+          if (isHaveSecret) {
+            newWallet.secretKey = decryptKey(selectedWallet.secretKey, accountPassword);
+          }
+          resolve(newWallet);
+        });
+      } else {
+        resolve({
+          account: '',
+          publicKey: '',
+          connectedSites: [],
+        });
+      }
+    });
+  });
+  return newSelectedWallet;
+};
+
 const checkConnect = async (data, tabId) => {
   const isValidNetwork = await verifyNetwork(data.networkId);
   if (isValidNetwork) {
-    const account = await getSelectedWallet();
+    const account = await getSelectedWalletAsync();
     const connectedSites = account.connectedSites || [];
     const activeDomains = await getActiveDomains();
     if (connectedSites.includes(data.domain)) {
@@ -226,7 +420,7 @@ const checkStatus = async (data, tabId) => {
   if (isValidNetwork) {
     const isValid = await checkValid(data);
     if (isValid) {
-      const account = await getSelectedWallet();
+      const account = await getSelectedWalletAsync();
       if (!account.account) {
         showPopup({ tabId, message: 'res_checkStatus' }, 'login-dapps');
       } else {
@@ -302,35 +496,6 @@ const getConnectedSites = async () => {
         resolve(selectedWallet.connectedSites);
       } else {
         resolve([]);
-      }
-    });
-  });
-  return newSelectedWallet;
-};
-
-const getSelectedWallet = async (isHaveSecret = false) => {
-  const newSelectedWallet = await new Promise((resolve) => {
-    chrome.storage.local.get('selectedWallet', (wallet) => {
-      if (wallet && wallet.selectedWallet && wallet.selectedWallet.account) {
-        const { selectedWallet } = wallet;
-        chrome.storage.session.get('accountPassword', (password) => {
-          const { accountPassword } = password;
-          const newWallet = {
-            account: accountPassword ? decryptKey(selectedWallet.account, accountPassword) : null,
-            publicKey: accountPassword ? decryptKey(selectedWallet.publicKey, accountPassword) : null,
-            connectedSites: selectedWallet.connectedSites,
-          };
-          if (isHaveSecret) {
-            newWallet.secretKey = decryptKey(selectedWallet.secretKey, accountPassword);
-          }
-          resolve(newWallet);
-        });
-      } else {
-        resolve({
-          account: '',
-          publicKey: '',
-          connectedSites: [],
-        });
       }
     });
   });
@@ -432,7 +597,7 @@ const showPopup = async (data = {}, popupUrl) => {
   chrome.windows.create(options);
 };
 
-const showSignPopup = async (data = {}) => {
+export const showSignPopup = async (data = {}) => {
   const lastFocused = await getLastFocusedWindow();
 
   const options = {
@@ -451,6 +616,10 @@ const showSignPopup = async (data = {}) => {
       networkId: data.networkId,
       domain: data.domain,
       icon: data.icon,
+      walletConnectAction: data.walletConnectAction || false,
+      topic: data.topic || false,
+      id: data.id || false,
+      wcMethod: data.wcMethod || null,
     },
   };
 
@@ -516,7 +685,7 @@ const getAccountSelected = async (data, tabId) => {
   if (isValidNetwork) {
     const isValid = await checkValid(data);
     if (isValid) {
-      const account = await getSelectedWallet();
+      const account = await getSelectedWalletAsync();
       if (account?.account) {
         sendToConnectedPorts({
           result: {
@@ -572,10 +741,7 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
       setTimeout(() => {
         sendToConnectedPorts(successMsg);
       }, 500);
-      chrome.runtime.sendMessage({
-        target: 'kda.extension',
-        action: 'sync_data',
-      });
+      sendInternalMessage('sync_data');
     }
   }
 });

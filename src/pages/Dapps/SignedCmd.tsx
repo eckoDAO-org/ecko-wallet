@@ -7,11 +7,12 @@ import ReactJson from 'react-json-view';
 import { getLocalSelectedNetwork, getLocalSigningCmd } from 'src/utils/storage';
 import Button from 'src/components/Buttons';
 import { DivFlex, SecondaryLabel } from 'src/components';
-import { updateSignedCmdMessage } from 'src/utils/message';
+import { sendWalletConnectMessage, updateSignedCmdMessage } from 'src/utils/message';
 import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 import { getTimestamp } from 'src/utils';
-import { ECKO_WALLET_DAPP_SIGN_NONCE } from 'src/utils/config';
+import { ECKO_WALLET_DAPP_SIGN_NONCE, WALLET_CONNECT_SIGN_METHOD } from 'src/utils/config';
 import { getSignatureFromHash } from 'src/utils/chainweb';
+import { SigningResponse } from './interfaces';
 
 export const DappWrapper = styled.div`
   display: flex;
@@ -52,21 +53,50 @@ export const DappLogo = styled.img`
   height: 70px;
   margin: 50px auto 20px auto;
 `;
+
+export interface WalletConnectParams {
+  id: number;
+  topic: string;
+  action: string;
+}
+
 const SignedCmd = () => {
   const [domain, setDomain] = useState('example.com.vn');
   const [tabId, setTabId] = useState(null);
   const [cmd, setCmd] = useState<any>({});
+  const [chainId, setChainId] = useState<any>();
   const [caps, setCaps] = useState<any[]>([]);
+  const [walletConnectParams, setWalletConnectParams] = useState<WalletConnectParams | null>(null);
 
   const rootState = useSelector((state) => state);
   const { publicKey, secretKey } = rootState.wallet;
 
   const { theme } = useAppThemeContext();
 
+  const returnSignedMessage = (result, error?) => {
+    if (walletConnectParams?.topic) {
+      sendWalletConnectMessage(walletConnectParams.id, walletConnectParams.topic, result, error);
+    } else {
+      updateSignedCmdMessage(result, tabId);
+    }
+    setTimeout(() => {
+      window.close();
+    }, 300);
+  };
+
   useEffect(() => {
     getLocalSigningCmd(
       (signingCmd) => {
         setTabId(signingCmd?.signingCmd?.tabId);
+        setChainId(signingCmd?.signingCmd?.chainId);
+        if (signingCmd?.signingCmd?.walletConnectAction) {
+          const { id, topic, walletConnectAction } = signingCmd?.signingCmd;
+          setWalletConnectParams({
+            id,
+            topic,
+            action: walletConnectAction,
+          });
+        }
         const signedResponse = signCommand(signingCmd?.signingCmd);
         if (signedResponse?.signingCmd && signedResponse.signedCmd) {
           getLocalSelectedNetwork(
@@ -108,7 +138,7 @@ const SignedCmd = () => {
       const signedCmd = Pact.api.prepareExecCmd(
         keyPairs,
         `${ECKO_WALLET_DAPP_SIGN_NONCE}-"${new Date().toISOString()}"`,
-        signingCmd.pactCode,
+        signingCmd?.pactCode || signingCmd?.code,
         signingCmd.envData,
         meta,
         signingCmd.networkId,
@@ -125,20 +155,25 @@ const SignedCmd = () => {
         status: 'fail',
         message: 'Signing cmd error',
       };
-      updateSignedCmdMessage(result, tabId);
+      returnSignedMessage(result);
       return null;
     }
   };
 
   const onSave = () => {
-    const result = {
-      status: 'success',
-      signedCmd: cmd,
-    };
-    updateSignedCmdMessage(result, tabId);
-    setTimeout(() => {
-      window.close();
-    }, 300);
+    if (walletConnectParams?.action === WALLET_CONNECT_SIGN_METHOD) {
+      const result: SigningResponse = {
+        chainId,
+        body: cmd,
+      };
+      returnSignedMessage(result);
+    } else {
+      const result = {
+        status: 'success',
+        signedCmd: cmd,
+      };
+      returnSignedMessage(result);
+    }
   };
 
   const onClose = () => {
@@ -146,10 +181,10 @@ const SignedCmd = () => {
       status: 'fail',
       message: 'Rejected by user',
     };
-    updateSignedCmdMessage(result, tabId);
-    setTimeout(() => {
-      window.close();
-    }, 300);
+    returnSignedMessage(result, {
+      code: 5000,
+      message: 'User rejected.',
+    });
   };
 
   const newCmd = cmd.cmd ? { ...cmd, cmd: JSON.parse(cmd.cmd) } : {};
