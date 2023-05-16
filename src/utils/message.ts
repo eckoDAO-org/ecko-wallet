@@ -56,3 +56,39 @@ export const updateCheckStatusMessage = (result, tabId) => {
     tabId,
   });
 };
+
+export const INTERNAL_MESSAGE_PREFIX = '_INTERNAL_';
+
+export const initWalletConnect = (uri: string, accounts: string[]) => {
+  (window as any)?.chrome?.runtime?.sendMessage({
+    uri,
+    accounts,
+    target: 'kda.background',
+    action: `${INTERNAL_MESSAGE_PREFIX}walletConnect:init`,
+  });
+};
+
+export const getWalletConnectActiveSessions = () => {
+  (window as any)?.chrome?.runtime?.sendMessage({
+    target: 'kda.background',
+    action: `${INTERNAL_MESSAGE_PREFIX}walletConnect:sessions`,
+  });
+};
+export const removeWalletConnectSession = (topic) => {
+  (window as any)?.chrome?.runtime?.sendMessage({
+    target: 'kda.background',
+    action: `${INTERNAL_MESSAGE_PREFIX}walletConnect:disconnect`,
+    topic,
+  });
+};
+
+export const sendWalletConnectMessage = (id, topic, response, error?) => {
+  (window as any)?.chrome?.runtime?.sendMessage({
+    id,
+    topic,
+    response,
+    error,
+    target: 'kda.background',
+    action: `${INTERNAL_MESSAGE_PREFIX}walletConnect:response`,
+  });
+};

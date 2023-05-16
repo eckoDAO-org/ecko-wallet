@@ -17,7 +17,7 @@ import { getKeyPairsFromSeedPhrase } from './chainweb';
 import { decryptKey, encryptKey } from './security';
 
 type RawWalletsMap = {
-  [key: string]: RawWallet[]
+  [key: string]: RawWallet[];
 };
 
 export const STORAGE_PASSWORD_KEY = 'accountPassword';
@@ -126,7 +126,7 @@ export const updateLocalWallets = (
 
       // This should never happend
       if (updatedSelectedWallet === undefined) {
-        throw new Error("No wallets found");
+        throw new Error('No wallets found');
       }
 
       retrieveAndUpdateSeedPhrase(newPasswordHash, oldPasswordHash, (updatedSeedPhrase) => {
@@ -147,7 +147,7 @@ export const updateLocalWallets = (
 
   try {
     getLocalNetworks(runUpdate, () => {
-      console.warn("failed to retrieve networks - using default");
+      console.warn('failed to retrieve networks - using default');
       runUpdate(defaultNetworks);
     });
   } catch (error: any) {
@@ -169,40 +169,34 @@ const retrieveAndUpdateNetworkedWallets = (
   });
 };
 
-const retrieveAndUpdateSelectedWallet = (
-  newPasswordHash: string,
-  oldPasswordHash: string,
-  callback: (wallet?: RawWallet) => any,
-) => {
-  getLocalSelectedWallet((selectedWallet) => {
-    const updatedSelectedWallet = updateWallet(selectedWallet, newPasswordHash, oldPasswordHash);
-    callback(updatedSelectedWallet);
-  }, () => {
-    console.warn("Failed to retrieve selected wallet");
-    callback(undefined);
-  });
+const retrieveAndUpdateSelectedWallet = (newPasswordHash: string, oldPasswordHash: string, callback: (wallet?: RawWallet) => any) => {
+  getLocalSelectedWallet(
+    (selectedWallet) => {
+      const updatedSelectedWallet = updateWallet(selectedWallet, newPasswordHash, oldPasswordHash);
+      callback(updatedSelectedWallet);
+    },
+    () => {
+      console.warn('Failed to retrieve selected wallet');
+      callback(undefined);
+    },
+  );
 };
 
-const retrieveAndUpdateSeedPhrase = (
-  newPasswordHash: string,
-  oldPasswordHash: string,
-  callback: (seedPhrase: string) => any,
-) => {
-  getLocalSeedPhrase((seedPhrase: string) => {
-    const updatedSeedPhrase = updateSeedPhrase(seedPhrase, newPasswordHash, oldPasswordHash);
-    callback(updatedSeedPhrase);
-  }, () => {
-    // TODO: handle errors
-    console.error("Failed to retrieve seed phrase");
-    throw new Error("Cannot update seed phrase");
-  });
+const retrieveAndUpdateSeedPhrase = (newPasswordHash: string, oldPasswordHash: string, callback: (seedPhrase: string) => any) => {
+  getLocalSeedPhrase(
+    (seedPhrase: string) => {
+      const updatedSeedPhrase = updateSeedPhrase(seedPhrase, newPasswordHash, oldPasswordHash);
+      callback(updatedSeedPhrase);
+    },
+    () => {
+      // TODO: handle errors
+      console.error('Failed to retrieve seed phrase');
+      throw new Error('Cannot update seed phrase');
+    },
+  );
 };
 
-const updateNetworkedWallets = (
-  oldNetworkedWallets: RawWalletsMap,
-  passwordHash: string,
-  oldPasswordHash: string,
-) => {
+const updateNetworkedWallets = (oldNetworkedWallets: RawWalletsMap, passwordHash: string, oldPasswordHash: string) => {
   const newNetworkedWallets: RawWalletsMap = {};
   Object.keys(oldNetworkedWallets).forEach((key) => {
     const oldWallets = oldNetworkedWallets[key];
@@ -251,10 +245,10 @@ const encryptWallet = (wallet: RawWallet, passwordHash: string): RawWallet => ({
 });
 
 const decryptWallet = (wallet: RawWallet, passwordHash: string): RawWallet => ({
-    ...wallet,
-    account: decryptKey(wallet.account, passwordHash),
-    publicKey: decryptKey(wallet.publicKey, passwordHash),
-    secretKey: decryptKey(wallet.secretKey, passwordHash),
+  ...wallet,
+  account: decryptKey(wallet.account, passwordHash),
+  publicKey: decryptKey(wallet.publicKey, passwordHash),
+  secretKey: decryptKey(wallet.secretKey, passwordHash),
 });
 
 export const setLocalSelectedWallet = (selectedWallet: {

@@ -85,8 +85,6 @@ const Footer = () => {
   const isFooter = (isFooterWeb || isFooterExtenstion) && account !== null && account !== '' && account !== undefined;
   const { isLocked } = useSettingsContext();
 
-  const isDappUrl =
-    location.includes('connected-dapps') || location.includes('dapps-transfer') || location.includes('sign-dapps') || location.includes('signed-cmd');
   const history = useHistory();
   useEffect(() => {
     // set up listener

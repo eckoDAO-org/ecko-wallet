@@ -81,6 +81,12 @@ const PageSetting = () => {
       onClick: () => history.push('/connected-sites'),
     },
     {
+      title: 'Wallet Connect',
+      img: <NetworksIcon />,
+      description: 'Connect with WalletConnect',
+      onClick: () => history.push('/wallet-connect'),
+    },
+    {
       title: 'Transaction Settings',
       img: <NetworksIcon />,
       description: 'Set your gas preferences',

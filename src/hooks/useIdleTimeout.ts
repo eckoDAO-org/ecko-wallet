@@ -11,7 +11,7 @@ const useIdleTimeout = () => {
   };
 
   useEffect(() => {
-    const events = ['load', 'mousemove', 'mousedown', 'click', 'scroll', 'keypress'];
+    const events = ['click', 'scroll', 'keypress'];
     for (const i in events) {
       window.addEventListener(events[i], onSetLastActivity);
     }

@@ -29,7 +29,7 @@
       "128": "favicon.png"
     }
   },
-  "permissions": ["storage", "windows"],
+  "permissions": ["storage"],
   "host_permissions": ["https://api.chainweb.com/", "https://api.testnet.chainweb.com/", "https://api.coingecko.com/", "*://*/*"],
   "icons": {
     "16": "favicon.png",
