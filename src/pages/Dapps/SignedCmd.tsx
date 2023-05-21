@@ -73,9 +73,11 @@ const SignedCmd = () => {
 
   const { theme } = useAppThemeContext();
 
-  const returnSignedMessage = (result, error?) => {
-    if (walletConnectParams?.topic) {
-      sendWalletConnectMessage(walletConnectParams.id, walletConnectParams.topic, result, error);
+  const returnSignedMessage = (result, error?, wcId = null, topic = null) => {
+    const walletConnectId = wcId ?? walletConnectParams?.id;
+    const walletConnectTopic = topic ?? walletConnectParams?.topic;
+    if (walletConnectTopic) {
+      sendWalletConnectMessage(walletConnectId, walletConnectTopic, result, error);
     } else {
       updateSignedCmdMessage(result, tabId);
     }
@@ -86,7 +88,7 @@ const SignedCmd = () => {
 
   useEffect(() => {
     getLocalSigningCmd(
-      (signingCmd) => {
+      async (signingCmd) => {
         setTabId(signingCmd?.signingCmd?.tabId);
         setChainId(signingCmd?.signingCmd?.chainId);
         if (signingCmd?.signingCmd?.walletConnectAction) {
@@ -97,68 +99,79 @@ const SignedCmd = () => {
             action: walletConnectAction,
           });
         }
-        const signedResponse = signCommand(signingCmd?.signingCmd);
-        if (signedResponse?.signingCmd && signedResponse.signedCmd) {
-          getLocalSelectedNetwork(
-            (selectedNetwork) => {
-              if (selectedNetwork.networkId === signedResponse?.signingCmd.networkId) {
-                setDomain(signedResponse?.signingCmd.domain);
-                setCmd(signedResponse?.signedCmd);
-                setCaps(signedResponse?.signingCmd.caps);
-              }
-            },
-            () => {},
-          );
-        }
+        signCommand(signingCmd?.signingCmd)
+          .then((signedResponse: any) => {
+            if (signedResponse?.signingCmd && signedResponse.signedCmd) {
+              getLocalSelectedNetwork(
+                (selectedNetwork) => {
+                  if (selectedNetwork.networkId === signedResponse?.signingCmd.networkId) {
+                    setDomain(signedResponse?.signingCmd.domain);
+                    setCmd(signedResponse?.signedCmd);
+                    setCaps(signedResponse?.signingCmd.caps);
+                  } else {
+                    const result = {
+                      status: 'fail',
+                      message: 'Invalid network',
+                    };
+                    returnSignedMessage(result, result, signingCmd?.signingCmd?.id, signingCmd?.signingCmd.topic);
+                  }
+                },
+                () => {},
+              );
+            }
+          })
+          .catch((result) => {
+            returnSignedMessage(result, result, signingCmd?.signingCmd?.id, signingCmd?.signingCmd.topic);
+          });
       },
       () => {},
     );
   }, [secretKey]);
 
-  const signCommand = (signingCmd) => {
-    try {
-      const meta = Pact.lang.mkMeta(
-        signingCmd.sender,
-        signingCmd.chainId.toString(),
-        signingCmd.gasPrice,
-        signingCmd.gasLimit,
-        getTimestamp(),
-        signingCmd.ttl,
-      );
-      const clist = signingCmd.caps ? signingCmd.caps.map((c) => c.cap) : [];
-      const keyPairs: any = {
-        publicKey,
-      };
-      if (secretKey.length === 64) {
-        keyPairs.secretKey = secretKey;
+  const signCommand = (signingCmd) =>
+    new Promise((resolve, reject) => {
+      try {
+        const meta = Pact.lang.mkMeta(
+          signingCmd.sender,
+          signingCmd.chainId.toString(),
+          signingCmd.gasPrice,
+          signingCmd.gasLimit,
+          getTimestamp(),
+          signingCmd.ttl,
+        );
+        const clist = signingCmd.caps ? signingCmd.caps.map((c) => c.cap) : [];
+        const keyPairs: any = {
+          publicKey,
+        };
+        if (secretKey.length === 64) {
+          keyPairs.secretKey = secretKey;
+        }
+        if (clist.length > 0) {
+          keyPairs.clist = clist;
+        }
+        const signedCmd = Pact.api.prepareExecCmd(
+          keyPairs,
+          `${ECKO_WALLET_DAPP_SIGN_NONCE}-"${new Date().toISOString()}"`,
+          signingCmd?.pactCode || signingCmd?.code,
+          signingCmd.envData,
+          meta,
+          signingCmd.networkId,
+        );
+        if (secretKey.length > 64) {
+          const signature = getSignatureFromHash(signedCmd.hash, secretKey);
+          const sigs = [{ sig: signature }];
+          signedCmd.sigs = sigs;
+        }
+        resolve({ signedCmd, signingCmd });
+      } catch (err: any) {
+        console.log(`Signing cmd err:`, err);
+        const result = {
+          status: 'fail',
+          message: err?.message ?? 'Signing cmd error',
+        };
+        reject(result);
       }
-      if (clist.length > 0) {
-        keyPairs.clist = clist;
-      }
-      const signedCmd = Pact.api.prepareExecCmd(
-        keyPairs,
-        `${ECKO_WALLET_DAPP_SIGN_NONCE}-"${new Date().toISOString()}"`,
-        signingCmd?.pactCode || signingCmd?.code,
-        signingCmd.envData,
-        meta,
-        signingCmd.networkId,
-      );
-      if (secretKey.length > 64) {
-        const signature = getSignatureFromHash(signedCmd.hash, secretKey);
-        const sigs = [{ sig: signature }];
-        signedCmd.sigs = sigs;
-      }
-      return { signedCmd, signingCmd };
-    } catch (err) {
-      console.log(`Signing cmd err:`, err);
-      const result = {
-        status: 'fail',
-        message: 'Signing cmd error',
-      };
-      returnSignedMessage(result);
-      return null;
-    }
-  };
+    });
 
   const onSave = () => {
     if (walletConnectParams?.action === WALLET_CONNECT_SIGN_METHOD) {
