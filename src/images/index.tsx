@@ -109,6 +109,7 @@ import iconDownload from './icon-download.svg';
 import iconMorePurple from './more-purple.svg';
 import iconDropDown from './icon-dropdown.svg';
 import iconCreate from './icon-create.svg';
+import iconBuy from './icon-buy.svg';
 import eckoWalletLogo from './ecko-wallet-logo.svg';
 import eckoWalletLogoRounded from './ecko-wallet-rounded.png';
 import eckoWalletIcon from './ecko-wallet-icon.svg';
@@ -159,6 +160,7 @@ const wallet = {
   iconMorePurple,
   iconDropDown,
   iconCreate,
+  iconBuy,
   tokens: {
     coin: iconKadenaToken,
     'kaddex.kdx': iconKdx,

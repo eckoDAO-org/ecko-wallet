@@ -34,6 +34,7 @@ import PageLockSettings from './pages/Setting/Lock';
 import PageSelectTheme from './pages/Setting/SelectTheme';
 import PageConnectedSites from './pages/Setting/ConnectedSites';
 import TwoFactorAuthenticator from './components/TwoFactorAuthenticator';
+import BuyCryptocurrencies from './pages/Wallet/views/BuyCryptocurrencies';
 
 const Container = styled.div`
   width: 1000px;
@@ -81,6 +82,7 @@ const AppContainer = () => {
           <PrivateRoute path="/select-theme" component={PageSelectTheme} />
           <PrivateRoute path="/setting" component={PageSetting} />
           <PrivateRoute path="/history" component={History} />
+          <PrivateRoute path="/buy" component={BuyCryptocurrencies} />
           <PrivateRoute isHome path="/" component={Wallet} />
           <Redirect to="/" />
         </Switch>

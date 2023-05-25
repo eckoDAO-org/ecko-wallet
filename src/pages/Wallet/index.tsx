@@ -169,6 +169,11 @@ const Wallet = () => {
 
   const { theme } = useAppThemeContext();
 
+  const handleBuy = () => {
+    const url = history.createHref({ pathname: 'buy' });
+    window.open(url, '_blank');
+  };
+
   return (
     <div>
       <Header />
@@ -202,6 +207,17 @@ const Wallet = () => {
               <DivFlex justifyContent="center">
                 <img src={images.wallet.arrowSend} style={{ width: 16, marginRight: 10, transform: 'scale(1, -1)' }} />
                 <span>Receive</span>
+              </DivFlex>
+            }
+            variant="secondary"
+            size="full"
+          />
+          <Button
+            onClick={handleBuy}
+            label={
+              <DivFlex justifyContent="center">
+                <img src={images.wallet.iconBuy} style={{ width: 16, marginRight: 10 }} />
+                <span>Buy</span>
               </DivFlex>
             }
             variant="secondary"
