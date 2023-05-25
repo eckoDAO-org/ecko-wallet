@@ -33,7 +33,6 @@ import PageTransaction from './pages/Setting/Transaction';
 import PageLockSettings from './pages/Setting/Lock';
 import PageSelectTheme from './pages/Setting/SelectTheme';
 import PageConnectedSites from './pages/Setting/ConnectedSites';
-import { useAppThemeContext } from './contexts/AppThemeContext';
 import TwoFactorAuthenticator from './components/TwoFactorAuthenticator';
 
 const Container = styled.div`
@@ -50,7 +49,6 @@ const Container = styled.div`
 
 const AppContainer = () => {
   const rootState = useSelector((state) => state);
-  const { theme } = useAppThemeContext();
   const { isLoading } = rootState.extensions;
   return (
     <Container>
@@ -87,7 +85,7 @@ const AppContainer = () => {
           <Redirect to="/" />
         </Switch>
         <Footer />
-        {isLoading && <Loading type="spin" color={theme.footer?.primary ?? '#20264e'} />}
+        {isLoading && <Loading />}
       </TwoFactorAuthenticator>
     </Container>
   );
