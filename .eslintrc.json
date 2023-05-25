@@ -40,6 +40,7 @@
     "operator-linebreak": "off",
     "indent": "off",
     "function-paren-newline": "off",
+    "lines-between-class-members": "off",
     "quotes": "warn",
     "import/extensions": [
       "error",
