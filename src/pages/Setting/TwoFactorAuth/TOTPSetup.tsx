@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { hash } from '@kadena/cryptography-utils';
 import { InputError } from 'src/baseComponent';
 import { SInput } from 'src/baseComponent/BaseTextInput';
-import { CommonLabel } from 'src/components';
+import { LabelWithLink } from 'src/components';
 import Button from 'src/components/Buttons';
 import { NavigationHeader } from 'src/components/NavigationHeader';
 import { SeedPhraseRetrivier } from 'src/components/SeedPhraseRetrivier';
@@ -29,12 +29,6 @@ const Body = styled.div`
 
 const StepWrapper = styled.div`
   margin-bottom: 32px;
-`;
-
-const Label = styled(CommonLabel)`
-  a {
-    color: inherit;
-  }
 `;
 
 const QRCodeWrapper = styled.div`
@@ -114,22 +108,22 @@ const TOTPSetup = () => {
       <NavigationHeader title="Two-Factor Authentication" onBack={goBack} />
       <Body>
         <StepWrapper>
-          <Label fontSize={18}>
+          <LabelWithLink fontSize={18}>
             1. Install <a href={GA_LINK} target="_blank" rel="noreferrer">Google Authenticator</a> or similiar apps
-          </Label>
+          </LabelWithLink>
         </StepWrapper>
         <StepWrapper>
-          <Label fontSize={18}>
+          <LabelWithLink fontSize={18}>
             2. Scan the QR code below:
-          </Label>
+          </LabelWithLink>
           <QRCodeWrapper>
             <QRCode value={uri} />
           </QRCodeWrapper>
         </StepWrapper>
         <StepWrapper>
-          <Label fontSize={18}>
+          <LabelWithLink fontSize={18}>
             3. Enter the 6-digit code
-          </Label>
+          </LabelWithLink>
           <TokenInputWrapper>
             <TokenInput
               placeholder="000 000"
