@@ -6,8 +6,7 @@ const PaymentRequestor = ({ provider, View, onPurchaseCompleted }: PaymentChecko
 
   const handleCheckoutPayment = async () => {
     const checkoutStatus = await provider.checkoutPayment();
-    console.log(checkoutStatus);
-    onPurchaseCompleted();
+    onPurchaseCompleted(checkoutStatus);
   };
 
   if (!payment) {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BuyCryptoProvider, PurchasePayment, PurchaseQuote } from "src/utils/crypto-providers/types";
+import { BuyCryptoProvider, PurchaseCheckoutStatus, PurchasePayment, PurchaseQuote } from "src/utils/crypto-providers/types";
 import { CheckoutCompletedViewProps, PaymentCheckoutViewProps, PaymentRequestorViewProps, QuoteRequestorViewProps, ViewProps } from '../views/types';
 
 export interface LogicProps<ViewPropsType extends ViewProps> {
@@ -16,7 +16,7 @@ export interface PaymentRequestorLogicProps extends LogicProps<PaymentRequestorV
 };
 
 export interface PaymentCheckoutLogicProps extends LogicProps<PaymentCheckoutViewProps> {
-  onPurchaseCompleted: () => void;
+  onPurchaseCompleted: (checkoutStatus: PurchaseCheckoutStatus) => void;
 }
 
 export interface CheckoutCompletedLogicProps extends LogicProps<CheckoutCompletedViewProps> {}
