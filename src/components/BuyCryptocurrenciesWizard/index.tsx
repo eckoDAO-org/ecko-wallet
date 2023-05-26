@@ -1,6 +1,6 @@
 import React from 'react';
 import { BuyCryptoProvider } from 'src/utils/crypto-providers/types';
-import CryptoProvider from 'src/utils/crypto-providers/mock';
+import CryptoProvider from 'src/utils/crypto-providers/simplex';
 import Step1 from './steps/QuoteRequestor';
 import Step2 from './steps/PaymentRequestor';
 import Step3 from './steps/PaymentCheckout';
