@@ -55,7 +55,7 @@ const Value = styled.div`
 const PaymentRequestor = ({
   quote,
   requestPayment,
-  refreshQuote,
+  // refreshQuote,
 }: PaymentRequestorViewProps) => {
   // const [missingSeconds, setMissingSeconds] = React.useState(0);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -85,10 +85,10 @@ const PaymentRequestor = ({
     requestPayment();
   };
 
-  const handleRefresh = async () => {
+  /* const handleRefresh = async () => {
     await refreshQuote();
     setIsLoading(false);
-  };
+  }; */
 
   const handleClick = () => {
     setIsLoading(true);
@@ -96,7 +96,7 @@ const PaymentRequestor = ({
   };
 
   // const actionText = isExpired ? 'Quote expired. Click to refresh' : `Confirm (${missingSeconds})`;
-  const actionText = `Confirm`;
+  const actionText = 'Confirm';
   const confirmButtonText = isLoading ? '...' : actionText;
 
   return (
