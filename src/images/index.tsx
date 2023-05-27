@@ -50,6 +50,7 @@ import viewExplorer from './view-explorer.svg';
 import exportKey from './export-private-key.svg';
 import removeWallet from './remove-wallet.svg';
 import arrowSend from './arrow-send.svg';
+import arrowReceive from './arrow-receive.svg';
 import arrowDownGray from './arrow-down-gray.svg';
 import directionBlack from './direction-black.svg';
 import addGray from './add-gray.svg';
@@ -144,6 +145,7 @@ const wallet = {
   removeWallet,
   arrowDownGray,
   arrowSend,
+  arrowReceive,
   directionBlack,
   addGray,
   checkedGray,
