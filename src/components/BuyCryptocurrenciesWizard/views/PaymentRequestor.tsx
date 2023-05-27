@@ -56,47 +56,18 @@ const Value = styled.div`
 const PaymentRequestor = ({
   quote,
   requestPayment,
-  // refreshQuote,
 }: PaymentRequestorViewProps) => {
-  // const [missingSeconds, setMissingSeconds] = React.useState(0);
   const [isLoading, setIsLoading] = React.useState(false);
-  // const isExpired = missingSeconds <= 0;
-
-  /* React.useEffect(() => {
-    let id: number;
-
-    const updateSeconds = () => {
-      const distanceInMsecs = quote.validUntil - Date.now();
-      const distanceInSeconds = Math.round(distanceInMsecs / 1000);
-      const newMissingSeconds = Math.max(0, distanceInSeconds);
-      setMissingSeconds(newMissingSeconds);
-
-      if (newMissingSeconds > 0) {
-        const nextTick = distanceInMsecs % 1000;
-        id = window.setTimeout(updateSeconds, nextTick);
-      }
-    };
-
-    updateSeconds();
-
-    return () => { window.clearTimeout(id); };
-  }, [quote]); */
 
   const handleRequestPayment = () => {
     requestPayment();
   };
 
-  /* const handleRefresh = async () => {
-    await refreshQuote();
-    setIsLoading(false);
-  }; */
-
   const handleClick = () => {
     setIsLoading(true);
-    /* isExpired ? handleRefresh() : */ handleRequestPayment();
+    handleRequestPayment();
   };
 
-  // const actionText = isExpired ? 'Quote expired. Click to refresh' : `Confirm (${missingSeconds})`;
   const actionText = 'Confirm';
   const confirmButtonText = isLoading ? '...' : actionText;
 
