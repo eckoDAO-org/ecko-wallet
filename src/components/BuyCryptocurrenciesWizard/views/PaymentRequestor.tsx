@@ -6,6 +6,7 @@ import { PaymentRequestorViewProps } from './types';
 
 const Container = styled.div`
   padding: 20px;
+  color: ${({ theme }) => theme.text.primary}
 `;
 
 const Header = styled.div`
