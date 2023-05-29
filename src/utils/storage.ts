@@ -85,14 +85,6 @@ const setMultipleObjects = (partialState: object, inSession: boolean = false) =>
   window.chrome.storage[inSession ? 'session' : 'local'].set(partialState)
 );
 
-const getMultipleObjects = (keyorKeys: string|string[], inSession: boolean = false) => (
-  window.chrome.storage[inSession ? 'session' : 'local'].get(keyorKeys)
-);
-
-const removeMultipleObjects = (keyorKeys: string|string[], inSession: boolean = false) => (
-  window.chrome.storage[inSession ? 'session' : 'local'].remove(keyorKeys)
-);
-
 export const updateLocalWallets = (
   newPasswordHash: string,
   oldPasswordHash: string,
@@ -126,7 +118,7 @@ export const updateLocalWallets = (
 
       // This should never happend
       if (updatedSelectedWallet === undefined) {
-        throw new Error("No wallets found");
+        throw new Error('No wallets found');
       }
 
       retrieveAndUpdateSeedPhrase(newPasswordHash, oldPasswordHash, (updatedSeedPhrase) => {
@@ -147,7 +139,7 @@ export const updateLocalWallets = (
 
   try {
     getLocalNetworks(runUpdate, () => {
-      console.warn("failed to retrieve networks - using default");
+      console.warn('failed to retrieve networks - using default');
       runUpdate(defaultNetworks);
     });
   } catch (error: any) {
@@ -178,7 +170,7 @@ const retrieveAndUpdateSelectedWallet = (
     const updatedSelectedWallet = updateWallet(selectedWallet, newPasswordHash, oldPasswordHash);
     callback(updatedSelectedWallet);
   }, () => {
-    console.warn("Failed to retrieve selected wallet");
+    console.warn('Failed to retrieve selected wallet');
     callback(undefined);
   });
 };
@@ -193,8 +185,8 @@ const retrieveAndUpdateSeedPhrase = (
     callback(updatedSeedPhrase);
   }, () => {
     // TODO: handle errors
-    console.error("Failed to retrieve seed phrase");
-    throw new Error("Cannot update seed phrase");
+    console.error('Failed to retrieve seed phrase');
+    throw new Error('Cannot update seed phrase');
   });
 };
 

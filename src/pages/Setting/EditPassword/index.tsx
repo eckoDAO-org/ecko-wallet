@@ -63,7 +63,7 @@ const EditPassword = () => {
       toast.success(<Toast type="success" content="Password modified successfully" />);
     }, (error: Error) => {
       console.error(error);
-      setError("updatePassword", {
+      setError('updatePassword', {
         type: 'custom',
         message: 'Cannot update password',
       });

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import styled from 'styled-components';
 import { disable2FA } from 'src/stores/auth';
 import { CommonLabel } from 'src/components';
 import Button from 'src/components/Buttons';

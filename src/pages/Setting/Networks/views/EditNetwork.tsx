@@ -14,7 +14,6 @@ import ModalCustom from 'src/components/Modal/ModalCustom';
 import { Content } from '../../style';
 import { ErrorWrapper, Footer } from '../../../SendTransactions/styles';
 import { DivBodyNetwork } from './style';
-import { BodyModal, DescriptionModal, TitleModal } from '../style';
 import { DivError } from '../../Contact/views/style';
 
 type Props = {

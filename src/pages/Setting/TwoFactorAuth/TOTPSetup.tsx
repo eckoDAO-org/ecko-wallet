@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import QRCode from "react-qr-code";
+import QRCode from 'react-qr-code';
 import styled from 'styled-components';
 import { hash } from '@kadena/cryptography-utils';
 import { InputError } from 'src/baseComponent';

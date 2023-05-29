@@ -1,4 +1,3 @@
-import styled from 'styled-components';
 import { CommonLabel } from 'src/components';
 import Button from 'src/components/Buttons';
 import { Header, Page, Body } from 'src/components/Page';

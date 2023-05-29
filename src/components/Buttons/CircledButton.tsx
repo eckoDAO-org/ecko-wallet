@@ -27,15 +27,15 @@ const Circle = styled.div`
   align-items: center;
   justify-content: center;
 
-  ${({ theme, variant }) => variant === "primary" && css`
+  ${({ theme, variant }) => variant === 'primary' && css`
     background-color: ${theme.button.primary}
   `}
 
-  ${({ theme, variant }) => variant === "secondary" && css`
+  ${({ theme, variant }) => variant === 'secondary' && css`
     background-color: ${theme.button.secondary}
   `}
 
-  ${({ theme, variant }) => variant === "brand" && css`
+  ${({ theme, variant }) => variant === 'brand' && css`
     outline: 1px solid ${theme.brand}
   `}
 `;
