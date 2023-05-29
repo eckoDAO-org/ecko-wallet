@@ -2,33 +2,22 @@ import React from 'react';
 import styled from 'styled-components';
 import { CommonLabel } from 'src/components';
 import Button from 'src/components/Buttons';
+import { Body, Footer, Header, Page } from 'src/components/Page';
 import { PaymentRequestorViewProps } from './types';
-
-const Container = styled.div`
-  padding: 20px;
-  color: ${({ theme }) => theme.text.primary}
-`;
-
-const Header = styled.div`
-  height: 75px;
-  text-align: center;
-`;
 
 const Summary = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: row;
   gap: 80px;
-  margin: 20px 0;
+  margin: 20px auto;
 `;
 
 const Details = styled.div`
-  font-size: 16px;
   display: flex;
   justify-content: center;
   flex-direction: row;
   gap: 40px;
-  margin: 20px 0;
 `;
 
 const Pair = styled.div`
@@ -72,11 +61,11 @@ const PaymentRequestor = ({
   const confirmButtonText = isLoading ? '...' : actionText;
 
   return (
-    <Container>
+    <Page>
       <Header>
         <CommonLabel fontSize={18} fontWeight={500}>Confirm quote</CommonLabel>
       </Header>
-      <div>
+      <Body>
         <Summary>
           <Pair>
             <SummaryKey>You send</SummaryKey>
@@ -98,10 +87,12 @@ const PaymentRequestor = ({
             <Value>{(quote.fiatTotalAmount - quote.fiatBaseAmount).toFixed(2)} {quote.fiatCurrency}</Value>
           </Pair>
         </Details>
+      </Body>
 
+      <Footer>
         <Button isDisabled={isLoading} onClick={handleClick} label={confirmButtonText} size="full" variant="primary" />
-      </div>
-    </Container>
+      </Footer>
+    </Page>
   );
 };
 

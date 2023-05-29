@@ -1,16 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import { CommonLabel } from 'src/components';
+import { Body, Header, Page } from 'src/components/Page';
 import { PaymentCheckoutViewProps } from './types';
-
-const Container = styled.div`
-  padding: 20px;
-`;
-
-const Header = styled.div`
-  height: 75px;
-  text-align: center;
-`;
 
 const Checkout = styled.div`
   min-width: 350px;
@@ -26,14 +18,16 @@ const SimplexPaymentCheckout = ({
   }, []);
 
   return (
-    <Container>
+    <Page>
       <Header>
         <CommonLabel fontSize={18} fontWeight={500}>Checkout</CommonLabel>
       </Header>
-      <form id="simplex-form">
-        <Checkout id="checkout-element" />
-      </form>
-    </Container>
+      <Body>
+        <form id="simplex-form">
+          <Checkout id="checkout-element" />
+        </form>
+      </Body>
+    </Page>
   );
 };
 

@@ -14,18 +14,9 @@ import Toast from 'src/components/Toast/Toast';
 import { encryptSharedKey, generateSharedKey, initTOTP } from 'src/utils/totp';
 import { useAppDispatch } from 'src/stores/hooks';
 import { setTOTPSharedKey } from 'src/stores/auth';
+import { Body, Footer, Page } from 'src/components/Page';
 
- const GA_LINK = 'https://support.google.com/accounts/answer/1066447?hl=en';
-
-const Container = styled.div`
-padding: 0 20px;
-`;
-
-const Body = styled.div`
-  height: auto;
-  width: 100%;
-  font-size: 16px;
-`;
+const GA_LINK = 'https://support.google.com/accounts/answer/1066447?hl=en';
 
 const StepWrapper = styled.div`
   margin-bottom: 32px;
@@ -45,12 +36,6 @@ const TokenInput = styled(SInput)`
 const TokenInputWrapper = styled.div`
   width: 100%;
   text-align: center;
-`;
-
-const Footer = styled.div`
-  width: 100%;
-  height: 3em;
-  margin-top: 35px;
 `;
 
 const TOTPSetup = () => {
@@ -104,7 +89,7 @@ const TOTPSetup = () => {
   };
 
   return (
-    <Container>
+    <Page>
       <NavigationHeader title="Two-Factor Authentication" onBack={goBack} />
       <Body>
         <StepWrapper>
@@ -145,7 +130,7 @@ const TOTPSetup = () => {
       <Footer>
         <Button onClick={handleSave} isDisabled={!isValidToken || isLoading} label="Save" size="full" variant="primary" />
       </Footer>
-    </Container>
+    </Page>
   );
 };
 export default TOTPSetup;
