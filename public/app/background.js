@@ -68,7 +68,7 @@ function setWalletConnectEvents(accounts) {
         case WALLET_CONNECT_SIGN_METHOD: {
           showSignPopup({
             signingCmd: { ...request.params, pactCode: request.code },
-            networkId: request.params.networkId,
+            networkId: params.chainId?.split(':') && params.chainId?.split(':')[1],
             domain: session?.peer?.metadata.url,
             icon: session?.peer?.metadata?.icons[0],
             walletConnectAction: WALLET_CONNECT_SIGN_METHOD,

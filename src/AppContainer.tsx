@@ -65,6 +65,7 @@ const AppContainer = () => {
           <PrivateRoute isSeedPhrase isSignIn path="/seed-phrase" component={SeedPhrase} />
           <PrivateRoute path="/export-seed-phrase" component={ExportSeedPhrase} />
           <PrivateRoute path="/edit-password" component={EditPassword} />
+          <PrivateRoute path="/2fa" component={TwoFactorAuth} />
           <PrivateRoute path="/import-wallet" component={ImportAccount} />
           <PrivateRoute path="/import-token" component={importToken} />
           <PrivateRoute path="/transfer" component={SendTransactions} />
@@ -89,7 +90,6 @@ const AppContainer = () => {
         </Switch>
         <Footer />
         {isLoading && <Loading type="spin" color={theme.footer?.primary ?? '#20264e'} />}
-        <PrivateRoute path="/2fa" component={TwoFactorAuth} />
       </TwoFactorAuthenticator>
     </Container>
   );
