@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction, Store } from '@reduxjs/toolkit';
+import { RootState } from '..';
 
 export interface RawWallet {
   chainId: string | number;
@@ -69,4 +70,10 @@ export const setWallets = (wallets: any) => {
 export const setBalance = (balance: any) => {
   customStore && customStore.dispatch(storeWallet.actions.setBalance(balance));
 };
+
+export const getCurrentWallet = (state: RootState) => state.wallet.wallets.find(
+  (wallet) => wallet.account === state.wallet.account,
+);
+export const getWallets = (state: RootState) => state.wallet.wallets;
+
 export { storeWallet };

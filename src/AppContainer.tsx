@@ -33,9 +33,9 @@ import PageTransaction from './pages/Setting/Transaction';
 import PageLockSettings from './pages/Setting/Lock';
 import PageSelectTheme from './pages/Setting/SelectTheme';
 import PageConnectedSites from './pages/Setting/ConnectedSites';
-import { useAppThemeContext } from './contexts/AppThemeContext';
 import TwoFactorAuthenticator from './components/TwoFactorAuthenticator';
 import PageWalletConnect from './pages/Setting/WalletConnect';
+import BuyCryptocurrencies from './pages/Wallet/views/BuyCryptocurrencies';
 
 const Container = styled.div`
   width: 1000px;
@@ -51,7 +51,6 @@ const Container = styled.div`
 
 const AppContainer = () => {
   const rootState = useSelector((state) => state);
-  const { theme } = useAppThemeContext();
   const { isLoading } = rootState.extensions;
   return (
     <Container>
@@ -65,6 +64,7 @@ const AppContainer = () => {
           <PrivateRoute isSeedPhrase isSignIn path="/seed-phrase" component={SeedPhrase} />
           <PrivateRoute path="/export-seed-phrase" component={ExportSeedPhrase} />
           <PrivateRoute path="/edit-password" component={EditPassword} />
+          <PrivateRoute path="/2fa" component={TwoFactorAuth} />
           <PrivateRoute path="/import-wallet" component={ImportAccount} />
           <PrivateRoute path="/import-token" component={importToken} />
           <PrivateRoute path="/transfer" component={SendTransactions} />
@@ -84,12 +84,12 @@ const AppContainer = () => {
           <PrivateRoute path="/wallet-connect" component={PageWalletConnect} />
           <PrivateRoute path="/setting" component={PageSetting} />
           <PrivateRoute path="/history" component={History} />
+          <PrivateRoute path="/buy" component={BuyCryptocurrencies} />
           <PrivateRoute isHome path="/" component={Wallet} />
           <Redirect to="/" />
         </Switch>
         <Footer />
-        {isLoading && <Loading type="spin" color={theme.footer?.primary ?? '#20264e'} />}
-        <PrivateRoute path="/2fa" component={TwoFactorAuth} />
+        {isLoading && <Loading />}
       </TwoFactorAuthenticator>
     </Container>
   );

@@ -10,23 +10,26 @@ export interface IPrimarySecondary {
   disabled?: string;
 }
 export interface IAppTheme {
-  isDark?: boolean;
-  background?: string;
-  border?: string;
-  text?: IPrimarySecondary;
-  button?: IPrimarySecondary;
-  footer?: IPrimarySecondary;
-  modalBackground?: string;
-  input?: { color?: string; background?: string; placeholder?: string };
-  selectMenu?: { color?: string; background?: string; selectedColor?: string; selectedBackground?: string };
-  transferIcon?: { border: string; background: string };
-  alert?: { color: string; background: string };
-  boxShadow?: string;
-  iconBackground?: string;
-  iconSettingsBackground?: string;
+  isDark: boolean;
+  background: string;
+  border: string;
+  text: IPrimarySecondary;
+  button: IPrimarySecondary;
+  footer: IPrimarySecondary;
+  modalBackground: string;
+  input: { color: string; background: string; placeholder: string };
+  selectMenu: { color: string; background: string; selectedColor: string; selectedBackground: string };
+  transferIcon: { border: string; background: string };
+  alert: { color: string; background: string };
+  boxShadow: string;
+  iconBackground: string;
+  iconSettingsBackground: string;
+  brand: string;
 }
 
-export const appThemes = {
+export const appThemes: {
+  [key in AppThemeEnum]: IAppTheme
+ } = {
   [AppThemeEnum.LIGHT]: {
     isDark: false,
     background: '#FFFFFF',
@@ -64,6 +67,7 @@ export const appThemes = {
     border: '#dfdfed',
     iconBackground: '#fff',
     iconSettingsBackground: '#24224c',
+    brand: '#ed1cb5',
     boxShadow: `background: white;
     box-shadow: rgb(31 31 31 / 1%) 0px 167px 67px, rgb(31 31 31 / 3%) 0px 94px 57px, rgb(31 31 31 / 6%) 0px 42px 42px, rgb(31 31 31 / 6%) 0px 10px 23px, rgb(31 31 31 / 7%) 0px 0px 0px;`,
   },
@@ -104,6 +108,7 @@ export const appThemes = {
     modalBackground: '#1f1f1f',
     iconBackground: '#2a2a2a',
     iconSettingsBackground: '#24224c',
+    brand: '#ed1cb5',
     boxShadow: `background: rgba(31, 31, 31, 1) 0% 0% no-repeat padding-box;
     box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.16);
     opacity: 1;`,
@@ -145,6 +150,7 @@ export const appThemes = {
     modalBackground: '#1A1E3E',
     iconBackground: '#2a2a2a',
     iconSettingsBackground: '#363F82',
+    brand: '#ed1cb5',
     boxShadow: `box-shadow: 0px 29px 48px rgb(0 0 0 / 40%);
     opacity: 1;`,
   },

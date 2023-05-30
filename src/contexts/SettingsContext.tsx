@@ -1,8 +1,8 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState } from 'react';
 import useLocalStorage from 'src/hooks/useLocalStorage';
 import useIdleTimeout from 'src/hooks/useIdleTimeout';
 import { CONFIG } from 'src/utils/config';
-import { getLocalPassword, STORAGE_PASSWORD_KEY } from 'src/utils/storage';
+import { STORAGE_PASSWORD_KEY } from 'src/utils/storage';
 import useSessionStorage from 'src/hooks/useSessionStorage';
 
 export interface TxSettings {

@@ -16,26 +16,9 @@ import { InputError } from 'src/baseComponent';
 import { useSettingsContext } from 'src/contexts/SettingsContext';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
+import { Page, Body, Footer } from 'src/components/Page';
 
-const Container = styled.div`
-padding: 0 20px;
-`;
-
-const Body = styled.div`
-  height: auto;
-  width: 100%;
-  font-size: 16px;
-`;
-
-const Wrapper = styled.form`
-  display: block;
-`;
-
-const Footer = styled.div`
-  width: 100%;
-  height: 3em;
-  margin-top: 35px;
-`;
+const Form = styled.form``;
 
 const EditPassword = () => {
   const history = useHistory();
@@ -80,7 +63,7 @@ const EditPassword = () => {
       toast.success(<Toast type="success" content="Password modified successfully" />);
     }, (error: Error) => {
       console.error(error);
-      setError("updatePassword", {
+      setError('updatePassword', {
         type: 'custom',
         message: 'Cannot update password',
       });
@@ -94,7 +77,7 @@ const EditPassword = () => {
   }
 
   return (
-    <Container>
+    <Page>
       <NavigationHeader title="Edit Password" onBack={goBack} />
       <Body>
         {errors.updatePassword && (
@@ -102,7 +85,7 @@ const EditPassword = () => {
             {errors.updatePassword.message}
           </InputError>
         )}
-        <Wrapper onSubmit={handleSubmit(onSubmit)} id="edit-password-form">
+        <Form onSubmit={handleSubmit(onSubmit)} id="edit-password-form">
           <PasswordForm
             clearErrors={clearErrors}
             control={control}
@@ -111,12 +94,12 @@ const EditPassword = () => {
             register={register}
             setValue={setValue}
           />
-        </Wrapper>
+        </Form>
       </Body>
       <Footer>
         <Button label="Save" size="full" variant="primary" form="edit-password-form" />
       </Footer>
-    </Container>
+    </Page>
   );
 };
 export default EditPassword;

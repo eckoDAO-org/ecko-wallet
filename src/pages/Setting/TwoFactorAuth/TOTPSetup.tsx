@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import QRCode from "react-qr-code";
+import QRCode from 'react-qr-code';
 import styled from 'styled-components';
 import { hash } from '@kadena/cryptography-utils';
 import { InputError } from 'src/baseComponent';
 import { SInput } from 'src/baseComponent/BaseTextInput';
-import { CommonLabel } from 'src/components';
+import { LabelWithLink } from 'src/components';
 import Button from 'src/components/Buttons';
 import { NavigationHeader } from 'src/components/NavigationHeader';
 import { SeedPhraseRetrivier } from 'src/components/SeedPhraseRetrivier';
@@ -14,27 +14,12 @@ import Toast from 'src/components/Toast/Toast';
 import { encryptSharedKey, generateSharedKey, initTOTP } from 'src/utils/totp';
 import { useAppDispatch } from 'src/stores/hooks';
 import { setTOTPSharedKey } from 'src/stores/auth';
+import { Body, Footer, Page } from 'src/components/Page';
 
- const GA_LINK = 'https://support.google.com/accounts/answer/1066447?hl=en';
-
-const Container = styled.div`
-padding: 0 20px;
-`;
-
-const Body = styled.div`
-  height: auto;
-  width: 100%;
-  font-size: 16px;
-`;
+const GA_LINK = 'https://support.google.com/accounts/answer/1066447?hl=en';
 
 const StepWrapper = styled.div`
   margin-bottom: 32px;
-`;
-
-const Label = styled(CommonLabel)`
-  a {
-    color: inherit;
-  }
 `;
 
 const QRCodeWrapper = styled.div`
@@ -51,12 +36,6 @@ const TokenInput = styled(SInput)`
 const TokenInputWrapper = styled.div`
   width: 100%;
   text-align: center;
-`;
-
-const Footer = styled.div`
-  width: 100%;
-  height: 3em;
-  margin-top: 35px;
 `;
 
 const TOTPSetup = () => {
@@ -110,26 +89,26 @@ const TOTPSetup = () => {
   };
 
   return (
-    <Container>
+    <Page>
       <NavigationHeader title="Two-Factor Authentication" onBack={goBack} />
       <Body>
         <StepWrapper>
-          <Label fontSize={18}>
+          <LabelWithLink fontSize={18}>
             1. Install <a href={GA_LINK} target="_blank" rel="noreferrer">Google Authenticator</a> or similiar apps
-          </Label>
+          </LabelWithLink>
         </StepWrapper>
         <StepWrapper>
-          <Label fontSize={18}>
+          <LabelWithLink fontSize={18}>
             2. Scan the QR code below:
-          </Label>
+          </LabelWithLink>
           <QRCodeWrapper>
             <QRCode value={uri} />
           </QRCodeWrapper>
         </StepWrapper>
         <StepWrapper>
-          <Label fontSize={18}>
+          <LabelWithLink fontSize={18}>
             3. Enter the 6-digit code
-          </Label>
+          </LabelWithLink>
           <TokenInputWrapper>
             <TokenInput
               placeholder="000 000"
@@ -151,7 +130,7 @@ const TOTPSetup = () => {
       <Footer>
         <Button onClick={handleSave} isDisabled={!isValidToken || isLoading} label="Save" size="full" variant="primary" />
       </Footer>
-    </Container>
+    </Page>
   );
 };
 export default TOTPSetup;

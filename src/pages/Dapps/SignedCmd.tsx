@@ -150,7 +150,7 @@ const SignedCmd = () => {
       }
       return { signedCmd, signingCmd };
     } catch (err) {
-      console.log(`Signing cmd err:`, err);
+      console.log('Signing cmd err:', err);
       const result = {
         status: 'fail',
         message: 'Signing cmd error',
