@@ -70,35 +70,35 @@ const EditPassword = () => {
     });
   };
 
-  if (!oldPassword) {
-    return (
-      <SeedPhraseRetrivier onSuccess={onSeedPhraseRetrivied} />
-    );
-  }
-
   return (
     <Page>
       <NavigationHeader title="Edit Password" onBack={goBack} />
-      <Body>
-        {errors.updatePassword && (
-          <InputError>
-            {errors.updatePassword.message}
-          </InputError>
-        )}
-        <Form onSubmit={handleSubmit(onSubmit)} id="edit-password-form">
-          <PasswordForm
-            clearErrors={clearErrors}
-            control={control}
-            errors={errors}
-            getValues={getValues}
-            register={register}
-            setValue={setValue}
-          />
-        </Form>
-      </Body>
-      <Footer>
-        <Button label="Save" size="full" variant="primary" form="edit-password-form" />
-      </Footer>
+      {oldPassword ? (
+        <>
+          <Body>
+            {errors.updatePassword && (
+              <InputError>
+                {errors.updatePassword.message}
+              </InputError>
+            )}
+            <Form onSubmit={handleSubmit(onSubmit)} id="edit-password-form">
+              <PasswordForm
+                clearErrors={clearErrors}
+                control={control}
+                errors={errors}
+                getValues={getValues}
+                register={register}
+                setValue={setValue}
+              />
+            </Form>
+          </Body>
+          <Footer>
+            <Button label="Save" size="full" variant="primary" form="edit-password-form" />
+          </Footer>
+        </>
+      ) : (
+        <SeedPhraseRetrivier onSuccess={onSeedPhraseRetrivied} />
+      )}
     </Page>
   );
 };
