@@ -12,6 +12,9 @@ import { Body, Footer, Header, Page } from 'src/components/Page';
 import { Radio } from 'src/components/Radio';
 import { QuoteRequestorViewProps } from './types';
 
+const PRIVACY_POLICY_LINK = 'https://wallet.ecko.finance/privacy-policy';
+const TERMS_OF_USE_LINK = 'https://wallet.ecko.finance/terms-of-use';
+
 const Form = styled.form`
   display: flex;
   justify-content: center;
@@ -265,10 +268,10 @@ const QuoteRequestor = ({
 
       <Footer>
         <LabelWithLink>
-          <a href="https://kaddex.com/privacy-policy" target="_blank" rel="noreferrer">Privacy Policy</a>
+          <a href={PRIVACY_POLICY_LINK} target="_blank" rel="noreferrer noopener">Privacy Policy</a>
         </LabelWithLink>
         <LabelWithLink>
-          <a href="https://kaddex.com/terms-of-use" target="_blank" rel="noreferrer">Terms Of Use</a>
+          <a href={TERMS_OF_USE_LINK} target="_blank" rel="noreferrer noopener">Terms Of Use</a>
         </LabelWithLink>
       </Footer>
     </Page>
