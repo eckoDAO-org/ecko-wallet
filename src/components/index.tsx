@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 
-export const DivFlex = styled.div<{
+interface DivFlexProps {
   alignItems?: string;
   justifyContent?: string;
-  flexDirection?: string;
+  flexDirection?: 'row' | 'column';
   padding?: string;
   paddingTop?: string;
   marginBottom?: string;
@@ -11,7 +11,9 @@ export const DivFlex = styled.div<{
   margin?: string;
   marginTop?: string;
   gap?: string;
-}>`
+}
+
+export const DivFlex = styled.div<DivFlexProps>`
   display: flex;
   justify-content: ${(props) => props.justifyContent};
   flex-direction: ${(props) => props.flexDirection || 'row'};

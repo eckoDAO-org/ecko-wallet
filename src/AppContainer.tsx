@@ -28,7 +28,8 @@ import InitSeedPhrase from './pages/InitSeedPhrase';
 import ExportSeedPhrase from './pages/Setting/ExportSeedPhrase';
 import EditPassword from './pages/Setting/EditPassword';
 import TwoFactorAuth from './pages/Setting/TwoFactorAuth';
-import History from './pages/Wallet/views/History';
+import History from './pages/History';
+import Nft from './pages/Nft';
 import PageTransaction from './pages/Setting/Transaction';
 import PageLockSettings from './pages/Setting/Lock';
 import PageSelectTheme from './pages/Setting/SelectTheme';
@@ -85,6 +86,7 @@ const AppContainer = () => {
           <PrivateRoute path="/wallet-connect" component={PageWalletConnect} />
           <PrivateRoute path="/setting" component={PageSetting} />
           <PrivateRoute path="/history" component={History} />
+          <PrivateRoute path="/nft" component={Nft} />
           <PrivateRoute isHome path="/" component={Wallet} />
           <Redirect to="/" />
         </Switch>
