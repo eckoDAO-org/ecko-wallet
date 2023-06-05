@@ -85,7 +85,7 @@ const AppContainer = () => {
           <PrivateRoute path="/setting" component={PageSetting} />
           <PrivateRoute path="/history" component={History} />
           <PrivateRoute path="/buy" component={BuyCryptocurrencies} />
-          <PrivateRoute isHome path="/" component={Wallet} />
+          <PrivateRoute path="/" component={Wallet} />
           <Redirect to="/" />
         </Switch>
         <Footer />

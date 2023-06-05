@@ -3,7 +3,6 @@ import { useContext, useState } from 'react';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import Button from 'src/components/Buttons';
 import styled from 'styled-components';
-import bcrypt from 'bcryptjs';
 import { setCurrentWallet, setWallets } from 'src/stores/wallet';
 import { setLocalActivities, setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
 import { encryptKey } from 'src/utils/security';
