@@ -26,7 +26,7 @@ const QRCodeWrapper = styled.div`
   background: white;
   padding: 16px;
   width: fit-content;
-  margin: 0 auto;
+  margin: 20px auto;
 `;
 
 const TokenInput = styled(SInput)`
@@ -36,6 +36,7 @@ const TokenInput = styled(SInput)`
 const TokenInputWrapper = styled.div`
   width: 100%;
   text-align: center;
+  margin-top: 10px;
 `;
 
 const TOTPSetup = () => {
@@ -64,12 +65,16 @@ const TOTPSetup = () => {
     setToken(e.target.value.replace(/\D/g, ''));
   };
 
+  if (!password) {
+    return <SeedPhraseRetrivier onSuccess={onSeedPhraseRetrivied} />;
+  }
+
   const totp = initTOTP(sharedKey);
   const uri = totp.toString();
 
   // Check if token is exactly 6 digits and validate it
   const is6Digits = token.match(/^\d{6}$/);
-  const isValidToken = is6Digits ? (totp.validate({ token, window: 0 }) !== null) : false;
+  const isValidToken = is6Digits ? totp.validate({ token, window: 0 }) !== null : false;
 
   const handleSave = () => {
     if (!isValidToken || isLoading) return;
@@ -85,51 +90,41 @@ const TOTPSetup = () => {
   return (
     <Page>
       <NavigationHeader title="Two-Factor Authentication" onBack={goBack} />
-      { password ? (
-        <>
-          <Body>
-            <StepWrapper>
-              <LabelWithLink fontSize={18}>
-                1. Install <a href={GA_LINK} target="_blank" rel="noreferrer">Google Authenticator</a> or similiar apps
-              </LabelWithLink>
-            </StepWrapper>
-            <StepWrapper>
-              <LabelWithLink fontSize={18}>
-                2. Scan the QR code below:
-              </LabelWithLink>
-              <QRCodeWrapper>
-                <QRCode value={uri} />
-              </QRCodeWrapper>
-            </StepWrapper>
-            <StepWrapper>
-              <LabelWithLink fontSize={18}>
-                3. Enter the 6-digit code
-              </LabelWithLink>
-              <TokenInputWrapper>
-                <TokenInput
-                  placeholder="000 000"
-                  onChange={onChangeInput}
-                  onKeyPress={(event) => {
-                    if (event.key === 'Enter') {
-                      handleSave();
-                    }
-                  }}
-                />
-              </TokenInputWrapper>
-              { is6Digits && !isValidToken && (
-                <InputError>
-                  The code is not valid.
-                </InputError>
-              )}
-            </StepWrapper>
-          </Body>
-          <Footer>
-            <Button onClick={handleSave} isDisabled={!isValidToken || isLoading} label="Save" size="full" variant="primary" />
-          </Footer>
-        </>
-      ) : (
-        <SeedPhraseRetrivier onSuccess={onSeedPhraseRetrivied} />
-      )}
+      <Body>
+        <StepWrapper>
+          <LabelWithLink fontSize={18}>
+            1. Install{' '}
+            <a href={GA_LINK} target="_blank" rel="noreferrer">
+              Google Authenticator
+            </a>{' '}
+            or similiar apps
+          </LabelWithLink>
+        </StepWrapper>
+        <StepWrapper>
+          <LabelWithLink fontSize={18}>2. Scan the QR code below:</LabelWithLink>
+          <QRCodeWrapper>
+            <QRCode value={uri} />
+          </QRCodeWrapper>
+        </StepWrapper>
+        <StepWrapper>
+          <LabelWithLink fontSize={18}>3. Enter the 6-digit code</LabelWithLink>
+          <TokenInputWrapper>
+            <TokenInput
+              placeholder="000 000"
+              onChange={onChangeInput}
+              onKeyPress={(event) => {
+                if (event.key === 'Enter') {
+                  handleSave();
+                }
+              }}
+            />
+          </TokenInputWrapper>
+          {is6Digits && !isValidToken && <InputError>The code is not valid.</InputError>}
+        </StepWrapper>
+      </Body>
+      <Footer>
+        <Button onClick={handleSave} isDisabled={!isValidToken || isLoading} label="Save" size="full" variant="primary" />
+      </Footer>
     </Page>
   );
 };
