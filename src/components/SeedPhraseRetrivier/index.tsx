@@ -10,8 +10,6 @@ import images from 'src/images';
 import { useSelector } from 'react-redux';
 
 const Wrapper = styled.div`
-  padding: 0 20px;
-
   font-size: 16px;
   word-break: break-word;
 `;
