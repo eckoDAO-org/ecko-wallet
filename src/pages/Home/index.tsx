@@ -1,5 +1,5 @@
 import { useHistory } from 'react-router-dom';
-import { DivFlex, SecondaryLabel, StickyFooter } from 'src/components';
+import { SecondaryLabel, StickyFooter } from 'src/components';
 import images from 'src/images';
 import styled from 'styled-components';
 import Button from '../../components/Buttons';
