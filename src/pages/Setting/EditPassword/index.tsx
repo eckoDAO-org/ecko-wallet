@@ -56,18 +56,23 @@ const EditPassword = () => {
     const { password } = data;
     const oldPasswordHash = hash(oldPassword);
     const newPasswordHash = hash(password);
-    updateLocalWallets(newPasswordHash, oldPasswordHash, () => {
-      handle2FA(oldPasswordHash, newPasswordHash);
-      removeAccountPassword();
-      setIsLocked(true);
-      toast.success(<Toast type="success" content="Password modified successfully" />);
-    }, (error: Error) => {
-      console.error(error);
-      setError('updatePassword', {
-        type: 'custom',
-        message: 'Cannot update password',
-      });
-    });
+    updateLocalWallets(
+      newPasswordHash,
+      oldPasswordHash,
+      () => {
+        handle2FA(oldPasswordHash, newPasswordHash);
+        removeAccountPassword();
+        setIsLocked(true);
+        toast.success(<Toast type="success" content="Password modified successfully" />);
+      },
+      (error: Error) => {
+        console.error(error);
+        setError('updatePassword', {
+          type: 'custom',
+          message: 'Cannot update password',
+        });
+      },
+    );
   };
 
   return (
@@ -76,11 +81,7 @@ const EditPassword = () => {
       {oldPassword ? (
         <>
           <Body>
-            {errors.updatePassword && (
-              <InputError>
-                {errors.updatePassword.message}
-              </InputError>
-            )}
+            {errors.updatePassword && <InputError>{errors.updatePassword.message}</InputError>}
             <Form onSubmit={handleSubmit(onSubmit)} id="edit-password-form">
               <PasswordForm
                 clearErrors={clearErrors}

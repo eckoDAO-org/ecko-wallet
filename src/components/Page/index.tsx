@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 
 export const Page = styled.div`
-  padding: 20px;
-  color: ${({ theme }) => theme.text.primary}
+  padding: 0 20px;
+  color: ${({ theme }) => theme.text.primary};
 `;
 
 export const Header = styled.div`
