@@ -18,11 +18,7 @@ const NotFound = styled.div`
   align-items: center;
   padding: 20px;
 `;
-const NotFoundImage = styled.img`
-  width: 80px;
-  height: 80px;
-  margin: 110px auto 32px auto;
-`;
+
 export const PageSendTransaction = styled.div`
   display: block;
   display: block;

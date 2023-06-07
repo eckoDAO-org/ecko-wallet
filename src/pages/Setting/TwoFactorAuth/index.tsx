@@ -1,6 +1,6 @@
 import { useAppSelector } from 'src/stores/hooks';
 import { hasTOTPSharedKey } from 'src/stores/auth';
-import TOTPSetup from "./TOTPSetup";
+import TOTPSetup from './TOTPSetup';
 import TOTPDisabler from './TOTPDisabler';
 
 const TwoFactorAuth = () => {

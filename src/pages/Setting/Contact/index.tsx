@@ -9,7 +9,6 @@ import Button from 'src/components/Buttons';
 import { NavigationHeader } from 'src/components/NavigationHeader';
 import { JazzAccount } from 'src/components/JazzAccount';
 import { CommonLabel, DivFlex, PrimaryLabel, SecondaryLabel, StickyFooter } from 'src/components';
-import { TitleMessage } from './style';
 import { Body } from '../../SendTransactions/styles';
 import ContactForm from './views/ContactForm';
 import { ContactInfo } from './views/ContactInfo';

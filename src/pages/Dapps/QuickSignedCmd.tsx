@@ -145,7 +145,7 @@ const QuickSignedCmd = () => {
               signature = kadenaJSSign(hash, { secretKey, publicKey }).sig;
             }
           } catch (err) {
-            console.log(`QUICK-SIGN ERROR`);
+            console.log('QUICK-SIGN ERROR');
             signedResponses.push({
               commandSigData: {
                 cmd,
@@ -226,7 +226,7 @@ const QuickSignedCmd = () => {
                     CAPABILITIES ({caps?.length})
                   </SecondaryLabel>
                   <DivFlex flexDirection="column">
-                    {caps?.map((cap, i) => (
+                    {caps?.map((cap) => (
                       <div style={{ margin: '10px 0' }}>
                         <ReactJson
                           name={cap.name}

@@ -8,21 +8,7 @@ import { InputError } from 'src/baseComponent';
 import { SInput } from 'src/baseComponent/BaseTextInput';
 import { CommonLabel } from 'src/components';
 import Button from 'src/components/Buttons';
-
-const Container = styled.div`
-  padding: 20px;
-`;
-
-const Header = styled.div`
-  height: 75px;
-  text-align: center;
-`;
-
-const Body = styled.div`
-  height: auto;
-  width: 100%;
-  font-size: 16px;
-`;
+import { Body, Header, Page } from 'src/components/Page';
 
 const StepWrapper = styled.div`
   margin-bottom: 32px;
@@ -109,7 +95,7 @@ const TOTPSetup = ({ handleVerified, handleFailed }: TOTPSetupProps) => {
   };
 
   return (
-    <Container>
+    <Page>
       <Header>
         <CommonLabel fontSize={18} fontWeight={500}>
           Two-Factor Authentication Required
@@ -141,7 +127,7 @@ const TOTPSetup = ({ handleVerified, handleFailed }: TOTPSetupProps) => {
       <Footer>
         <Button onClick={handleSave} isDisabled={!isValidToken || isLoading} label="Verify" size="full" variant="primary" />
       </Footer>
-    </Container>
+    </Page>
   );
 };
 export default TOTPSetup;

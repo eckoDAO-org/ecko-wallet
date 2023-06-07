@@ -5,7 +5,7 @@ import { ReactComponent as SearchIconSVG } from 'src/images/search.svg';
 import { ReactComponent as AddIconSVG } from 'src/images/add-round.svg';
 import styled from 'styled-components';
 import { ReactComponent as AlertIconSVG } from 'src/images/icon-alert.svg';
-import Button from 'src/components/Buttons';
+import CircledButton from 'src/components/Buttons/CircledButton';
 import Spinner from 'src/components/Spinner';
 import { Header } from 'src/components/Header';
 import { toast } from 'react-toastify';
@@ -169,6 +169,11 @@ const Wallet = () => {
 
   const { theme } = useAppThemeContext();
 
+  const handleBuy = () => {
+    const url = history.createHref({ pathname: 'buy' });
+    window.open(url, '_blank');
+  };
+
   return (
     <div>
       <Header />
@@ -185,27 +190,24 @@ const Wallet = () => {
       <DivBottomShadow justifyContent="center" flexDirection="column" alignItems="center" padding="20px">
         <SecondaryLabel>ACCOUNT BALANCE</SecondaryLabel>
         <PrimaryLabel>$ {humanReadableNumber(getAccountBalance(stateWallet?.account).toFixed(2), 2)}</PrimaryLabel>
-        <DivFlex gap="5%" style={{ width: '100%', marginTop: 30 }}>
-          <Button
+        <DivFlex justifyContent="space-around" style={{ width: '100%', marginTop: 30 }}>
+          <CircledButton
             onClick={() => history.push('/transfer?coin=kda&chainId=0')}
-            label={
-              <DivFlex justifyContent="center">
-                <img src={images.wallet.arrowSend} style={{ width: 16, marginRight: 10 }} />
-                <span>Send</span>
-              </DivFlex>
-            }
-            size="full"
+            label="Send"
+            iconUrl={images.wallet.arrowSend}
+            variant="primary"
           />
-          <Button
+          <CircledButton
             onClick={() => openModal({ title: 'Receive tokens', content: <ReceiveModal /> })}
-            label={
-              <DivFlex justifyContent="center">
-                <img src={images.wallet.arrowSend} style={{ width: 16, marginRight: 10, transform: 'scale(1, -1)' }} />
-                <span>Receive</span>
-              </DivFlex>
-            }
+            label="Receive"
+            iconUrl={images.wallet.arrowReceive}
             variant="secondary"
-            size="full"
+          />
+          <CircledButton
+            onClick={handleBuy}
+            label="Buy"
+            iconUrl={images.wallet.iconBuy}
+            variant="brand"
           />
         </DivFlex>
       </DivBottomShadow>
