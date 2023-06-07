@@ -409,7 +409,7 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
               {errors.accountName && <InputError>{errors.accountName.message}</InputError>}
               {isOpenContactSuggestion && accountName ? (
                 <ContactSuggestion style={{ width: rect?.width ? rect?.width - 10 : '100%' }} className="lightScrollbar">
-                  {getTabContent(sortedContacts?.filter((c) => c.aliasName?.toLocaleLowerCase()?.includes(accountName)))}
+                  {getTabContent(sortedContacts?.filter((c) => c.aliasName?.toLocaleLowerCase()?.includes(accountName?.toLocaleLowerCase())))}
                 </ContactSuggestion>
               ) : null}
             </InputWrapper>
