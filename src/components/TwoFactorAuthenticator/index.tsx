@@ -1,10 +1,10 @@
-import React from "react";
-import { is2FARequired, unrequire2FA } from "src/stores/auth";
-import { useAppDispatch, useAppSelector } from "src/stores/hooks";
-import { useSettingsContext } from "src/contexts/SettingsContext";
-import useSessionStorage from "src/hooks/useSessionStorage";
-import { STORAGE_PASSWORD_KEY } from "src/utils/storage";
-import UI from "./UI";
+import React from 'react';
+import { is2FARequired, unrequire2FA } from 'src/stores/auth';
+import { useAppDispatch, useAppSelector } from 'src/stores/hooks';
+import { useSettingsContext } from 'src/contexts/SettingsContext';
+import useSessionStorage from 'src/hooks/useSessionStorage';
+import { STORAGE_PASSWORD_KEY } from 'src/utils/storage';
+import UI from './UI';
 
 interface Props {
   children: React.ReactNode
@@ -22,7 +22,7 @@ const TwoFactorAuthenticator: React.FC<Props> = ({ children }) => {
   }
 
   const handleFailed = () => {
-    console.warn("Failed to handle 2FA");
+    console.warn('Failed to handle 2FA');
     dispatch(unrequire2FA());
     removeAccountPassword();
     setIsLocked(true);

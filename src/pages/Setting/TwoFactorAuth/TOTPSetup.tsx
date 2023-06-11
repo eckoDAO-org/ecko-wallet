@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { hash } from '@kadena/cryptography-utils';
 import { InputError } from 'src/baseComponent';
 import { SInput } from 'src/baseComponent/BaseTextInput';
-import { CommonLabel } from 'src/components';
+import { LabelWithLink } from 'src/components';
 import Button from 'src/components/Buttons';
 import { NavigationHeader } from 'src/components/NavigationHeader';
 import { SeedPhraseRetrivier } from 'src/components/SeedPhraseRetrivier';
@@ -14,27 +14,12 @@ import Toast from 'src/components/Toast/Toast';
 import { encryptSharedKey, generateSharedKey, initTOTP } from 'src/utils/totp';
 import { useAppDispatch } from 'src/stores/hooks';
 import { setTOTPSharedKey } from 'src/stores/auth';
+import { Body, Footer, Page } from 'src/components/Page';
 
 const GA_LINK = 'https://support.google.com/accounts/answer/1066447?hl=en';
 
-const Container = styled.div`
-  padding: 0 20px;
-`;
-
-const Body = styled.div`
-  height: auto;
-  width: 100%;
-  font-size: 16px;
-`;
-
 const StepWrapper = styled.div`
   margin-bottom: 32px;
-`;
-
-const Label = styled(CommonLabel)`
-  a {
-    color: inherit;
-  }
 `;
 
 const QRCodeWrapper = styled.div`
@@ -52,11 +37,6 @@ const TokenInputWrapper = styled.div`
   width: 100%;
   text-align: center;
   margin-top: 10px;
-`;
-
-const Footer = styled.div`
-  width: 100%;
-  margin: 35px 0 10px 0;
 `;
 
 const TOTPSetup = () => {
@@ -85,10 +65,6 @@ const TOTPSetup = () => {
     setToken(e.target.value.replace(/\D/g, ''));
   };
 
-  if (!password) {
-    return <SeedPhraseRetrivier onSuccess={onSeedPhraseRetrivied} />;
-  }
-
   const totp = initTOTP(sharedKey);
   const uri = totp.toString();
 
@@ -108,44 +84,50 @@ const TOTPSetup = () => {
   };
 
   return (
-    <Container>
+    <Page>
       <NavigationHeader title="Two-Factor Authentication" onBack={goBack} />
-      <Body>
-        <StepWrapper>
-          <Label fontSize={18}>
-            1. Install{' '}
-            <a href={GA_LINK} target="_blank" rel="noreferrer">
-              Google Authenticator
-            </a>{' '}
-            or similiar apps
-          </Label>
-        </StepWrapper>
-        <StepWrapper>
-          <Label fontSize={18}>2. Scan the QR code below:</Label>
-          <QRCodeWrapper>
-            <QRCode value={uri} />
-          </QRCodeWrapper>
-        </StepWrapper>
-        <StepWrapper>
-          <Label fontSize={18}>3. Enter the 6-digit code</Label>
-          <TokenInputWrapper>
-            <TokenInput
-              placeholder="000 000"
-              onChange={onChangeInput}
-              onKeyPress={(event) => {
-                if (event.key === 'Enter') {
-                  handleSave();
-                }
-              }}
-            />
-          </TokenInputWrapper>
-          {is6Digits && !isValidToken && <InputError>The code is not valid.</InputError>}
-        </StepWrapper>
-      </Body>
-      <Footer>
-        <Button onClick={handleSave} isDisabled={!isValidToken || isLoading} label="Save" size="full" variant="primary" />
-      </Footer>
-    </Container>
+      { password ? (
+        <>
+          <Body>
+            <StepWrapper>
+              <LabelWithLink fontSize={18}>
+                1. Install{' '}
+                <a href={GA_LINK} target="_blank" rel="noreferrer">
+                  Google Authenticator
+                </a>{' '}
+                or similiar apps
+              </LabelWithLink>
+            </StepWrapper>
+            <StepWrapper>
+              <LabelWithLink fontSize={18}>2. Scan the QR code below:</LabelWithLink>
+              <QRCodeWrapper>
+                <QRCode value={uri} />
+              </QRCodeWrapper>
+            </StepWrapper>
+            <StepWrapper>
+              <LabelWithLink fontSize={18}>3. Enter the 6-digit code</LabelWithLink>
+              <TokenInputWrapper>
+                <TokenInput
+                  placeholder="000 000"
+                  onChange={onChangeInput}
+                  onKeyPress={(event) => {
+                    if (event.key === 'Enter') {
+                      handleSave();
+                    }
+                  }}
+                />
+              </TokenInputWrapper>
+              {is6Digits && !isValidToken && <InputError>The code is not valid.</InputError>}
+            </StepWrapper>
+          </Body>
+          <Footer>
+            <Button onClick={handleSave} isDisabled={!isValidToken || isLoading} label="Save" size="full" variant="primary" />
+          </Footer>
+        </>
+      ) : (
+        <SeedPhraseRetrivier onSuccess={onSeedPhraseRetrivied} />
+      )}
+    </Page>
   );
 };
 export default TOTPSetup;

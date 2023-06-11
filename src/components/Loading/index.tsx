@@ -1,9 +1,10 @@
 import ReactLoading, { LoadingType } from 'react-loading';
+import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 import styled from 'styled-components';
 
 type Props = {
-  type: LoadingType;
-  color: string;
+  type?: LoadingType;
+  color?: string;
 };
 
 const LoadingWrapper = styled.div`
@@ -20,7 +21,12 @@ const LoadingWrapper = styled.div`
 `;
 
 const Loading = (props: Props) => {
-  const { type, color } = props;
+  const { theme } = useAppThemeContext();
+  const {
+    type = 'spin',
+    color = (theme.footer?.primary ?? '#20264e'),
+  } = props;
+
   return (
     <LoadingWrapper id="loading">
       <ReactLoading type={type} color={color} />

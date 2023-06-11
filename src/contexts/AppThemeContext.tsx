@@ -10,7 +10,7 @@ interface AppThemeContextValue {
 }
 
 const defaultAppThemeValue: AppThemeContextValue = {
-  theme: {},
+  theme: appThemes[AppThemeEnum.LIGHT],
   selectedTheme: AppThemeEnum.LIGHT,
   setTheme: () => {},
 };

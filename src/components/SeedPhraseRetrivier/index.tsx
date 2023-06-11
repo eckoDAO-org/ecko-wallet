@@ -1,8 +1,8 @@
 import styled from 'styled-components';
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import { hash as kadenaHash } from '@kadena/cryptography-utils';
 import { decryptKey } from 'src/utils/security';
-import { getLocalSeedPhrase } from "src/utils/storage";
+import { getLocalSeedPhrase } from 'src/utils/storage';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import { DivFlex, SecondaryLabel } from 'src/components';
 import Button from 'src/components/Buttons';
@@ -10,8 +10,6 @@ import images from 'src/images';
 import { useSelector } from 'react-redux';
 
 const Wrapper = styled.div`
-  padding: 0 20px;
-
   font-size: 16px;
   word-break: break-word;
 `;

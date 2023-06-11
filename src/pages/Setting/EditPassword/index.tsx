@@ -16,26 +16,9 @@ import { InputError } from 'src/baseComponent';
 import { useSettingsContext } from 'src/contexts/SettingsContext';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
+import { Page, Body, Footer } from 'src/components/Page';
 
-const Container = styled.div`
-padding: 0 20px;
-`;
-
-const Body = styled.div`
-  height: auto;
-  width: 100%;
-  font-size: 16px;
-`;
-
-const Wrapper = styled.form`
-  display: block;
-`;
-
-const Footer = styled.div`
-  width: 100%;
-  height: 3em;
-  margin-top: 35px;
-`;
+const Form = styled.form``;
 
 const EditPassword = () => {
   const history = useHistory();
@@ -73,50 +56,51 @@ const EditPassword = () => {
     const { password } = data;
     const oldPasswordHash = hash(oldPassword);
     const newPasswordHash = hash(password);
-    updateLocalWallets(newPasswordHash, oldPasswordHash, () => {
-      handle2FA(oldPasswordHash, newPasswordHash);
-      removeAccountPassword();
-      setIsLocked(true);
-      toast.success(<Toast type="success" content="Password modified successfully" />);
-    }, (error: Error) => {
-      console.error(error);
-      setError("updatePassword", {
-        type: 'custom',
-        message: 'Cannot update password',
-      });
-    });
+    updateLocalWallets(
+      newPasswordHash,
+      oldPasswordHash,
+      () => {
+        handle2FA(oldPasswordHash, newPasswordHash);
+        removeAccountPassword();
+        setIsLocked(true);
+        toast.success(<Toast type="success" content="Password modified successfully" />);
+      },
+      (error: Error) => {
+        console.error(error);
+        setError('updatePassword', {
+          type: 'custom',
+          message: 'Cannot update password',
+        });
+      },
+    );
   };
 
-  if (!oldPassword) {
-    return (
-      <SeedPhraseRetrivier onSuccess={onSeedPhraseRetrivied} />
-    );
-  }
-
   return (
-    <Container>
+    <Page>
       <NavigationHeader title="Edit Password" onBack={goBack} />
-      <Body>
-        {errors.updatePassword && (
-          <InputError>
-            {errors.updatePassword.message}
-          </InputError>
-        )}
-        <Wrapper onSubmit={handleSubmit(onSubmit)} id="edit-password-form">
-          <PasswordForm
-            clearErrors={clearErrors}
-            control={control}
-            errors={errors}
-            getValues={getValues}
-            register={register}
-            setValue={setValue}
-          />
-        </Wrapper>
-      </Body>
-      <Footer>
-        <Button label="Save" size="full" variant="primary" form="edit-password-form" />
-      </Footer>
-    </Container>
+      {oldPassword ? (
+        <>
+          <Body>
+            {errors.updatePassword && <InputError>{errors.updatePassword.message}</InputError>}
+            <Form onSubmit={handleSubmit(onSubmit)} id="edit-password-form">
+              <PasswordForm
+                clearErrors={clearErrors}
+                control={control}
+                errors={errors}
+                getValues={getValues}
+                register={register}
+                setValue={setValue}
+              />
+            </Form>
+          </Body>
+          <Footer>
+            <Button label="Save" size="full" variant="primary" form="edit-password-form" />
+          </Footer>
+        </>
+      ) : (
+        <SeedPhraseRetrivier onSuccess={onSeedPhraseRetrivied} />
+      )}
+    </Page>
   );
 };
 export default EditPassword;

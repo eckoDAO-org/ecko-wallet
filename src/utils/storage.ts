@@ -85,14 +85,6 @@ const setMultipleObjects = (partialState: object, inSession: boolean = false) =>
   window.chrome.storage[inSession ? 'session' : 'local'].set(partialState)
 );
 
-const getMultipleObjects = (keyorKeys: string|string[], inSession: boolean = false) => (
-  window.chrome.storage[inSession ? 'session' : 'local'].get(keyorKeys)
-);
-
-const removeMultipleObjects = (keyorKeys: string|string[], inSession: boolean = false) => (
-  window.chrome.storage[inSession ? 'session' : 'local'].remove(keyorKeys)
-);
-
 export const updateLocalWallets = (
   newPasswordHash: string,
   oldPasswordHash: string,

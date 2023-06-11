@@ -37,6 +37,12 @@ export const CommonLabel = styled.span<LabelProps>`
   word-break: ${($props) => $props.wordBreak};
 `;
 
+export const LabelWithLink = styled(CommonLabel)`
+  a {
+    color: inherit;
+  }
+`;
+
 interface LabelProps {
   textCenter?: boolean;
   uppercase?: boolean;
