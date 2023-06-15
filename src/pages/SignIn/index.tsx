@@ -29,7 +29,7 @@ import { WelcomeBackground } from '../InitSeedPhrase';
 
 export const isValidPassword = async (password) => {
   const hashPassword = hash(password);
-  return new Promise<Boolean>((resolve, reject) => {
+  return new Promise<Boolean>((resolve) => {
     getLocalSelectedWallet(
       (w) => {
         try {

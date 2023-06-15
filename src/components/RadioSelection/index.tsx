@@ -4,7 +4,7 @@ import { DivFlex } from '..';
 export const RadioSelection = ({ options, value, onChange }: RadioSelectionProps) => (
   <DivFlex flexDirection="column">
     {options.map((opt: any) => (
-      <Radio isChecked={value === opt.value} label={opt.label} onClick={() => onChange(opt.value)} style={{ margin: '10px 0' }} />
+      <Radio key={opt.value} isChecked={value === opt.value} label={opt.label} onClick={() => onChange(opt.value)} style={{ margin: '10px 0' }} />
     ))}
   </DivFlex>
 );

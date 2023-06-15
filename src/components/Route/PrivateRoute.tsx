@@ -9,7 +9,6 @@ type Props = {
   path: string;
   isFirstInstall?: boolean;
   isSignIn?: boolean;
-  isHome?: boolean;
   isSeedPhrase?: boolean;
 };
 
@@ -23,10 +22,10 @@ const FetchingWrapper = styled.div`
 `;
 
 const PrivateRoute = (props: Props) => {
-  const { component: Component, path, isFirstInstall, isSignIn, isHome, isSeedPhrase } = props;
+  const { component: Component, path, isFirstInstall, isSignIn, isSeedPhrase } = props;
   const rootState = useSelector((state) => state);
   const { isLocked } = useSettingsContext();
-  const { extensions, wallet } = rootState;
+  const { extensions } = rootState;
   const { passwordHash, isFetching, isHaveSeedPhrase } = extensions;
   const isLoggedIn = !isLocked;
   const hasPassword = !!passwordHash;
