@@ -2,17 +2,21 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import ModalCustom from 'src/components/Modal/ModalCustom';
 import { BaseTextInput } from 'src/baseComponent';
-import { DivFlex, PrimaryLabel, SecondaryLabel } from 'src/components';
+import { CommonLabel, DivFlex, PrimaryLabel, SecondaryLabel } from 'src/components';
 import { hideLoading, showLoading } from 'src/stores/extensions';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import { useSelector } from 'react-redux';
 import { setBalance } from 'src/stores/wallet';
 import { fetchLocal, getBalanceFromChainwebApiResponse } from '../../utils/chainweb';
-import nftData from './nft-data';
+import arkades from './nft-data';
 
 const Container = styled.div`
   padding: 24px;
   margin-bottom: 60px;
+`;
+
+const NftCard = styled.img`
+  border-radius: 14px;
 `;
 
 const Nft = () => {
@@ -20,7 +24,7 @@ const Nft = () => {
   const { selectedNetwork } = rootState.extensions;
   const stateWallet = useCurrentWallet();
 
-  const [account, setAccount] = useState('k:ab27dcf2217761df3724f3e2c24bc1abbbd667a1204b8ea1166c406dbd65e190');
+  const [account, setAccount] = useState('k:3652c9b85f7f03b5af3caa664db3951ac3a7d91f7ce79a6cd7d2084abc700917');
   const [nftAccount, setNftAccount] = useState({});
 
   useEffect(() => {
@@ -28,10 +32,10 @@ const Nft = () => {
       // const { account, chainId } = stateWallet;
       const pactCode = `(
         let*  (                
-                ${nftData.map((nft) => `(${nft.pactAlias} (${nft.moduleName}.ids-owned-by "${account}"))`).join(' ')}
+                ${arkades.map((nft) => `(${nft.pactAlias} (${nft.moduleName}.ids-owned-by "${account}"))`).join(' ')}
               )
               {
-                ${nftData.map((nft) => `"${nft.pactAlias}": ${nft.pactAlias}`).join(',')}                
+                ${arkades.map((nft) => `"${nft.pactAlias}": ${nft.pactAlias}`).join(',')}                
               }
         )`;
       console.log(`🚀 !!! ~ pactCode:`, pactCode);
@@ -56,7 +60,6 @@ const Nft = () => {
 
   return (
     <Container>
-      <PrimaryLabel>NFT</PrimaryLabel>
       <BaseTextInput
         inputProps={{
           value: account,
@@ -69,22 +72,21 @@ const Nft = () => {
       <DivFlex marginTop="40px" flexDirection="column">
         {Object.keys(nftAccount)?.length &&
           Object.keys(nftAccount)?.map((nftPactAlias) => {
-            const nft = nftData?.find((n) => n.pactAlias === nftPactAlias);
+            const nft = arkades?.find((n) => n.pactAlias === nftPactAlias);
             console.log(`🚀 !!! ~ nft:`, nft);
             return (
               nft && (
                 <div style={{ marginTop: 30 }}>
-                  <DivFlex>
-                    <img src={nft.pic} style={{ width: 30 }} />
+                  <DivFlex alignItems="center" margin="10px 0px">
+                    <NftCard src={nft.pic} style={{ width: 40, marginRight: 10 }} />
                     <SecondaryLabel uppercase>{nft.displayName}</SecondaryLabel>
                   </DivFlex>
-                  <DivFlex justifyContent="flex-start" gap="10px">
-                    {nftAccount[nftPactAlias]?.map((n) => {
-                      console.log(n);
-                      console.log(nftAccount[nftPactAlias]);
-                      // return '';
-                      return <img src={nft?.getPicById(n.id)} style={{ width: 60 }} />;
-                    })}
+                  <DivFlex justifyContent="flex-start" gap="10px" flexFlow="wrap">
+                    {nftAccount[nftPactAlias]?.length ? (
+                      nftAccount[nftPactAlias]?.map((n) => <NftCard src={nft?.getPicById(n.id)} style={{ width: 70 }} />)
+                    ) : (
+                      <CommonLabel>No {nft.displayName} NFT owned</CommonLabel>
+                    )}
                   </DivFlex>
                 </div>
               )

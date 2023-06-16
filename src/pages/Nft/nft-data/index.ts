@@ -9,7 +9,7 @@ interface NFTData {
   getPicById: (id: string | number) => string;
 }
 
-const nftData: NFTData[] = [
+const arkades: NFTData[] = [
   {
     displayName: 'Brawler Bears',
     moduleName: 'free.brawler-bears',
@@ -31,6 +31,28 @@ const nftData: NFTData[] = [
     pic: 'https://storage.googleapis.com/sphynx/153.jpg',
     getPicById: (id) => `https://arkade-prod.s3.amazonaws.com/sphynx/${id}.png`,
   },
+  {
+    displayName: 'Arkade 80s Bulls',
+    moduleName: 'free.eighties-bulls',
+    pactAlias: 'eighties_bulls',
+    pic: 'https://arkade-prod.s3.amazonaws.com/arkade-80s-bulls/104.png',
+    getPicById: (id) => `https://arkade-prod.s3.amazonaws.com/arkade-80s-bulls/${id}.png`,
+  },
+  {
+    displayName: 'Arkade 90s Bulls',
+    moduleName: 'free.nineties-bulls',
+    pactAlias: 'nineties_bulls',
+    pic: 'https://arkade-prod.s3.amazonaws.com/arkade-90s-bulls/1307.png',
+    getPicById: (id) => `https://arkade-prod.s3.amazonaws.com/arkade-90s-bulls/${id}.png`,
+  },
 ];
 
-export default nftData;
+const nftCollectionGroups = [
+  {
+    chainId: 8,
+    component: null,
+    collections: arkades,
+  },
+];
+
+export default arkades;

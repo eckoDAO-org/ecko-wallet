@@ -17,6 +17,7 @@ export const DivFlex = styled.div<DivFlexProps>`
   display: flex;
   justify-content: ${(props) => props.justifyContent};
   flex-direction: ${(props) => props.flexDirection || 'row'};
+  flex-flow: ${(props) => props.flexFlow};
   padding: ${(props) => props.padding};
   padding-top: ${(props) => props.paddingTop};
   margin-bottom: ${(props) => props.marginBottom};
