@@ -93,3 +93,7 @@ export const DivBottomShadow = styled(DivFlex)`
   border-bottom-right-radius: 25px;
   padding-bottom: 24px;
 `;
+
+export const NftCard = styled.img`
+  border-radius: 14px;
+`;
