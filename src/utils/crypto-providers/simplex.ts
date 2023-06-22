@@ -1,15 +1,19 @@
 /* eslint-disable camelcase */
-import { BuyCryptoProvider, CryptoCurrencies, FiatCurrencyAvailabilities, FiatCurrencyAvailability, PurchaseCheckoutStatus, PurchasePayment, PurchaseQuote, PurchaseQuoteRequest } from './types';
+import {
+  BuyCryptoProvider,
+  CryptoCurrencies,
+  FiatCurrencyAvailabilities,
+  FiatCurrencyAvailability,
+  PurchaseCheckoutStatus,
+  PurchasePayment,
+  PurchaseQuote,
+  PurchaseQuoteRequest,
+} from './types';
 
-const [baseUrl, publicKey] = process.env.NODE_ENV === 'production'
-  ? [
-    process.env.REACT_APP_SIMPLEX_API_URL_PROD,
-    process.env.REACT_APP_SIMPLEX_PUBLIC_KEY_PROD,
-  ]
-  : [
-    process.env.REACT_APP_SIMPLEX_API_URL_DEV,
-    process.env.REACT_APP_SIMPLEX_PUBLIC_KEY_DEV,
-  ];
+const [baseUrl, publicKey] =
+  process.env.NODE_ENV === 'production'
+    ? [process.env.REACT_APP_SIMPLEX_API_URL_PROD, process.env.REACT_APP_SIMPLEX_PUBLIC_KEY_PROD]
+    : [process.env.REACT_APP_SIMPLEX_API_URL_DEV, process.env.REACT_APP_SIMPLEX_PUBLIC_KEY_DEV];
 
 const headers = {
   Accept: 'application/json',
@@ -19,8 +23,8 @@ const headers = {
 declare global {
   // eslint-disable-next-line
   interface Window {
-    simplexAsyncFunction: () => void,
-    Simplex: any,
+    simplexAsyncFunction: () => void;
+    Simplex: any;
   }
 }
 
@@ -42,12 +46,12 @@ type SimplexQuoteResponse = {
   digital_money: {
     currency: string;
     amount: number;
-  },
+  };
   fiat_money: {
     currency: string;
     base_amount: number;
     total_amount: number;
-  },
+  };
   valid_until: string;
 };
 
@@ -76,7 +80,7 @@ class SimplexProvider implements BuyCryptoProvider {
   initSdk = () => {
     this.prepareSdk();
     this.injectSdk();
-  }
+  };
 
   prepareSdk = () => {
     window.simplexAsyncFunction = () => {
@@ -84,54 +88,54 @@ class SimplexProvider implements BuyCryptoProvider {
         public_key: publicKey,
       });
     };
-  }
+  };
 
   injectSdk = () => {
     if (SimplexProvider.isSdkInjected) {
       return;
     }
-
-    require('./simplex-sdk');
+    if (process.env.NODE_ENV === 'production') {
+      require('./simplex-sdk');
+    } else {
+      require('./simplex-sdk-stage');
+    }
     SimplexProvider.isSdkInjected = true;
-  }
+  };
 
-  getQuote = () => this.quote
+  getQuote = () => this.quote;
 
-  getPayment = () => this.payment
+  getPayment = () => this.payment;
 
-  getCheckoutStatus = () => this.checkoutStatus
+  getCheckoutStatus = () => this.checkoutStatus;
 
   getFiatCurrencyAvailabilities = async () => {
     const options = { method: 'GET', headers };
     const response = await fetch(`${baseUrl}simplex/fiat-currencies`, options);
     this.assertOk(response);
 
-    const json = await response.json() as SimplexFiatCurrenciesResponse;
-    const fiatCurrencyAvailabilities: FiatCurrencyAvailabilities = json.reduce(
-      (accumulator, element) => {
-        const minAmount = parseFloat(element.min_amount);
-        const maxAmount = parseFloat(element.max_amount);
+    const json = (await response.json()) as SimplexFiatCurrenciesResponse;
+    const fiatCurrencyAvailabilities: FiatCurrencyAvailabilities = json.reduce((accumulator, element) => {
+      const minAmount = parseFloat(element.min_amount);
+      const maxAmount = parseFloat(element.max_amount);
 
-        if (!Number.isNaN(minAmount) && !Number.isNaN(maxAmount)) {
-          accumulator[element.ticker_symbol] = {
-            symbol: element.ticker_symbol,
-            minAmount,
-            maxAmount,
-          } as FiatCurrencyAvailability;
-        }
+      if (!Number.isNaN(minAmount) && !Number.isNaN(maxAmount)) {
+        accumulator[element.ticker_symbol] = {
+          symbol: element.ticker_symbol,
+          minAmount,
+          maxAmount,
+        } as FiatCurrencyAvailability;
+      }
 
-        return accumulator;
-      }, {},
-    );
+      return accumulator;
+    }, {});
 
     return fiatCurrencyAvailabilities;
-  }
+  };
 
-  getCryptoCurrencies = () => (
+  getCryptoCurrencies = () =>
     new Promise<CryptoCurrencies>((resolve) => {
       resolve(['KDA']);
-    })
-  )
+    });
 
   requestQuote = async (buyQuoteRequest: PurchaseQuoteRequest) => {
     this.quoteRequest = buyQuoteRequest;
@@ -148,7 +152,7 @@ class SimplexProvider implements BuyCryptoProvider {
     const response = await fetch(`${baseUrl}simplex/quote`, options);
     this.assertOk(response);
 
-    const json = await response.json() as SimplexQuoteResponse;
+    const json = (await response.json()) as SimplexQuoteResponse;
     const quote: PurchaseQuote = {
       id: json.quote_id,
       account: json.user_id,
@@ -162,9 +166,9 @@ class SimplexProvider implements BuyCryptoProvider {
 
     this.quote = quote;
     return quote;
-  }
+  };
 
-  refreshQuote = () => (
+  refreshQuote = () =>
     new Promise<PurchaseQuote>((resolve, reject) => {
       if (this.quoteRequest === undefined) {
         reject(new Error('Missing quote'));
@@ -172,8 +176,7 @@ class SimplexProvider implements BuyCryptoProvider {
       }
 
       resolve(this.requestQuote(this.quoteRequest));
-    })
-  )
+    });
 
   requestPayment = async () => {
     if (this.quote === undefined) {
@@ -189,7 +192,7 @@ class SimplexProvider implements BuyCryptoProvider {
     const response = await fetch(`${baseUrl}simplex/create-payment`, options);
     this.assertOk(response);
 
-    const json = await response.json() as SimplexCreatePaymentResponse;
+    const json = (await response.json()) as SimplexCreatePaymentResponse;
     const payment: PurchasePayment = {
       id: json.payment_id,
       quote: { ...this.quote },
@@ -197,9 +200,9 @@ class SimplexProvider implements BuyCryptoProvider {
 
     this.payment = payment;
     return payment;
-  }
+  };
 
-  checkoutPayment = () => (
+  checkoutPayment = () =>
     new Promise<PurchaseCheckoutStatus>((resolve, reject) => {
       const { payment } = this;
       if (payment === undefined) {
@@ -217,14 +220,13 @@ class SimplexProvider implements BuyCryptoProvider {
         this.checkoutStatus = checkoutStatus;
         resolve(checkoutStatus);
       });
-    })
-  )
+    });
 
   assertOk = (response: Response) => {
     if (!response.ok) {
       throw new Error(response.statusText);
     }
-  }
+  };
 }
 
 export default SimplexProvider;
