@@ -4099,7 +4099,7 @@
           var e = {
             widget: !0,
             sdk_version: 'v1.0.9',
-            baseUrl: 'https://checkout.simplexcc.com',
+            baseUrl: 'https://sandbox.test-simplexcc.com',
             subscribedEventListeners: [],
             state: { nextEvent: L },
           };
@@ -4233,7 +4233,7 @@
       })();
     window.addEventListener('message', function (t) {
       try {
-        if (t.origin !== new URL('https://checkout.simplexcc.com').origin) return;
+        if (t.origin !== new URL('https://sandbox.test-simplexcc.com').origin) return;
         var e = t.data,
           n = JSON.parse(e),
           r = n.type,
