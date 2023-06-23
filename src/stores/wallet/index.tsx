@@ -71,9 +71,7 @@ export const setBalance = (balance: any) => {
   customStore && customStore.dispatch(storeWallet.actions.setBalance(balance));
 };
 
-export const getCurrentWallet = (state: RootState) => state.wallet.wallets.find(
-  (wallet) => wallet.account === state.wallet.account,
-);
+export const getCurrentWallet = (state: RootState) => state.wallet.wallets.find((wallet) => wallet.account === state.wallet.account);
 export const getWallets = (state: RootState) => state.wallet.wallets;
 
 export { storeWallet };

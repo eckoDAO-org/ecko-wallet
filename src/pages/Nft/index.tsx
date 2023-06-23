@@ -75,6 +75,7 @@ const Nft = () => {
           setAccount(e.target.value);
         }}
       />
+      <PrimaryLabel>Your collectibles</PrimaryLabel>
       <DivFlex marginTop="40px" flexDirection="column">
         {Object.keys(nftAccount)?.length &&
           Object.keys(nftAccount)?.map((nftPactAlias) => {

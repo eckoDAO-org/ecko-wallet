@@ -29,13 +29,7 @@ const PaymentRequestor = ({ provider, View, onPurchaseRetrieved }: PaymentReques
     return <ErrorFallback error={errorMessage} />;
   }
 
-  return (
-    <View
-      quote={quote}
-      requestPayment={handleRequestPayment}
-      refreshQuote={handleRefreshQuote}
-    />
-  );
+  return <View quote={quote} requestPayment={handleRequestPayment} refreshQuote={handleRefreshQuote} />;
 };
 
 export default PaymentRequestor;

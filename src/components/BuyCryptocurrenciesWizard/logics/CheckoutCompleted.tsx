@@ -8,9 +8,7 @@ const CheckoutCompleted = ({ provider, View }: CheckoutCompletedLogicProps) => {
     return <ErrorFallback error="Cannot retrieve payment" />;
   }
 
-  return (
-    <View checkoutStatus={checkoutStatus} />
-  );
+  return <View checkoutStatus={checkoutStatus} />;
 };
 
 export default CheckoutCompleted;

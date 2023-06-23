@@ -132,14 +132,7 @@ const CreatePassword = () => {
               <>{errors.seedPhrase && <InputError>{errors.seedPhrase.message}</InputError>}</>
             </>
           )}
-          <PasswordForm
-            clearErrors={clearErrors}
-            control={control}
-            errors={errors}
-            getValues={getValues}
-            register={register}
-            setValue={setValue}
-          />
+          <PasswordForm clearErrors={clearErrors} control={control} errors={errors} getValues={getValues} register={register} setValue={setValue} />
         </Wrapper>
       </Body>
       <Footer>
