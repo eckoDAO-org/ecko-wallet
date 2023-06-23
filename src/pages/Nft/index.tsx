@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import ModalCustom from 'src/components/Modal/ModalCustom';
 import { BaseTextInput } from 'src/baseComponent';
-import { CommonLabel, DivFlex, NftCard, PrimaryLabel, SecondaryLabel } from 'src/components';
+import { CommonLabel, DivFlex, PrimaryLabel, SecondaryLabel } from 'src/components';
 import { hideLoading, showLoading } from 'src/stores/extensions';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import { useSelector } from 'react-redux';
@@ -14,6 +14,30 @@ import nftList from './nft-data';
 const Container = styled.div`
   padding: 24px;
   margin-bottom: 60px;
+`;
+
+const NftContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+`;
+const NftCategoryCard = styled.div`
+  flex-basis: 50%;
+  flex-grow: 0;
+  position: relative;
+  display: flex;
+  background: center url('${({ background }) => background}');
+  img {
+    width: 180px;
+    height: 180px;
+    border-radius: 10px;
+  }
+  span {
+    width: 100%;
+    text-align: center;
+    position: absolute;
+    bottom: 0;
+  }
 `;
 
 const Nft = () => {
@@ -76,29 +100,27 @@ const Nft = () => {
         }}
       />
       <PrimaryLabel>Your collectibles</PrimaryLabel>
-      <DivFlex marginTop="40px" flexDirection="column">
+      <NftContainer marginTop="40px">
         {Object.keys(nftAccount)?.length &&
           Object.keys(nftAccount)?.map((nftPactAlias) => {
             const nft = nftList?.find((n) => n.pactAlias === nftPactAlias);
             return (
               nft && (
-                <div style={{ marginTop: 30 }}>
-                  <DivFlex alignItems="center" margin="10px 0px">
-                    <NftCard src={nft.pic} style={{ width: 40, marginRight: 10 }} />
-                    <SecondaryLabel uppercase>{nft.displayName}</SecondaryLabel>
-                  </DivFlex>
-                  <DivFlex justifyContent="flex-start" gap="10px" flexFlow="wrap">
+                <NftCategoryCard>
+                  <img src={nft.pic} />
+                  <SecondaryLabel fontSize={12}>{nft.displayName}</SecondaryLabel>
+                  {/* <DivFlex justifyContent="flex-start" gap="10px" flexFlow="wrap">
                     {nftAccount[nftPactAlias]?.length ? (
                       nftAccount[nftPactAlias]?.map((n) => React.createElement<any>(nft.component, { src: nft?.getPicById(n.id), id: n.id }))
                     ) : (
                       <CommonLabel>No {nft.displayName} NFT owned</CommonLabel>
                     )}
-                  </DivFlex>
-                </div>
+                  </DivFlex> */}
+                </NftCategoryCard>
               )
             );
           })}
-      </DivFlex>
+      </NftContainer>
     </Container>
   );
 };
