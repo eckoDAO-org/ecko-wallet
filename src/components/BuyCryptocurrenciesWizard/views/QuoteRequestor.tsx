@@ -31,20 +31,16 @@ const DisclaimerLabel = styled.span`
 `;
 
 interface FormData {
-  walletAddress: string,
-  fiatCurrency: FiatCurrency,
-  cryptoCurrency: CryptoCurrency,
-  amount: number,
-  consent: boolean,
+  walletAddress: string;
+  fiatCurrency: FiatCurrency;
+  cryptoCurrency: CryptoCurrency;
+  amount: number;
+  consent: boolean;
 }
 
 const optionify = (option: string) => ({ label: option, value: option });
 
-const QuoteRequestor = ({
-  fiatCurrencyAvailabilities,
-  cryptoCurrencies,
-  requestQuote,
-}: QuoteRequestorViewProps) => {
+const QuoteRequestor = ({ fiatCurrencyAvailabilities, cryptoCurrencies, requestQuote }: QuoteRequestorViewProps) => {
   const [showDisclaimer, setShowDisclaimer] = React.useState(false);
   const wallets = useAppSelector(getWallets);
   const currentWallet = useAppSelector(getCurrentWallet);
@@ -54,11 +50,23 @@ const QuoteRequestor = ({
     label: (wallet.alias || `Account ${i + 1}`).concat(` (${wallet.account})`),
   }));
   const fiatCurrencies = Object.keys(fiatCurrencyAvailabilities);
+  const orderedAlphabetically = fiatCurrencies.sort((a, b) => a.localeCompare(b));
+  const orderedByRelevance = [
+    ...orderedAlphabetically?.filter((a) => ['USD', 'EUR', 'GBP'].some((c) => c === a)),
+    ...orderedAlphabetically?.filter((a) => ['USD', 'EUR', 'GBP'].every((c) => c !== a)),
+  ];
 
-  const { control, formState: { errors }, handleSubmit, clearErrors, getValues, setValue } = useForm<FormData>({
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    clearErrors,
+    getValues,
+    setValue,
+  } = useForm<FormData>({
     defaultValues: {
       walletAddress: currentWallet?.account,
-      fiatCurrency: fiatCurrencies[0],
+      fiatCurrency: orderedByRelevance[0],
       cryptoCurrency: cryptoCurrencies[0],
       amount: 100,
       consent: false,
@@ -80,7 +88,7 @@ const QuoteRequestor = ({
     setShowDisclaimer((show) => !show);
   };
 
-  const fiatCurrenciesOptions = fiatCurrencies.map(optionify);
+  const fiatCurrenciesOptions = orderedByRelevance.map(optionify);
   const cryptoCurrenciesOptions = cryptoCurrencies.map(optionify);
 
   const fiatCurrency = getValues('fiatCurrency');
@@ -90,7 +98,9 @@ const QuoteRequestor = ({
     return (
       <Page>
         <Header>
-          <CommonLabel fontSize={18} fontWeight={500}>This service isn&apos;t available in your country.</CommonLabel>
+          <CommonLabel fontSize={18} fontWeight={500}>
+            This service isn&apos;t available in your country.
+          </CommonLabel>
         </Header>
       </Page>
     );
@@ -99,7 +109,9 @@ const QuoteRequestor = ({
   return (
     <Page>
       <Header>
-        <CommonLabel fontSize={18} fontWeight={500}>Get quote</CommonLabel>
+        <CommonLabel fontSize={18} fontWeight={500}>
+          Get quote
+        </CommonLabel>
       </Header>
       <Body>
         <Form onSubmit={handleSubmit(handleRequestQuote)}>
@@ -118,7 +130,9 @@ const QuoteRequestor = ({
                   title="Wallet"
                   options={walletAddresses}
                   value={walletAddresses.find((wallet) => wallet.value === field.value)}
-                  onChange={(value) => { field.onChange(value?.value); }}
+                  onChange={(value) => {
+                    field.onChange(value?.value);
+                  }}
                 />
               )}
             />
@@ -164,7 +178,9 @@ const QuoteRequestor = ({
                   title="Crypto currency"
                   options={cryptoCurrenciesOptions}
                   value={optionify(field.value)}
-                  onChange={(value) => { field.onChange(value?.value); }}
+                  onChange={(value) => {
+                    field.onChange(value?.value);
+                  }}
                 />
               )}
             />
@@ -172,7 +188,9 @@ const QuoteRequestor = ({
           </InputWrapper>
 
           <InputWrapper>
-            <SLabel>Amount ({minAmount} {fiatCurrency} minimum / {maxAmount} {fiatCurrency} maximum)</SLabel>
+            <SLabel>
+              Amount ({minAmount} {fiatCurrency} minimum / {maxAmount} {fiatCurrency} maximum)
+            </SLabel>
             <Controller
               control={control}
               name="amount"
@@ -231,33 +249,31 @@ const QuoteRequestor = ({
                   message: 'You must accept the consent.',
                 },
               }}
-              render={({
-                field: { value, name },
-              }) => (
+              render={({ field: { value, name } }) => (
                 <Radio
                   onClick={() => setValue(name, !value)}
                   isChecked={value}
                   label={
                     <CommonLabel>
-                      I have read the <DisclaimerLabel onClick={handleClickDisclaimer}>disclaimer</DisclaimerLabel>&nbsp;
-                      and consent to eckoWALLET providing my deposit address and user name to Simplex.
+                      I have read the <DisclaimerLabel onClick={handleClickDisclaimer}>disclaimer</DisclaimerLabel>&nbsp; and consent to eckoWALLET
+                      providing my deposit address and user name to Simplex.
                     </CommonLabel>
                   }
                 />
               )}
             />
             {errors.consent && <InputError>{errors.consent.message}</InputError>}
-            { showDisclaimer && (
+            {showDisclaimer && (
               <LabelWithLink fontSize={12}>
                 Please read and agree to the Terms of Use of Simplex before using this service. eckoWALLET does not currently support purchases of
-                cryptocurrency using debit or credit cards. These transactions must be completed with a third-party. While eckoWALLET will direct you to
-                Simplex to complete the transaction above, you are not required to purchase cryptocurrency through Simplex and there may be other ways
-                to purchase cryptocurrency using your debit or credit card. Simplex is not owned or operated by eckoWALLET and as such we cannot guarantee
-                that your transaction will process successfully. As a convenience to our customers, eckoWALLET will provide your deposit address and
-                username to Simplex should you choose to complete this transaction. By checking the box below, you consent to eckoWALLET providing this
-                information to Simplex on your behalf and acknowledge your agreement to this disclaimer. For any questions about your card payment,
-                please contact <a href="mailto:support@simplex.com">support@simplex.com</a>. eckoWALLET does not assume responsibility for any loss or
-                damage caused by the use of the service.
+                cryptocurrency using debit or credit cards. These transactions must be completed with a third-party. While eckoWALLET will direct you
+                to Simplex to complete the transaction above, you are not required to purchase cryptocurrency through Simplex and there may be other
+                ways to purchase cryptocurrency using your debit or credit card. Simplex is not owned or operated by eckoWALLET and as such we cannot
+                guarantee that your transaction will process successfully. As a convenience to our customers, eckoWALLET will provide your deposit
+                address and username to Simplex should you choose to complete this transaction. By checking the box below, you consent to eckoWALLET
+                providing this information to Simplex on your behalf and acknowledge your agreement to this disclaimer. For any questions about your
+                card payment, please contact <a href="mailto:support@simplex.com">support@simplex.com</a>. eckoWALLET does not assume responsibility
+                for any loss or damage caused by the use of the service.
               </LabelWithLink>
             )}
           </InputWrapper>
@@ -268,10 +284,14 @@ const QuoteRequestor = ({
 
       <Footer>
         <LabelWithLink>
-          <a href={PRIVACY_POLICY_LINK} target="_blank" rel="noreferrer noopener">Privacy Policy</a>
+          <a href={PRIVACY_POLICY_LINK} target="_blank" rel="noreferrer noopener">
+            Privacy Policy
+          </a>
         </LabelWithLink>
         <LabelWithLink>
-          <a href={TERMS_OF_USE_LINK} target="_blank" rel="noreferrer noopener">Terms Of Use</a>
+          <a href={TERMS_OF_USE_LINK} target="_blank" rel="noreferrer noopener">
+            Terms Of Use
+          </a>
         </LabelWithLink>
       </Footer>
     </Page>
