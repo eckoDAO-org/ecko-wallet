@@ -1,5 +1,6 @@
-import { NftCard } from 'src/components';
+import { NFTData } from '../nft-data';
+import NftCard from './NftCard';
 
-const ArkadeNFT = ({ src }: { src: string }) => <NftCard src={src} style={{ width: 70 }} />;
+const ArkadeNFT = ({ id, nftData }: { id: string; nftData: NFTData }) => <NftCard src={nftData.getPicById(id)} label={`#${id}`} />;
 
 export default ArkadeNFT;

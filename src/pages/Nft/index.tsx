@@ -1,57 +1,33 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import ModalCustom from 'src/components/Modal/ModalCustom';
+import { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { BaseTextInput } from 'src/baseComponent';
-import { CommonLabel, DivFlex, PrimaryLabel, SecondaryLabel } from 'src/components';
+import { DivFlex, PrimaryLabel, SecondaryLabel } from 'src/components';
 import { hideLoading, showLoading } from 'src/stores/extensions';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import { useSelector } from 'react-redux';
 import { groupBy } from 'lodash';
-import { setBalance } from 'src/stores/wallet';
-import { fetchLocal, getBalanceFromChainwebApiResponse } from '../../utils/chainweb';
+import { fetchLocal } from '../../utils/chainweb';
 import nftList from './nft-data';
-
-const Container = styled.div`
-  padding: 24px;
-  margin-bottom: 60px;
-`;
-
-const NftContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-`;
-const NftCategoryCard = styled.div`
-  flex-basis: 50%;
-  flex-grow: 0;
-  position: relative;
-  display: flex;
-  background: center url('${({ background }) => background}');
-  img {
-    width: 180px;
-    height: 180px;
-    border-radius: 10px;
-  }
-  span {
-    width: 100%;
-    text-align: center;
-    position: absolute;
-    bottom: 0;
-  }
-`;
+import { NftContainer, NftPageContainer } from './style';
+import NftCard from './components/NftCard';
 
 const Nft = () => {
   const rootState = useSelector((state) => state);
   const { selectedNetwork } = rootState.extensions;
-  const stateWallet = useCurrentWallet();
 
-  const [account, setAccount] = useState('k:cb5365b6cec5d8a056f4de8d1c280aaa01f8c3dadcff04e449fd5d1e8c7ced81');
+  const history = useHistory();
+
+  const stateWallet = useCurrentWallet();
+  console.log(`🚀 !!! ~ stateWallet:`, stateWallet);
+  // const account = stateWallet?.account;
+
+  // TODO: set wallet account after testing
+  const [account, setAccount] = useState('k:4496205014a34f909ce27dd6a7417477f1a5a2df9ac3fcb77feb9c23a7251e1a');
   const [nftAccount, setNftAccount] = useState({});
 
   useEffect(() => {
     if ((account && account.length === 66) || account.includes('bank')) {
       const groupedByChain = groupBy(nftList, 'chainId');
-      console.log(`🚀 !!! ~ groupedByChain:`, groupedByChain);
 
       Object.keys(groupedByChain).forEach((chainId) => {
         const pactCode = `(
@@ -62,13 +38,12 @@ const Nft = () => {
                   ${groupedByChain[chainId].map((nft) => `"${nft.pactAlias}": ${nft.pactAlias}`).join(',')}                
                 }
           )`;
-        console.log(`🚀 !!! ~ pactCode:`, pactCode);
         showLoading();
         fetchLocal(pactCode, selectedNetwork?.url, selectedNetwork?.networkId, chainId)
           .then((res) => {
-            console.log(`🚀 !!! ~ res:`, res);
             if (res?.result?.status === 'success') {
-              console.log(`SUCCESS`);
+              // eslint-disable-next-line no-console
+              console.log('SUCCESS GET NFT DATA');
               setNftAccount((prev) => ({
                 ...prev,
                 ...res?.result?.data,
@@ -89,39 +64,45 @@ const Nft = () => {
   }, [account]);
 
   return (
-    <Container>
+    <NftPageContainer>
       <BaseTextInput
         inputProps={{
           value: account,
         }}
-        title="Account"
+        title=""
         onChange={(e) => {
           setAccount(e.target.value);
         }}
       />
-      <PrimaryLabel>Your collectibles</PrimaryLabel>
+      <PrimaryLabel fontSize={18} uppercase>
+        Your collectibles
+      </PrimaryLabel>
       <NftContainer marginTop="40px">
-        {Object.keys(nftAccount)?.length &&
+        {Object.keys(nftAccount)?.length ? (
           Object.keys(nftAccount)?.map((nftPactAlias) => {
             const nft = nftList?.find((n) => n.pactAlias === nftPactAlias);
             return (
               nft && (
-                <NftCategoryCard>
-                  <img src={nft.pic} />
-                  <SecondaryLabel fontSize={12}>{nft.displayName}</SecondaryLabel>
-                  {/* <DivFlex justifyContent="flex-start" gap="10px" flexFlow="wrap">
-                    {nftAccount[nftPactAlias]?.length ? (
-                      nftAccount[nftPactAlias]?.map((n) => React.createElement<any>(nft.component, { src: nft?.getPicById(n.id), id: n.id }))
-                    ) : (
-                      <CommonLabel>No {nft.displayName} NFT owned</CommonLabel>
-                    )}
-                  </DivFlex> */}
-                </NftCategoryCard>
+                <NftCard
+                  src={nft.pic}
+                  label={
+                    <>
+                      {nft.displayName} <span>({nftAccount[nftPactAlias]?.length})</span>
+                    </>
+                  }
+                  // TODO: remove account after testing
+                  onClick={() => history.push(`/nft-details?category=${nftPactAlias}&account=${account}`)}
+                />
               )
             );
-          })}
+          })
+        ) : (
+          <DivFlex justifyContent="center" marginTop="80px" style={{ width: '100%' }}>
+            <SecondaryLabel>No NFT owned</SecondaryLabel>
+          </DivFlex>
+        )}
       </NftContainer>
-    </Container>
+    </NftPageContainer>
   );
 };
 export default Nft;

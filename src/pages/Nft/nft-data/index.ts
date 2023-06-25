@@ -29,7 +29,7 @@ const nftList: NFTData[] = [
   },
   {
     chainId: 1,
-    displayName: 'Looney Bulls Airdrop',
+    displayName: 'Looney Bulls',
     moduleName: 'free.looney-bulls-airdrop',
     pactAlias: 'looney_bulls_airdrop',
     pic: 'https://arkade-prod.s3.amazonaws.com/looney-bulls/130.png',
@@ -69,7 +69,7 @@ const nftList: NFTData[] = [
   },
   {
     chainId: 8,
-    displayName: 'Kadena Mining Club',
+    displayName: 'KMC Miners',
     moduleName: 'free.kadena-mining-club',
     pactAlias: 'kadena_mining_club_miners',
     pic: 'https://farm.kdamining.club/assets/424ee438898f8da7ac2dc1a66b29b6c09bedc8399c032624994650533615df67.jpeg',
@@ -79,7 +79,7 @@ const nftList: NFTData[] = [
   },
   {
     chainId: 8,
-    displayName: 'Kadena Mining Club Founder Pass',
+    displayName: 'Founders Pass',
     moduleName: 'free.kadena-mining-club',
     pactAlias: 'kadena_mining_club_founder_pass',
     pic: 'https://farm.kdamining.club/static/media/founders.b9d3a224b6ce8e690f53.webp',
