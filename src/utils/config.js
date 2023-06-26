@@ -19,8 +19,9 @@ export const ESTIMATE_KDA_TO_USD_API = 'https://api.coingecko.com/api/v3/simple/
 export const KADDEX_ANALYTICS_API = 'https://analytics-api.kaddex.com';
 export const TELEGRAM_GROUP_LINK = 'https://t.me/kadena_io';
 export const DISCORD_INVITATION_LINK = 'https://discord.com/invite/QSJpHRFDcv';
-export const WEBSITE_LINK = 'https://kaddex.com/';
-export const TERM_LINK = 'https://xwallet.kaddex.com/terms-of-use';
+export const WEBSITE_LINK = 'https://wallet.ecko.finance/';
+export const TERM_LINK = 'https://wallet.ecko.finance/terms-of-use';
+export const PRIVACY_LINK = 'https://wallet.ecko.finance/privacy-policy';
 export const GAS_CONFIGS = {
   ECONOMY: {
     LABEL: 'Economy',

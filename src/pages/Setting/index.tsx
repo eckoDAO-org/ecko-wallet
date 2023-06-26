@@ -12,7 +12,7 @@ import { ReactComponent as GlobeIcon } from 'src/images/globe-icon.svg';
 import { ReactComponent as Padlock } from 'src/images/padlock.svg';
 import { ReactComponent as ExpandView } from 'src/images/expand-view.svg';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
-import { DISCORD_INVITATION_LINK, WEBSITE_LINK } from 'src/utils/config';
+import { DISCORD_INVITATION_LINK, PRIVACY_LINK, TERM_LINK, WEBSITE_LINK } from 'src/utils/config';
 import { useSettingsContext } from 'src/contexts/SettingsContext';
 import useSessionStorage from 'src/hooks/useSessionStorage';
 import { STORAGE_PASSWORD_KEY } from 'src/utils/storage';
@@ -174,6 +174,16 @@ const PageSetting = () => {
       <AboutDiv marginTop="10px">
         <a href={WEBSITE_LINK} target="_blank" rel="noreferrer">
           <GlobeIcon /> <SecondaryLabel>Visit our website</SecondaryLabel>
+        </a>
+      </AboutDiv>
+      <AboutDiv marginTop="10px">
+        <a href={TERM_LINK} target="_blank" rel="noreferrer">
+          <SecondaryLabel>Terms of use</SecondaryLabel>
+        </a>
+      </AboutDiv>
+      <AboutDiv marginTop="10px">
+        <a href={PRIVACY_LINK} target="_blank" rel="noreferrer">
+          <SecondaryLabel>Privacy Policy</SecondaryLabel>
         </a>
       </AboutDiv>
     </SettingsContainer>
