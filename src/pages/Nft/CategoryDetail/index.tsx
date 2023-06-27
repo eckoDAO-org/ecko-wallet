@@ -7,9 +7,9 @@ import { hideLoading, showLoading } from 'src/stores/extensions';
 import { NavigationHeader } from 'src/components/NavigationHeader';
 import nftList, { NFTTypes } from '../nft-data';
 import { NftContainer, NftPageContainer } from '../style';
-import ArkadeNFT from '../components/ArkadeNFT';
-import KadenaMiningClub from '../components/KadenaMiningClub';
-import KadenaMiningClubFoundersPass from '../components/KadenaMiningClubFoundersPass';
+import ArkadeNFT from '../NftTypes/Arkade';
+import KadenaMiningClub from '../NftTypes/KadenaMiningClub';
+import KadenaMiningClubFoundersPass from '../NftTypes/KadenaMiningClubFoundersPass';
 
 const CategoryDetail = () => {
   const rootState = useSelector((state) => state);

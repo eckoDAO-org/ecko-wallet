@@ -9,7 +9,7 @@ import { groupBy } from 'lodash';
 import { fetchLocal } from '../../utils/chainweb';
 import nftList from './nft-data';
 import { NftContainer, NftPageContainer } from './style';
-import NftCard from './components/NftCard';
+import NftCard from './NftTypes/NftCard';
 
 const Nft = () => {
   const rootState = useSelector((state) => state);
@@ -22,7 +22,7 @@ const Nft = () => {
   // const account = stateWallet?.account;
 
   // TODO: set wallet account after testing
-  const [account, setAccount] = useState('k:4496205014a34f909ce27dd6a7417477f1a5a2df9ac3fcb77feb9c23a7251e1a');
+  const [account, setAccount] = useState('k:7f1af34808e3921148cf42e4167b11a587c10758d5bef814292292b787c1234f');
   const [nftAccount, setNftAccount] = useState({});
 
   useEffect(() => {
