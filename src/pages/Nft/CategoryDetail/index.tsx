@@ -10,6 +10,7 @@ import { NftContainer, NftPageContainer } from '../style';
 import ArkadeNFT from '../NftTypes/Arkade';
 import KadenaMiningClub from '../NftTypes/KadenaMiningClub';
 import KadenaMiningClubFoundersPass from '../NftTypes/KadenaMiningClubFoundersPass';
+import KittyKad from '../NftTypes/KittyKad';
 
 const CategoryDetail = () => {
   const rootState = useSelector((state) => state);
@@ -57,6 +58,9 @@ const CategoryDetail = () => {
       }
       case NFTTypes.KADENA_MINING_CLUB_FOUNDER_PASS: {
         return <KadenaMiningClubFoundersPass id={id} />;
+      }
+      case NFTTypes.KITTY_KAD: {
+        return <KittyKad id={id} />;
       }
       default: {
         return null;

@@ -2,6 +2,7 @@ export enum NFTTypes {
   ARKADE = 'ARKADE',
   KADENA_MINING_CLUB = 'KADENA_MINING_CLUB',
   KADENA_MINING_CLUB_FOUNDER_PASS = 'KADENA_MINING_CLUB_FOUNDER_PASS',
+  KITTY_KAD = 'KITTY_KAD',
 }
 
 export interface NFTData {
@@ -106,6 +107,26 @@ const nftList: NFTData[] = [
     getPicById: (id) => `https://arkade-prod.s3.amazonaws.com/pact-rats/${id}.png`,
     getAccountBalance: (account) => `(free.pact-rats.ids-owned-by "${account}")`,
     type: NFTTypes.ARKADE,
+  },
+  {
+    chainId: 1,
+    displayName: 'Kitty Kad Gen 1',
+    moduleName: 'free.gen-1-kitty-kad-kitties',
+    pactAlias: 'gen_1_kitty_kad_kitties',
+    pic: 'https://uploads-ssl.webflow.com/62672fcd3f94ea5b55290338/629084715da74ec954c0f5dc_Kitty%20Kad%20Big.png',
+    getPicById: (id) => `https://storage.googleapis.com/kittykad/gen1/${id}.png`,
+    getAccountBalance: (account) => `(free.gen-1-kitty-kad-kitties.ids-owned-by "${account}")`,
+    type: NFTTypes.KITTY_KAD,
+  },
+  {
+    chainId: 1,
+    displayName: 'Kitty Kad',
+    moduleName: 'free.kitty-kad-kitties',
+    pactAlias: 'kitty_kad_kitties',
+    pic: 'https://uploads-ssl.webflow.com/62672fcd3f94ea5b55290338/629084715da74ec954c0f5dc_Kitty%20Kad%20Big.png',
+    getPicById: (id) => `https://storage.googleapis.com/kittykad/${id}.png`,
+    getAccountBalance: (account) => `(free.kitty-kad-kitties.ids-owned-by "${account}")`,
+    type: NFTTypes.KITTY_KAD,
   },
   {
     chainId: 8,
