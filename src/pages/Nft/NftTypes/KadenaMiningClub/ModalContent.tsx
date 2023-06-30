@@ -7,6 +7,8 @@ const KMCModalContent = ({ uri }: { uri: string }) => {
   const [nftData, setNftData] = useState<any>();
   const [errorMessage, setErrorMessage] = useState<string>();
 
+  const src = `https://farm.kdamining.club/assets/${nftData?.imageName || `${uri}.mp4`}`;
+
   useEffect(() => {
     if (uri) {
       setErrorMessage('');
@@ -21,13 +23,18 @@ const KMCModalContent = ({ uri }: { uri: string }) => {
           setErrorMessage('Unable to fetch NFT data, try again later');
         });
     }
+    return () => {
+      setNftData(undefined);
+    };
   }, [uri]);
 
   return (
     <DivFlex flexDirection="column" alignItems="center" padding="20px">
-      <video width="300" height="300" autoPlay loop style={{ borderRadius: 10 }}>
-        <source src={`https://farm.kdamining.club/assets/${nftData?.imageName || `${uri}.mp4`}`} type="video/mp4" />
-      </video>
+      {src && nftData && (
+        <video key={src} width="300" height="300" autoPlay loop style={{ borderRadius: 10 }}>
+          <source src={src} type="video/mp4" />
+        </video>
+      )}
       {errorMessage ? (
         <SecondaryLabel>{errorMessage}</SecondaryLabel>
       ) : (
