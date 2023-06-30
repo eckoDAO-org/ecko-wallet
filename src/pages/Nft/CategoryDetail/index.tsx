@@ -10,7 +10,6 @@ import { NftContainer, NftPageContainer } from '../style';
 import ArkadeNFT from '../NftTypes/Arkade';
 import KadenaMiningClub from '../NftTypes/KadenaMiningClub';
 import KadenaMiningClubFoundersPass from '../NftTypes/KadenaMiningClubFoundersPass';
-import KittyKad from '../NftTypes/KittyKad';
 
 const CategoryDetail = () => {
   const rootState = useSelector((state) => state);
@@ -19,6 +18,7 @@ const CategoryDetail = () => {
   const history = useHistory();
   const { search } = useLocation();
   const [nftUUIDs, setNftUUIDs] = useState<string[]>([]);
+  const [additionalData, setAdditionalData] = useState<any[]>([]);
 
   const params = new URLSearchParams(search);
   const category = params.get('category');
@@ -32,8 +32,8 @@ const CategoryDetail = () => {
       fetchLocal(nftData?.getAccountBalance(account), selectedNetwork?.url, selectedNetwork?.networkId, nftData?.chainId)
         .then((res) => {
           if (res?.result?.status === 'success') {
-            console.log(`SUCCESS`);
-            setNftUUIDs(res.result.data?.map((nft) => nft?.id));
+            const ids = res.result.data?.map((nft) => nft?.id);
+            setNftUUIDs(ids);
           } else {
             // eslint-disable-next-line no-console
             console.log('fetch error');
@@ -60,7 +60,10 @@ const CategoryDetail = () => {
         return <KadenaMiningClubFoundersPass id={id} />;
       }
       case NFTTypes.KITTY_KAD: {
-        return <KittyKad id={id} />;
+        // const img = additionalData.find((k) => k.id === id);
+        // console.log(`🚀 ~ img:`, img);
+        // return null;
+        return <ArkadeNFT id={id} nftData={nftData} cardStyle={{ imageRendering: 'pixelated' }} />;
       }
       default: {
         return null;

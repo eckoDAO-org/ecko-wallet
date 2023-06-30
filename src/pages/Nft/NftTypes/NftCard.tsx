@@ -57,14 +57,14 @@ const NftCard = ({
   modalTitle,
   modalContent,
   onClick,
-  style,
+  cardStyle,
 }: {
   src: string;
   label: React.ReactNode;
   modalTitle?: string;
   modalContent?: React.ReactNode;
   onClick?: any;
-  style?: any;
+  cardStyle?: any;
 }) => {
   const { openModal } = useModalContext();
 
@@ -81,7 +81,7 @@ const NftCard = ({
 
   return (
     <NftCardContainer src={src} onClick={onClickCard}>
-      <div style={style}>
+      <div style={cardStyle}>
         <span className="categoryNft">{label}</span>
       </div>
     </NftCardContainer>

@@ -18,11 +18,10 @@ const Nft = () => {
   const history = useHistory();
 
   const stateWallet = useCurrentWallet();
-  console.log(`🚀 !!! ~ stateWallet:`, stateWallet);
   // const account = stateWallet?.account;
 
   // TODO: set wallet account after testing
-  const [account, setAccount] = useState('k:7f1af34808e3921148cf42e4167b11a587c10758d5bef814292292b787c1234f');
+  const [account, setAccount] = useState('k:4496205014a34f909ce27dd6a7417477f1a5a2df9ac3fcb77feb9c23a7251e1a');
   const [nftAccount, setNftAccount] = useState({});
 
   useEffect(() => {

@@ -124,7 +124,7 @@ const nftList: NFTData[] = [
     moduleName: 'free.kitty-kad-kitties',
     pactAlias: 'kitty_kad_kitties',
     pic: 'https://uploads-ssl.webflow.com/62672fcd3f94ea5b55290338/629084715da74ec954c0f5dc_Kitty%20Kad%20Big.png',
-    getPicById: (id) => `https://storage.googleapis.com/kittykad/${id}.png`,
+    getPicById: (id) => `https://dc7daf10.kitty-images-static.pages.dev/${id}.png`,
     getAccountBalance: (account) => `(free.kitty-kad-kitties.ids-owned-by "${account}")`,
     type: NFTTypes.KITTY_KAD,
   },

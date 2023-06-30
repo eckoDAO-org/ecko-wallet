@@ -3,7 +3,11 @@ import NftCard from '../NftCard';
 
 const KMCFPModalContent = ({ id }: { id?: any }) => (
   <DivFlex flexDirection="column" padding="20px">
-    <NftCard src="https://farm.kdamining.club/static/media/founders.b9d3a224b6ce8e690f53.webp" label={`#${id}`} style={{ width: 300, height: 300 }} />
+    <NftCard
+      src="https://farm.kdamining.club/static/media/founders.b9d3a224b6ce8e690f53.webp"
+      label={`#${id}`}
+      cardStyle={{ width: 300, height: 300 }}
+    />
     ;<SecondaryLabel>Founder’s Pass #{id}</SecondaryLabel>
     <CommonLabel margin="20px 0px">
       Each and every Founder’s Pass comes with three primary benefits. First and foremost, anyone who holds TWO Founder’s Passes on our August 27th
