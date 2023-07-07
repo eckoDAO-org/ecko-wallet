@@ -14,16 +14,13 @@ import KadenaMiningClubFoundersPass from '../NftTypes/KadenaMiningClubFoundersPa
 const CategoryDetail = () => {
   const rootState = useSelector((state) => state);
   const { selectedNetwork } = rootState.extensions;
-  // const { account } = rootState.wallet;
+  const { account } = rootState?.wallet;
   const history = useHistory();
   const { search } = useLocation();
   const [nftUUIDs, setNftUUIDs] = useState<string[]>([]);
-  const [additionalData, setAdditionalData] = useState<any[]>([]);
 
   const params = new URLSearchParams(search);
   const category = params.get('category');
-  // TODO: set wallet account
-  const account = params.get('account');
   const nftData = nftList.find((n) => n.pactAlias === category);
 
   useEffect(() => {
@@ -44,8 +41,6 @@ const CategoryDetail = () => {
           hideLoading();
         });
     }
-
-    // const { account, chainId } = stateWallet;
   }, [category, account]);
 
   const renderNFT = (id: string) => {
@@ -60,9 +55,6 @@ const CategoryDetail = () => {
         return <KadenaMiningClubFoundersPass id={id} />;
       }
       case NFTTypes.KITTY_KAD: {
-        // const img = additionalData.find((k) => k.id === id);
-        // console.log(`🚀 ~ img:`, img);
-        // return null;
         return <ArkadeNFT id={id} nftData={nftData} cardStyle={{ imageRendering: 'pixelated' }} />;
       }
       default: {

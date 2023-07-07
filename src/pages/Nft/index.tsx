@@ -1,6 +1,6 @@
+/* eslint-disable no-restricted-syntax */
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { BaseTextInput } from 'src/baseComponent';
 import { DivFlex, PrimaryLabel, SecondaryLabel } from 'src/components';
 import { hideLoading, showLoading } from 'src/stores/extensions';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
@@ -18,14 +18,13 @@ const Nft = () => {
   const history = useHistory();
 
   const stateWallet = useCurrentWallet();
-  // const account = stateWallet?.account;
+  const account = stateWallet?.account;
 
-  // TODO: set wallet account after testing
-  const [account, setAccount] = useState('k:4496205014a34f909ce27dd6a7417477f1a5a2df9ac3fcb77feb9c23a7251e1a');
   const [nftAccount, setNftAccount] = useState({});
 
   useEffect(() => {
-    if ((account && account.length === 66) || account.includes('bank')) {
+    const promises: any[] = [];
+    if (account) {
       const groupedByChain = groupBy(nftList, 'chainId');
 
       Object.keys(groupedByChain).forEach((chainId) => {
@@ -38,8 +37,12 @@ const Nft = () => {
                 }
           )`;
         showLoading();
-        fetchLocal(pactCode, selectedNetwork?.url, selectedNetwork?.networkId, chainId)
-          .then((res) => {
+        const promise = fetchLocal(pactCode, selectedNetwork?.url, selectedNetwork?.networkId, chainId);
+        promises.push(promise);
+      });
+      Promise.all(promises)
+        .then((resArray: any[]) => {
+          for (const res of resArray) {
             if (res?.result?.status === 'success') {
               // eslint-disable-next-line no-console
               console.log('SUCCESS GET NFT DATA');
@@ -52,49 +55,40 @@ const Nft = () => {
               console.log('fetch error');
             }
             hideLoading();
-          })
-          .catch(() => {
-            hideLoading();
-          });
-      });
-
-      // const { account, chainId } = stateWallet;
+          }
+        })
+        .catch((err) => {
+          console.log(`Error fetching NFTs`, err);
+          hideLoading();
+        });
     }
   }, [account]);
 
   return (
     <NftPageContainer>
-      <BaseTextInput
-        inputProps={{
-          value: account,
-        }}
-        title=""
-        onChange={(e) => {
-          setAccount(e.target.value);
-        }}
-      />
       <PrimaryLabel fontSize={18} uppercase>
         Your collectibles
       </PrimaryLabel>
       <NftContainer marginTop="40px">
         {Object.keys(nftAccount)?.length ? (
-          Object.keys(nftAccount)?.map((nftPactAlias) => {
-            const nft = nftList?.find((n) => n.pactAlias === nftPactAlias);
-            return (
-              nft && (
-                <NftCard
-                  src={nft.pic}
-                  label={
-                    <>
-                      {nft.displayName} <span>({nftAccount[nftPactAlias]?.length})</span>
-                    </>
-                  }
-                  // TODO: remove account after testing
-                  onClick={() => history.push(`/nft-details?category=${nftPactAlias}&account=${account}`)}
-                />
-              )
-            );
-          })
+          Object.keys(nftAccount)
+            ?.sort((a, b) => a.localeCompare(b))
+            ?.map((nftPactAlias) => {
+              const nft = nftList?.find((n) => n.pactAlias === nftPactAlias);
+              return (
+                nft && (
+                  <NftCard
+                    src={nft.pic}
+                    label={
+                      <>
+                        {nft.displayName} <span>({nftAccount[nftPactAlias]?.length})</span>
+                      </>
+                    }
+                    onClick={() => history.push(`/nft-details?category=${nftPactAlias}`)}
+                  />
+                )
+              );
+            })
         ) : (
           <DivFlex justifyContent="center" marginTop="80px" style={{ width: '100%' }}>
             <SecondaryLabel>No NFT owned</SecondaryLabel>

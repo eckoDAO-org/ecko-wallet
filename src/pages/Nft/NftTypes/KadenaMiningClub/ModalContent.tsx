@@ -39,7 +39,7 @@ const KMCModalContent = ({ uri }: { uri: string }) => {
         <SecondaryLabel>{errorMessage}</SecondaryLabel>
       ) : (
         nftData?.attributes?.map(({ trait_type, value }: any) => (
-          <DivFlex justifyContent="space-between" alignItems="center" marginTop="20px" style={{ width: '100%' }}>
+          <DivFlex justifyContent="space-between" alignItems="center" marginTop="20px" style={{ width: '100%', maxWidth: 300 }}>
             <SecondaryLabel>{trait_type}</SecondaryLabel>
             <CommonLabel>{value}</CommonLabel>
           </DivFlex>
