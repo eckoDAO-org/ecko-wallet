@@ -5,7 +5,7 @@ import { DivFlex, PrimaryLabel, SecondaryLabel } from 'src/components';
 import { hideLoading, showLoading } from 'src/stores/extensions';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import { useSelector } from 'react-redux';
-import { groupBy } from 'lodash';
+import { groupBy, chunk } from 'lodash';
 import { fetchLocal } from '../../utils/chainweb';
 import nftList from './nft-data';
 import { NftContainer, NftPageContainer } from './style';
@@ -28,17 +28,20 @@ const Nft = () => {
       const groupedByChain = groupBy(nftList, 'chainId');
 
       Object.keys(groupedByChain).forEach((chainId) => {
-        const pactCode = `(
-          let*  (                
-                  ${groupedByChain[chainId].map((nft) => `(${nft.pactAlias} ${nft.getAccountBalance(account)})`).join(' ')}
-                )
-                {
-                  ${groupedByChain[chainId].map((nft) => `"${nft.pactAlias}": ${nft.pactAlias}`).join(',')}                
-                }
-          )`;
-        showLoading();
-        const promise = fetchLocal(pactCode, selectedNetwork?.url, selectedNetwork?.networkId, chainId);
-        promises.push(promise);
+        const chunked = chunk(groupedByChain[chainId], 2);
+        chunked.forEach((chunkArray) => {
+          const pactCode = `(
+            let*  (                
+                    ${chunkArray.map((nft) => `(${nft.pactAlias} ${nft.getAccountBalance(account)})`).join(' ')}
+                  )
+                  {
+                    ${chunkArray.map((nft) => `"${nft.pactAlias}": ${nft.pactAlias}`).join(',')}                
+                  }
+            )`;
+          showLoading();
+          const promise = fetchLocal(pactCode, selectedNetwork?.url, selectedNetwork?.networkId, chainId);
+          promises.push(promise);
+        });
       });
       Promise.all(promises)
         .then((resArray: any[]) => {
