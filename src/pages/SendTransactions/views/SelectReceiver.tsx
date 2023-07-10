@@ -157,6 +157,7 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
               chainId,
               pred,
               keys,
+              receiverExists: true,
             };
             goToTransferAccount(destinationAccount, sourceChainIdValue);
           } else if (receiver.startsWith('k:')) {
