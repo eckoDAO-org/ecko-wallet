@@ -41,6 +41,7 @@ const PopupConfirm = (props: Props) => {
     senderChainId,
     senderPrivateKey,
     receiverName,
+    receiverExists,
     receiverChainId,
     gasLimit,
     gasPrice,
@@ -61,9 +62,9 @@ const PopupConfirm = (props: Props) => {
 
   const getCmd = async () => {
     const decimals = getFloatPrecision(Number.parseFloat(amount)) || 2;
-    let pactCode = `(${fungibleToken?.contractAddress}.transfer-create "${senderName}" "${receiverName}" (read-keyset "ks") ${Number.parseFloat(
-      amount,
-    ).toFixed(decimals)})`;
+    let pactCode = `(${fungibleToken?.contractAddress}.transfer${receiverExists ? '' : '-create'} "${senderName}" "${receiverName}" ${
+      receiverExists ? '' : '(read-keyset "ks")'
+    } ${Number.parseFloat(amount).toFixed(decimals)})`;
     if (isCrossChain) {
       pactCode = `(${
         fungibleToken?.contractAddress
