@@ -28,7 +28,8 @@ import InitSeedPhrase from './pages/InitSeedPhrase';
 import ExportSeedPhrase from './pages/Setting/ExportSeedPhrase';
 import EditPassword from './pages/Setting/EditPassword';
 import TwoFactorAuth from './pages/Setting/TwoFactorAuth';
-import History from './pages/Wallet/views/History';
+import History from './pages/History';
+import Nft from './pages/Nft';
 import PageTransaction from './pages/Setting/Transaction';
 import PageLockSettings from './pages/Setting/Lock';
 import PageSelectTheme from './pages/Setting/SelectTheme';
@@ -36,6 +37,7 @@ import PageConnectedSites from './pages/Setting/ConnectedSites';
 import TwoFactorAuthenticator from './components/TwoFactorAuthenticator';
 import PageWalletConnect from './pages/Setting/WalletConnect';
 import BuyCryptocurrencies from './pages/Wallet/views/BuyCryptocurrencies';
+import CategoryDetail from './pages/Nft/CategoryDetail';
 
 const Container = styled.div`
   width: 1000px;
@@ -85,6 +87,8 @@ const AppContainer = () => {
           <PrivateRoute path="/setting" component={PageSetting} />
           <PrivateRoute path="/history" component={History} />
           <PrivateRoute path="/buy" component={BuyCryptocurrencies} />
+          <PrivateRoute path="/nft" component={Nft} />
+          <PrivateRoute path="/nft-details" component={CategoryDetail} />
           <PrivateRoute path="/" component={Wallet} />
           <Redirect to="/" />
         </Switch>

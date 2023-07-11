@@ -6,8 +6,8 @@ import { get } from 'lodash';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import { useSelector } from 'react-redux';
 import { setBalance } from 'src/stores/wallet';
-import { fetchLocal, getBalanceFromChainwebApiResponse } from '../../../utils/chainweb';
-import TabWallet from './TabContent';
+import { fetchLocal, getBalanceFromChainwebApiResponse } from '../../utils/chainweb';
+import TabWallet from '../Wallet/views/TabContent';
 
 const Div = styled.div`
   margin: auto 0;

@@ -249,6 +249,7 @@ const Transfer = (props: Props) => {
     senderPrivateKey: wallet?.secretKey,
     aliasName: destinationAccount?.aliasName,
     receiverName: destinationAccount?.accountName,
+    receiverExists: destinationAccount?.receiverExists,
     domain: destinationAccount?.domain,
     dappAmount: destinationAccount?.dappAmount,
     receiverChainId: destinationAccount?.chainId,

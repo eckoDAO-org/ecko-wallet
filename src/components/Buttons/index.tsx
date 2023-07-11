@@ -11,7 +11,7 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isDisabled?: boolean;
 }
 
-const ButtonWrapper = styled.button<{ size?: string; background?: string; border?: string; svgColor?: string; color?: string, cursor?: string }>`
+const ButtonWrapper = styled.button<{ size?: string; background?: string; border?: string; svgColor?: string; color?: string; cursor?: string }>`
   ${(props) => (props.size === BUTTON_SIZE.NORMAL ? 'padding: 0 30px' : 'width: 100%')};
   height: 50px;
   background: ${(props) => props.background};
@@ -79,7 +79,16 @@ const Button = (props: Props) => {
     };
   }
   return (
-    <ButtonWrapper disabled={isDisabled} onClick={onClick} size={size} color={buttonType.color} background={buttonType.background} border={buttonType.border} cursor={buttonType.cursor} {...props}>
+    <ButtonWrapper
+      disabled={isDisabled}
+      onClick={onClick}
+      size={size}
+      color={buttonType.color}
+      background={buttonType.background}
+      border={buttonType.border}
+      cursor={buttonType.cursor}
+      {...props}
+    >
       {label}
     </ButtonWrapper>
   );

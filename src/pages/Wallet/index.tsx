@@ -203,12 +203,7 @@ const Wallet = () => {
             iconUrl={images.wallet.arrowReceive}
             variant="secondary"
           />
-          <CircledButton
-            onClick={handleBuy}
-            label="Buy"
-            iconUrl={images.wallet.iconBuy}
-            variant="brand"
-          />
+          <CircledButton onClick={handleBuy} label="Buy" iconUrl={images.wallet.iconBuy} variant="brand" />
         </DivFlex>
       </DivBottomShadow>
       <DivAsset>

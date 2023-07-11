@@ -13,7 +13,7 @@ export const fetchLocal = (code, url, networkId, chainId) => {
   const localCmd = {
     keyPairs: [],
     pactCode: code,
-    meta: Pact.lang.mkMeta('not-real', chainId.toString(), 0.00000001, 6000, getTimestamp(), 600),
+    meta: Pact.lang.mkMeta('not-real', chainId.toString(), 0.00000001, 1500000, getTimestamp(), 600),
   };
   return Pact.fetch.local(localCmd, getApiUrl(url, networkId, chainId));
 };

@@ -9,7 +9,7 @@ import { getLocalSeedPhrase, initDataFromLocal } from 'src/utils/storage';
 import { ReactComponent as EckoWalletLogoBar } from 'src/images/ecko-wallet-icon.svg';
 import { ReactComponent as HistoryIcon } from 'src/images/history-icon.svg';
 import { ReactComponent as GearIcon } from 'src/images/gear-icon.svg';
-import { ReactComponent as SWAPIcon } from 'src/images/swap-icon.svg';
+import { ReactComponent as NFTIcon } from 'src/images/nft-icon.svg';
 import { ACTIVE_TAB } from 'src/utils/constant';
 import { DivFlex, SecondaryLabel } from '..';
 
@@ -75,7 +75,7 @@ const Footer = () => {
   const location = useLocation().pathname;
   const locationExtension = window.location.hash;
   const showSettingAndSelectNetworks = !(location.includes('networks') || location.includes('contact') || location.includes('about'));
-  const isFooterWeb = location === '/' || location === '/wallet' || location === '/history' || location === '/setting';
+  const isFooterWeb = location === '/' || location === '/wallet' || location === '/history' || location === '/setting' || location === '/nft';
   const isFooterExtenstion =
     locationExtension.substr(1) === '/' ||
     locationExtension.substr(1) === '/wallet' ||
@@ -148,6 +148,10 @@ const Footer = () => {
     history.push('/setting');
     setActiveTab(ACTIVE_TAB.SETTINGS);
   };
+  const setIconNftActive = () => {
+    history.push('/nft');
+    setActiveTab(ACTIVE_TAB.NFT);
+  };
 
   return (
     <Wrapper isFooter={isFooter}>
@@ -164,11 +168,11 @@ const Footer = () => {
           </span>
           <SecondaryLabel fontWeight={700}>HISTORY</SecondaryLabel>
         </ActionBarElement>
-        <ActionBarElement className="disabled">
+        <ActionBarElement className={activeTab === ACTIVE_TAB.NFT && 'active'} onClick={setIconNftActive}>
           <span>
-            <SWAPIcon />
+            <NFTIcon />
           </span>
-          <SecondaryLabel fontWeight={700}>CONVERT</SecondaryLabel>
+          <SecondaryLabel fontWeight={700}>NFT</SecondaryLabel>
         </ActionBarElement>
         <ActionBarElement
           className={activeTab === ACTIVE_TAB.SETTINGS && 'active'}
