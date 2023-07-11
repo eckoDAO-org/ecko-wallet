@@ -22,10 +22,7 @@ const LoadingWrapper = styled.div`
 
 const Loading = (props: Props) => {
   const { theme } = useAppThemeContext();
-  const {
-    type = 'spin',
-    color = (theme.footer?.primary ?? '#20264e'),
-  } = props;
+  const { type = 'spin', color = theme.footer?.primary ?? '#20264e' } = props;
 
   return (
     <LoadingWrapper id="loading">

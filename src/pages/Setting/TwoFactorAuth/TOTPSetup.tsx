@@ -86,7 +86,7 @@ const TOTPSetup = () => {
   return (
     <Page>
       <NavigationHeader title="Two-Factor Authentication" onBack={goBack} />
-      { password ? (
+      {password ? (
         <>
           <Body>
             <StepWrapper>

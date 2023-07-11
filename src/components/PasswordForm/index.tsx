@@ -14,12 +14,12 @@ const DivBody = styled.div`
 `;
 
 interface PasswordFormProps {
-  clearErrors: UseFormClearErrors<FieldValues>,
-  control: Control<FieldValues, object>,
-  errors: { [x: string]: any; },
-  getValues: UseFormGetValues<FieldValues>,
-  register: UseFormRegister<FieldValues>,
-  setValue: UseFormSetValue<FieldValues>,
+  clearErrors: UseFormClearErrors<FieldValues>;
+  control: Control<FieldValues, object>;
+  errors: { [x: string]: any };
+  getValues: UseFormGetValues<FieldValues>;
+  register: UseFormRegister<FieldValues>;
+  setValue: UseFormSetValue<FieldValues>;
 }
 
 export const PasswordForm = ({ clearErrors, control, errors, getValues, register, setValue }: PasswordFormProps) => {
@@ -65,11 +65,7 @@ export const PasswordForm = ({ clearErrors, control, errors, getValues, register
           }}
         />
       </DivBody>
-      {errors.password && (
-        <InputError>
-          {errors.password.message}
-        </InputError>
-      )}
+      {errors.password && <InputError>{errors.password.message}</InputError>}
       <DivBody>
         <BaseTextInput
           inputProps={{
@@ -98,11 +94,7 @@ export const PasswordForm = ({ clearErrors, control, errors, getValues, register
           }}
         />
       </DivBody>
-      {errors.confirmPassword && (
-        <InputError>
-          {errors.confirmPassword.message}
-        </InputError>
-      )}
+      {errors.confirmPassword && <InputError>{errors.confirmPassword.message}</InputError>}
       <DivBody>
         {passwordIsDiscouraged && (
           <Controller
@@ -114,15 +106,14 @@ export const PasswordForm = ({ clearErrors, control, errors, getValues, register
                 message: 'This field is required.',
               },
             }}
-            render={({
-              field: { value, name },
-            }) => (
+            render={({ field: { value, name } }) => (
               <Radio
                 onClick={() => setValue(name, !value)}
                 isChecked={value}
                 label={
                   <InputAlert>
-                    I understand that I used characters that are unsafe. It is strongly recommended to use only letters(a-z), numbers(0-9), and special characters _!?&quot;&apos;.#@,;-
+                    I understand that I used characters that are unsafe. It is strongly recommended to use only letters(a-z), numbers(0-9), and
+                    special characters _!?&quot;&apos;.#@,;-
                   </InputAlert>
                 }
               />
@@ -130,11 +121,7 @@ export const PasswordForm = ({ clearErrors, control, errors, getValues, register
           />
         )}
       </DivBody>
-      {errors.passwordDiscouragedConfirm && (
-        <InputError>
-          {errors.passwordDiscouragedConfirm.message}
-        </InputError>
-      )}
+      {errors.passwordDiscouragedConfirm && <InputError>{errors.passwordDiscouragedConfirm.message}</InputError>}
     </>
   );
 };

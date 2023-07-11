@@ -1,7 +1,5 @@
 import BuyWizard from 'src/components/BuyCryptocurrenciesWizard';
 
-const BuyCryptocurrencies = () => (
-  <BuyWizard />
-);
+const BuyCryptocurrencies = () => <BuyWizard />;
 
 export default BuyCryptocurrencies;

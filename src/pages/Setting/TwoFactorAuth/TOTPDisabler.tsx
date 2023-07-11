@@ -31,9 +31,7 @@ const TOTPDisabler = () => {
     <Page>
       <NavigationHeader title="Two-Factor Authentication" onBack={goBack} />
       <Body>
-        <CommonLabel fontSize={18}>
-          Two-Factor Authentication is already setupped.
-        </CommonLabel>
+        <CommonLabel fontSize={18}>Two-Factor Authentication is already setupped.</CommonLabel>
       </Body>
       <Footer>
         <Button onClick={handleDisable} isDisabled={isLoading} label="Disable" size="full" variant="primary" />

@@ -7,7 +7,7 @@ import { STORAGE_PASSWORD_KEY } from 'src/utils/storage';
 import UI from './UI';
 
 interface Props {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 const TwoFactorAuthenticator: React.FC<Props> = ({ children }) => {

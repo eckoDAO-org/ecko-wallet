@@ -27,17 +27,23 @@ const Circle = styled.div`
   align-items: center;
   justify-content: center;
 
-  ${({ theme, variant }) => variant === 'primary' && css`
-    background-color: ${theme.button.primary}
-  `}
+  ${({ theme, variant }) =>
+    variant === 'primary' &&
+    css`
+      background-color: ${theme.button.primary};
+    `}
 
-  ${({ theme, variant }) => variant === 'secondary' && css`
-    background-color: ${theme.button.secondary}
-  `}
+  ${({ theme, variant }) =>
+    variant === 'secondary' &&
+    css`
+      background-color: ${theme.button.secondary};
+    `}
 
-  ${({ theme, variant }) => variant === 'brand' && css`
-    outline: 1px solid ${theme.brand}
-  `}
+  ${({ theme, variant }) =>
+    variant === 'brand' &&
+    css`
+      outline: 1px solid ${theme.brand};
+    `}
 `;
 
 const Icon = styled.img`
@@ -50,15 +56,10 @@ const Label = styled.span`
   font-family: 'Montserrat';
   font-weight: 700;
   font-size: 14px;
-  color: ${({ theme }) => theme.text.primary}
+  color: ${({ theme }) => theme.text.primary};
 `;
 
-const CircledButton: React.FC<CircledButtonProps> = ({
-  label,
-  iconUrl,
-  onClick,
-  variant = 'primary',
-}) => (
+const CircledButton: React.FC<CircledButtonProps> = ({ label, iconUrl, onClick, variant = 'primary' }) => (
   <ButtonWrapper onClick={onClick}>
     <Circle variant={variant}>
       <Icon src={iconUrl} alt="Icon" />

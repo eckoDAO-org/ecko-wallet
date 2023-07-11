@@ -42,10 +42,7 @@ const Value = styled.div`
   font-weight: bold;
 `;
 
-const PaymentRequestor = ({
-  quote,
-  requestPayment,
-}: PaymentRequestorViewProps) => {
+const PaymentRequestor = ({ quote, requestPayment }: PaymentRequestorViewProps) => {
   const [isLoading, setIsLoading] = React.useState(false);
 
   const handleRequestPayment = () => {
@@ -63,28 +60,38 @@ const PaymentRequestor = ({
   return (
     <Page>
       <Header>
-        <CommonLabel fontSize={18} fontWeight={500}>Confirm quote</CommonLabel>
+        <CommonLabel fontSize={18} fontWeight={500}>
+          Confirm quote
+        </CommonLabel>
       </Header>
       <Body>
         <Summary>
           <Pair>
             <SummaryKey>You send</SummaryKey>
-            <SummaryValue>{quote.fiatTotalAmount} {quote.fiatCurrency}</SummaryValue>
+            <SummaryValue>
+              {quote.fiatTotalAmount} {quote.fiatCurrency}
+            </SummaryValue>
           </Pair>
           <Pair>
             <SummaryKey>You get</SummaryKey>
-            <SummaryValue>{quote.cryptoAmount} {quote.cryptoCurrency}</SummaryValue>
+            <SummaryValue>
+              {quote.cryptoAmount} {quote.cryptoCurrency}
+            </SummaryValue>
           </Pair>
         </Summary>
 
         <Details>
           <Pair>
             <Key>Price</Key>
-            <Value>1 {quote.cryptoCurrency} = {quote.fiatBaseAmount / quote.cryptoAmount} {quote.fiatCurrency}</Value>
+            <Value>
+              1 {quote.cryptoCurrency} = {quote.fiatBaseAmount / quote.cryptoAmount} {quote.fiatCurrency}
+            </Value>
           </Pair>
           <Pair>
             <Key>Fee</Key>
-            <Value>{(quote.fiatTotalAmount - quote.fiatBaseAmount).toFixed(2)} {quote.fiatCurrency}</Value>
+            <Value>
+              {(quote.fiatTotalAmount - quote.fiatBaseAmount).toFixed(2)} {quote.fiatCurrency}
+            </Value>
           </Pair>
         </Details>
       </Body>

@@ -28,8 +28,8 @@ const DivError = styled.div`
 `;
 
 interface SeedPhraseRetrivierProps {
-  onSuccess: (seedPhrase: string, password: string) => any,
-  onFail?: () => any,
+  onSuccess: (seedPhrase: string, password: string) => any;
+  onFail?: () => any;
 }
 
 export const SeedPhraseRetrivier = ({ onSuccess, onFail }: SeedPhraseRetrivierProps) => {
@@ -115,9 +115,7 @@ export const SeedPhraseRetrivier = ({ onSuccess, onFail }: SeedPhraseRetrivierPr
             </CustomButton>
           </>
         )}
-        {seedPhrase && (
-          <SecondaryLabel fontWeight={500}>Your password is correct, please wait...</SecondaryLabel>
-        )}
+        {seedPhrase && <SecondaryLabel fontWeight={500}>Your password is correct, please wait...</SecondaryLabel>}
       </Wrapper>
     </>
   );

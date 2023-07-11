@@ -10,9 +10,7 @@ const Checkout = styled.div`
   border: 1px solid black;
 `;
 
-const SimplexPaymentCheckout = ({
-  checkoutPayment,
-}: PaymentCheckoutViewProps) => {
+const SimplexPaymentCheckout = ({ checkoutPayment }: PaymentCheckoutViewProps) => {
   React.useEffect(() => {
     checkoutPayment();
   }, []);
@@ -20,7 +18,9 @@ const SimplexPaymentCheckout = ({
   return (
     <Page>
       <Header>
-        <CommonLabel fontSize={18} fontWeight={500}>Checkout</CommonLabel>
+        <CommonLabel fontSize={18} fontWeight={500}>
+          Checkout
+        </CommonLabel>
       </Header>
       <Body>
         <form id="simplex-form">

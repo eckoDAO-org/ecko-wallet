@@ -13,12 +13,7 @@ const PaymentRequestor = ({ provider, View, onPurchaseCompleted }: PaymentChecko
     return <ErrorFallback error="Cannot retrieve payment" />;
   }
 
-  return (
-    <View
-      payment={payment}
-      checkoutPayment={handleCheckoutPayment}
-    />
-  );
+  return <View payment={payment} checkoutPayment={handleCheckoutPayment} />;
 };
 
 export default PaymentRequestor;

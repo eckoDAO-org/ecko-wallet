@@ -36,8 +36,8 @@ const Footer = styled.div`
 `;
 
 interface TOTPSetupProps {
-  handleVerified: () => any,
-  handleFailed: () => any,
+  handleVerified: () => any;
+  handleFailed: () => any;
 }
 
 const TOTPSetup = ({ handleVerified, handleFailed }: TOTPSetupProps) => {
@@ -85,7 +85,7 @@ const TOTPSetup = ({ handleVerified, handleFailed }: TOTPSetupProps) => {
 
   // Check if token is exactly 6 digits and validate it
   const is6Digits = token.match(/^\d{6}$/);
-  const isValidToken = is6Digits ? (totp.validate({ token, window: 0 }) !== null) : false;
+  const isValidToken = is6Digits ? totp.validate({ token, window: 0 }) !== null : false;
 
   const handleSave = () => {
     if (!isValidToken || isLoading) return;
@@ -103,9 +103,7 @@ const TOTPSetup = ({ handleVerified, handleFailed }: TOTPSetupProps) => {
       </Header>
       <Body>
         <StepWrapper>
-          <Label fontSize={18}>
-            Enter the 6-digit code
-          </Label>
+          <Label fontSize={18}>Enter the 6-digit code</Label>
           <TokenInputWrapper>
             <TokenInput
               placeholder="000 000"
@@ -117,11 +115,7 @@ const TOTPSetup = ({ handleVerified, handleFailed }: TOTPSetupProps) => {
               }}
             />
           </TokenInputWrapper>
-          { is6Digits && !isValidToken && (
-            <InputError>
-              The code is not valid.
-            </InputError>
-          )}
+          {is6Digits && !isValidToken && <InputError>The code is not valid.</InputError>}
         </StepWrapper>
       </Body>
       <Footer>
