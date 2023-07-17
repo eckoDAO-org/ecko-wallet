@@ -160,7 +160,7 @@ const PageSetting = () => {
       {settingsMenu.map((menuItem) => !menuItem.isHidden && getSettingsItem(menuItem))}
       <AboutDiv marginTop="48px" alignItems="center">
         <SecondaryLabel fontWeight={500}>
-          eckoWALLET V. 2.6.3
+          eckoWALLET V. 2.7.0
           <br />
           <br />
           The Kadena ecosystem gateway

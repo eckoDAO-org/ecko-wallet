@@ -1,8 +1,9 @@
+import React from 'react';
 import { NFTData } from '../../nft-data';
 import NftCard from '../NftCard';
 import ArkadeModalContent from './ModalContent';
 
-const ArkadeNFT = ({ id, nftData, cardStyle }: { id: string; nftData: NFTData; cardStyle?: any }) => (
+const ArkadeNFT = ({ id, nftData, cardStyle }: { id: string; nftData: NFTData; cardStyle?: React.CSSProperties }) => (
   <NftCard
     src={nftData.getPicById(id)}
     label={`#${id}`}

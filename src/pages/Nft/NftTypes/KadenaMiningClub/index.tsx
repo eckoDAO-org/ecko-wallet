@@ -3,8 +3,9 @@ import { useSelector } from 'react-redux';
 import { fetchLocal } from 'src/utils/chainweb';
 import NftCard from '../NftCard';
 import KMCModalContent from './ModalContent';
+import { NFTData } from '../../nft-data';
 
-const KadenaMiningClub = ({ id }: { id: string }) => {
+const KadenaMiningClub = ({ id, nftData }: { id: string; nftData: NFTData }) => {
   const rootState = useSelector((state) => state);
   const { selectedNetwork } = rootState.extensions;
   const [data, setData] = useState<any>({});
@@ -18,7 +19,14 @@ const KadenaMiningClub = ({ id }: { id: string }) => {
       });
     });
   }, [id]);
-  return <NftCard src={data?.src} label={`#${data?.id}`} modalTitle={`#${data?.id}`} modalContent={<KMCModalContent uri={data?.uri} />} />;
+  return (
+    <NftCard
+      src={data?.src}
+      label={`#${data?.id}`}
+      modalTitle={`#${data?.id}`}
+      modalContent={<KMCModalContent id={id} nftData={nftData} uri={data?.uri} />}
+    />
+  );
 };
 
 export default KadenaMiningClub;

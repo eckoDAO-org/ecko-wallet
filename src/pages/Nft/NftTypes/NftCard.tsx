@@ -64,7 +64,7 @@ const NftCard = ({
   modalTitle?: string;
   modalContent?: React.ReactNode;
   onClick?: any;
-  cardStyle?: any;
+  cardStyle?: React.CSSProperties;
 }) => {
   const { openModal } = useModalContext();
 

@@ -3,6 +3,7 @@ export enum NFTTypes {
   KADENA_MINING_CLUB = 'KADENA_MINING_CLUB',
   KADENA_MINING_CLUB_FOUNDER_PASS = 'KADENA_MINING_CLUB_FOUNDER_PASS',
   KITTY_KAD = 'KITTY_KAD',
+  WIZ_ARENA = 'WIZ_ARENA',
 }
 
 export interface NFTData {
@@ -14,6 +15,7 @@ export interface NFTData {
   // eslint-disable-next-line no-unused-vars
   getAccountBalance: (account: string) => string;
   getPicById: (id: string | number) => string;
+  getDetailLinkById?: (id: string | number) => string;
   type?: NFTTypes;
 }
 
@@ -25,6 +27,7 @@ const nftList: NFTData[] = [
     pactAlias: 'brawler_bears',
     pic: 'https://arkade-prod.s3.amazonaws.com/brawler-bears/880.png',
     getPicById: (id) => `https://arkade-prod.s3.amazonaws.com/brawler-bears/${id}.png`,
+    getDetailLinkById: (id) => `https://www.arkade.fun/marketplace/brawler-bears/${id}`,
     getAccountBalance: (account) => `(free.brawler-bears.ids-owned-by "${account}")`,
     type: NFTTypes.ARKADE,
   },
@@ -35,6 +38,7 @@ const nftList: NFTData[] = [
     pactAlias: 'looney_bulls_airdrop',
     pic: 'https://arkade-prod.s3.amazonaws.com/looney-bulls/130.png',
     getPicById: (id) => `https://arkade-prod.s3.amazonaws.com/looney-bulls/${id}.png`,
+    getDetailLinkById: (id) => `https://www.arkade.fun/marketplace/looney-bulls/${id}`,
     getAccountBalance: (account) => `(free.looney-bulls-airdrop.ids-owned-by "${account}")`,
     type: NFTTypes.ARKADE,
   },
@@ -45,6 +49,7 @@ const nftList: NFTData[] = [
     pactAlias: 'sphynxxx_cats',
     pic: 'https://storage.googleapis.com/sphynx/153.jpg',
     getPicById: (id) => `https://arkade-prod.s3.amazonaws.com/sphynx/${id}.png`,
+    getDetailLinkById: (id) => `https://www.arkade.fun/marketplace/sphynxxx-cats/${id}`,
     getAccountBalance: (account) => `(free.sphynxxx-cats.ids-owned-by "${account}")`,
     type: NFTTypes.ARKADE,
   },
@@ -55,6 +60,7 @@ const nftList: NFTData[] = [
     pactAlias: 'eighties_bulls',
     pic: 'https://arkade-prod.s3.amazonaws.com/arkade-80s-bulls/104.png',
     getPicById: (id) => `https://arkade-prod.s3.amazonaws.com/arkade-80s-bulls/${id}.png`,
+    getDetailLinkById: (id) => `https://www.arkade.fun/marketplace/eighties-bulls/${id}`,
     getAccountBalance: (account) => `(free.eighties-bulls.ids-owned-by "${account}")`,
     type: NFTTypes.ARKADE,
   },
@@ -65,6 +71,7 @@ const nftList: NFTData[] = [
     pactAlias: 'nineties_bulls',
     pic: 'https://arkade-prod.s3.amazonaws.com/arkade-90s-bulls/1307.png',
     getPicById: (id) => `https://arkade-prod.s3.amazonaws.com/arkade-90s-bulls/${id}.png`,
+    getDetailLinkById: (id) => `https://www.arkade.fun/marketplace/90s-bulls/${id}`,
     getAccountBalance: (account) => `(free.nineties-bulls.ids-owned-by "${account}")`,
     type: NFTTypes.ARKADE,
   },
@@ -75,6 +82,7 @@ const nftList: NFTData[] = [
     pactAlias: 'lazy_penguins',
     pic: 'https://storage.googleapis.com/lazypenguins/131.png',
     getPicById: (id) => `https://storage.googleapis.com/lazypenguins/${id}.png`,
+    getDetailLinkById: (id) => `https://www.arkade.fun/marketplace/lazy-penguins/${id}`,
     getAccountBalance: (account) => `(free.lazy-penguins.ids-owned-by "${account}")`,
     type: NFTTypes.ARKADE,
   },
@@ -85,6 +93,7 @@ const nftList: NFTData[] = [
     pactAlias: 'kda_skellies',
     pic: 'https://storage.googleapis.com/kadenaskellies/346.png',
     getPicById: (id) => `https://storage.googleapis.com/kadenaskellies/${id}.png`,
+    getDetailLinkById: (id) => `https://www.arkade.fun/marketplace/kadena-skellies/${id}`,
     getAccountBalance: (account) => `(free.kda-skellies.ids-owned-by "${account}")`,
     type: NFTTypes.ARKADE,
   },
@@ -95,6 +104,7 @@ const nftList: NFTData[] = [
     pactAlias: 'variation_apes',
     pic: 'https://arkade-prod.s3.amazonaws.com/variation-apes/108.png',
     getPicById: (id) => `https://arkade-prod.s3.amazonaws.com/variation-apes/${id}.png`,
+    getDetailLinkById: (id) => `https://www.arkade.fun/marketplace/variation-apes/${id}`,
     getAccountBalance: (account) => `(free.variation-apes.ids-owned-by "${account}")`,
     type: NFTTypes.ARKADE,
   },
@@ -105,7 +115,30 @@ const nftList: NFTData[] = [
     pactAlias: 'pact_rats',
     pic: 'https://arkade-prod.s3.amazonaws.com/pact-rats/108.png',
     getPicById: (id) => `https://arkade-prod.s3.amazonaws.com/pact-rats/${id}.png`,
+    getDetailLinkById: (id) => `https://www.arkade.fun/marketplace/pact-rats/${id}`,
     getAccountBalance: (account) => `(free.pact-rats.ids-owned-by "${account}")`,
+    type: NFTTypes.ARKADE,
+  },
+  {
+    chainId: 1,
+    displayName: 'Secret Garden',
+    moduleName: 'free.secret-garden-of-kadena',
+    pactAlias: 'secret_garden_of_kadena',
+    pic: 'https://arkade-prod.s3.us-east-1.amazonaws.com/secret-garden-of-kadena/853.png',
+    getDetailLinkById: (id) => `https://www.arkade.fun/marketplace/secret-garden-of-kadena/${id}`,
+    getPicById: (id) => `https://arkade-prod.s3.us-east-1.amazonaws.com/secret-garden-of-kadena/${id}.png`,
+    getAccountBalance: (account) => `(free.secret-garden-of-kadena.ids-owned-by "${account}")`,
+    type: NFTTypes.ARKADE,
+  },
+  {
+    chainId: 1,
+    displayName: 'KDA Punks',
+    moduleName: 'free.punks',
+    pactAlias: 'punks',
+    pic: 'https://arkade-prod.s3.us-east-1.amazonaws.com/punks/222.png',
+    getPicById: (id) => `https://arkade-prod.s3.us-east-1.amazonaws.com/punks/${id}.png`,
+    getDetailLinkById: (id) => `https://www.arkade.fun/marketplace/kda-punks/${id}`,
+    getAccountBalance: (account) => `(free.punks.ids-owned-by "${account}")`,
     type: NFTTypes.ARKADE,
   },
   {
@@ -135,6 +168,7 @@ const nftList: NFTData[] = [
     pactAlias: 'kadena_mining_club_miners',
     pic: 'https://farm.kdamining.club/assets/424ee438898f8da7ac2dc1a66b29b6c09bedc8399c032624994650533615df67.jpeg',
     getPicById: (id) => `https://farm.kdamining.club/assets/${id}.jpeg`,
+    getDetailLinkById: (id) => `https://farm.kdamining.club/view?id=${id}&type=miner`,
     getAccountBalance: (account) => `(free.kadena-mining-club.get-user-miners "${account}")`,
     type: NFTTypes.KADENA_MINING_CLUB,
   },
@@ -145,8 +179,20 @@ const nftList: NFTData[] = [
     pactAlias: 'kadena_mining_club_founder_pass',
     pic: 'https://farm.kdamining.club/static/media/founders.b9d3a224b6ce8e690f53.webp',
     getPicById: (id) => `https://farm.kdamining.club/assets/${id}.jpeg`,
+    getDetailLinkById: (id) => `https://farm.kdamining.club/view?id=${id}&type=founders`,
     getAccountBalance: (account) => `(free.kadena-mining-club.get-user-founders "${account}")`,
     type: NFTTypes.KADENA_MINING_CLUB_FOUNDER_PASS,
+  },
+  {
+    chainId: 1,
+    displayName: 'Wizards Arena',
+    moduleName: 'free.wiz-arena',
+    pactAlias: 'wiz_arena',
+    pic: 'https://storage.googleapis.com/wizarena/generated_imgs/612.png',
+    getPicById: (id) => `https://storage.googleapis.com/wizarena/generated_imgs/${id}.png`,
+    getDetailLinkById: (id) => `https://www.wizardsarena.net/nft/${id}`,
+    getAccountBalance: (account) => `(free.wiz-arena.wizard-owned-by "${account}")`,
+    type: NFTTypes.WIZ_ARENA,
   },
 ];
 
