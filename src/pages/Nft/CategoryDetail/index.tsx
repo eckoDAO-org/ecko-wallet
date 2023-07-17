@@ -10,6 +10,7 @@ import { NftContainer, NftPageContainer } from '../style';
 import ArkadeNFT from '../NftTypes/Arkade';
 import KadenaMiningClub from '../NftTypes/KadenaMiningClub';
 import KadenaMiningClubFoundersPass from '../NftTypes/KadenaMiningClubFoundersPass';
+import WizardsArena from '../NftTypes/WizardsArena';
 
 const CategoryDetail = () => {
   const rootState = useSelector((state) => state);
@@ -56,6 +57,9 @@ const CategoryDetail = () => {
       }
       case NFTTypes.KITTY_KAD: {
         return <ArkadeNFT id={id} nftData={nftData} cardStyle={{ imageRendering: 'pixelated' }} />;
+      }
+      case NFTTypes.WIZ_ARENA: {
+        return <WizardsArena id={id} nftData={nftData} cardStyle={{ imageRendering: 'pixelated' }} />;
       }
       default: {
         return null;

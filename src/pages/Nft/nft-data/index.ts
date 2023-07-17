@@ -3,6 +3,7 @@ export enum NFTTypes {
   KADENA_MINING_CLUB = 'KADENA_MINING_CLUB',
   KADENA_MINING_CLUB_FOUNDER_PASS = 'KADENA_MINING_CLUB_FOUNDER_PASS',
   KITTY_KAD = 'KITTY_KAD',
+  WIZ_ARENA = 'WIZ_ARENA',
 }
 
 export interface NFTData {
@@ -147,6 +148,16 @@ const nftList: NFTData[] = [
     getPicById: (id) => `https://farm.kdamining.club/assets/${id}.jpeg`,
     getAccountBalance: (account) => `(free.kadena-mining-club.get-user-founders "${account}")`,
     type: NFTTypes.KADENA_MINING_CLUB_FOUNDER_PASS,
+  },
+  {
+    chainId: 1,
+    displayName: 'Wizards Arena',
+    moduleName: 'free.wiz-arena',
+    pactAlias: 'wiz_arena',
+    pic: 'https://storage.googleapis.com/wizarena/generated_imgs/612.png',
+    getPicById: (id) => `https://storage.googleapis.com/wizarena/generated_imgs/${id}.png`,
+    getAccountBalance: (account) => `(free.wiz-arena.wizard-owned-by "${account}")`,
+    type: NFTTypes.WIZ_ARENA,
   },
 ];
 
