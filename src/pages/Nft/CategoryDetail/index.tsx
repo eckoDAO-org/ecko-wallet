@@ -15,7 +15,8 @@ import WizardsArena from '../NftTypes/WizardsArena';
 const CategoryDetail = () => {
   const rootState = useSelector((state) => state);
   const { selectedNetwork } = rootState.extensions;
-  const { account } = rootState?.wallet;
+  const account = 'k:6151a59541a4d411644d01ad07566f16ddf1ef53e0f3e24269a3141f5df0647e';
+  // const { account } = rootState?.wallet;
   const history = useHistory();
   const { search } = useLocation();
   const [nftUUIDs, setNftUUIDs] = useState<string[]>([]);

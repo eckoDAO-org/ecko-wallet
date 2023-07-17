@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import images from 'src/images';
+import { NftFullDetailsLink } from 'src/components/NftFullDetailsLink';
 import { useSelector } from 'react-redux';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import { fetchLocal } from 'src/utils/chainweb';
@@ -39,11 +39,7 @@ const WizardsArenaModalContent = ({ id, nftData, cardStyle }: { id: number; nftD
           <SecondaryLabel>Weakness</SecondaryLabel>
           <CommonLabel>{data?.weakness?.toLocaleUpperCase() ?? '-'}</CommonLabel>
         </NftTableRow>
-        <a href={`https://www.wizardsarena.net/nft/${id}`} target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}>
-          <SecondaryLabel style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 20 }}>
-            Full details <img src={images.settings.iconShare} style={{ marginRight: 13 }} />
-          </SecondaryLabel>
-        </a>
+        {nftData?.getDetailLinkById && <NftFullDetailsLink link={nftData?.getDetailLinkById(id)} />}
       </>
     </DivFlex>
   );
