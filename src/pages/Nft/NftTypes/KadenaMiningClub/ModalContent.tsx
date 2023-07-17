@@ -2,6 +2,7 @@
 /* eslint-disable jsx-a11y/media-has-caption */
 import { useEffect, useState } from 'react';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
+import { NftTableRow } from '../../style';
 
 const KMCModalContent = ({ uri }: { uri: string }) => {
   const [nftData, setNftData] = useState<any>();
@@ -39,10 +40,10 @@ const KMCModalContent = ({ uri }: { uri: string }) => {
         <SecondaryLabel>{errorMessage}</SecondaryLabel>
       ) : (
         nftData?.attributes?.map(({ trait_type, value }: any) => (
-          <DivFlex justifyContent="space-between" alignItems="center" marginTop="20px" style={{ width: '100%', maxWidth: 300 }}>
+          <NftTableRow>
             <SecondaryLabel>{trait_type}</SecondaryLabel>
             <CommonLabel>{value}</CommonLabel>
-          </DivFlex>
+          </NftTableRow>
         ))
       )}
     </DivFlex>
