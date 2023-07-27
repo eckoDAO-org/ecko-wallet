@@ -280,6 +280,9 @@ chrome.runtime.onConnect.addListener(async (port) => {
       case 'kda_checkStatus':
         checkStatus(payload.data, originTabId);
         break;
+      case 'kda_checkIsConnected':
+        checkIsConnected(payload.data, originTabId);
+        break;
       default:
         break;
     }
@@ -412,6 +415,34 @@ const sendKadena = async (data, tabId) => {
     }
   } else {
     checkStatus(data, tabId);
+  }
+};
+
+const checkIsConnected = async (data, tabId) => {
+  const isValidNetwork = await verifyNetwork(data.networkId);
+  if (isValidNetwork) {
+    const isValid = await checkValid(data);
+    const msg = {
+      result: {
+        status: isValid ? 'success' : 'fail',
+        message: isValid ? 'Connected successfully' : 'Not connected',
+      },
+      target: 'kda.content',
+      action: 'res_checkIsConnected',
+      tabId,
+    };
+    sendToConnectedPorts(msg);
+  } else {
+    const msg = {
+      result: {
+        status: 'fail',
+        message: 'Invalid network',
+      },
+      target: 'kda.content',
+      action: 'res_checkIsConnected',
+      tabId,
+    };
+    sendToConnectedPorts(msg);
   }
 };
 
