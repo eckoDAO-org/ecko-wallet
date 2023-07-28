@@ -422,10 +422,12 @@ const checkIsConnected = async (data, tabId) => {
   const isValidNetwork = await verifyNetwork(data.networkId);
   if (isValidNetwork) {
     const isValid = await checkValid(data);
+    const account = await getSelectedWalletAsync();
     const msg = {
       result: {
         status: isValid ? 'success' : 'fail',
         message: isValid ? 'Connected successfully' : 'Not connected',
+        isLocked: !account.account,
       },
       target: 'kda.content',
       action: 'res_checkIsConnected',
