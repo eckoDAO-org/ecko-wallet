@@ -46,13 +46,11 @@ export const HashSignModal = () => {
           TRANSACTION HASH
         </SecondaryLabel>
         <BaseTextInput
-          inputProps={{ value: hash, placeholder: 'Insert Transaction Hash' }}
+          inputProps={{ value: hash || '', placeholder: 'Insert Transaction Hash' }}
           title=""
           height="auto"
           onChange={(e) => {
-            if (e.target?.value?.length < 20) {
-              setHash(e.target.value);
-            }
+            setHash(e.target.value);
           }}
         />
         {signature && (
