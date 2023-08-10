@@ -73,7 +73,7 @@ const Button = (props: Props) => {
     };
   } else if (variant === 'grey') {
     buttonType = {
-      color: '#787B8E',
+      color: '#37417E',
       background: '#ECECF5',
       border: 'none',
     };
