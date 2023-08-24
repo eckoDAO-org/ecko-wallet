@@ -242,6 +242,15 @@ const ConnectedDapp = () => {
                               };
                               setCurrentWallet(currentWallet);
                               setLocalSelectedWallet({ ...w, connectedSites: selectedWallet.connectedSites });
+                              const result = {
+                                status: 'success',
+                                message: 'Connected successfully',
+                                account: {
+                                  account: decryptKey(selectedWallet.account, accountPassword),
+                                  publicKey: decryptKey(selectedWallet.publicKey, accountPassword),
+                                },
+                              };
+                              updateConnectMessage(result, tabId);
                             });
                           },
                           () => {

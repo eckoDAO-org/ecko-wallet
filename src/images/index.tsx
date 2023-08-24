@@ -106,6 +106,7 @@ import iconGear from './gear-icon.svg';
 import iconTrash from './trash-icon.svg';
 import iconShare from './share-icon.svg';
 import iconEdit from './icon-edit.svg';
+import iconSignHash from './ic_sign_hash.svg';
 import iconDownload from './icon-download.svg';
 import iconMorePurple from './more-purple.svg';
 import iconDropDown from './icon-dropdown.svg';
@@ -214,6 +215,7 @@ const settings = {
   iconGear,
   iconNft,
   iconEdit,
+  iconSignHash,
   iconDownload,
   iconTrash,
   iconShare,
