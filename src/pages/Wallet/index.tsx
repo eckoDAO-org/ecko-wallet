@@ -15,6 +15,7 @@ import { DivBottomShadow, DivFlex, PrimaryLabel, SecondaryLabel } from 'src/comp
 import { ConfirmModal } from 'src/components/ConfirmModal';
 import { IconButton } from 'src/components/IconButton';
 import { ActionList } from 'src/components/ActionList';
+import KDXGovernanceMiningButton from 'src/components/GovernanceMining/KDXButton';
 import { roundNumber, BigNumberConverter, humanReadableNumber } from 'src/utils';
 import { extractDecimal } from 'src/utils/chainweb';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
@@ -118,6 +119,9 @@ const Wallet = () => {
             </div>
           </Warning>
         ) : null}
+        {symbol?.toLowerCase() === 'kdx' && (
+          <KDXGovernanceMiningButton onClick={closeModal} />
+        )}
         {getTokenChainDistribution(contractAddress)
           .filter((cD) => cD.balance > 0)
           .map((cD) => (
