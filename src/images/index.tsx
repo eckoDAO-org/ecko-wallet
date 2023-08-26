@@ -114,6 +114,8 @@ import iconBuy from './icon-buy.svg';
 import eckoWalletLogo from './ecko-wallet-logo.svg';
 import eckoWalletLogoRounded from './ecko-wallet-rounded.png';
 import eckoWalletIcon from './ecko-wallet-icon.svg';
+import governanceMiningBg from './governance-mining-bg.png';
+import governanceMiningKdx from './governance-mining-kdx.svg';
 
 const wallet = {
   checked,
@@ -228,6 +230,10 @@ const toast = {
   failToast,
   closeWhite,
 };
+const governance = {
+  governanceMiningBg,
+  governanceMiningKdx,
+};
 const images = {
   wallet,
   logoName,
@@ -256,6 +262,7 @@ const images = {
   eckoWalletIcon,
   eckoWalletLogo,
   eckoWalletLogoRounded,
+  governance,
 };
 
 export default images;
