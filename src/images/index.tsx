@@ -13,7 +13,7 @@ import arrowGreenDown from './Group71.png';
 import received from './received-white.svg';
 import send from './send.svg';
 import trash from './trash.png';
-import info from './info.svg';
+import violetInfo from './violet-info.svg';
 import logoName from './logo-name.svg';
 import trashPink from './trash-pink.png';
 import view from './view.svg';
@@ -116,6 +116,9 @@ import eckoWalletLogoRounded from './ecko-wallet-rounded.png';
 import eckoWalletIcon from './ecko-wallet-icon.svg';
 import governanceMiningBg from './governance-mining-bg.png';
 import governanceMiningKdx from './governance-mining-kdx.svg';
+import info from './info.svg';
+import stake from './stake.svg';
+import unstake from './unstake.svg';
 
 const wallet = {
   checked,
@@ -202,7 +205,7 @@ const transfer = {
   barCode,
   transferArrow,
   accountNotFound,
-  info,
+  info: violetInfo,
   violetAdd,
 };
 const settings = {
@@ -233,6 +236,9 @@ const toast = {
 const governance = {
   governanceMiningBg,
   governanceMiningKdx,
+  info,
+  stake,
+  unstake,
 };
 const images = {
   wallet,

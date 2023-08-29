@@ -1,4 +1,5 @@
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import styled, { css, keyframes } from 'styled-components';
 import images from 'src/images';
 
@@ -68,6 +69,7 @@ const GovernanceMiningButton = ({ onClick }: GovernanceMiningButtonProps) => {
 
   const triggerClick = () => {
     onClick?.();
+    history.push('governance-mining');
     setIsAnimating(false);
   };
 

@@ -38,6 +38,7 @@ import TwoFactorAuthenticator from './components/TwoFactorAuthenticator';
 import PageWalletConnect from './pages/Setting/WalletConnect';
 import BuyCryptocurrencies from './pages/Wallet/views/BuyCryptocurrencies';
 import CategoryDetail from './pages/Nft/CategoryDetail';
+import GovernanceMining from './pages/GovernanceMining';
 
 const Container = styled.div`
   width: 1000px;
@@ -89,6 +90,7 @@ const AppContainer = () => {
           <PrivateRoute path="/buy" component={BuyCryptocurrencies} />
           <PrivateRoute path="/nft" component={Nft} />
           <PrivateRoute path="/nft-details" component={CategoryDetail} />
+          <PrivateRoute path="/governance-mining" component={GovernanceMining} />
           <PrivateRoute path="/" component={Wallet} />
           <Redirect to="/" />
         </Switch>
