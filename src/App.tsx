@@ -12,6 +12,7 @@ import { AppThemeProvider } from './contexts/AppThemeContext';
 import { SettingsProvider } from './contexts/SettingsContext';
 import { AccountBalanceProvider } from './contexts/AccountBalanceContext';
 import ModalCustom from './components/Modal/ModalCustom';
+import { LedgerProvider } from './contexts/LedgerContext';
 
 const AppWrapper = styled.div`
   display: block;
@@ -67,7 +68,9 @@ const App = () => (
               <SettingsProvider>
                 <AccountBalanceProvider>
                   <CrossChainProvider>
-                    <AppContainer />
+                    <LedgerProvider>
+                      <AppContainer />
+                    </LedgerProvider>
                   </CrossChainProvider>
                 </AccountBalanceProvider>
               </SettingsProvider>

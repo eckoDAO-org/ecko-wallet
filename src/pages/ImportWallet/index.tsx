@@ -8,6 +8,7 @@ import { hideLoading, setActiveTab, showLoading } from 'src/stores/extensions';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
 import images from 'src/images';
+import { ActionFooter, PageWrapper } from 'src/components';
 import { setCurrentWallet, setWallets } from 'src/stores/wallet';
 import { NavigationHeader } from 'src/components/NavigationHeader';
 import Button from 'src/components/Buttons';
@@ -32,17 +33,7 @@ const DivBody = styled.div`
   margin-top: 20px;
   flex-wrap: wrap;
 `;
-const Footer = styled.div`
-  width: 100%;
-  text-align: center;
-  margin-top: 50px;
-  @media screen and (max-width: 480px) {
-    margin-top: 25px;
-  }
-`;
-const ConditionWrapper = styled.div`
-  padding: 0 20px;
-`;
+
 const Body = styled.div`
   height: auto;
   width: 100%;
@@ -172,7 +163,7 @@ const ImportAccount = () => {
     }
   };
   return (
-    <ConditionWrapper>
+    <PageWrapper>
       <NavigationHeader title="Import Wallet" onBack={goBack} />
       <Body>
         <form onSubmit={handleSubmit(onImport)} id="import-wallet-form">
@@ -306,10 +297,10 @@ const ImportAccount = () => {
           </Body>
         </ModalCustom>
       )}
-      <Footer>
+      <ActionFooter>
         <Button label="Import wallet" size="full" form="import-wallet-form" />
-      </Footer>
-    </ConditionWrapper>
+      </ActionFooter>
+    </PageWrapper>
   );
 };
 export default ImportAccount;

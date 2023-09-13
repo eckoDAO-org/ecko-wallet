@@ -20,10 +20,12 @@ export const DoubleFooter = styled.div`
 export const AccountActions = ({
   onCreateAccount,
   onImportAccount,
+  onImportFromLedger,
   onRemoveWallet,
 }: {
   onCreateAccount: any;
   onImportAccount: any;
+  onImportFromLedger: any;
   onRemoveWallet: any;
 }) => {
   const history = useHistory();
@@ -76,6 +78,7 @@ export const AccountActions = ({
             actions={[
               { label: 'Create Wallet', onClick: () => onActionClick(onCreateAccount) },
               { label: 'Import Wallet', onClick: () => onActionClick(onImportAccount) },
+              { label: 'Import Hardware Wallet', onClick: () => onActionClick(onImportFromLedger) },
             ]}
           />
         </DivFlex>

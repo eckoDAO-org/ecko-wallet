@@ -7,8 +7,10 @@ import { getApiUrl, getSignatureFromHash, fetchLocal, pollRequestKey } from 'src
 import { CONFIG, ECKO_WALLET_SEND_TX_NONCE } from 'src/utils/config';
 import { getFloatPrecision } from 'src/utils/numbers';
 import { toast } from 'react-toastify';
+import { AccountType } from 'src/stores/wallet';
 import { ReactComponent as AlertIconSVG } from 'src/images/icon-alert.svg';
 import Toast from 'src/components/Toast/Toast';
+import { useLedgerContext } from 'src/contexts/LedgerContext';
 import { CrossChainContext } from 'src/contexts/CrossChainContext';
 import { setActiveTab, setRecent } from 'src/stores/extensions';
 import { getLocalActivities, getLocalRecent, setLocalActivities, setLocalRecent } from 'src/utils/storage';
@@ -35,6 +37,7 @@ const PopupConfirm = (props: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const { setCrossChainRequest, getCrossChainRequestsAsync } = useContext(CrossChainContext);
+  const { sendTransaction, sendCrossChainTransaction } = useLedgerContext();
   const history = useHistory();
   const {
     senderName,
@@ -182,24 +185,42 @@ const PopupConfirm = (props: Props) => {
 
   const onSend = async () => {
     if (!isSending) {
+      let sendCmd: any = null;
       setIsSending(true);
       const newCreatedTime = new Date();
       const createdTime = newCreatedTime.toString();
-      const cmd = await getCmd();
-      const meta = Pact.lang.mkMeta(senderName, senderChainId.toString(), validGasPrice, validGasLimit, getTimestamp(), CONFIG.X_CHAIN_TTL);
-      const sendCmd: any = Pact.api.prepareExecCmd(
-        cmd.keyPairs,
-        `"${ECKO_WALLET_SEND_TX_NONCE}-${new Date().toISOString()}"`,
-        cmd.pactCode,
-        cmd.envData,
-        meta,
-        selectedNetwork.networkId,
-      );
-      if (senderPrivateKey.length > 64) {
-        const signature = getSignatureFromHash(sendCmd.hash, senderPrivateKey);
-        const sigs = [{ sig: signature }];
-        sendCmd.sigs = sigs;
+      if (configs?.type === AccountType.LEDGER) {
+        const tx = await sendTransaction({
+          recipient: receiverName,
+          amount,
+          chainId: Number(senderChainId),
+          network: selectedNetwork.networkId,
+          gasPrice,
+          gasLimit,
+          nonce: `"${ECKO_WALLET_SEND_TX_NONCE}-${new Date().toISOString()}"`,
+        });
+        sendCmd = tx?.pact_command;
+        console.log(`🚀 !!! ~ tx:`, tx);
+        return;
+        // eslint-disable-next-line no-else-return
+      } else {
+        const cmd = await getCmd();
+        const meta = Pact.lang.mkMeta(senderName, senderChainId.toString(), validGasPrice, validGasLimit, getTimestamp(), CONFIG.X_CHAIN_TTL);
+        const sendCmd: any = Pact.api.prepareExecCmd(
+          cmd.keyPairs,
+          `"${ECKO_WALLET_SEND_TX_NONCE}-${new Date().toISOString()}"`,
+          cmd.pactCode,
+          cmd.envData,
+          meta,
+          selectedNetwork.networkId,
+        );
+        if (senderPrivateKey.length > 64) {
+          const signature = getSignatureFromHash(sendCmd.hash, senderPrivateKey);
+          const sigs = [{ sig: signature }];
+          sendCmd.sigs = sigs;
+        }
       }
+
       setIsLoading(true);
       Pact.wallet
         .sendSigned(sendCmd, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, senderChainId))

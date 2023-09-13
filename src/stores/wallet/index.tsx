@@ -1,6 +1,11 @@
 import { createSlice, PayloadAction, Store } from '@reduxjs/toolkit';
 import { RootState } from '..';
 
+export enum AccountType {
+  STANDARD = 'STANDARD',
+  LEDGER = 'LEDGER',
+}
+
 export interface RawWallet {
   chainId: string | number;
   account: string;
@@ -8,6 +13,7 @@ export interface RawWallet {
   publicKey: string;
   secretKey: string;
   connectedSites: string[];
+  type?: AccountType;
 }
 interface Wallet {
   chainId: string | number;
@@ -18,6 +24,7 @@ interface Wallet {
   secretKey: string;
   wallets: RawWallet[];
   connectedSites: string[];
+  type?: AccountType;
 }
 
 let customStore: Store | undefined;
@@ -34,6 +41,7 @@ const initialState: Wallet = {
   publicKey: '',
   secretKey: '',
   wallets: [],
+  type: AccountType.STANDARD,
   connectedSites: [],
 };
 
@@ -49,6 +57,7 @@ const storeWallet = createSlice({
       publicKey: action.payload.publicKey,
       secretKey: action.payload.secretKey,
       connectedSites: action.payload.connectedSites,
+      type: action.payload.type ?? AccountType.STANDARD,
     }),
     setWallets: (state, action: PayloadAction<any>) => ({
       ...state,

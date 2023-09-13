@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import {
   RawNetwork,
   defaultNetworks,
@@ -81,9 +81,8 @@ export const initLocalWallet = (seedPhrase: string, passwordHash: string) => {
   setLocalSeedPhrase(seedPhraseHash);
 };
 
-const setMultipleObjects = (partialState: object, inSession: boolean = false) => (
-  window.chrome.storage[inSession ? 'session' : 'local'].set(partialState)
-);
+const setMultipleObjects = (partialState: object, inSession: boolean = false) =>
+  window.chrome.storage[inSession ? 'session' : 'local'].set(partialState);
 
 export const updateLocalWallets = (
   newPasswordHash: string,
@@ -519,6 +518,7 @@ export const updateWallets = (networkId) => {
             publicKey: decryptKey(item.publicKey, accountPassword),
             secretKey: decryptKey(item.secretKey, accountPassword),
             connectedSites: item.connectedSites,
+            type: item.type,
           }));
           setWallets(newWallets);
           getLocalSelectedWallet(
@@ -529,6 +529,7 @@ export const updateWallets = (networkId) => {
                 account: decryptKey(selectedWallet.account, accountPassword),
                 publicKey: decryptKey(selectedWallet.publicKey, accountPassword),
                 secretKey: decryptKey(selectedWallet.secretKey, accountPassword),
+                type: selectedWallet.type,
                 connectedSites: selectedWallet.connectedSites,
               });
             },
