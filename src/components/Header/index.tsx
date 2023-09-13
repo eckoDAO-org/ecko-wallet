@@ -127,7 +127,7 @@ export const Header = ({ hideAccounts }: { hideAccounts?: boolean }) => {
   };
 
   const goImportFromLedger = () => {
-    window.open('/index.html#/import-from-ledger', '_blank');
+    window.open('/index.html#/import-hardware-wallet', '_blank');
     closeModal();
   };
 

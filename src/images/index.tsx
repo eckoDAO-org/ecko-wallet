@@ -115,6 +115,9 @@ import iconBuy from './icon-buy.svg';
 import eckoWalletLogo from './ecko-wallet-logo.svg';
 import eckoWalletLogoRounded from './ecko-wallet-rounded.png';
 import eckoWalletIcon from './ecko-wallet-icon.svg';
+import ledgerLogo from './ledger-logo.svg';
+import ledgerLogoLong from './ledger-logo-long.svg';
+import trezorLogo from './trezor-logo-svg-vector.svg';
 
 const wallet = {
   checked,
@@ -258,6 +261,9 @@ const images = {
   eckoWalletIcon,
   eckoWalletLogo,
   eckoWalletLogoRounded,
+  ledgerLogo,
+  ledgerLogoLong,
+  trezorLogo,
 };
 
 export default images;
