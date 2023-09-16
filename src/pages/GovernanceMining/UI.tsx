@@ -23,12 +23,7 @@ const WithdrawButton = styled(Button)`
   opacity: 0.7;
 `;
 
-interface GovernanceMiningProps {
-  position: number;
-  collected: number;
-}
-
-const GovernanceMining = ({ position, collected }: GovernanceMiningProps) => {
+const GovernanceMining = () => {
   const history = useHistory();
 
   const goBack = () => {
@@ -43,18 +38,12 @@ const GovernanceMining = ({ position, collected }: GovernanceMiningProps) => {
       <Body>
         <DivBottomShadow justifyContent="center" flexDirection="column" alignItems="center" gap="16px" padding="20px" marginBottom="24px">
           <Icon src={images.governance.governanceMiningKdx} />
-          <Position amount={position} />
+          <Position />
           <Staking />
         </DivBottomShadow>
         <DivFlex justifyContent="center" flexDirection="column" padding="0 20px" gap="16px">
-          <Details
-            hasPosition
-            collected={collected}
-            waitingDays={60}
-            rewardPenalty={0}
-            votingPower={0.65}
-          />
-          <VotingPowerBar votingPower={0.65} />
+          <Details />
+          <VotingPowerBar />
           <WithdrawButton label="Withdraw" />
         </DivFlex>
       </Body>

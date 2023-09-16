@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { DivFlex } from '..';
+import { DivFlex } from 'src/components';
 
 const Container = styled.div`
   height: 31px;
@@ -67,10 +67,10 @@ const Ticks = ({ maxValue }: { maxValue: number }) => (
 
 interface VotingPowerBarProps {
   votingPower: number;
-  maxValue?: number;
+  maxValue: number;
 }
 
-const VotingPowerBar = ({ votingPower, maxValue = 2.5 }: VotingPowerBarProps) => (
+const VotingPowerBarUI = ({ votingPower, maxValue }: VotingPowerBarProps) => (
   <Container>
     <Bar>
       <Value value={votingPower} maxValue={maxValue} />
@@ -79,4 +79,4 @@ const VotingPowerBar = ({ votingPower, maxValue = 2.5 }: VotingPowerBarProps) =>
   </Container>
 );
 
-export default VotingPowerBar;
+export default VotingPowerBarUI;
