@@ -1,7 +1,31 @@
 import { createContext, useContext, useState } from 'react';
 import { listen } from '@ledgerhq/logs';
+import styled from 'styled-components';
 import KadenaLedger, { BuildTransactionResult, SignTransactionResult, TransferCrossChainTxParams, TransferTxParams } from 'hw-app-kda';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
+import { Overlay } from 'src/components/Modal/ModalCustom';
+import { DivFlex, SecondaryLabel } from 'src/components';
+import { SpinnerWrapper } from 'src/pages/SendTransactions/views/style';
+import SpokesLoading from 'src/components/Loading/Spokes';
+
+const LedgerModal = styled.div`
+  position: fixed;
+  top: 20%;
+  left: auto;
+  width: 80%;
+  height: 150px;
+  padding: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1000;
+  background-color: ${({ theme }) => theme.modalBackground};
+  border-radius: 25px;
+  width: 80%;
+  box-shadow: 0 0 4px 0px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease-out;
+`;
 
 export const DEFAULT_BIP32_PATH = "m/44'/626'/0'/0/0";
 
@@ -25,10 +49,23 @@ export const LedgerContext = createContext<KadenaLedgerData>({
 
 export const LedgerProvider = ({ children }: any) => {
   const [kadenaLedger, setKadenaLedger] = useState<KadenaLedger | undefined>();
+  const [isWaitingLedger, setIsWaitingLedger] = useState(false);
   console.log(`🚀 !!! ~ kadenaLedger:`, kadenaLedger);
   const [error, setError] = useState<string>('');
 
   const bufferToHex = (buffer) => [...new Uint8Array(buffer)].map((b) => b.toString(16).padStart(2, '0')).join('');
+
+  const executeLedgerFunction = async (ledgerFunction) => {
+    try {
+      setIsWaitingLedger(true);
+      const result = await ledgerFunction();
+      setIsWaitingLedger(false);
+      return result;
+    } catch (err) {
+      setIsWaitingLedger(false);
+      throw err;
+    }
+  };
 
   const getLedger = async (): Promise<KadenaLedger | undefined> => {
     if (!kadenaLedger) {
@@ -53,15 +90,18 @@ export const LedgerProvider = ({ children }: any) => {
   };
 
   const signHash = async (hash: string): Promise<SignTransactionResult | undefined> => {
-    const ledger = await getLedger();
-    return ledger?.signHash(DEFAULT_BIP32_PATH, hash);
+    const signH = async () => {
+      const ledger = await getLedger();
+      return ledger?.signHash(DEFAULT_BIP32_PATH, hash);
+    };
+    return executeLedgerFunction(signH);
   };
 
   const sendTransaction = async (params: TransferTxParams): Promise<BuildTransactionResult | undefined> =>
-    (await getLedger())?.signTransferCreateTx({ path: DEFAULT_BIP32_PATH, ...params });
+    executeLedgerFunction(async () => (await getLedger())?.signTransferCreateTx({ path: DEFAULT_BIP32_PATH, ...params }));
 
   const sendCrossChainTransaction = async (params: TransferCrossChainTxParams): Promise<BuildTransactionResult | undefined> =>
-    (await getLedger())?.signTransferCrossChainTx({ path: DEFAULT_BIP32_PATH, ...params });
+    executeLedgerFunction(async () => (await getLedger())?.signTransferCrossChainTx({ path: DEFAULT_BIP32_PATH, ...params }));
 
   return (
     <LedgerContext.Provider
@@ -75,6 +115,17 @@ export const LedgerProvider = ({ children }: any) => {
       }}
     >
       {children}
+      {isWaitingLedger && (
+        <>
+          <LedgerModal>
+            <SecondaryLabel>Please follow Ledger&apos;s instructions</SecondaryLabel>
+            <SpinnerWrapper>
+              <SpokesLoading />
+            </SpinnerWrapper>
+          </LedgerModal>
+          <Overlay />
+        </>
+      )}
     </LedgerContext.Provider>
   );
 };

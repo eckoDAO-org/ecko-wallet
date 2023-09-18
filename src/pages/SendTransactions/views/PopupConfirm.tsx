@@ -185,40 +185,55 @@ const PopupConfirm = (props: Props) => {
 
   const onSend = async () => {
     if (!isSending) {
-      let sendCmd: any = null;
+      const cmd = await getCmd();
+      const meta = Pact.lang.mkMeta(senderName, senderChainId.toString(), validGasPrice, validGasLimit, getTimestamp(), CONFIG.X_CHAIN_TTL);
+      let sendCmd: any = Pact.api.prepareExecCmd(
+        cmd.keyPairs,
+        `"${ECKO_WALLET_SEND_TX_NONCE}-${new Date().toISOString()}"`,
+        cmd.pactCode,
+        cmd.envData,
+        meta,
+        selectedNetwork.networkId,
+      );
       setIsSending(true);
       const newCreatedTime = new Date();
       const createdTime = newCreatedTime.toString();
       if (configs?.type === AccountType.LEDGER) {
-        const tx = await sendTransaction({
-          recipient: receiverName,
-          amount,
-          chainId: Number(senderChainId),
-          network: selectedNetwork.networkId,
-          gasPrice,
-          gasLimit,
-          nonce: `"${ECKO_WALLET_SEND_TX_NONCE}-${new Date().toISOString()}"`,
-        });
-        sendCmd = tx?.pact_command;
-        console.log(`🚀 !!! ~ tx:`, tx);
-        return;
-        // eslint-disable-next-line no-else-return
-      } else {
-        const cmd = await getCmd();
-        const meta = Pact.lang.mkMeta(senderName, senderChainId.toString(), validGasPrice, validGasLimit, getTimestamp(), CONFIG.X_CHAIN_TTL);
-        const sendCmd: any = Pact.api.prepareExecCmd(
-          cmd.keyPairs,
-          `"${ECKO_WALLET_SEND_TX_NONCE}-${new Date().toISOString()}"`,
-          cmd.pactCode,
-          cmd.envData,
-          meta,
-          selectedNetwork.networkId,
-        );
-        if (senderPrivateKey.length > 64) {
-          const signature = getSignatureFromHash(sendCmd.hash, senderPrivateKey);
-          const sigs = [{ sig: signature }];
-          sendCmd.sigs = sigs;
+        try {
+          const ledgerSendTxParams = {
+            recipient: receiverName,
+            namespace: fungibleToken?.contractAddress !== 'coin' ? fungibleToken?.contractAddress?.split('.')[0] ?? undefined : undefined,
+            module: fungibleToken?.contractAddress !== 'coin' ? fungibleToken?.contractAddress?.split('.')[1] ?? undefined : undefined,
+            amount,
+            chainId: Number(senderChainId),
+            network: selectedNetwork.networkId,
+            gasPrice: gasPrice.toString(),
+            gasLimit: gasLimit.toString(),
+            nonce: `${ECKO_WALLET_SEND_TX_NONCE}-${new Date().toISOString()}`,
+          };
+          if (isCrossChain) {
+            const ledgerSignCrosschainRes = await sendCrossChainTransaction({
+              ...ledgerSendTxParams,
+              recipient_chainId: Number(receiverChainId),
+            });
+            console.log('ledgerSignCrosschainRes', ledgerSignCrosschainRes);
+            toast.success(<Toast type="success" content="Ledger Sign Success" />);
+            sendCmd = ledgerSignCrosschainRes?.pact_command;
+          } else {
+            const ledgerSignRes = await sendTransaction(ledgerSendTxParams);
+            console.log('ledgerSignRes', ledgerSignRes);
+            toast.success(<Toast type="success" content="Ledger Sign Success" />);
+            sendCmd = ledgerSignRes?.pact_command;
+          }
+        } catch (error) {
+          toast.error(<Toast type="fail" content="Ledger Sign Failed or Rejected" />);
+          console.log('Ledger Sign Error', error);
+          return;
         }
+      } else if (senderPrivateKey.length > 64) {
+        const signature = getSignatureFromHash(sendCmd.hash, senderPrivateKey);
+        const sigs = [{ sig: signature }];
+        sendCmd.sigs = sigs;
       }
 
       setIsLoading(true);

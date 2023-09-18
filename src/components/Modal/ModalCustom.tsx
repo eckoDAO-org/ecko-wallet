@@ -19,7 +19,7 @@ const Modal = styled.div`
   }
 `;
 
-const Overlay = styled.div`
+export const Overlay = styled.div`
   background-color: rgba(0, 0, 0, 0.55);
   top: 0;
   bottom: 0;
