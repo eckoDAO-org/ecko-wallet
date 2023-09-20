@@ -1,5 +1,5 @@
 import React from 'react';
-import { useGovernanceMining } from 'src/contexts/GovernanceMinigContext';
+import { useGovernanceMining } from 'src/contexts/GovernanceMiningContext';
 import EmptyDetailsView from './EmptyDetails';
 import DetailsView from './Details';
 

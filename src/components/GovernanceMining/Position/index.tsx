@@ -1,5 +1,5 @@
 import React from 'react';
-import { useGovernanceMining } from 'src/contexts/GovernanceMinigContext';
+import { useGovernanceMining } from 'src/contexts/GovernanceMiningContext';
 import PositionView from './UI';
 
 const Position = () => {
