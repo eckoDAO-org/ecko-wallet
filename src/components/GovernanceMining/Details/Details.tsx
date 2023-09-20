@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import { useStakingConstants } from '../helpers/stakingConstants';
-import { Container, Icon, Key, StatusValue, Value } from './UI';
+import { AnalyticsButton, Container, Key, StatusValue, Value } from './UI';
 
 type DetailsProps = {
   collected: number;
@@ -16,7 +16,7 @@ const Details = ({ collected, effectiveStartDate, rewardPenalty, votingPower }: 
     <Container>
       <Key>Analytics</Key>
       <Value>
-        <Icon />
+        <AnalyticsButton />
       </Value>
 
       <Key>KDX collected</Key>

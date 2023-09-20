@@ -1,11 +1,11 @@
 import React from 'react';
-import { Container, Icon, Key, Value } from './UI';
+import { AnalyticsButton, Container, Key, Value } from './UI';
 
 const EmptyDetails = () => (
   <Container>
     <Key>Analytics</Key>
     <Value>
-      <Icon />
+      <AnalyticsButton />
     </Value>
 
     <Key>KDX collected</Key>
