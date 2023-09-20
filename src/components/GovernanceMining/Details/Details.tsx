@@ -1,6 +1,6 @@
 import React from 'react';
 import moment from 'moment';
-import { useStakingConstants } from '../helpers/stakingConstants';
+import { useStakingConstants } from '../constants/staking';
 import { AnalyticsButton, Container, Key, StatusValue, Value } from './UI';
 
 type DetailsProps = {

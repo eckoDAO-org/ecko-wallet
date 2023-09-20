@@ -1,6 +1,6 @@
 import React from 'react';
 import { useGovernanceMining } from 'src/contexts/GovernanceMiningContext';
-import { useStakingConstants } from '../helpers/stakingConstants';
+import { useStakingConstants } from '../constants/staking';
 import VotingPowerBarUI from './UI';
 
 const VotingPowerBar = () => {
