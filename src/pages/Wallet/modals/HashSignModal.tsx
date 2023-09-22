@@ -10,6 +10,8 @@ import Toast from 'src/components/Toast/Toast';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import images from 'src/images';
 import { getSignatureFromHash } from 'src/utils/chainweb';
+import { AccountType } from 'src/stores/wallet';
+import { useLedgerContext } from 'src/contexts/LedgerContext';
 
 export const Icon = styled.img`
   cursor: pointer;
@@ -17,10 +19,11 @@ export const Icon = styled.img`
 
 export const HashSignModal = () => {
   const rootState = useSelector((state) => state);
-  const { publicKey, secretKey } = rootState?.wallet;
+  const { publicKey, secretKey, type } = rootState?.wallet;
 
   const [hash, setHash] = useState('');
   const [signature, setSignature] = useState('');
+  const { signHash } = useLedgerContext();
 
   const onCopy = (str: string) => {
     navigator.clipboard.writeText(str);
@@ -78,10 +81,13 @@ export const HashSignModal = () => {
             type="submit"
             label="Sign"
             size="full"
-            onClick={() => {
+            onClick={async () => {
               if (hash) {
-                let signatureOutput = '';
-                if (secretKey.length > 64) {
+                let signatureOutput: any;
+                if (type === AccountType.LEDGER) {
+                  const ledgerSig = await signHash(hash);
+                  signatureOutput = ledgerSig?.signature;
+                } else if (secretKey.length > 64) {
                   signatureOutput = getSignatureFromHash(hash, secretKey);
                 } else {
                   signatureOutput = kadenaJSSign(hash, { secretKey, publicKey })?.sig ?? '';

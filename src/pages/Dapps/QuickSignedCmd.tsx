@@ -13,8 +13,8 @@ import Button from 'src/components/Buttons';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import { sendWalletConnectMessage, updateQuickSignedCmdMessage } from 'src/utils/message';
 import { useLedgerContext } from 'src/contexts/LedgerContext';
-import { DappDescription, DappLogo, DappWrapper, WalletConnectParams } from './SignedCmd';
 import { AccountType } from 'src/stores/wallet';
+import { DappDescription, DappLogo, DappWrapper, WalletConnectParams } from './SignedCmd';
 
 const CommandListWrapper = styled.div`
   padding: 10px;
