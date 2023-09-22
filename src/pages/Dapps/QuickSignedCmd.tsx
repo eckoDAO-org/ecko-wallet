@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import images from 'src/images';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -11,7 +12,9 @@ import { getLocalQuickSignedCmd, getLocalSelectedNetwork } from 'src/utils/stora
 import Button from 'src/components/Buttons';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import { sendWalletConnectMessage, updateQuickSignedCmdMessage } from 'src/utils/message';
+import { useLedgerContext } from 'src/contexts/LedgerContext';
 import { DappDescription, DappLogo, DappWrapper, WalletConnectParams } from './SignedCmd';
+import { AccountType } from 'src/stores/wallet';
 
 const CommandListWrapper = styled.div`
   padding: 10px;
@@ -40,9 +43,10 @@ const QuickSignedCmd = () => {
   const [tabId, setTabId] = useState(null);
   const [quickSignData, setQuickSignData] = useState<any>([]);
   const [walletConnectParams, setWalletConnectParams] = useState<WalletConnectParams | null>(null);
+  const { signHash } = useLedgerContext();
 
   const rootState = useSelector((state) => state);
-  const { publicKey, secretKey } = rootState.wallet;
+  const { publicKey, secretKey, type } = rootState.wallet;
 
   const { theme } = useAppThemeContext();
 
@@ -139,7 +143,10 @@ const QuickSignedCmd = () => {
           parsedCmd.signers[commandSigIndex].secretKey = secretKey;
           try {
             hash = kadenaJSHash(cmd);
-            if (secretKey.length > 64) {
+            if (type === AccountType.LEDGER) {
+              const ledgerSig = await signHash(hash);
+              signature = ledgerSig?.signature;
+            } else if (secretKey.length > 64) {
               signature = getSignatureFromHash(hash, secretKey);
             } else {
               signature = kadenaJSSign(hash, { secretKey, publicKey }).sig;
