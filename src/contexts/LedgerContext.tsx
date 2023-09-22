@@ -50,7 +50,6 @@ export const LedgerContext = createContext<KadenaLedgerData>({
 export const LedgerProvider = ({ children }: any) => {
   const [kadenaLedger, setKadenaLedger] = useState<KadenaLedger | undefined>();
   const [isWaitingLedger, setIsWaitingLedger] = useState(false);
-  console.log(`🚀 !!! ~ kadenaLedger:`, kadenaLedger);
   const [error, setError] = useState<string>('');
 
   const bufferToHex = (buffer) => [...new Uint8Array(buffer)].map((b) => b.toString(16).padStart(2, '0')).join('');
