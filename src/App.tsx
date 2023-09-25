@@ -57,16 +57,16 @@ const App = () => (
         <AppWrapper>
           <Content>
             <ModalProvider>
-              <ModalConsumer>
-                {({ isOpen, title, content, footer, closeModal, roundIcon }) => (
-                  <ModalCustom isOpen={isOpen || false} title={title} footer={footer} onCloseModal={closeModal} roundIcon={roundIcon}>
-                    {content}
-                  </ModalCustom>
-                )}
-              </ModalConsumer>
               <SettingsProvider>
                 <AccountBalanceProvider>
                   <CrossChainProvider>
+                    <ModalConsumer>
+                      {({ isOpen, title, content, footer, closeModal, roundIcon }) => (
+                        <ModalCustom isOpen={isOpen || false} title={title} footer={footer} onCloseModal={closeModal} roundIcon={roundIcon}>
+                          {content}
+                        </ModalCustom>
+                      )}
+                    </ModalConsumer>
                     <AppContainer />
                   </CrossChainProvider>
                 </AccountBalanceProvider>
