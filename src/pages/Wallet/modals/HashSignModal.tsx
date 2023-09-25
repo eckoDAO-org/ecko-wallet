@@ -11,7 +11,7 @@ import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import images from 'src/images';
 import { getSignatureFromHash } from 'src/utils/chainweb';
 import { AccountType } from 'src/stores/wallet';
-import { useLedgerContext } from 'src/contexts/LedgerContext';
+import { bufferToHex, useLedgerContext } from 'src/contexts/LedgerContext';
 
 export const Icon = styled.img`
   cursor: pointer;
@@ -23,7 +23,7 @@ export const HashSignModal = () => {
 
   const [hash, setHash] = useState('');
   const [signature, setSignature] = useState('');
-  const { signHash } = useLedgerContext();
+  const { signHash, isWaitingLedger } = useLedgerContext();
 
   const onCopy = (str: string) => {
     navigator.clipboard.writeText(str);
@@ -81,18 +81,25 @@ export const HashSignModal = () => {
             type="submit"
             label="Sign"
             size="full"
-            onClick={async () => {
+            onClick={() => {
               if (hash) {
                 let signatureOutput: any;
                 if (type === AccountType.LEDGER) {
-                  const ledgerSig = await signHash(hash);
-                  signatureOutput = ledgerSig?.signature;
+                  signHash(hash)
+                    .then((signHashResult) => {
+                      setSignature(bufferToHex(signHashResult?.signature));
+                    })
+                    .catch(() => {
+                      setHash('');
+                      setSignature('');
+                    });
                 } else if (secretKey.length > 64) {
                   signatureOutput = getSignatureFromHash(hash, secretKey);
+                  setSignature(signatureOutput);
                 } else {
                   signatureOutput = kadenaJSSign(hash, { secretKey, publicKey })?.sig ?? '';
+                  setSignature(signatureOutput);
                 }
-                setSignature(signatureOutput);
               }
             }}
           />

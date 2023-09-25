@@ -12,7 +12,7 @@ import { getLocalQuickSignedCmd, getLocalSelectedNetwork } from 'src/utils/stora
 import Button from 'src/components/Buttons';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import { sendWalletConnectMessage, updateQuickSignedCmdMessage } from 'src/utils/message';
-import { useLedgerContext } from 'src/contexts/LedgerContext';
+import { DEFAULT_BIP32_PATH, bufferToHex, useLedgerContext } from 'src/contexts/LedgerContext';
 import { AccountType } from 'src/stores/wallet';
 import { DappDescription, DappLogo, DappWrapper, WalletConnectParams } from './SignedCmd';
 
@@ -43,7 +43,7 @@ const QuickSignedCmd = () => {
   const [tabId, setTabId] = useState(null);
   const [quickSignData, setQuickSignData] = useState<any>([]);
   const [walletConnectParams, setWalletConnectParams] = useState<WalletConnectParams | null>(null);
-  const { signHash } = useLedgerContext();
+  const { getLedger } = useLedgerContext();
 
   const rootState = useSelector((state) => state);
   const { publicKey, secretKey, type } = rootState.wallet;
@@ -120,6 +120,10 @@ const QuickSignedCmd = () => {
       returnSignedMessage(result);
       return null;
     }
+    let ledger: any = null;
+    if (type === AccountType.LEDGER) {
+      ledger = await getLedger();
+    }
     const signedResponses: any[] = [];
     for (let i = 0; i < data.commandSigDatas.length; i += 1) {
       const { cmd, sigs } = data.commandSigDatas[i];
@@ -144,8 +148,8 @@ const QuickSignedCmd = () => {
           try {
             hash = kadenaJSHash(cmd);
             if (type === AccountType.LEDGER) {
-              const ledgerSig = await signHash(hash);
-              signature = ledgerSig?.signature;
+              const ledgerSig = await ledger?.signHash(DEFAULT_BIP32_PATH, hash);
+              signature = bufferToHex(ledgerSig?.signature);
             } else if (secretKey.length > 64) {
               signature = getSignatureFromHash(hash, secretKey);
             } else {

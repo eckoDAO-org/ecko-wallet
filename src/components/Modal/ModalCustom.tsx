@@ -27,7 +27,7 @@ export const Overlay = styled.div`
   right: 0;
   position: fixed;
   display: none;
-  z-index: 5;
+  z-index: ${({ zIndex }) => zIndex || 5};
   &.show {
     display: block;
   }
