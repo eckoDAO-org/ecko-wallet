@@ -24,7 +24,7 @@ interface FormValues {
   amount: string;
 }
 
-const StakeView = ({ balance, onStake }: StakeViewProps) => {
+const AmountSelectorView = ({ balance, onStake }: StakeViewProps) => {
   const {
     register,
     handleSubmit,
@@ -49,12 +49,13 @@ const StakeView = ({ balance, onStake }: StakeViewProps) => {
           errors={errors}
           readOnly={false}
         />
-        <DivFlex justifyContent="center" paddingTop="32px">
-          <Button form="stake" label="Stake" size="full" style={{ width: '90%', maxWidth: 890 }} />
+
+        <DivFlex justifyContent="center" padding="4px" paddingTop="32px">
+          <Button form="stake" label="Stake" size="full" />
         </DivFlex>
       </form>
     </Container>
   );
 };
 
-export default StakeView;
+export default AmountSelectorView;

@@ -1,29 +1,34 @@
 import React from 'react';
-import { useGetAccountDetails } from '../api/kaddex.dao';
-import StakeView from './UI';
+import AmountSelector from './AmountSelector';
+import ConfirmAmount from './ConfirmAmount';
 
-const Stake = () => {
-  const getStakeableKDX = useGetAccountDetails();
-  const [balance, setBalance] = React.useState(0);
+const StakeWizard = () => {
+  const [state, setState] = React.useState({
+    amount: 0,
+    step: 0,
+  });
 
-  React.useEffect(() => {
-    getStakeableKDX().then((details) => {
-      if (details.status === 'success') {
-        setBalance(details.data.balance);
-      }
+  const onAmountSelected = (selectedAmount: number) => {
+    setState({
+      amount: selectedAmount,
+      step: 1,
     });
-  }, []);
-
-  const handleStake = (amount: number) => {
-    console.log(`Staking ${amount}`);
   };
 
-  return (
-    <StakeView
-      balance={balance}
-      onStake={handleStake}
-    />
-  );
+  const onAmountConfirmed = () => {
+    // Stake ${amount} KDX...
+  };
+
+  if (state.step === 0) {
+    return <AmountSelector onAmountSelected={onAmountSelected} />;
+  }
+
+  const steps = [
+    <AmountSelector onAmountSelected={onAmountSelected} />,
+    <ConfirmAmount amount={state.amount} onConfirm={onAmountConfirmed} />,
+  ];
+
+  return steps[state.step];
 };
 
-export default Stake;
+export default StakeWizard;
