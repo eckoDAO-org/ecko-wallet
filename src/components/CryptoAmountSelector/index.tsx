@@ -70,8 +70,7 @@ const CryptoAmountSelector = ({
   onChangeAmount,
   ...props
 }: CryptoAmountSelectorProps) => {
-  const test = useAccountBalanceContext();
-  const { usdPrices } = test;
+  const { usdPrices } = useAccountBalanceContext();
 
   const [amount, setAmount] = React.useState(props.amount || '0.0');
 
