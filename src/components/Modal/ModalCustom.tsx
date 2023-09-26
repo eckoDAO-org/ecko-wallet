@@ -14,9 +14,7 @@ const Modal = styled.div`
   left: 0;
   z-index: 10;
   transition: all 0.3s ease-out;
-  &.show {
-    bottom: 0;
-  }
+  bottom: 0;
 `;
 
 const Overlay = styled.div`
@@ -28,9 +26,7 @@ const Overlay = styled.div`
   position: fixed;
   display: none;
   z-index: 5;
-  &.show {
-    display: block;
-  }
+  display: block;
 `;
 
 const DivBody = styled.div`
@@ -84,9 +80,13 @@ const RoundIcon = styled.div`
 const ModalCustom = (props: Props) => {
   const { isOpen, onCloseModal, closeOnOverlayClick, title, showCloseIcon, roundIcon, children, footer } = props;
 
+  if (!isOpen) {
+    return null;
+  }
+
   return (
     <>
-      <Modal className={isOpen && 'show'} closeOnOverlayClick={closeOnOverlayClick} showCloseIcon={showCloseIcon}>
+      <Modal closeOnOverlayClick={closeOnOverlayClick} showCloseIcon={showCloseIcon}>
         {title && (
           <TitleHeader roundIcon={roundIcon}>
             {roundIcon && <RoundIcon>{roundIcon}</RoundIcon>}
@@ -99,7 +99,7 @@ const ModalCustom = (props: Props) => {
           <div>{footer && <DivFooter>{footer}</DivFooter>}</div>
         </DivBody>
       </Modal>
-      <Overlay className={isOpen ? 'show' : ''} onClick={onCloseModal} />
+      <Overlay onClick={onCloseModal} />
     </>
   );
 };
