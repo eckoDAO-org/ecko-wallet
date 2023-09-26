@@ -18,6 +18,7 @@ export const Key = styled(SecondaryLabel)`
   line-height: 15px;
   justify-self: start;
   grid-column: 1;
+  color: #A0A6AA;
 `;
 
 export const Value = styled(SecondaryLabel)`
