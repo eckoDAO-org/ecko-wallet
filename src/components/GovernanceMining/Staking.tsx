@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import { DivFlex } from 'src/components';
 import Button from 'src/components/Buttons';
 import images from 'src/images';
+import { useModalContext } from 'src/contexts/ModalContext';
+import Stake from './Stake';
 
 const LabelContainer = styled.div`
   display: flex;
@@ -19,28 +21,39 @@ const UnstakeLabel = styled.span`
   color: ${({ theme }) => theme.background}
 `;
 
-const Staking = () => (
-  <DivFlex gap="16px" style={{ width: '100%' }}>
-    <Button
-      label={
-        <LabelContainer>
-          <Icon src={images.governance.stake} />
-          <span>Stake</span>
-        </LabelContainer>
-      }
-      size="full"
-    />
-    <Button
-      label={
-        <LabelContainer>
-          <Icon src={images.governance.unstake} />
-          <UnstakeLabel>Unstake</UnstakeLabel>
-        </LabelContainer>
-      }
-      variant="secondary"
-      size="full"
-    />
-  </DivFlex>
-);
+const Staking = () => {
+  const { openModal } = useModalContext();
+  const openStakeModal = () => {
+    openModal({
+      title: 'Stake',
+      content: <Stake />,
+    });
+  };
+
+  return (
+    <DivFlex gap="16px" style={{ width: '100%' }}>
+      <Button
+        label={
+          <LabelContainer>
+            <Icon src={images.governance.stake} />
+            <span>Stake</span>
+          </LabelContainer>
+        }
+        size="full"
+        onClick={openStakeModal}
+      />
+      <Button
+        label={
+          <LabelContainer>
+            <Icon src={images.governance.unstake} />
+            <UnstakeLabel>Unstake</UnstakeLabel>
+          </LabelContainer>
+        }
+        variant="secondary"
+        size="full"
+      />
+    </DivFlex>
+  );
+};
 
 export default Staking;
