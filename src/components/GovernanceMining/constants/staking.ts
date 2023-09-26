@@ -17,9 +17,7 @@ type StakingEnvConfiguration = {
   maxPowerVoting: number;
 };
 
-type StakingConfiguration = {
-  [key: string]: StakingEnvConfiguration;
-};
+type StakingConfiguration = Record<string, StakingEnvConfiguration>;
 
 const stakingConfiguration: StakingConfiguration = {
   stage: {

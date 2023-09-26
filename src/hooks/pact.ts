@@ -3,12 +3,22 @@ import { useAppSelector } from 'src/stores/hooks';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import { fetchLocal } from 'src/utils/chainweb';
 
+type ResponseWrapper <Response = any> = {
+  status: 'success';
+  data: Response;
+} | {
+  status: 'failure';
+  error: {
+    message: string;
+  };
+};
+
 export const useExecPact = <Response = any>(chainId: string) => {
   const selectedNetwork = useAppSelector(getSelectedNetwork);
 
   return async (pactCode: string) => {
     const response = await fetchLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, chainId);
-    return response.result as Response;
+    return response.result as ResponseWrapper<Response>;
   };
 };
 

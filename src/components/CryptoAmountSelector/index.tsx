@@ -37,15 +37,19 @@ export const AmountInput = styled(SInput)`
   background: ${({ theme }) => theme.background};
 `;
 
+export type TFieldValues = FieldValues & {
+  amount: string;
+};
+
 type CryptoAmountSelectorProps = {
   fungibleToken: IFungibleToken;
   showPrefilledButtons?: boolean;
   showEstimatedUSD?: boolean;
   selectedGas?: GasType;
   tokenBalance: number;
-  register: UseFormRegister<FieldValues>;
-  setValue: UseFormSetValue<FieldValues>;
-  clearErrors: UseFormClearErrors<FieldValues>;
+  register: UseFormRegister<TFieldValues>;
+  setValue: UseFormSetValue<TFieldValues>;
+  clearErrors: UseFormClearErrors<TFieldValues>;
   errors: { [x: string]: any };
   readOnly: boolean;
   amount?: string;

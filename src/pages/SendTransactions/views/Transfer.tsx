@@ -137,7 +137,7 @@ const Transfer = (props: Props) => {
     formState: { errors },
     setValue,
     clearErrors,
-  } = useForm();
+  } = useForm<any>();
   const rootState = useSelector((state) => state);
   const { selectedNetwork } = rootState.extensions;
   useEffect(() => {
