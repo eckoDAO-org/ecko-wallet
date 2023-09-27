@@ -8,6 +8,7 @@ module.exports = {
       '@Utils': path.resolve(__dirname, 'src/utils'),
       '@Css': path.resolve(__dirname, 'src/css'),
       '@Reducers': path.resolve(__dirname, 'src/reducers'),
+      '@ledgerhq/devices': '@ledgerhq/devices/lib-es',
     },
   },
   devServer: {

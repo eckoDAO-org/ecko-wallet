@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import images from 'src/images';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -11,6 +12,8 @@ import { getLocalQuickSignedCmd, getLocalSelectedNetwork } from 'src/utils/stora
 import Button from 'src/components/Buttons';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import { sendWalletConnectMessage, updateQuickSignedCmdMessage } from 'src/utils/message';
+import { DEFAULT_BIP32_PATH, bufferToHex, useLedgerContext } from 'src/contexts/LedgerContext';
+import { AccountType } from 'src/stores/wallet';
 import { DappDescription, DappLogo, DappWrapper, WalletConnectParams } from './SignedCmd';
 
 const CommandListWrapper = styled.div`
@@ -40,9 +43,10 @@ const QuickSignedCmd = () => {
   const [tabId, setTabId] = useState(null);
   const [quickSignData, setQuickSignData] = useState<any>([]);
   const [walletConnectParams, setWalletConnectParams] = useState<WalletConnectParams | null>(null);
+  const { getLedger } = useLedgerContext();
 
   const rootState = useSelector((state) => state);
-  const { publicKey, secretKey } = rootState.wallet;
+  const { publicKey, secretKey, type } = rootState.wallet;
 
   const { theme } = useAppThemeContext();
 
@@ -116,6 +120,10 @@ const QuickSignedCmd = () => {
       returnSignedMessage(result);
       return null;
     }
+    let ledger: any = null;
+    if (type === AccountType.LEDGER) {
+      ledger = await getLedger();
+    }
     const signedResponses: any[] = [];
     for (let i = 0; i < data.commandSigDatas.length; i += 1) {
       const { cmd, sigs } = data.commandSigDatas[i];
@@ -139,7 +147,10 @@ const QuickSignedCmd = () => {
           parsedCmd.signers[commandSigIndex].secretKey = secretKey;
           try {
             hash = kadenaJSHash(cmd);
-            if (secretKey.length > 64) {
+            if (type === AccountType.LEDGER) {
+              const ledgerSig = await ledger?.signHash(DEFAULT_BIP32_PATH, hash);
+              signature = bufferToHex(ledgerSig?.signature);
+            } else if (secretKey.length > 64) {
               signature = getSignatureFromHash(hash, secretKey);
             } else {
               signature = kadenaJSSign(hash, { secretKey, publicKey }).sig;

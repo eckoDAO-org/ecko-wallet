@@ -109,6 +109,7 @@ export const Header = ({ hideAccounts }: { hideAccounts?: boolean }) => {
           publicKey: encryptKey(wallet.publicKey, accountPassword),
           secretKey: encryptKey(wallet.secretKey, accountPassword),
           chainId: wallet.chainId,
+          type: wallet.type,
           connectedSites: wallet.connectedSites,
         };
         setLocalSelectedWallet(newWallet);
@@ -122,6 +123,12 @@ export const Header = ({ hideAccounts }: { hideAccounts?: boolean }) => {
       pathname: '/import-wallet',
       state: { from: location },
     });
+    closeModal();
+  };
+
+  const goImportFromLedger = () => {
+    window.open('/index.html#/import-hardware-wallet', '_blank');
+    closeModal();
   };
 
   const onRemoveWallet = () => {
@@ -205,7 +212,14 @@ export const Header = ({ hideAccounts }: { hideAccounts?: boolean }) => {
               }}
             />
           }
-          modalFooter={<AccountActions onCreateAccount={onCreateAccount} onImportAccount={goImportAccount} onRemoveWallet={onRemoveWallet} />}
+          modalFooter={
+            <AccountActions
+              onCreateAccount={onCreateAccount}
+              onImportAccount={goImportAccount}
+              onImportFromLedger={goImportFromLedger}
+              onRemoveWallet={onRemoveWallet}
+            />
+          }
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
