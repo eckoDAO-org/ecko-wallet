@@ -11,8 +11,8 @@ import { CommonLabel, DivFlex } from 'src/components';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import { useSettingsContext } from 'src/contexts/SettingsContext';
 import { useHistory } from 'react-router-dom';
+import { useGoHome } from 'src/hooks/ui';
 import { checkIsValidOldPassword, decryptKey } from 'src/utils/security';
-import { setActiveTab } from 'src/stores/extensions';
 import {
   getLocalPassword,
   getLocalSeedPhrase,
@@ -23,7 +23,6 @@ import {
   removeOldLocalPassword,
   setLocalPassword,
 } from 'src/utils/storage';
-import { ACTIVE_TAB } from 'src/utils/constant';
 import { DivError } from '../Setting/Contact/views/style';
 import { WelcomeBackground } from '../InitSeedPhrase';
 
@@ -84,13 +83,13 @@ const SignIn = () => {
   const { selectedNetwork, networks } = rootState.extensions;
   const { setIsLocked } = useSettingsContext();
   const dispatch = useAppDispatch();
+  const goHome = useGoHome();
 
   useEffect(() => {
     getLocalPassword(
       (p) => {
         if (p) {
-          history.push('/');
-          setActiveTab(ACTIVE_TAB.HOME);
+          goHome();
         }
       },
       () => {},
@@ -108,8 +107,7 @@ const SignIn = () => {
     setIsLocked(false);
     getLocalSelectedWallet(
       () => {
-        history.push('/');
-        setActiveTab(ACTIVE_TAB.HOME);
+        goHome();
       },
       () => {
         history.push('/init');

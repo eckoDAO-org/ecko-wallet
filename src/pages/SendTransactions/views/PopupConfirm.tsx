@@ -1,7 +1,5 @@
 import Button from 'src/components/Buttons';
 import Pact from 'pact-lang-api';
-import { ACTIVE_TAB } from 'src/utils/constant';
-import { useHistory } from 'react-router-dom';
 import { convertRecent, getTimestamp, humanReadableNumber, shortenAddress } from 'src/utils';
 import { getApiUrl, getSignatureFromHash, fetchLocal, pollRequestKey } from 'src/utils/chainweb';
 import { CONFIG, ECKO_WALLET_SEND_TX_NONCE } from 'src/utils/config';
@@ -10,7 +8,8 @@ import { toast } from 'react-toastify';
 import { ReactComponent as AlertIconSVG } from 'src/images/icon-alert.svg';
 import Toast from 'src/components/Toast/Toast';
 import { CrossChainContext } from 'src/contexts/CrossChainContext';
-import { setActiveTab, setRecent } from 'src/stores/extensions';
+import { useGoHome } from 'src/hooks/ui';
+import { setRecent } from 'src/stores/extensions';
 import { getLocalActivities, getLocalRecent, setLocalActivities, setLocalRecent } from 'src/utils/storage';
 import { updateSendDapp } from 'src/utils/message';
 import { useContext, useState } from 'react';
@@ -35,7 +34,7 @@ const PopupConfirm = (props: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const { setCrossChainRequest, getCrossChainRequestsAsync } = useContext(CrossChainContext);
-  const history = useHistory();
+  const goHome = useGoHome();
   const {
     senderName,
     senderChainId,
@@ -254,8 +253,7 @@ const PopupConfirm = (props: Props) => {
           onListenTransaction(requestKey);
           setIsLoading(false);
           toast.success(<Toast type="success" content="Transaction sent successfully! Please check the transaction status in the history tab" />);
-          history.push('/');
-          setActiveTab(ACTIVE_TAB.HOME);
+          goHome();
         })
         .catch(() => {
           if (domain) {

@@ -4,7 +4,7 @@ import { BaseTextInput, BaseSelect, InputError } from 'src/baseComponent';
 import { useSelector } from 'react-redux';
 import QrReader from 'react-qr-reader';
 import ModalCustom from 'src/components/Modal/ModalCustom';
-import { hideLoading, setActiveTab, showLoading } from 'src/stores/extensions';
+import { hideLoading, showLoading } from 'src/stores/extensions';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
 import images from 'src/images';
@@ -14,13 +14,13 @@ import Button from 'src/components/Buttons';
 import { useWindowResizeMobile } from 'src/hooks/useWindowResizeMobile';
 import styled from 'styled-components';
 import useChainIdOptions from 'src/hooks/useChainIdOptions';
+import { useGoHome } from 'src/hooks/ui';
 import { Controller, useForm } from 'react-hook-form';
 import Pact from 'pact-lang-api';
 import { encryptKey } from 'src/utils/security';
 import { find, isEmpty, get } from 'lodash';
 import { useHistory } from 'react-router-dom';
 import { getLocalPassword, getLocalWallets, setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
-import { ACTIVE_TAB } from 'src/utils/constant';
 import { fetchLocal } from '../../utils/chainweb';
 
 const DivBody = styled.div`
@@ -62,6 +62,7 @@ const TitleModal = styled.div`
 const ImportAccount = () => {
   const optionsChain = useChainIdOptions();
   const history = useHistory();
+  const goHome = useGoHome();
   const [isMobile] = useWindowResizeMobile(420);
   const rootState = useSelector((state) => state);
   const { wallets, account } = rootState?.wallet;
@@ -126,8 +127,7 @@ const ImportAccount = () => {
                     setLocalSelectedWallet(wallet);
                     setCurrentWallet(newStateWallet);
                     toast.success(<Toast type="success" content="Import account successfully." />);
-                    history.push('/');
-                    setActiveTab(ACTIVE_TAB.HOME);
+                    goHome();
                   } else {
                     toast.error(<Toast type="fail" content="The account you are trying to import is a duplicate." />);
                   }
