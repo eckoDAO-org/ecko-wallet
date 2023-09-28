@@ -26,8 +26,15 @@ const Description = styled(SecondaryLabel)`
 
 const ConfirmAmount = ({ amount, onConfirm }: ConfirmModalProps) => {
   const { usdPrices } = useAccountBalanceContext();
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  const handleConfirm = () => {
+    setIsLoading(true);
+    onConfirm();
+  };
+
   const estimateUSDAmount = (usdPrices?.['kaddex.kdx'] || 0) * amount;
-  const handleConfirm = () => { onConfirm(); };
+  const confirmButtonText = isLoading ? '...' : 'Confirm';
 
   return (
     <DivFlex flexDirection="column" padding="24px" gap="24px">
@@ -53,7 +60,7 @@ const ConfirmAmount = ({ amount, onConfirm }: ConfirmModalProps) => {
       />
 
       <DivFlex justifyContent="center" padding="4px" paddingTop="8px">
-        <Button label="Confirm" size="full" variant="primary" onClick={handleConfirm} />
+        <Button isDisabled={isLoading} label={confirmButtonText} size="full" variant="primary" onClick={handleConfirm} />
       </DivFlex>
     </DivFlex>
   );

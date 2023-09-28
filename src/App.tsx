@@ -11,6 +11,7 @@ import { CrossChainProvider } from './contexts/CrossChainContext';
 import { AppThemeProvider } from './contexts/AppThemeContext';
 import { SettingsProvider } from './contexts/SettingsContext';
 import { AccountBalanceProvider } from './contexts/AccountBalanceContext';
+import { GovernanceMiningContextProvider } from './contexts/GovernanceMiningContext';
 import ModalCustom from './components/Modal/ModalCustom';
 
 const AppWrapper = styled.div`
@@ -60,14 +61,16 @@ const App = () => (
               <SettingsProvider>
                 <AccountBalanceProvider>
                   <CrossChainProvider>
-                    <ModalConsumer>
-                      {({ isOpen, title, content, footer, closeModal, roundIcon }) => (
-                        <ModalCustom isOpen={isOpen || false} title={title} footer={footer} onCloseModal={closeModal} roundIcon={roundIcon}>
-                          {content}
-                        </ModalCustom>
-                      )}
-                    </ModalConsumer>
-                    <AppContainer />
+                    <GovernanceMiningContextProvider>
+                      <ModalConsumer>
+                        {({ isOpen, title, content, footer, closeModal, roundIcon }) => (
+                          <ModalCustom isOpen={isOpen || false} title={title} footer={footer} onCloseModal={closeModal} roundIcon={roundIcon}>
+                            {content}
+                          </ModalCustom>
+                        )}
+                      </ModalConsumer>
+                      <AppContainer />
+                    </GovernanceMiningContextProvider>
                   </CrossChainProvider>
                 </AccountBalanceProvider>
               </SettingsProvider>

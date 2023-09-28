@@ -22,11 +22,11 @@ const UnstakeLabel = styled.span`
 `;
 
 const Staking = () => {
-  const { openModal } = useModalContext();
+  const { openModal, closeModal } = useModalContext();
   const openStakeModal = () => {
     openModal({
       title: 'Stake',
-      content: <Stake />,
+      content: <Stake stakeCompleted={closeModal} />,
     });
   };
 
