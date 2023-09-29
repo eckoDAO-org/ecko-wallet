@@ -1,7 +1,7 @@
 import React, { createContext, useContext } from 'react';
 // import { useGetLastDayData } from 'src/components/GovernanceMining/api/analytics';
 import { useGetAccountData } from 'src/components/GovernanceMining/api/kaddex.dao';
-import { createPendingStakeActivity, useInspectStaker, useStake } from 'src/components/GovernanceMining/api/kaddex.staking';
+import { StakerInspection, createPendingStakeActivity, useInspectStaker, useStake } from 'src/components/GovernanceMining/api/kaddex.staking';
 import { PoolState, StakeRewards, StakeStatus } from 'src/components/GovernanceMining/types';
 import { getTimeByBlockchain } from 'src/components/GovernanceMining/helpers/stringUtils';
 
@@ -47,7 +47,7 @@ export const GovernanceMiningContextProvider: React.FC<GovernanceMiningContextPr
   const [poolState, setPoolState] = React.useState(emptyPoolState);
 
   const [accountData, setAccountData] = React.useState<any>();
-  const [stakerInpsection, setStakerInspection] = React.useState<any>();
+  const [stakerInspection, setStakerInspection] = React.useState<StakerInspection>();
   // const [lastDayData, setLastDayData] = React.useState<any>();
   const getAccountData = useGetAccountData();
   const inspectStaker = useInspectStaker();
@@ -55,19 +55,20 @@ export const GovernanceMiningContextProvider: React.FC<GovernanceMiningContextPr
   // const getLastDayData = useGetLastDayData();
 
   const getStakeStatus = () => {
-    if (!accountData || !stakerInpsection) {
+    if (!accountData || !stakerInspection) {
       setStakeStatus(emptyStakeStatus);
       return;
     }
 
     const rewards: StakeRewards = {
-      collectedTokens: stakerInpsection['reward-accrued'],
-      effectiveStartDate: getTimeByBlockchain(stakerInpsection['stake-record']['effective-start']),
-      penaltyTokens: stakerInpsection['reward-penalty'],
+      collectedTokens: stakerInspection['reward-accrued'],
+      effectiveStartDate: getTimeByBlockchain(stakerInspection['stake-record']['effective-start']),
+      penaltyTokens: stakerInspection['reward-penalty'],
     };
 
     const newStakeStatus: StakeStatus = {
       stakedTokens: accountData['staked-amount'],
+      pendingTokens: stakerInspection['stake-record']['pending-add'],
       rewards,
       votingPower: accountData.vp,
     };
@@ -76,7 +77,7 @@ export const GovernanceMiningContextProvider: React.FC<GovernanceMiningContextPr
   };
 
   const getPoolState = () => {
-    if (!stakerInpsection) {
+    if (!stakerInspection) {
       setStakeStatus(emptyStakeStatus);
       return;
     }
@@ -86,8 +87,8 @@ export const GovernanceMiningContextProvider: React.FC<GovernanceMiningContextPr
     const newPoolState: PoolState = {
       dailyVolumeInUsd,
       stakingRewardsInPercentual: 0.5,
-      burnedTokens: stakerInpsection['burnt-kdx'],
-      totalStakedTokens: stakerInpsection['staked-kdx'],
+      burnedTokens: 10,
+      totalStakedTokens: 100,
     };
 
     setPoolState(newPoolState);
@@ -100,7 +101,7 @@ export const GovernanceMiningContextProvider: React.FC<GovernanceMiningContextPr
     /* await getLastDayData(); */
 
     newAccountData.status === 'success' && setAccountData(newAccountData?.data);
-    newStakerInpsection.status === 'success' && setStakerInspection(newStakerInpsection?.data);
+    newStakerInpsection.status === 'success' && setStakerInspection(newStakerInpsection.data);
     // setLastDayData(newLastDayData);
   };
 
@@ -131,7 +132,7 @@ export const GovernanceMiningContextProvider: React.FC<GovernanceMiningContextPr
   React.useEffect(() => {
     getStakeStatus();
     getPoolState();
-  }, [accountData, stakerInpsection]);
+  }, [accountData, stakerInspection]);
 
   return (
     <GovernanceMiningContext.Provider value={contextValue}>

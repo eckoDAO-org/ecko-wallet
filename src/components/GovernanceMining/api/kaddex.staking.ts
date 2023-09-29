@@ -10,7 +10,41 @@ import { addLocalActivity } from 'src/utils/storage';
 import { CHAIN_ID } from '../constants';
 import { reduceBalance } from '../helpers/numberUtils';
 
-export const useInspectStaker = () => useExecPactWithLocalAccount('(kaddex.staking.inspect-staker "{{ACCOUNT}}")', CHAIN_ID);
+export interface TimestampP {
+  timep: string;
+}
+
+export interface Timestamp {
+  time: string;
+}
+
+export interface StakeRecord {
+  amount: number;
+  'last-stake': TimestampP;
+  'last-add-request': TimestampP;
+  'start-cumulative': {
+    decimal: string;
+  };
+  'effective-start': TimestampP;
+  account: string;
+  'last-claim': Timestamp;
+  locks: any[];
+  rollover: number;
+  'pending-add': number;
+}
+
+export interface StakerInspection {
+  'reward-accrued': number;
+  'staked-unlocked': number;
+  'reward-penalty': number;
+  staked: number;
+  'unstake-penalty': number;
+  'stake-record': StakeRecord;
+  'can-claim': boolean;
+  'current-time': TimestampP;
+}
+
+export const useInspectStaker = () => useExecPactWithLocalAccount<StakerInspection>('(kaddex.staking.inspect-staker "{{ACCOUNT}}")', CHAIN_ID);
 
 export interface StakeResult {
   request: any;
