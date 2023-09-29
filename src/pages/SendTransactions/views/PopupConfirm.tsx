@@ -10,7 +10,7 @@ import Toast from 'src/components/Toast/Toast';
 import { CrossChainContext } from 'src/contexts/CrossChainContext';
 import { useGoHome } from 'src/hooks/ui';
 import { setRecent } from 'src/stores/extensions';
-import { getLocalActivities, getLocalRecent, setLocalActivities, setLocalRecent } from 'src/utils/storage';
+import { addLocalActivity, getLocalRecent, setLocalRecent } from 'src/utils/storage';
 import { updateSendDapp } from 'src/utils/message';
 import { useContext, useState } from 'react';
 import SpokesLoading from 'src/components/Loading/Spokes';
@@ -219,20 +219,7 @@ const PopupConfirm = (props: Props) => {
             aliasName: configs?.aliasName,
             status: 'pending',
           };
-          getLocalActivities(
-            selectedNetwork.networkId,
-            senderName,
-            (activities) => {
-              const newActivities = [...activities];
-              newActivities.push(activity);
-              setLocalActivities(selectedNetwork.networkId, senderName, newActivities);
-            },
-            () => {
-              const newActivities: any[] = [];
-              newActivities.push(activity);
-              setLocalActivities(selectedNetwork.networkId, senderName, newActivities);
-            },
-          );
+          addLocalActivity(selectedNetwork.networkId, senderName, activity);
           if (senderChainId.toString() !== receiverChainId.toString()) {
             const asyncCrossTx = await getCrossChainRequestsAsync();
             const requests = [...(asyncCrossTx || [])];
