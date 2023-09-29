@@ -55,7 +55,7 @@ const StakeWizard = ({ stakeCompleted }: StakeWizardProps) => {
     if (result.status === 'success') {
       toast.success(<Toast type="success" content="KDX Staked Successfully" />);
     } else {
-      toast.error(<Toast type="fail" content="KDX Stake Fail" />);
+      toast.error(<Toast type="fail" content="KDX Stake Failed" />);
     }
   };
 
