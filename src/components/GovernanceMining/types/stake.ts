@@ -1,5 +1,6 @@
 export interface StakeStatus {
   stakedTokens: number;
+  pendingTokens: number;
   rewards: StakeRewards;
   votingPower: number;
 }

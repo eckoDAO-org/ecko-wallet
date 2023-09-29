@@ -4,10 +4,10 @@ import PositionView from './UI';
 
 const Position = () => {
   const governanceMining = useGovernanceMining();
-  const { stakedTokens } = governanceMining.stakeStatus;
+  const { stakedTokens, pendingTokens } = governanceMining.stakeStatus;
 
   return (
-    <PositionView amount={stakedTokens} />
+    <PositionView amount={stakedTokens} pending={pendingTokens} />
   );
 };
 

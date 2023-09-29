@@ -14,6 +14,7 @@ export interface GovernanceMiningContextValue {
 
 const emptyStakeStatus: StakeStatus = {
   stakedTokens: 0,
+  pendingTokens: 0,
   rewards: {
     collectedTokens: 0,
     effectiveStartDate: '',
