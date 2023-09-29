@@ -6,10 +6,16 @@ import { useExecPactWithLocalAccount, usePoolRequestKey } from 'src/hooks/pact';
 import { getTimestamp } from 'src/utils';
 import { getApiUrl } from 'src/utils/chainweb';
 import { CONFIG, ECKO_WALLET_SEND_TX_NONCE } from 'src/utils/config';
+import { addLocalActivity } from 'src/utils/storage';
 import { CHAIN_ID } from '../constants';
 import { reduceBalance } from '../helpers/numberUtils';
 
 export const useInspectStaker = () => useExecPactWithLocalAccount('(kaddex.staking.inspect-staker "{{ACCOUNT}}")', CHAIN_ID);
+
+export interface StakeResult {
+  request: any;
+  response: any;
+}
 
 export const useStake = () => {
   const selectedNetwork = useAppSelector(getSelectedNetwork);
@@ -59,9 +65,12 @@ export const useStake = () => {
     const url = getApiUrl(selectedNetwork.url, selectedNetwork.networkId, CHAIN_ID);
 
     const response = await Pact.wallet.sendSigned(cmd, url);
-    const requestKey = response.requestKeys[0];
+    const parsedCmd = JSON.parse(cmd.cmd);
 
-    return requestKey as string;
+    return {
+      request: parsedCmd,
+      response,
+    } as StakeResult;
   };
 };
 
@@ -71,4 +80,21 @@ export const usePoolStakeRequest = () => {
   return (requestKey: string) => (
     poolRequestKey(requestKey, CHAIN_ID)
   );
+};
+
+export const createPendingStakeActivity = (stakeResult: StakeResult) => {
+  const activity = {
+    symbol: 'KDX',
+    requestKey: stakeResult.response.requestKeys[0],
+    senderChainId: CHAIN_ID,
+    receiverChainId: CHAIN_ID,
+    receiver: 'Stake KDX',
+    createdTime: (new Date(stakeResult.request.meta.creationTime * 1000)).toString(),
+    amount: stakeResult.request.payload.exec.data.amount,
+    gasPrice: stakeResult.request.meta.gasPrice,
+    sender: stakeResult.request.meta.sender,
+    status: 'pending',
+  };
+
+  addLocalActivity(stakeResult.request.networkId, stakeResult.request.meta.sender, activity);
 };

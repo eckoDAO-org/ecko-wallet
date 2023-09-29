@@ -1,7 +1,7 @@
 import React, { createContext, useContext } from 'react';
 // import { useGetLastDayData } from 'src/components/GovernanceMining/api/analytics';
 import { useGetAccountData } from 'src/components/GovernanceMining/api/kaddex.dao';
-import { useInspectStaker, useStake } from 'src/components/GovernanceMining/api/kaddex.staking';
+import { createPendingStakeActivity, useInspectStaker, useStake } from 'src/components/GovernanceMining/api/kaddex.staking';
 import { PoolState, StakeRewards, StakeStatus } from 'src/components/GovernanceMining/types';
 import { getTimeByBlockchain } from 'src/components/GovernanceMining/helpers/stringUtils';
 
@@ -105,8 +105,16 @@ export const GovernanceMiningContextProvider: React.FC<GovernanceMiningContextPr
   };
 
   const requestStake = async (amount: number) => {
-    const requestKey = await stake(amount);
-    return requestKey || undefined;
+    const result = await stake(amount);
+    const requestKey = result.response.requestKeys[0];
+
+    if (!requestKey) {
+      return undefined;
+    }
+
+    createPendingStakeActivity(result);
+
+    return requestKey;
   };
 
   const contextValue: GovernanceMiningContextValue = {

@@ -283,6 +283,23 @@ export const getLocalActivities = (network, account, successCallback, failCallba
   });
 };
 
+export const addLocalActivity = (network, account, activity) => {
+  getLocalActivities(
+    network,
+    account,
+    (activities) => {
+      const newActivities = [...activities];
+      newActivities.push(activity);
+      setLocalActivities(network, account, newActivities);
+    },
+    () => {
+      const newActivities: any[] = [];
+      newActivities.push(activity);
+      setLocalActivities(network, account, newActivities);
+    },
+  );
+};
+
 // Password
 export const setLocalPassword = (passwordHash) => {
   (window as any)?.chrome?.storage?.session?.set({ accountPassword: passwordHash });
