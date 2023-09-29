@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
 import { get, groupBy } from 'lodash';
@@ -173,7 +173,7 @@ const Activities = () => {
               {Object.keys(grouped)
                 .filter((key) => key !== yesterdayString && key !== todayString)
                 .map((date) => (
-                  <>
+                  <React.Fragment key={date}>
                     <DayLabel uppercase>{moment(date, 'DD/MM/YYYY').format('DD/MM/YYYY')}</DayLabel>
                     {grouped[date].map((item) => {
                       if (!item || !item.receiverChainId) return null;
@@ -198,7 +198,7 @@ const Activities = () => {
                         </Div>
                       );
                     })}
-                  </>
+                  </React.Fragment>
                 ))}
             </DivScroll>
           </DivChild>
