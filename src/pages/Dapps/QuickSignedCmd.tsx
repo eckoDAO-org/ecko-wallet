@@ -4,6 +4,8 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import ReactJson from 'react-json-view';
+import Toast from 'src/components/Toast/Toast';
+import { toast } from 'react-toastify';
 import { hash as kadenaJSHash, sign as kadenaJSSign } from '@kadena/cryptography-utils';
 import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 import { getSignatureFromHash } from 'src/utils/chainweb';
@@ -41,6 +43,9 @@ const CodeWrapper = styled.div`
 const QuickSignedCmd = () => {
   const [domain, setDomain] = useState('');
   const [tabId, setTabId] = useState(null);
+  const [currentHash, setCurrentHash] = useState<{ hash: string; count: number }>({ hash: '', count: 0 });
+  const [isWaitingLedger, setIsWaitingLedger] = useState(false);
+  const [totalCommands, setTotalCommands] = useState(0);
   const [quickSignData, setQuickSignData] = useState<any>([]);
   const [walletConnectParams, setWalletConnectParams] = useState<WalletConnectParams | null>(null);
   const { getLedger } = useLedgerContext();
@@ -122,9 +127,12 @@ const QuickSignedCmd = () => {
     }
     let ledger: any = null;
     if (type === AccountType.LEDGER) {
+      setIsWaitingLedger(true);
       ledger = await getLedger();
     }
+
     const signedResponses: any[] = [];
+    setTotalCommands(data.commandSigDatas.length);
     for (let i = 0; i < data.commandSigDatas.length; i += 1) {
       const { cmd, sigs } = data.commandSigDatas[i];
       let signature: any = null;
@@ -148,7 +156,9 @@ const QuickSignedCmd = () => {
           try {
             hash = kadenaJSHash(cmd);
             if (type === AccountType.LEDGER) {
+              setCurrentHash({ hash, count: i + 1 });
               const ledgerSig = await ledger?.signHash(DEFAULT_BIP32_PATH, hash);
+              toast.success(<Toast type="success" content={`Ledger command ${i + 1}/${data?.commandSigDatas?.length ?? '?'} signed successfully`} />);
               signature = bufferToHex(ledgerSig?.signature);
             } else if (secretKey.length > 64) {
               signature = getSignatureFromHash(hash, secretKey);
@@ -157,16 +167,13 @@ const QuickSignedCmd = () => {
             }
           } catch (err) {
             console.log('QUICK-SIGN ERROR');
-            signedResponses.push({
-              commandSigData: {
-                cmd,
-                sigs,
-              },
-              outcome: {
-                result: 'failure',
-                msg: 'Error to sign cmd',
-              },
-            });
+            const result = {
+              status: 'fail',
+              message: 'Ledger signing fail',
+            };
+            setIsWaitingLedger(false);
+            returnSignedMessage(result);
+            return null;
           }
         }
 
@@ -183,6 +190,7 @@ const QuickSignedCmd = () => {
         });
       }
     }
+    setIsWaitingLedger(false);
     return signedResponses;
   };
 
@@ -195,7 +203,7 @@ const QuickSignedCmd = () => {
     } else {
       const result = {
         status: 'success',
-        quickSignData,
+        responses: quickSignData,
       };
       returnSignedMessage(result);
     }
@@ -215,6 +223,21 @@ const QuickSignedCmd = () => {
       <CommonLabel textCenter fontWeight={800} style={{ marginBottom: 20 }}>
         QUICK SIGN REQUEST
       </CommonLabel>
+      {type === AccountType.LEDGER && isWaitingLedger && (
+        <DivFlex flexDirection="column" alignItems="center" padding="24px">
+          <SecondaryLabel style={{ textAlign: 'center' }}>
+            Please enable BLIND SIGNING <br />
+            and follow the instruction on your ledger first
+          </SecondaryLabel>
+          {currentHash?.hash && (
+            <SecondaryLabel style={{ textAlign: 'center', marginTop: 30, wordBreak: 'break-all' }}>
+              HASH TO SIGN ({currentHash?.count}/{totalCommands}):
+              <br />
+              {currentHash?.hash}
+            </SecondaryLabel>
+          )}
+        </DivFlex>
+      )}
       {quickSignData?.map(({ commandSigData, outcome }, iCmd) => {
         const cmd = JSON.parse(commandSigData?.cmd || {});
         const signData = {
@@ -224,64 +247,68 @@ const QuickSignedCmd = () => {
         };
         const caps = cmd?.signers?.find((s) => s?.pubKey === publicKey)?.clist;
         return (
-          <>
-            <CommonLabel textCenter fontWeight={800} style={{ marginBottom: 15 }}>
-              COMMAND {iCmd + 1}/{quickSignData?.length}
-            </CommonLabel>
-            <SecondaryLabel textCenter>CODE</SecondaryLabel>
-            <CommandListWrapper>
-              <CodeWrapper fontWeight={600}>{cmd?.payload?.exec?.code}</CodeWrapper>
-              {caps?.length ? (
+          !isWaitingLedger && (
+            <>
+              <CommonLabel textCenter fontWeight={800} style={{ marginBottom: 15 }}>
+                COMMAND {iCmd + 1}/{quickSignData?.length}
+              </CommonLabel>
+              <SecondaryLabel textCenter>CODE</SecondaryLabel>
+              <CommandListWrapper>
+                <CodeWrapper fontWeight={600}>{cmd?.payload?.exec?.code}</CodeWrapper>
+                {caps?.length ? (
+                  <DivFlex flexDirection="column">
+                    <SecondaryLabel textCenter style={{ marginTop: 15 }}>
+                      CAPABILITIES ({caps?.length})
+                    </SecondaryLabel>
+                    <DivFlex flexDirection="column">
+                      {caps?.map((cap) => (
+                        <div style={{ margin: '10px 0' }}>
+                          <ReactJson
+                            name={cap.name}
+                            src={cap?.args}
+                            enableClipboard={false}
+                            displayObjectSize={false}
+                            displayDataTypes={false}
+                            quotesOnKeys={false}
+                            collapsed
+                            indentWidth={2}
+                            theme={theme.isDark ? 'twilight' : 'rjv-default'}
+                            collapseStringsAfterLength={false}
+                          />
+                        </div>
+                      ))}
+                    </DivFlex>
+                  </DivFlex>
+                ) : null}
                 <DivFlex flexDirection="column">
                   <SecondaryLabel textCenter style={{ marginTop: 15 }}>
-                    CAPABILITIES ({caps?.length})
+                    RAW DATA
                   </SecondaryLabel>
-                  <DivFlex flexDirection="column">
-                    {caps?.map((cap) => (
-                      <div style={{ margin: '10px 0' }}>
-                        <ReactJson
-                          name={cap.name}
-                          src={cap?.args}
-                          enableClipboard={false}
-                          displayObjectSize={false}
-                          displayDataTypes={false}
-                          quotesOnKeys={false}
-                          collapsed
-                          indentWidth={2}
-                          theme={theme.isDark ? 'twilight' : 'rjv-default'}
-                          collapseStringsAfterLength={false}
-                        />
-                      </div>
-                    ))}
-                  </DivFlex>
                 </DivFlex>
-              ) : null}
-              <DivFlex flexDirection="column">
-                <SecondaryLabel textCenter style={{ marginTop: 15 }}>
-                  RAW DATA
-                </SecondaryLabel>
-              </DivFlex>
-              <ReactJson
-                name="rawCmd"
-                src={signData}
-                enableClipboard={false}
-                displayObjectSize={false}
-                displayDataTypes={false}
-                quotesOnKeys={false}
-                collapsed
-                indentWidth={2}
-                style={{ paddingBottom: 40 }}
-                theme={theme.isDark ? 'twilight' : 'rjv-default'}
-                collapseStringsAfterLength={false}
-              />
-            </CommandListWrapper>
-          </>
+                <ReactJson
+                  name="rawCmd"
+                  src={signData}
+                  enableClipboard={false}
+                  displayObjectSize={false}
+                  displayDataTypes={false}
+                  quotesOnKeys={false}
+                  collapsed
+                  indentWidth={2}
+                  style={{ paddingBottom: 40 }}
+                  theme={theme.isDark ? 'twilight' : 'rjv-default'}
+                  collapseStringsAfterLength={false}
+                />
+              </CommandListWrapper>
+            </>
+          )
         );
       })}
-      <DivFlex gap="10px" padding="24px">
-        <Button size="full" label="Reject" variant="disabled" onClick={onClose} />
-        <Button size="full" label="Confirm" onClick={onSave} />
-      </DivFlex>
+      {!isWaitingLedger && (
+        <DivFlex gap="10px" padding="24px">
+          <Button size="full" label="Reject" variant="disabled" onClick={onClose} />
+          <Button size="full" label="Confirm" onClick={onSave} />
+        </DivFlex>
+      )}
     </DappWrapper>
   );
 };

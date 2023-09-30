@@ -7,10 +7,11 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { decryptKey, encryptKey } from 'src/utils/security';
 import { setSelectedNetwork } from 'src/stores/extensions';
 import { toast } from 'react-toastify';
+import { ReactComponent as LedgerIcon } from 'src/images/ledger-logo.svg';
 import { ModalContext } from 'src/contexts/ModalContext';
 import { AccountList } from 'src/pages/Wallet/components/AccountList';
 import { AccountActions } from 'src/pages/Wallet/components/AccountActions';
-import { setBalance, setCurrentWallet, setWallets } from 'src/stores/wallet';
+import { AccountType, setBalance, setCurrentWallet, setWallets } from 'src/stores/wallet';
 import { getKeyPairsFromSeedPhrase } from 'src/utils/chainweb';
 import { shortenAddress } from 'src/utils';
 import images from 'src/images';
@@ -42,7 +43,7 @@ export const Header = ({ hideAccounts }: { hideAccounts?: boolean }) => {
   const { openModal, closeModal } = useContext(ModalContext);
 
   const { selectedNetwork, passwordHash, networks } = rootState.extensions;
-  const { wallets } = rootState?.wallet;
+  const { wallets, type } = rootState?.wallet;
   const selectedWallet = wallets?.find((a) => a.account === stateWallet?.account);
 
   const checkWallet = (pub) => {
@@ -195,7 +196,7 @@ export const Header = ({ hideAccounts }: { hideAccounts?: boolean }) => {
         <DropdownModal
           title={
             <DivFlex>
-              <Jazzicon diameter={24} seed={jsNumberForAddress(stateWallet?.account)} />{' '}
+              {type === AccountType.LEDGER ? <LedgerIcon /> : <Jazzicon diameter={24} seed={jsNumberForAddress(stateWallet?.account)} />}{' '}
               <span style={{ color: '#787B8E', marginLeft: 5 }}>{selectedWallet?.alias || shortenAddress(stateWallet?.account)}</span>{' '}
             </DivFlex>
           }

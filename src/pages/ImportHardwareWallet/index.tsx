@@ -17,9 +17,8 @@ import { find, isEmpty } from 'lodash';
 import { encryptKey } from 'src/utils/security';
 import { AccountType, setCurrentWallet, setWallets } from 'src/stores/wallet';
 import { ACTIVE_TAB } from 'src/utils/constant';
-import { DEFAULT_BIP32_PATH, useLedgerContext } from 'src/contexts/LedgerContext';
+import { useLedgerContext } from 'src/contexts/LedgerContext';
 import { RadioSelection } from 'src/components/RadioSelection';
-import { shortenAddress } from 'src/utils';
 
 const HardwareButton = styled.div`
   border-radius: 10px;
@@ -44,7 +43,7 @@ const ImportHardwareWallet = () => {
   const [selectedPublicKey, setSelectedPublicKey] = useState<string>('');
   const { wallets } = rootState?.wallet;
   const { selectedNetwork } = rootState?.extensions;
-  const { getLedger, getPublicKey, error } = useLedgerContext();
+  const { getPublicKey } = useLedgerContext();
 
   const goBack = () => {
     history.push('/');
@@ -52,24 +51,14 @@ const ImportHardwareWallet = () => {
 
   const getLedgerAccount = async () => {
     try {
+      showLoading();
       const publicKey = await getPublicKey();
       setLedgerPublicKey(publicKey ?? '');
-      const accountName = `k:${publicKey}`;
-      const pactCode = `(coin.details "${accountName}")`;
-      showLoading();
-      fetchLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, 0)
-        .then((response) => {
-          console.log(`🚀 !!! ~ response:`, response);
-          hideLoading();
-          // if ()
-        })
-        .catch(() => {
-          hideLoading();
-          toast.error(<Toast type="fail" content="Network error fetching account data" />);
-        });
+      hideLoading();
       return publicKey;
     } catch (err: any) {
       console.log(`Ledger ERROR:`, err);
+      hideLoading();
     }
     return null;
   };
@@ -81,7 +70,8 @@ const ImportHardwareWallet = () => {
       showLoading();
       fetchLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, 0)
         .then((response) => {
-          console.log(`🚀 !!! ~ response:`, response);
+          console.log('ACCOUNT DETAILS RESPONSE', response);
+          // Allow account import even if it doesn't exist
           hideLoading();
           getLocalPassword(
             (accountPassword) => {
@@ -117,7 +107,7 @@ const ImportHardwareWallet = () => {
                 setWallets(newWallets);
                 setLocalSelectedWallet(wallet);
                 setCurrentWallet(newStateWallet);
-                toast.success(<Toast type="success" content="Import account successfully." />);
+                toast.success(<Toast type="success" content="Import Hardware wallet successfully" />);
                 history.push('/');
                 setActiveTab(ACTIVE_TAB.HOME);
               } else {
@@ -185,7 +175,7 @@ const ImportHardwareWallet = () => {
       </DivFlex>
       <RadioSelection
         value={selectedPublicKey}
-        options={[{ label: `k:${shortenAddress(ledgerPublicKey)}`, value: ledgerPublicKey }]}
+        options={[{ label: `k:${ledgerPublicKey}`, value: ledgerPublicKey }]}
         onChange={(pk) => {
           setSelectedPublicKey(pk);
         }}
