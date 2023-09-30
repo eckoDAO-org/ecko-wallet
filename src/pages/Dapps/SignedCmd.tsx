@@ -4,6 +4,8 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import ReactJson from 'react-json-view';
+import Toast from 'src/components/Toast/Toast';
+import { toast } from 'react-toastify';
 import { getLocalSelectedNetwork, getLocalSigningCmd } from 'src/utils/storage';
 import Button from 'src/components/Buttons';
 import { DivFlex, SecondaryLabel } from 'src/components';
@@ -166,6 +168,7 @@ const SignedCmd = () => {
           setHash(signedCmd.hash);
           signHash(signedCmd.hash)
             .then((signHashResult) => {
+              toast.success(<Toast type="success" content="Ledger signed successfully" />);
               const sigs = [{ sig: bufferToHex(signHashResult?.signature) }];
               signedCmd.sigs = sigs;
               resolve({ signedCmd, signingCmd });
@@ -254,7 +257,7 @@ const SignedCmd = () => {
             and follow the instruction on your ledger first
           </SecondaryLabel>
           {hash && (
-            <SecondaryLabel style={{ textAlign: 'center', marginTop: 30 }}>
+            <SecondaryLabel style={{ textAlign: 'center', marginTop: 30, wordBreak: 'break-all' }}>
               HASH TO SIGN:
               <br />
               {hash}
