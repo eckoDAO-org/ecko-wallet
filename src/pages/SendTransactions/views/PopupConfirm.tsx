@@ -207,7 +207,7 @@ const PopupConfirm = (props: Props) => {
             amount,
             chainId: Number(senderChainId),
             network: selectedNetwork.networkId,
-            gasPrice: gasPrice.toString(),
+            gasPrice: humanReadableNumber(gasPrice, 12),
             gasLimit: gasLimit.toString(),
             nonce: `${ECKO_WALLET_SEND_TX_NONCE}-${new Date().toISOString()}`,
           };
