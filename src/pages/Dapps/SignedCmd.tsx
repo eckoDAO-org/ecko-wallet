@@ -76,7 +76,6 @@ const SignedCmd = () => {
 
   const rootState = useSelector((state) => state);
   const { publicKey, secretKey, type } = rootState.wallet;
-  console.log(`🚀 !!! ~ type:`, type);
 
   const { theme } = useAppThemeContext();
 
