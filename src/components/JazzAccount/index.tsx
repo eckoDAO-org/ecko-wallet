@@ -1,6 +1,8 @@
 import React from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { shortenAddress } from 'src/utils';
+import { AccountType } from 'src/stores/wallet';
+import { ReactComponent as LedgerIcon } from 'src/images/ledger-logo.svg';
 import styled from 'styled-components';
 import { DivFlex } from '..';
 
@@ -18,12 +20,14 @@ const AccountLabel = styled.span`
 export const JazzAccount = ({
   account,
   diameter,
+  type,
   renderAccount,
   isSelected,
   onClick,
 }: {
   account: string;
   diameter?: number;
+  type?: AccountType;
   // eslint-disable-next-line no-unused-vars
   renderAccount?: (acc: string) => React.ReactNode;
   isSelected?: boolean;
@@ -31,11 +35,15 @@ export const JazzAccount = ({
 }) =>
   account ? (
     <AccountListWrapper key={account} justifyContent="flex-start" alignItems="center" onClick={onClick}>
-      <Jazzicon
-        diameter={diameter || 24}
-        seed={jsNumberForAddress(account)}
-        paperStyles={{ marginRight: 10, border: isSelected ? '2px solid #20264e' : null, padding: !isSelected ? 1 : 0 }}
-      />
+      {type === AccountType.LEDGER ? (
+        <LedgerIcon style={{ marginRight: 11 }} />
+      ) : (
+        <Jazzicon
+          diameter={diameter || 24}
+          seed={jsNumberForAddress(account)}
+          paperStyles={{ marginRight: 10, border: isSelected ? '2px solid #20264e' : null, padding: !isSelected ? 1 : 0 }}
+        />
+      )}
       {renderAccount ? renderAccount(account) : <AccountLabel isSelected={isSelected}>{shortenAddress(account)}</AccountLabel>}
     </AccountListWrapper>
   ) : null;

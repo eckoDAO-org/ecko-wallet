@@ -23,6 +23,7 @@ export const AccountList = ({ onSelectWallet }: { onSelectWallet: any }) => {
       {groupedAccountWallets.map((wallet, i) => (
         <JazzAccount
           key={wallet.account}
+          type={wallet.type}
           isSelected={selectedAccount === wallet.account}
           renderAccount={(account) => (
             <DivFlex flexDirection="column">

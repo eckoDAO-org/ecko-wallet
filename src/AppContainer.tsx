@@ -38,6 +38,8 @@ import TwoFactorAuthenticator from './components/TwoFactorAuthenticator';
 import PageWalletConnect from './pages/Setting/WalletConnect';
 import BuyCryptocurrencies from './pages/Wallet/views/BuyCryptocurrencies';
 import CategoryDetail from './pages/Nft/CategoryDetail';
+import ImportHardwareWallet from './pages/ImportHardwareWallet';
+import ImportLedger from './pages/ImportHardwareWallet/ImportLedger';
 
 const Container = styled.div`
   width: 1000px;
@@ -68,6 +70,8 @@ const AppContainer = () => {
           <PrivateRoute path="/edit-password" component={EditPassword} />
           <PrivateRoute path="/2fa" component={TwoFactorAuth} />
           <PrivateRoute path="/import-wallet" component={ImportAccount} />
+          <PrivateRoute path="/import-hardware-wallet" component={ImportHardwareWallet} />
+          <PrivateRoute path="/import-from-ledger" component={ImportLedger} />
           <PrivateRoute path="/import-token" component={importToken} />
           <PrivateRoute path="/transfer" component={SendTransactions} />
           <PrivateRoute path="/init" component={InitPage} />

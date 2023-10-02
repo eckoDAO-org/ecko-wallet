@@ -6,6 +6,7 @@ import { DivFlex } from '..';
 const RadioSpan = styled.span`
   font-weight: 500;
   font-size: 16px;
+  word-break: break-all;
   color: ${({ theme }) => theme?.text?.primary};
 `;
 

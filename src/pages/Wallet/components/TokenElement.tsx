@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unused-prop-types */
 import { DivFlex, CommonLabel } from 'src/components';
 import Spinner from 'src/components/Spinner';
 import { useAppThemeContext } from 'src/contexts/AppThemeContext';

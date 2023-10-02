@@ -12,6 +12,7 @@ import { AppThemeProvider } from './contexts/AppThemeContext';
 import { SettingsProvider } from './contexts/SettingsContext';
 import { AccountBalanceProvider } from './contexts/AccountBalanceContext';
 import ModalCustom from './components/Modal/ModalCustom';
+import { LedgerProvider } from './contexts/LedgerContext';
 
 const AppWrapper = styled.div`
   display: block;
@@ -56,22 +57,24 @@ const App = () => (
       <AppThemeProvider>
         <AppWrapper>
           <Content>
-            <ModalProvider>
-              <ModalConsumer>
-                {({ isOpen, title, content, footer, closeModal, roundIcon }) => (
-                  <ModalCustom isOpen={isOpen || false} title={title} footer={footer} onCloseModal={closeModal} roundIcon={roundIcon}>
-                    {content}
-                  </ModalCustom>
-                )}
-              </ModalConsumer>
-              <SettingsProvider>
-                <AccountBalanceProvider>
-                  <CrossChainProvider>
-                    <AppContainer />
-                  </CrossChainProvider>
-                </AccountBalanceProvider>
-              </SettingsProvider>
-            </ModalProvider>
+            <LedgerProvider>
+              <ModalProvider>
+                <ModalConsumer>
+                  {({ isOpen, title, content, footer, closeModal, roundIcon }) => (
+                    <ModalCustom isOpen={isOpen || false} title={title} footer={footer} onCloseModal={closeModal} roundIcon={roundIcon}>
+                      {content}
+                    </ModalCustom>
+                  )}
+                </ModalConsumer>
+                <SettingsProvider>
+                  <AccountBalanceProvider>
+                    <CrossChainProvider>
+                      <AppContainer />
+                    </CrossChainProvider>
+                  </AccountBalanceProvider>
+                </SettingsProvider>
+              </ModalProvider>
+            </LedgerProvider>
           </Content>
         </AppWrapper>
         <ToastWrapper>

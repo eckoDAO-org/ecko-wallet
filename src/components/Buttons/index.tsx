@@ -81,7 +81,7 @@ const Button = (props: Props) => {
   return (
     <ButtonWrapper
       disabled={isDisabled}
-      onClick={onClick}
+      onClick={!isDisabled ? onClick : () => {}}
       size={size}
       color={buttonType.color}
       background={buttonType.background}

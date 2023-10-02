@@ -7,8 +7,10 @@ import { getApiUrl, getSignatureFromHash, fetchLocal, pollRequestKey } from 'src
 import { CONFIG, ECKO_WALLET_SEND_TX_NONCE } from 'src/utils/config';
 import { getFloatPrecision } from 'src/utils/numbers';
 import { toast } from 'react-toastify';
+import { AccountType } from 'src/stores/wallet';
 import { ReactComponent as AlertIconSVG } from 'src/images/icon-alert.svg';
 import Toast from 'src/components/Toast/Toast';
+import { useLedgerContext } from 'src/contexts/LedgerContext';
 import { CrossChainContext } from 'src/contexts/CrossChainContext';
 import { setActiveTab, setRecent } from 'src/stores/extensions';
 import { getLocalActivities, getLocalRecent, setLocalActivities, setLocalRecent } from 'src/utils/storage';
@@ -35,6 +37,7 @@ const PopupConfirm = (props: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const { setCrossChainRequest, getCrossChainRequestsAsync } = useContext(CrossChainContext);
+  const { sendTransaction, sendCrossChainTransaction } = useLedgerContext();
   const history = useHistory();
   const {
     senderName,
@@ -182,12 +185,9 @@ const PopupConfirm = (props: Props) => {
 
   const onSend = async () => {
     if (!isSending) {
-      setIsSending(true);
-      const newCreatedTime = new Date();
-      const createdTime = newCreatedTime.toString();
       const cmd = await getCmd();
       const meta = Pact.lang.mkMeta(senderName, senderChainId.toString(), validGasPrice, validGasLimit, getTimestamp(), CONFIG.X_CHAIN_TTL);
-      const sendCmd: any = Pact.api.prepareExecCmd(
+      let sendCmd: any = Pact.api.prepareExecCmd(
         cmd.keyPairs,
         `"${ECKO_WALLET_SEND_TX_NONCE}-${new Date().toISOString()}"`,
         cmd.pactCode,
@@ -195,11 +195,47 @@ const PopupConfirm = (props: Props) => {
         meta,
         selectedNetwork.networkId,
       );
-      if (senderPrivateKey.length > 64) {
+      setIsSending(true);
+      const newCreatedTime = new Date();
+      const createdTime = newCreatedTime.toString();
+      if (configs?.type === AccountType.LEDGER) {
+        try {
+          const ledgerSendTxParams = {
+            recipient: receiverName,
+            namespace: fungibleToken?.contractAddress !== 'coin' ? fungibleToken?.contractAddress?.split('.')[0] ?? undefined : undefined,
+            module: fungibleToken?.contractAddress !== 'coin' ? fungibleToken?.contractAddress?.split('.')[1] ?? undefined : undefined,
+            amount,
+            chainId: Number(senderChainId),
+            network: selectedNetwork.networkId,
+            gasPrice: humanReadableNumber(gasPrice, 12),
+            gasLimit: gasLimit.toString(),
+            nonce: `${ECKO_WALLET_SEND_TX_NONCE}-${new Date().toISOString()}`,
+          };
+          if (isCrossChain) {
+            const ledgerSignCrosschainRes = await sendCrossChainTransaction({
+              ...ledgerSendTxParams,
+              recipient_chainId: Number(receiverChainId),
+            });
+            console.log('ledgerSignCrosschainRes', ledgerSignCrosschainRes);
+            toast.success(<Toast type="success" content="Ledger Sign Success" />);
+            sendCmd = ledgerSignCrosschainRes?.pact_command;
+          } else {
+            const ledgerSignRes = await sendTransaction(ledgerSendTxParams);
+            console.log('ledgerSignRes', ledgerSignRes);
+            toast.success(<Toast type="success" content="Ledger Sign Success" />);
+            sendCmd = ledgerSignRes?.pact_command;
+          }
+        } catch (error) {
+          toast.error(<Toast type="fail" content="Ledger Sign Failed or Rejected" />);
+          console.log('Ledger Sign Error', error);
+          return;
+        }
+      } else if (senderPrivateKey.length > 64) {
         const signature = getSignatureFromHash(sendCmd.hash, senderPrivateKey);
         const sigs = [{ sig: signature }];
         sendCmd.sigs = sigs;
       }
+
       setIsLoading(true);
       Pact.wallet
         .sendSigned(sendCmd, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, senderChainId))
