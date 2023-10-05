@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { TokenElement } from 'src/pages/Wallet/components/TokenElement';
-import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
+import { DivFlex, SecondaryLabel } from 'src/components';
 import Button from 'src/components/Buttons';
 import { Radio } from 'src/components/Radio';
 import images from 'src/images';
