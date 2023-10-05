@@ -135,7 +135,7 @@ export const createPendingStakeActivity = (stakeResult: StakeResult) => {
   addLocalActivity(stakeResult.request.networkId, stakeResult.request.meta.sender, activity);
 };
 
-export const useUnstake = () => {
+export const useRollupAndUnstake = () => {
   const selectedNetwork = useAppSelector(getSelectedNetwork);
   const { account, publicKey, secretKey } = useCurrentWallet();
 
@@ -143,8 +143,12 @@ export const useUnstake = () => {
     const gasLimit = 10000;
     const gasPrice = 0.000001;
     const parsedAmount = reduceBalance(amount);
-    const pactCode = `(kaddex.staking.unstake "${account}" (read-decimal 'amount))`;
+    const pactCode = `
+      (kaddex.staking.rollup "${account}")
+      (kaddex.staking.unstake "${account}" (read-decimal 'amount))
+    `;
     const payGasCap = Pact.lang.mkCap('gas', 'pay gas', 'coin.GAS');
+    const rollupCap = Pact.lang.mkCap('rollup capability', 'rollup', 'kaddex.staking.ROLLUP', [account]);
     const unwrapRewardsKdxCap = Pact.lang.mkCap('unwrap capability for rewards', 'unwrapping skdx for user', 'kaddex.kdx.UNWRAP', [
       'kaddex.skdx',
       account,
@@ -162,6 +166,7 @@ export const useUnstake = () => {
     ]);
     const caps = [
       payGasCap.cap,
+      rollupCap.cap,
       unwrapRewardsKdxCap.cap,
       unwrapPenaltyKdxCap.cap,
       unstakeCap.cap,
