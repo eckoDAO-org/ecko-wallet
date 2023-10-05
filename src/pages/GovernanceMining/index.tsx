@@ -1,11 +1,17 @@
 import React from 'react';
-import { GovernanceMiningContextProvider } from 'src/contexts/GovernanceMiningContext';
+import { useGovernanceMining } from 'src/contexts/GovernanceMiningContext';
 import GovernanceMiningUI from './UI';
 
-const KDXGovernanceMining = () => (
-  <GovernanceMiningContextProvider>
+const KDXGovernanceMining = () => {
+  const governanceMining = useGovernanceMining();
+
+  React.useEffect(() => {
+    governanceMining.fetch();
+  }, []);
+
+  return (
     <GovernanceMiningUI />
-  </GovernanceMiningContextProvider>
-);
+  );
+};
 
 export default KDXGovernanceMining;

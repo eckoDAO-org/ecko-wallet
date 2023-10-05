@@ -68,9 +68,9 @@ const GovernanceMiningButton = ({ onClick }: GovernanceMiningButtonProps) => {
   };
 
   const triggerClick = () => {
-    onClick?.();
-    history.push('governance-mining');
     setIsAnimating(false);
+    history.push('governance-mining');
+    onClick?.();
   };
 
   return (
