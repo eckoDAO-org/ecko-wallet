@@ -23,7 +23,6 @@ const stakingConfiguration: StakingConfiguration = {
   stage: {
     rewardsPenaltyDaysToWait: 0,
     rewardsPenaltyHoursToWait: 6,
-    // rewardsClaimDaysToWait: () => 0,
     rewardsClaimHoursToWait: 2,
     percentagePenaltyHours: 1,
     dynamicPenaltyDays: 0,
@@ -32,7 +31,6 @@ const stakingConfiguration: StakingConfiguration = {
   development: {
     rewardsPenaltyDaysToWait: 0,
     rewardsPenaltyHoursToWait: 6,
-    // rewardsClaimDaysToWait: () => 0,
     rewardsClaimHoursToWait: 2,
     percentagePenaltyHours: 1,
     dynamicPenaltyDays: 0,
@@ -41,7 +39,6 @@ const stakingConfiguration: StakingConfiguration = {
   mainnet: {
     rewardsPenaltyDaysToWait: 60,
     rewardsPenaltyHoursToWait: 1440,
-    // rewardsClaimDaysToWait: () => (lastRewardsClaim) => 7 - moment().diff(getTimeByBlockchain(lastRewardsClaim), 'days'),
     rewardsClaimHoursToWait: 168,
     percentagePenaltyHours: 72,
     dynamicPenaltyDays: 60,

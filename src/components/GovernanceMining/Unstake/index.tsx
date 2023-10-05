@@ -27,8 +27,8 @@ const UnstakeWizard = ({ unstakeCompleted }: UnstakeWizardProps) => {
     });
   };
 
-  const onAmountConfirmed = async () => {
-    const requestKey = await governanceMining.requestUnstake(state.amount);
+  const onAmountConfirmed = async (withdrawRewards: boolean) => {
+    const requestKey = await governanceMining.requestUnstake(state.amount, withdrawRewards);
 
     if (!requestKey) {
       toast.error(

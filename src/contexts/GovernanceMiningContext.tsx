@@ -10,7 +10,7 @@ export interface GovernanceMiningContextValue {
   poolState: PoolState;
   fetch: () => void;
   requestStake: (amount: number) => Promise<string|undefined>;
-  requestUnstake: (amount: number) => Promise<string|undefined>;
+  requestUnstake: (amount: number, claimRewards: boolean) => Promise<string|undefined>;
 }
 
 const emptyStakeStatus: StakeStatus = {
@@ -122,8 +122,8 @@ export const GovernanceMiningContextProvider: React.FC<GovernanceMiningContextPr
     return requestKey;
   };
 
-  const requestUnstake = async (amount: number) => {
-    const result = await unstake(amount);
+  const requestUnstake = async (amount: number, claimRewards: boolean) => {
+    const result = await unstake(amount, claimRewards);
     const requestKey = result.response.requestKeys[0];
 
     if (!requestKey) {

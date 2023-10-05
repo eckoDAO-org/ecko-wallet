@@ -1,11 +1,6 @@
 import Pact from 'pact-lang-api';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
-import { useAppSelector } from 'src/stores/hooks';
-import { getSelectedNetwork } from 'src/stores/extensions';
-import { payGasCap, useExecCommand, useExecPactWithLocalAccount, usePoolRequestKey } from 'src/hooks/pact';
-import { getTimestamp } from 'src/utils';
-import { getApiUrl } from 'src/utils/chainweb';
-import { CONFIG, ECKO_WALLET_SEND_TX_NONCE } from 'src/utils/config';
+import { ExecCommandResult, payGasCap, useExecCommand, useExecPactWithLocalAccount, usePoolRequestKey } from 'src/hooks/pact';
 import { addLocalActivity } from 'src/utils/storage';
 import { CHAIN_ID } from '../constants';
 import { reduceBalance } from '../helpers/numberUtils';
@@ -46,16 +41,9 @@ export interface StakerInspection {
 
 export const useInspectStaker = () => useExecPactWithLocalAccount<StakerInspection>('(kaddex.staking.inspect-staker "{{ACCOUNT}}")', CHAIN_ID);
 
-export interface StakeResult {
-  request: any;
-  response: any;
-}
-
-export type UnstakeResult = StakeResult;
-
 export const useStake = () => {
   const { account } = useCurrentWallet();
-  const execCommand = useExecCommand<StakeResult>();
+  const execCommand = useExecCommand();
 
   return (amount: number) => {
     const parsedAmount = reduceBalance(amount);
@@ -93,7 +81,7 @@ export const usePoolStakeRequest = () => {
   );
 };
 
-export const createPendingStakeActivity = (stakeResult: StakeResult) => {
+export const createPendingStakeActivity = (stakeResult: ExecCommandResult) => {
   const activity = {
     symbol: 'KDX',
     requestKey: stakeResult.response.requestKeys[0],
@@ -112,15 +100,20 @@ export const createPendingStakeActivity = (stakeResult: StakeResult) => {
 
 export const useRollupAndUnstake = () => {
   const { account } = useCurrentWallet();
-  const execCommand = useExecCommand<UnstakeResult>();
+  const execCommand = useExecCommand();
 
-  return (amount: number) => {
+  return (amount: number, claimRewards: boolean) => {
     const parsedAmount = reduceBalance(amount);
-    const pactCode = `
+    const pactCode = claimRewards ? `
+      (kaddex.staking.rollup "${account}")
+      (kaddex.staking.claim "${account}")
+      (kaddex.staking.unstake "${account}" (read-decimal 'amount))
+    ` : `
       (kaddex.staking.rollup "${account}")
       (kaddex.staking.unstake "${account}" (read-decimal 'amount))
     `;
 
+    const claimCap = Pact.lang.mkCap('claim capability', 'claim', 'kaddex.staking.CLAIM', [account]);
     const rollupCap = Pact.lang.mkCap('rollup capability', 'rollup', 'kaddex.staking.ROLLUP', [account]);
     const unwrapRewardsKdxCap = Pact.lang.mkCap('unwrap capability for rewards', 'unwrapping skdx for user', 'kaddex.kdx.UNWRAP', [
       'kaddex.skdx',
@@ -137,6 +130,7 @@ export const useRollupAndUnstake = () => {
     const unstakeCap = Pact.lang.mkCap('unstake capability', 'unstaking', 'kaddex.staking.UNSTAKE', [
       account,
     ]);
+
     const caps = [
       payGasCap,
       rollupCap,
@@ -144,6 +138,10 @@ export const useRollupAndUnstake = () => {
       unwrapPenaltyKdxCap,
       unstakeCap,
     ];
+
+    if (claimRewards) {
+      caps.push(claimCap);
+    }
 
     const envData = {
       amount: parsedAmount,
@@ -161,7 +159,7 @@ export const usePoolUnstakeRequest = () => {
   );
 };
 
-export const createPendingUnstakeActivity = (unstakeResult: UnstakeResult) => {
+export const createPendingUnstakeActivity = (unstakeResult: ExecCommandResult) => {
   const activity = {
     symbol: 'KDX',
     requestKey: unstakeResult.response.requestKeys[0],

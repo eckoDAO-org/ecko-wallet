@@ -67,7 +67,7 @@ export interface Command {
   networkId: string;
   payload: {
     exec: {
-      data: object;
+      data: Record<string, any>;
       code: string;
     }
   };
@@ -83,9 +83,16 @@ export interface Command {
   nonce: string;
 }
 
+export interface ExecCommandResult {
+  request: Command;
+  response: {
+    requestKeys: string[]
+  };
+}
+
 export const payGasCap: Capability = Pact.lang.mkCap('gas', 'pay gas', 'coin.GAS');
 
-export const useExecCommand = <Response = any> () => {
+export const useExecCommand = () => {
   const selectedNetwork = useAppSelector(getSelectedNetwork);
   const { account, publicKey, secretKey } = useCurrentWallet();
 
@@ -117,7 +124,7 @@ export const useExecCommand = <Response = any> () => {
 
     return {
       request: parsedCmd as Command,
-      response: response as Response,
-    };
+      response,
+    } as ExecCommandResult;
   };
 };
