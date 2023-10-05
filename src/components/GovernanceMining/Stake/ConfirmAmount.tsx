@@ -14,12 +14,12 @@ interface ConfirmModalProps {
 const Subtitle = styled(SecondaryLabel)`
   text-transform: uppercase;
   color: #A0A6AA;
-  fontWeight: bold;
+  font-weight: bold;
 `;
 
 const Description = styled(SecondaryLabel)`
-  fontWeight: 300;
-  fontSize: 14px;
+  font-weight: 300;
+  font-size: 14px;
   padding-bottom: 24px;
   border-bottom: 1px solid ${({ theme }) => theme.border};
 `;

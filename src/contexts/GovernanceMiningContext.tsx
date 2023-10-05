@@ -1,7 +1,7 @@
 import React, { createContext, useContext } from 'react';
 // import { useGetLastDayData } from 'src/components/GovernanceMining/api/analytics';
 import { useGetAccountData } from 'src/components/GovernanceMining/api/kaddex.dao';
-import { StakerInspection, createPendingStakeActivity, useInspectStaker, useStake } from 'src/components/GovernanceMining/api/kaddex.staking';
+import { StakerInspection, createPendingStakeActivity, createPendingUnstakeActivity, useInspectStaker, useStake, useUnstake } from 'src/components/GovernanceMining/api/kaddex.staking';
 import { PoolState, StakeRewards, StakeStatus } from 'src/components/GovernanceMining/types';
 import { getTimeByBlockchain } from 'src/components/GovernanceMining/helpers/stringUtils';
 
@@ -10,6 +10,7 @@ export interface GovernanceMiningContextValue {
   poolState: PoolState;
   fetch: () => void;
   requestStake: (amount: number) => Promise<string|undefined>;
+  requestUnstake: (amount: number) => Promise<string|undefined>;
 }
 
 const emptyStakeStatus: StakeStatus = {
@@ -35,6 +36,7 @@ const defaultStatGovernanceMiningValue: GovernanceMiningContextValue = {
   poolState: emptyPoolState,
   fetch: () => {},
   requestStake: async () => undefined,
+  requestUnstake: async () => undefined,
 };
 
 const GovernanceMiningContext = createContext<GovernanceMiningContextValue>(defaultStatGovernanceMiningValue);
@@ -53,6 +55,7 @@ export const GovernanceMiningContextProvider: React.FC<GovernanceMiningContextPr
   const getAccountData = useGetAccountData();
   const inspectStaker = useInspectStaker();
   const stake = useStake();
+  const unstake = useUnstake();
   // const getLastDayData = useGetLastDayData();
 
   const getStakeStatus = () => {
@@ -119,11 +122,25 @@ export const GovernanceMiningContextProvider: React.FC<GovernanceMiningContextPr
     return requestKey;
   };
 
+  const requestUnstake = async (amount: number) => {
+    const result = await unstake(amount);
+    const requestKey = result.response.requestKeys[0];
+
+    if (!requestKey) {
+      return undefined;
+    }
+
+    createPendingUnstakeActivity(result);
+
+    return requestKey;
+  };
+
   const contextValue: GovernanceMiningContextValue = {
     stakeStatus,
     poolState,
     fetch,
     requestStake,
+    requestUnstake,
   };
 
   React.useEffect(() => {

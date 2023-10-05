@@ -5,6 +5,7 @@ import Button from 'src/components/Buttons';
 import images from 'src/images';
 import { useModalContext } from 'src/contexts/ModalContext';
 import Stake from './Stake';
+import Unstake from './Unstake';
 
 const LabelContainer = styled.div`
   display: flex;
@@ -30,6 +31,13 @@ const Staking = () => {
     });
   };
 
+  const openUnstakeModal = () => {
+    openModal({
+      title: 'Unstake',
+      content: <Unstake unstakeCompleted={closeModal} />,
+    });
+  };
+
   return (
     <DivFlex gap="16px" style={{ width: '100%' }}>
       <Button
@@ -51,6 +59,7 @@ const Staking = () => {
         }
         variant="secondary"
         size="full"
+        onClick={openUnstakeModal}
       />
     </DivFlex>
   );

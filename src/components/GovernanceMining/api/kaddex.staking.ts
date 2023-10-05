@@ -51,6 +51,8 @@ export interface StakeResult {
   response: any;
 }
 
+export type UnstakeResult = StakeResult;
+
 export const useStake = () => {
   const selectedNetwork = useAppSelector(getSelectedNetwork);
   const { account, publicKey, secretKey } = useCurrentWallet();
@@ -131,4 +133,86 @@ export const createPendingStakeActivity = (stakeResult: StakeResult) => {
   };
 
   addLocalActivity(stakeResult.request.networkId, stakeResult.request.meta.sender, activity);
+};
+
+export const useUnstake = () => {
+  const selectedNetwork = useAppSelector(getSelectedNetwork);
+  const { account, publicKey, secretKey } = useCurrentWallet();
+
+  return async (amount: number) => {
+    const gasLimit = 10000;
+    const gasPrice = 0.000001;
+    const parsedAmount = reduceBalance(amount);
+    const pactCode = `(kaddex.staking.unstake "${account}" (read-decimal 'amount))`;
+    const payGasCap = Pact.lang.mkCap('gas', 'pay gas', 'coin.GAS');
+    const unwrapRewardsKdxCap = Pact.lang.mkCap('unwrap capability for rewards', 'unwrapping skdx for user', 'kaddex.kdx.UNWRAP', [
+      'kaddex.skdx',
+      account,
+      account,
+      parsedAmount,
+    ]);
+    const unwrapPenaltyKdxCap = Pact.lang.mkCap('unwrap capability for penalty', 'unwrapping skdx for penalty', 'kaddex.kdx.UNWRAP', [
+      'kaddex.skdx',
+      account,
+      'kdx-staking',
+      parsedAmount,
+    ]);
+    const unstakeCap = Pact.lang.mkCap('unstake capability', 'unstaking', 'kaddex.staking.UNSTAKE', [
+      account,
+    ]);
+    const caps = [
+      payGasCap.cap,
+      unwrapRewardsKdxCap.cap,
+      unwrapPenaltyKdxCap.cap,
+      unstakeCap.cap,
+    ];
+    const envData = {
+      amount: parsedAmount,
+    };
+    const meta = Pact.lang.mkMeta(account, CHAIN_ID, gasPrice, gasLimit, getTimestamp(), CONFIG.X_CHAIN_TTL);
+    const nonce = `"${ECKO_WALLET_SEND_TX_NONCE}-${new Date().toISOString()}"`;
+    const keyPairs = {
+      publicKey,
+      secretKey,
+      clist: caps,
+    };
+
+    const cmd = Pact.api.prepareExecCmd(
+      keyPairs,
+      nonce,
+      pactCode,
+      envData,
+      meta,
+      selectedNetwork.networkId,
+    );
+
+    const url = getApiUrl(selectedNetwork.url, selectedNetwork.networkId, CHAIN_ID);
+
+    const response = await Pact.wallet.sendSigned(cmd, url);
+    const parsedCmd = JSON.parse(cmd.cmd);
+
+    return {
+      request: parsedCmd,
+      response,
+    } as UnstakeResult;
+  };
+};
+
+export const usePoolUnstakeRequest = usePoolStakeRequest;
+
+export const createPendingUnstakeActivity = (unstakeResult: UnstakeResult) => {
+  const activity = {
+    symbol: 'KDX',
+    requestKey: unstakeResult.response.requestKeys[0],
+    senderChainId: CHAIN_ID,
+    receiverChainId: CHAIN_ID,
+    receiver: 'Unstake KDX',
+    createdTime: (new Date(unstakeResult.request.meta.creationTime * 1000)).toString(),
+    amount: unstakeResult.request.payload.exec.data.amount,
+    gasPrice: unstakeResult.request.meta.gasPrice,
+    sender: unstakeResult.request.meta.sender,
+    status: 'pending',
+  };
+
+  addLocalActivity(unstakeResult.request.networkId, unstakeResult.request.meta.sender, activity);
 };
