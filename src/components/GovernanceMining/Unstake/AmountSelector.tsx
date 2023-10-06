@@ -9,7 +9,6 @@ interface AmountSelectorProps {
 const AmountSelector = ({ onAmountSelected }: AmountSelectorProps) => {
   const governanceMining = useGovernanceMining();
   const { rewards, stakedTokens: unstakeableKdx } = governanceMining.stakeStatus;
-  console.log(governanceMining.stakeStatus);
 
   return (
     <AmountSelectorView
