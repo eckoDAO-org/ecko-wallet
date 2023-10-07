@@ -21,7 +21,7 @@ const AmountSelector = ({ onAmountSelected }: AmountSelectorProps) => {
       balance={unstakeableKdx}
       hasPositionPenalty={hasPositionPenalty}
       positionPenaltyPercentage={STAKING_CONSTANTS.percentagePenalty}
-      waitingTime={hoursToWait}
+      waitingHours={hoursToWait}
       onStake={onAmountSelected}
     />
   );

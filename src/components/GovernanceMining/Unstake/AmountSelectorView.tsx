@@ -17,13 +17,13 @@ const PenaltyLabel = styled(SecondaryLabel)`
 interface UnstakeViewProps extends StakeViewProps {
   hasPositionPenalty: boolean;
   positionPenaltyPercentage: number;
-  waitingTime: number;
+  waitingHours: number;
 }
 
 const AmountSelectorView = ({
   hasPositionPenalty,
   positionPenaltyPercentage,
-  waitingTime,
+  waitingHours,
   ...props
 }: UnstakeViewProps) => (
   <StakeView {...props}>
@@ -34,7 +34,7 @@ const AmountSelectorView = ({
         </SecondaryLabel>
 
         <PenaltyLabel>
-          {positionPenaltyPercentage}% - {waitingTime} left
+          {positionPenaltyPercentage}% - {waitingHours} hours left
         </PenaltyLabel>
       </PenaltyContainer>
     )}
