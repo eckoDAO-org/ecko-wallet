@@ -4,6 +4,7 @@ import { useAccountBalanceContext } from 'src/contexts/AccountBalanceContext';
 import { useGovernanceMining } from 'src/contexts/GovernanceMiningContext';
 import { useStakingConstants } from '../constants/staking';
 import ConfirmAmountView from './ConfirmAmountView';
+import { reduceBalance } from '../helpers/numberUtils';
 
 interface ConfirmAmountProps {
   amount: number;
@@ -18,10 +19,14 @@ const ConfirmAmount = ({ amount, onConfirm }: ConfirmAmountProps) => {
 
   const { stakeStatus } = governanceMining;
   const { rewards } = stakeStatus;
+
   const positionPenaltyHoursToWait = STAKING_CONSTANTS.percentagePenaltyHours - moment().diff(rewards.lastStakeDate, 'hours');
   const hasPositionPenalty = positionPenaltyHoursToWait > 0;
+  const positionPenalty = reduceBalance((amount * STAKING_CONSTANTS.percentagePenalty) / 100);
+
   const hasRewardPenalty = rewards.rewardPenaltyTokens > 0;
-  const rewardPenaltyPercentage = (rewards.rewardPenaltyTokens / rewards.collectedTokens) * 100;
+  const rewardPenaltyPercentage = +((rewards.rewardPenaltyTokens / rewards.collectedTokens) * 100).toFixed(2);
+
   const estimateUSDAmount = (usdPrices?.['kaddex.kdx'] || 0) * amount;
 
   const handleConfirm = (withdrawRewards: boolean) => {
@@ -33,7 +38,7 @@ const ConfirmAmount = ({ amount, onConfirm }: ConfirmAmountProps) => {
     <ConfirmAmountView
       amount={amount}
       hasPositionPenalty={hasPositionPenalty}
-      positionPenalty={stakeStatus.positionPenaltyTokens}
+      positionPenalty={positionPenalty}
       positionPenaltyPercentage={STAKING_CONSTANTS.percentagePenalty}
       hasRewardPenalty={hasRewardPenalty}
       rewardPenalty={rewards.rewardPenaltyTokens}

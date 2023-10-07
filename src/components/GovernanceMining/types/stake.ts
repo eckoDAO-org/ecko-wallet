@@ -3,7 +3,6 @@ export interface StakeStatus {
   pendingTokens: number;
   rewards: StakeRewards;
   votingPower: number;
-  positionPenaltyTokens: number;
 }
 
 export interface StakeRewards {

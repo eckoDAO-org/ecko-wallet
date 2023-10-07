@@ -26,7 +26,6 @@ const emptyStakeStatus: StakeStatus = {
     lastClaimDate: '',
   },
   votingPower: 0,
-  positionPenaltyTokens: 0,
 };
 
 const emptyPoolState: PoolState = {
@@ -85,7 +84,6 @@ export const GovernanceMiningContextProvider: React.FC<GovernanceMiningContextPr
       pendingTokens: stakerInspection['stake-record']['pending-add'],
       rewards,
       votingPower: accountData.vp,
-      positionPenaltyTokens: stakerInspection['unstake-penalty'],
     };
 
     setStakeStatus(newStakeStatus);
