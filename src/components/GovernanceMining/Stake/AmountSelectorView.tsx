@@ -6,11 +6,11 @@ import CryptoAmountSelector from 'src/components/CryptoAmountSelector';
 import Button from 'src/components/Buttons';
 import { DivFlex } from 'src/components';
 
-export const Container = styled.div`
+const Container = styled.div`
   margin: 24px;
 `;
 
-export const kda: IFungibleToken = {
+const kda: IFungibleToken = {
   contractAddress: 'kaddex.kdx',
   symbol: 'KDX',
 };
@@ -20,7 +20,7 @@ export interface StakeViewProps {
   onStake: (amount: number) => void,
 }
 
-export interface FormValues {
+interface FormValues {
   amount: string;
 }
 
