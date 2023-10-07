@@ -16,7 +16,7 @@ const Details = () => {
     <DetailsView
       collected={rewards.collectedTokens}
       effectiveStartDate={rewards.effectiveStartDate}
-      rewardPenalty={rewards.penaltyTokens}
+      rewardPenalty={rewards.rewardPenaltyTokens}
       votingPower={votingPower}
     />
   );

@@ -5,7 +5,6 @@ import { IFungibleToken } from 'src/pages/ImportToken';
 import CryptoAmountSelector from 'src/components/CryptoAmountSelector';
 import Button from 'src/components/Buttons';
 import { DivFlex, SecondaryLabel } from 'src/components';
-import { getWaitingTimeRewardsPenalty } from '../Details/Details';
 
 const Container = styled.div`
   margin: 24px;
@@ -29,8 +28,9 @@ const kda: IFungibleToken = {
 
 interface StakeViewProps {
   balance: number;
-  effectiveStartDate: string;
-  rewardsPenalty: number;
+  hasPositionPenalty: boolean;
+  positionPenaltyPercentage: number;
+  waitingTime: number;
   onStake: (amount: number) => void,
 }
 
@@ -38,19 +38,20 @@ interface FormValues {
   amount: string;
 }
 
-const AmountSelectorView = ({ balance, effectiveStartDate, rewardsPenalty, onStake }: StakeViewProps) => {
+const AmountSelectorView = ({
+  balance,
+  hasPositionPenalty,
+  positionPenaltyPercentage,
+  waitingTime,
+  onStake,
+}: StakeViewProps) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
-    getValues,
     clearErrors,
   } = useForm<FormValues>();
-
-  const [hasPenalty, waitingTime] = getWaitingTimeRewardsPenalty(effectiveStartDate);
-  const amount = parseFloat(getValues('amount')) || 0;
-  const penaltyPercentual = amount ? (rewardsPenalty / amount) * 100 : 0;
 
   const onSubmit = handleSubmit((data) => {
     onStake(+data.amount);
@@ -69,14 +70,14 @@ const AmountSelectorView = ({ balance, effectiveStartDate, rewardsPenalty, onSta
           readOnly={false}
         />
 
-        {!hasPenalty && (
+        {hasPositionPenalty && (
           <PenaltyContainer>
             <SecondaryLabel uppercase fontWeight={700} style={{ flex: 1 }}>
-              Amount to send
+              Position Penalty
             </SecondaryLabel>
 
             <PenaltyLabel>
-              {penaltyPercentual}% - {waitingTime} left
+              {positionPenaltyPercentage}% - {waitingTime} left
             </PenaltyLabel>
           </PenaltyContainer>
         )}

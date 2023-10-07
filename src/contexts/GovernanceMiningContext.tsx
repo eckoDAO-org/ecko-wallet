@@ -19,11 +19,13 @@ const emptyStakeStatus: StakeStatus = {
   pendingTokens: 0,
   rewards: {
     collectedTokens: 0,
+    lastStakeDate: '',
     effectiveStartDate: '',
-    penaltyTokens: 0,
+    rewardPenaltyTokens: 0,
     canClaim: false,
   },
   votingPower: 0,
+  positionPenaltyTokens: 0,
 };
 
 const emptyPoolState: PoolState = {
@@ -70,8 +72,9 @@ export const GovernanceMiningContextProvider: React.FC<GovernanceMiningContextPr
 
     const rewards: StakeRewards = {
       collectedTokens: stakerInspection['reward-accrued'],
+      lastStakeDate: getTimeByBlockchain(stakerInspection['stake-record']['last-stake']),
       effectiveStartDate: getTimeByBlockchain(stakerInspection['stake-record']['effective-start']),
-      penaltyTokens: stakerInspection['reward-penalty'],
+      rewardPenaltyTokens: stakerInspection['reward-penalty'],
       canClaim: stakerInspection['can-claim'],
     };
 
@@ -80,6 +83,7 @@ export const GovernanceMiningContextProvider: React.FC<GovernanceMiningContextPr
       pendingTokens: stakerInspection['stake-record']['pending-add'],
       rewards,
       votingPower: accountData.vp,
+      positionPenaltyTokens: stakerInspection['unstake-penalty'],
     };
 
     setStakeStatus(newStakeStatus);

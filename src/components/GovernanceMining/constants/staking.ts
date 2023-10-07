@@ -10,9 +10,9 @@ export const useStakingConstants = () => {
 type StakingEnvConfiguration = {
   rewardsPenaltyDaysToWait: number;
   rewardsPenaltyHoursToWait: number;
-  // rewardsClaimDaysToWait: () => number;
   rewardsClaimHoursToWait: number;
   percentagePenaltyHours: number;
+  percentagePenalty: number,
   dynamicPenaltyDays: number;
   maxPowerVoting: number;
 };
@@ -25,6 +25,7 @@ const stakingConfiguration: StakingConfiguration = {
     rewardsPenaltyHoursToWait: 6,
     rewardsClaimHoursToWait: 2,
     percentagePenaltyHours: 1,
+    percentagePenalty: 3,
     dynamicPenaltyDays: 0,
     maxPowerVoting: 2.5,
   },
@@ -33,6 +34,7 @@ const stakingConfiguration: StakingConfiguration = {
     rewardsPenaltyHoursToWait: 6,
     rewardsClaimHoursToWait: 2,
     percentagePenaltyHours: 1,
+    percentagePenalty: 3,
     dynamicPenaltyDays: 0,
     maxPowerVoting: 2.5,
   },
@@ -41,6 +43,7 @@ const stakingConfiguration: StakingConfiguration = {
     rewardsPenaltyHoursToWait: 1440,
     rewardsClaimHoursToWait: 168,
     percentagePenaltyHours: 72,
+    percentagePenalty: 3,
     dynamicPenaltyDays: 60,
     maxPowerVoting: 2.5,
   },

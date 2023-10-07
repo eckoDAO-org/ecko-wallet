@@ -14,7 +14,12 @@ import {
 
 interface ConfirmAmountViewProps {
   amount: number;
+  hasPositionPenalty: boolean;
+  positionPenalty: number;
+  positionPenaltyPercentage: number;
+  hasRewardPenalty: boolean;
   rewardPenalty: number;
+  rewardPenaltyPercentage: number;
   usdAmount: number;
   isLoading: boolean;
   onConfirm: (withdraw: boolean) => void;
@@ -39,7 +44,12 @@ const Separator = styled.div`
 
 const ConfirmAmount = ({
   amount,
+  hasPositionPenalty,
+  positionPenalty,
+  positionPenaltyPercentage,
+  hasRewardPenalty,
   rewardPenalty,
+  rewardPenaltyPercentage,
   usdAmount,
   isLoading = false,
   onConfirm,
@@ -57,11 +67,11 @@ const ConfirmAmount = ({
 
     <DivFlex flexDirection="column" padding="24px" paddingTop="0px" gap="8px">
       <Subtitle>
-        Closing your staking plan {rewardPenalty ? 'early' : ''}
+        Closing your staking plan {hasPositionPenalty ? 'early' : ''}
       </Subtitle>
 
       <Description>
-        {rewardPenalty ? (
+        {(hasPositionPenalty) ? (
           'Removing KDX from your staking amount will incur a penalty of 3% of the unstaked amount.' +
           'All the KDX penalties are going to be burnt in order to reduce the overall supply.'
         ) : (
@@ -71,10 +81,16 @@ const ConfirmAmount = ({
       </Description>
 
       <DetailsContainer>
-        {!!rewardPenalty && (
+        {(hasPositionPenalty) && (
           <>
             <DetailsKey>Position penalty</DetailsKey>
-            <DetailsValue>3%</DetailsValue>
+            <DetailsValue>{positionPenaltyPercentage}%</DetailsValue>
+          </>
+        )}
+        {(withdraw && hasRewardPenalty) && (
+          <>
+            <DetailsKey>Rewards penalty</DetailsKey>
+            <DetailsValue>{rewardPenaltyPercentage}%</DetailsValue>
           </>
         )}
         <DetailsKey>Amount</DetailsKey>
@@ -94,12 +110,20 @@ const ConfirmAmount = ({
         logo={images.wallet.tokens['kaddex.kdx']}
       />
 
-      {!!rewardPenalty && (
-        <DetailsContainer>
-          <DetailsKey>Position penalty</DetailsKey>
-          <DetailsStatusValue error>{rewardPenalty} KDX</DetailsStatusValue>
-        </DetailsContainer>
-      )}
+      <DetailsContainer>
+        {hasPositionPenalty && (
+          <>
+            <DetailsKey>Position penalty</DetailsKey>
+            <DetailsStatusValue error>{positionPenalty} KDX</DetailsStatusValue>
+          </>
+        )}
+        {(withdraw && hasRewardPenalty) && (
+          <>
+            <DetailsKey>Rewards penalty</DetailsKey>
+            <DetailsStatusValue error>{rewardPenalty} KDX</DetailsStatusValue>
+          </>
+        )}
+      </DetailsContainer>
 
       <Radio
         onClick={toggleWithdraw}

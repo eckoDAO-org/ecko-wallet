@@ -34,7 +34,7 @@ const Details = ({ collected, effectiveStartDate, rewardPenalty, votingPower }: 
   );
 };
 
-export const getWaitingTimeRewardsPenalty = (effectiveStartDate: string) => {
+export const getWaitingTimeRewardsPenalty = (effectiveStartDate: string): [boolean, string] => {
   const STAKING_CONSTANTS = useStakingConstants();
 
   const daysToWait = STAKING_CONSTANTS.rewardsPenaltyDaysToWait - moment().diff(effectiveStartDate, 'days');
