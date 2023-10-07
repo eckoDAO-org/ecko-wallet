@@ -15,6 +15,7 @@ type StakingEnvConfiguration = {
   percentagePenalty: number,
   dynamicPenaltyDays: number;
   maxPowerVoting: number;
+  withdrawDaysToWaitFromLastClaim: number;
 };
 
 type StakingConfiguration = Record<string, StakingEnvConfiguration>;
@@ -28,6 +29,7 @@ const stakingConfiguration: StakingConfiguration = {
     percentagePenalty: 3,
     dynamicPenaltyDays: 0,
     maxPowerVoting: 2.5,
+    withdrawDaysToWaitFromLastClaim: 7,
   },
   development: {
     rewardsPenaltyDaysToWait: 0,
@@ -37,6 +39,7 @@ const stakingConfiguration: StakingConfiguration = {
     percentagePenalty: 3,
     dynamicPenaltyDays: 0,
     maxPowerVoting: 2.5,
+    withdrawDaysToWaitFromLastClaim: 7,
   },
   mainnet: {
     rewardsPenaltyDaysToWait: 60,
@@ -46,5 +49,6 @@ const stakingConfiguration: StakingConfiguration = {
     percentagePenalty: 3,
     dynamicPenaltyDays: 60,
     maxPowerVoting: 2.5,
+    withdrawDaysToWaitFromLastClaim: 7,
   },
 };

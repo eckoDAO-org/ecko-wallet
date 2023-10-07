@@ -12,4 +12,5 @@ export interface StakeRewards {
   effectiveStartDate: string;
   rewardPenaltyTokens: number;
   canClaim: boolean;
+  lastClaimDate: string;
 }

@@ -23,6 +23,7 @@ const emptyStakeStatus: StakeStatus = {
     effectiveStartDate: '',
     rewardPenaltyTokens: 0,
     canClaim: false,
+    lastClaimDate: '',
   },
   votingPower: 0,
   positionPenaltyTokens: 0,
@@ -76,6 +77,7 @@ export const GovernanceMiningContextProvider: React.FC<GovernanceMiningContextPr
       effectiveStartDate: getTimeByBlockchain(stakerInspection['stake-record']['effective-start']),
       rewardPenaltyTokens: stakerInspection['reward-penalty'],
       canClaim: stakerInspection['can-claim'],
+      lastClaimDate: getTimeByBlockchain(stakerInspection['stake-record']['last-claim']),
     };
 
     const newStakeStatus: StakeStatus = {
