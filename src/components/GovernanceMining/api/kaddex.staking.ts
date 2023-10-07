@@ -175,3 +175,51 @@ export const createPendingUnstakeActivity = (unstakeResult: ExecCommandResult) =
 
   addLocalActivity(unstakeResult.request.networkId, unstakeResult.request.meta.sender, activity);
 };
+
+export const useClaim = () => {
+  const { account } = useCurrentWallet();
+  const execCommand = useExecCommand();
+
+  return () => {
+    const pactCode = `
+      (kaddex.staking.rollup "${account}")
+      (kaddex.staking.claim "${account}")
+    `;
+
+    const claimCap = Pact.lang.mkCap('claim capability', 'claim', 'kaddex.staking.CLAIM', [account]);
+    const rollupCap = Pact.lang.mkCap('rollup capability', 'rollup', 'kaddex.staking.ROLLUP', [account]);
+
+    const caps = [
+      payGasCap,
+      rollupCap,
+      claimCap,
+    ];
+
+    return execCommand(pactCode, CHAIN_ID, caps);
+  };
+};
+
+export const usePoolClaimRequest = () => {
+  const poolRequestKey = usePoolRequestKey<boolean>();
+
+  return (requestKey: string) => (
+    poolRequestKey(requestKey, CHAIN_ID)
+  );
+};
+
+export const createPendingClaimActivity = (unstakeResult: ExecCommandResult) => {
+  const activity = {
+    symbol: 'KDX',
+    requestKey: unstakeResult.response.requestKeys[0],
+    senderChainId: CHAIN_ID,
+    receiverChainId: CHAIN_ID,
+    receiver: 'Claim KDX',
+    createdTime: (new Date(unstakeResult.request.meta.creationTime * 1000)).toString(),
+    amount: 0,
+    gasPrice: unstakeResult.request.meta.gasPrice,
+    sender: unstakeResult.request.meta.sender,
+    status: 'pending',
+  };
+
+  addLocalActivity(unstakeResult.request.networkId, unstakeResult.request.meta.sender, activity);
+};

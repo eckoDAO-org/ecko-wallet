@@ -9,4 +9,5 @@ export interface StakeRewards {
   collectedTokens: number;
   effectiveStartDate: string;
   penaltyTokens: number;
+  canClaim: boolean;
 }
