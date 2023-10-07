@@ -6,25 +6,25 @@ import CryptoAmountSelector from 'src/components/CryptoAmountSelector';
 import Button from 'src/components/Buttons';
 import { DivFlex } from 'src/components';
 
-const Container = styled.div`
+export const Container = styled.div`
   margin: 24px;
 `;
 
-const kda: IFungibleToken = {
+export const kda: IFungibleToken = {
   contractAddress: 'kaddex.kdx',
   symbol: 'KDX',
 };
 
-interface StakeViewProps {
+export interface StakeViewProps {
   balance: number;
   onStake: (amount: number) => void,
 }
 
-interface FormValues {
+export interface FormValues {
   amount: string;
 }
 
-const AmountSelectorView = ({ balance, onStake }: StakeViewProps) => {
+const AmountSelectorView = ({ balance, children, onStake }: React.PropsWithChildren<StakeViewProps>) => {
   const {
     register,
     handleSubmit,
@@ -39,7 +39,7 @@ const AmountSelectorView = ({ balance, onStake }: StakeViewProps) => {
 
   return (
     <Container>
-      <form onSubmit={onSubmit} id="stake" noValidate>
+      <form onSubmit={onSubmit} noValidate>
         <CryptoAmountSelector
           fungibleToken={kda}
           tokenBalance={balance}
@@ -50,8 +50,10 @@ const AmountSelectorView = ({ balance, onStake }: StakeViewProps) => {
           readOnly={false}
         />
 
+        {children}
+
         <DivFlex justifyContent="center" padding="4px" paddingTop="32px">
-          <Button form="stake" label="Stake" size="full" />
+          <Button label="Stake" size="full" />
         </DivFlex>
       </form>
     </Container>
