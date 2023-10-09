@@ -3,7 +3,7 @@ import { getSelectedNetwork } from 'src/stores/extensions';
 import { useAppSelector } from 'src/stores/hooks';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import { getTimestamp } from 'src/utils';
-import { fetchLocal, getApiUrl, pollRequestKey } from 'src/utils/chainweb';
+import { fetchLocal, getApiUrl, getSignatureFromHash, pollRequestKey } from 'src/utils/chainweb';
 import { CONFIG, ECKO_WALLET_SEND_TX_NONCE } from 'src/utils/config';
 
 export type ResponseWrapper <Response = any> = {
@@ -102,11 +102,14 @@ export const useExecCommand = () => {
     const caps = capabilities.map((cap) => cap.cap);
     const meta = Pact.lang.mkMeta(account, CHAIN_ID, gasPrice, gasLimit, getTimestamp(), CONFIG.X_CHAIN_TTL);
     const nonce = `"${ECKO_WALLET_SEND_TX_NONCE}-${new Date().toISOString()}"`;
-    const keyPairs = {
+    const keyPairs: Record<string, any> = {
       publicKey,
-      secretKey,
       clist: caps,
     };
+
+    if (secretKey.length === 64) {
+      keyPairs.secretKey = secretKey;
+    }
 
     const cmd = Pact.api.prepareExecCmd(
       keyPairs,
@@ -116,6 +119,11 @@ export const useExecCommand = () => {
       meta,
       selectedNetwork.networkId,
     );
+
+    if (secretKey.length > 64) {
+      const signature = getSignatureFromHash(cmd.hash, secretKey);
+      cmd.sigs = [{ sig: signature }];
+    }
 
     const url = getApiUrl(selectedNetwork.url, selectedNetwork.networkId, CHAIN_ID);
 

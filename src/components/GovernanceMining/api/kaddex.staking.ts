@@ -2,7 +2,7 @@ import Pact from 'pact-lang-api';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import { ExecCommandResult, payGasCap, useExecCommand, useExecPactWithLocalAccount, usePoolRequestKey } from 'src/hooks/pact';
 import { addLocalActivity } from 'src/utils/storage';
-import { CHAIN_ID } from '../constants';
+import { useStakingConstants } from '../constants/staking';
 import { reduceBalance } from '../helpers/numberUtils';
 
 export interface TimestampP {
@@ -39,11 +39,15 @@ export interface StakerInspection {
   'current-time': TimestampP;
 }
 
-export const useInspectStaker = () => useExecPactWithLocalAccount<StakerInspection>('(kaddex.staking.inspect-staker "{{ACCOUNT}}")', CHAIN_ID);
+export const useInspectStaker = () => {
+  const { chainId } = useStakingConstants();
+  return useExecPactWithLocalAccount<StakerInspection>('(kaddex.staking.inspect-staker "{{ACCOUNT}}")', chainId);
+};
 
 export const useStake = () => {
   const { account } = useCurrentWallet();
   const execCommand = useExecCommand();
+  const { chainId } = useStakingConstants();
 
   return (amount: number) => {
     const parsedAmount = reduceBalance(amount);
@@ -69,38 +73,44 @@ export const useStake = () => {
       amount: parsedAmount,
     };
 
-    return execCommand(pactCode, CHAIN_ID, caps, envData);
+    return execCommand(pactCode, chainId, caps, envData);
   };
 };
 
 export const usePoolStakeRequest = () => {
   const poolRequestKey = usePoolRequestKey<string>();
+  const STAKING_CONSTANTS = useStakingConstants();
 
   return (requestKey: string) => (
-    poolRequestKey(requestKey, CHAIN_ID)
+    poolRequestKey(requestKey, STAKING_CONSTANTS.chainId)
   );
 };
 
-export const createPendingStakeActivity = (stakeResult: ExecCommandResult) => {
-  const activity = {
-    symbol: 'KDX',
-    requestKey: stakeResult.response.requestKeys[0],
-    senderChainId: CHAIN_ID,
-    receiverChainId: CHAIN_ID,
-    receiver: 'Stake KDX',
-    createdTime: (new Date(stakeResult.request.meta.creationTime * 1000)).toString(),
-    amount: stakeResult.request.payload.exec.data.amount,
-    gasPrice: stakeResult.request.meta.gasPrice,
-    sender: stakeResult.request.meta.sender,
-    status: 'pending',
-  };
+export const useCreatePendingStakeActivity = () => {
+  const { chainId } = useStakingConstants();
 
-  addLocalActivity(stakeResult.request.networkId, stakeResult.request.meta.sender, activity);
+  return (stakeResult: ExecCommandResult) => {
+    const activity = {
+      symbol: 'KDX',
+      requestKey: stakeResult.response.requestKeys[0],
+      senderChainId: chainId,
+      receiverChainId: chainId,
+      receiver: 'Stake KDX',
+      createdTime: (new Date(stakeResult.request.meta.creationTime * 1000)).toString(),
+      amount: stakeResult.request.payload.exec.data.amount,
+      gasPrice: stakeResult.request.meta.gasPrice,
+      sender: stakeResult.request.meta.sender,
+      status: 'pending',
+    };
+
+    addLocalActivity(stakeResult.request.networkId, stakeResult.request.meta.sender, activity);
+  };
 };
 
 export const useRollupAndUnstake = () => {
   const { account } = useCurrentWallet();
   const execCommand = useExecCommand();
+  const { chainId } = useStakingConstants();
 
   return (amount: number, claimRewards: boolean) => {
     const parsedAmount = reduceBalance(amount);
@@ -147,38 +157,44 @@ export const useRollupAndUnstake = () => {
       amount: parsedAmount,
     };
 
-    return execCommand(pactCode, CHAIN_ID, caps, envData);
+    return execCommand(pactCode, chainId, caps, envData);
   };
 };
 
 export const usePoolUnstakeRequest = () => {
   const poolRequestKey = usePoolRequestKey<boolean>();
+  const { chainId } = useStakingConstants();
 
   return (requestKey: string) => (
-    poolRequestKey(requestKey, CHAIN_ID)
+    poolRequestKey(requestKey, chainId)
   );
 };
 
-export const createPendingUnstakeActivity = (unstakeResult: ExecCommandResult) => {
-  const activity = {
-    symbol: 'KDX',
-    requestKey: unstakeResult.response.requestKeys[0],
-    senderChainId: CHAIN_ID,
-    receiverChainId: CHAIN_ID,
-    receiver: 'Unstake KDX',
-    createdTime: (new Date(unstakeResult.request.meta.creationTime * 1000)).toString(),
-    amount: unstakeResult.request.payload.exec.data.amount,
-    gasPrice: unstakeResult.request.meta.gasPrice,
-    sender: unstakeResult.request.meta.sender,
-    status: 'pending',
-  };
+export const useCreatePendingUnstakeActivity = () => {
+  const { chainId } = useStakingConstants();
 
-  addLocalActivity(unstakeResult.request.networkId, unstakeResult.request.meta.sender, activity);
+  return (unstakeResult: ExecCommandResult) => {
+    const activity = {
+      symbol: 'KDX',
+      requestKey: unstakeResult.response.requestKeys[0],
+      senderChainId: chainId,
+      receiverChainId: chainId,
+      receiver: 'Unstake KDX',
+      createdTime: (new Date(unstakeResult.request.meta.creationTime * 1000)).toString(),
+      amount: unstakeResult.request.payload.exec.data.amount,
+      gasPrice: unstakeResult.request.meta.gasPrice,
+      sender: unstakeResult.request.meta.sender,
+      status: 'pending',
+    };
+
+    addLocalActivity(unstakeResult.request.networkId, unstakeResult.request.meta.sender, activity);
+  };
 };
 
 export const useClaim = () => {
   const { account } = useCurrentWallet();
   const execCommand = useExecCommand();
+  const { chainId } = useStakingConstants();
 
   return () => {
     const pactCode = `
@@ -195,31 +211,36 @@ export const useClaim = () => {
       claimCap,
     ];
 
-    return execCommand(pactCode, CHAIN_ID, caps);
+    return execCommand(pactCode, chainId, caps);
   };
 };
 
 export const usePoolClaimRequest = () => {
   const poolRequestKey = usePoolRequestKey<boolean>();
+  const { chainId } = useStakingConstants();
 
   return (requestKey: string) => (
-    poolRequestKey(requestKey, CHAIN_ID)
+    poolRequestKey(requestKey, chainId)
   );
 };
 
-export const createPendingClaimActivity = (unstakeResult: ExecCommandResult) => {
-  const activity = {
-    symbol: 'KDX',
-    requestKey: unstakeResult.response.requestKeys[0],
-    senderChainId: CHAIN_ID,
-    receiverChainId: CHAIN_ID,
-    receiver: 'Claim KDX',
-    createdTime: (new Date(unstakeResult.request.meta.creationTime * 1000)).toString(),
-    amount: 0,
-    gasPrice: unstakeResult.request.meta.gasPrice,
-    sender: unstakeResult.request.meta.sender,
-    status: 'pending',
-  };
+export const useCreatePendingClaimActivity = () => {
+  const { chainId } = useStakingConstants();
 
-  addLocalActivity(unstakeResult.request.networkId, unstakeResult.request.meta.sender, activity);
+  return (claimResult: ExecCommandResult) => {
+    const activity = {
+      symbol: 'KDX',
+      requestKey: claimResult.response.requestKeys[0],
+      senderChainId: chainId,
+      receiverChainId: chainId,
+      receiver: 'Claim KDX',
+      createdTime: (new Date(claimResult.request.meta.creationTime * 1000)).toString(),
+      amount: 0,
+      gasPrice: claimResult.request.meta.gasPrice,
+      sender: claimResult.request.meta.sender,
+      status: 'pending',
+    };
+
+    addLocalActivity(claimResult.request.networkId, claimResult.request.meta.sender, activity);
+  };
 };

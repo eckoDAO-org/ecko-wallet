@@ -16,6 +16,7 @@ type StakingEnvConfiguration = {
   dynamicPenaltyDays: number;
   maxPowerVoting: number;
   withdrawDaysToWaitFromLastClaim: number;
+  chainId: string;
 };
 
 type StakingConfiguration = Record<string, StakingEnvConfiguration>;
@@ -30,6 +31,7 @@ const stakingConfiguration: StakingConfiguration = {
     dynamicPenaltyDays: 0,
     maxPowerVoting: 2.5,
     withdrawDaysToWaitFromLastClaim: 7,
+    chainId: '0',
   },
   development: {
     rewardsPenaltyDaysToWait: 0,
@@ -40,6 +42,7 @@ const stakingConfiguration: StakingConfiguration = {
     dynamicPenaltyDays: 0,
     maxPowerVoting: 2.5,
     withdrawDaysToWaitFromLastClaim: 7,
+    chainId: '0',
   },
   mainnet: {
     rewardsPenaltyDaysToWait: 60,
@@ -50,5 +53,6 @@ const stakingConfiguration: StakingConfiguration = {
     dynamicPenaltyDays: 60,
     maxPowerVoting: 2.5,
     withdrawDaysToWaitFromLastClaim: 7,
+    chainId: '2',
   },
 };

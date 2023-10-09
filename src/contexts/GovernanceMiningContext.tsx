@@ -1,7 +1,7 @@
 import React, { createContext, useContext } from 'react';
 // import { useGetLastDayData } from 'src/components/GovernanceMining/api/analytics';
 import { useGetAccountData } from 'src/components/GovernanceMining/api/kaddex.dao';
-import { StakerInspection, createPendingStakeActivity, createPendingUnstakeActivity, useInspectStaker, useStake, useRollupAndUnstake, useClaim, createPendingClaimActivity } from 'src/components/GovernanceMining/api/kaddex.staking';
+import { StakerInspection, useCreatePendingStakeActivity, useCreatePendingUnstakeActivity, useInspectStaker, useStake, useRollupAndUnstake, useClaim, useCreatePendingClaimActivity } from 'src/components/GovernanceMining/api/kaddex.staking';
 import { PoolState, StakeRewards, StakeStatus } from 'src/components/GovernanceMining/types';
 import { getTimeByBlockchain } from 'src/components/GovernanceMining/helpers/stringUtils';
 
@@ -62,6 +62,10 @@ export const GovernanceMiningContextProvider: React.FC<GovernanceMiningContextPr
   const stake = useStake();
   const unstake = useRollupAndUnstake();
   const claim = useClaim();
+
+  const createPendingStakeActivity = useCreatePendingStakeActivity();
+  const createPendingUnstakeActivity = useCreatePendingUnstakeActivity();
+  const createPendingClaimActivity = useCreatePendingClaimActivity();
   // const getLastDayData = useGetLastDayData();
 
   const getStakeStatus = () => {
