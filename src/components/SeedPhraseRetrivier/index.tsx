@@ -74,6 +74,7 @@ export const SeedPhraseRetrivier = ({ onSuccess, onFail }: SeedPhraseRetrivierPr
           setSeedPhrase(plainSeedPhrase);
           onSuccess(plainSeedPhrase, passwordInput);
         } catch (err) {
+          // eslint-disable-next-line no-console
           console.error('Invalid hash');
           onFail?.();
         }

@@ -132,7 +132,8 @@ export const CrossChainProvider = ({ children }: any) => {
       .spv(spvCmd, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, request.senderChainId))
       .then((res) => {
         if (res.includes('SPV target not reachable') || res.includes('Transaction hash not found')) {
-          console.log('SPV target not reachable');
+          // eslint-disable-next-line no-console
+          console.warn('SPV target not reachable');
           setTimeout(() => {
             getSpv(request);
           }, 10000);
@@ -178,7 +179,8 @@ export const CrossChainProvider = ({ children }: any) => {
         finishCrossChain(c, host, targetChainId, request);
       })
       .catch((err) => {
-        console.log('SPV err', err);
+        // eslint-disable-next-line no-console
+        console.error('SPV err', err);
         setTimeout(() => {
           getSpv(request);
         }, 10000);

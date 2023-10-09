@@ -226,7 +226,8 @@ const PopupConfirm = (props: Props) => {
           }
         } catch (error) {
           toast.error(<Toast type="fail" content="Ledger Sign Failed or Rejected" />);
-          console.log('Ledger Sign Error', error);
+          // eslint-disable-next-line no-console
+          console.error('Ledger Sign Error', error);
           return;
         }
       } else if (senderPrivateKey.length > 64) {

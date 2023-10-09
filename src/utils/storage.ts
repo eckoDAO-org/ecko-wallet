@@ -1,4 +1,4 @@
-import { get, isEmpty } from 'lodash';
+import { get } from 'lodash';
 import {
   RawNetwork,
   defaultNetworks,
@@ -138,6 +138,7 @@ export const updateLocalWallets = (
 
   try {
     getLocalNetworks(runUpdate, () => {
+      // eslint-disable-next-line no-console
       console.warn('failed to retrieve networks - using default');
       runUpdate(defaultNetworks);
     });
@@ -167,6 +168,7 @@ const retrieveAndUpdateSelectedWallet = (newPasswordHash: string, oldPasswordHas
       callback(updatedSelectedWallet);
     },
     () => {
+      // eslint-disable-next-line no-console
       console.warn('Failed to retrieve selected wallet');
       callback(undefined);
     },
@@ -181,6 +183,7 @@ const retrieveAndUpdateSeedPhrase = (newPasswordHash: string, oldPasswordHash: s
     },
     () => {
       // TODO: handle errors
+      // eslint-disable-next-line no-console
       console.error('Failed to retrieve seed phrase');
       throw new Error('Cannot update seed phrase');
     },

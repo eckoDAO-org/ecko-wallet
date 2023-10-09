@@ -22,7 +22,8 @@ const KMCModalContent = ({ uri, nftData, id }: { uri: string; id: string; nftDat
           setAsyncData(json);
         })
         .catch((err: any) => {
-          console.log('KMC Miners detail error', err);
+          // eslint-disable-next-line no-console
+          console.error('KMC Miners detail error', err);
           setErrorMessage('Unable to fetch NFT data, try again later');
         });
     }

@@ -121,7 +121,8 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
           setIsLoadingKadenaName(false);
         })
         .catch((err) => {
-          console.log(err);
+          // eslint-disable-next-line no-console
+          console.error(err);
           setIsLoadingKadenaName(false);
         });
     }

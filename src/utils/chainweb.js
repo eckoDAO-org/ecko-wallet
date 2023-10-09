@@ -88,7 +88,6 @@ export const pollRequestKey = async (reqKey, network) => {
   do {
     const pollRes = await Pact.fetch.poll({ requestKeys: [reqKey] }, network);
     if (pollRes[reqKey]) {
-      console.log('poll result util', pollRes);
       attempts = 0;
       return pollRes[reqKey];
     }
@@ -107,7 +106,8 @@ export const fetchTokenList = async () => {
     }
     return CHAIN_AVAILABLE_TOKENS_FIXTURE;
   } catch (err) {
-    console.log('Error fetching fungible tokens', err);
+    // eslint-disable-next-line no-console
+    console.error('Error fetching fungible tokens', err);
   }
   return CHAIN_AVAILABLE_TOKENS_FIXTURE;
 };
@@ -147,10 +147,12 @@ export const getAccountExistsChains = async (accounts, networkUrl, networkId) =>
           }
         });
       } else {
-        console.log(`getAccountExistsChains error chainId ${chainId}:`, res);
+        // eslint-disable-next-line no-console
+        console.error(`getAccountExistsChains error chainId ${chainId}:`, res);
       }
     } catch (err) {
-      console.log(`getAccountExistsChains error chainId ${chainId}:`, err);
+      // eslint-disable-next-line no-console
+      console.error(`getAccountExistsChains error chainId ${chainId}:`, err);
     }
   }
   return accountResponse;

@@ -61,7 +61,8 @@ const Nft = () => {
           }
         })
         .catch((err) => {
-          console.log(`Error fetching NFTs`, err);
+          // eslint-disable-next-line no-console
+          console.error('Error fetching NFTs', err);
           hideLoading();
         });
     }
