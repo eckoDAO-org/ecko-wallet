@@ -1,13 +1,8 @@
 import React from 'react';
-import { AnalyticsButton, Container, Key, Value } from './UI';
+import { Container, Key, Value } from './UI';
 
 const EmptyDetails = () => (
   <Container>
-    <Key>Analytics</Key>
-    <Value>
-      <AnalyticsButton />
-    </Value>
-
     <Key>KDX collected</Key>
     <Value>— KDX</Value>
 

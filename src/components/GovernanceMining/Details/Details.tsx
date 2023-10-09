@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import { useStakingConstants } from '../constants/staking';
-import { AnalyticsButton, Container, Key, StatusValue, Value } from './UI';
+import { Container, Key, StatusValue, Value } from './UI';
 
 type DetailsProps = {
   collected: number;
@@ -14,11 +14,6 @@ const Details = ({ collected, effectiveStartDate, rewardPenalty, votingPower }: 
   const [hasPenalty, waitingTime] = getWaitingTimeRewardsPenalty(effectiveStartDate);
   return (
     <Container>
-      <Key>Analytics</Key>
-      <Value>
-        <AnalyticsButton />
-      </Value>
-
       <Key>KDX collected</Key>
       <Value>{collected.toFixed(6)} KDX</Value>
 
