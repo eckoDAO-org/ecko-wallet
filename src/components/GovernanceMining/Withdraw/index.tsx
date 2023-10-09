@@ -22,14 +22,14 @@ const Withdraw = () => {
   const { openModal, closeModal } = useModalContext();
 
   const { stakeStatus: { rewards } } = governanceMining;
-  const isDisabled = !(rewards.canClaim && rewards.collectedTokens);
+  const isDisabled = !rewards.canClaim || (rewards.collectedTokens === 0);
   const nextClaimTotalHours = (STAKING_CONSTANTS.withdrawDaysToWaitFromLastClaim * 24) - moment().diff(rewards.lastClaimDate, 'hours');
   const nextClaimDays = Math.trunc(nextClaimTotalHours / 24);
   const nextClaimHours = nextClaimTotalHours - (nextClaimDays * 24);
   const nextWithdrawLabel = nextClaimDays > 0
     ? `Withdraw in ${nextClaimDays} days and ${nextClaimHours} hours`
     : `Withdraw in ${nextClaimHours} hours`;
-  const label = rewards.canClaim ? 'Withdraw' : nextWithdrawLabel;
+  const label = (rewards.collectedTokens && !rewards.canClaim) ? nextWithdrawLabel : 'Withdraw';
 
   const openConfirmModal = () => {
     openModal({
