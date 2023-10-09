@@ -17,6 +17,7 @@ const kda: IFungibleToken = {
 
 export interface StakeViewProps {
   balance: number;
+  buttonLabel?: string;
   onStake: (amount: number) => void,
 }
 
@@ -24,7 +25,7 @@ interface FormValues {
   amount: string;
 }
 
-const AmountSelectorView = ({ balance, children, onStake }: React.PropsWithChildren<StakeViewProps>) => {
+const AmountSelectorView = ({ balance, buttonLabel = 'Stake', children, onStake }: React.PropsWithChildren<StakeViewProps>) => {
   const {
     register,
     handleSubmit,
@@ -53,7 +54,7 @@ const AmountSelectorView = ({ balance, children, onStake }: React.PropsWithChild
         {children}
 
         <DivFlex justifyContent="center" padding="4px" paddingTop="32px">
-          <Button label="Stake" size="full" />
+          <Button label={buttonLabel} size="full" />
         </DivFlex>
       </form>
     </Container>

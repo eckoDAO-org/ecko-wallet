@@ -26,6 +26,7 @@ const ConfirmAmount = ({ amount, onConfirm }: ConfirmAmountProps) => {
 
   const hasRewardPenalty = rewards.rewardPenaltyTokens > 0;
   const rewardPenaltyPercentage = +((rewards.rewardPenaltyTokens / rewards.collectedTokens) * 100).toFixed(2);
+  const rewardPenalty = reduceBalance(rewards.rewardPenaltyTokens);
 
   const estimateUSDAmount = (usdPrices?.['kaddex.kdx'] || 0) * amount;
 
@@ -41,7 +42,7 @@ const ConfirmAmount = ({ amount, onConfirm }: ConfirmAmountProps) => {
       positionPenalty={positionPenalty}
       positionPenaltyPercentage={STAKING_CONSTANTS.percentagePenalty}
       hasRewardPenalty={hasRewardPenalty}
-      rewardPenalty={rewards.rewardPenaltyTokens}
+      rewardPenalty={rewardPenalty}
       rewardPenaltyPercentage={rewardPenaltyPercentage}
       usdAmount={estimateUSDAmount}
       isLoading={isLoading}

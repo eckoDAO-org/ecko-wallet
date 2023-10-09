@@ -26,7 +26,7 @@ const AmountSelectorView = ({
   waitingHours,
   ...props
 }: UnstakeViewProps) => (
-  <StakeView {...props}>
+  <StakeView buttonLabel="Unstake" {...props}>
     {hasPositionPenalty && (
       <PenaltyContainer>
         <SecondaryLabel uppercase fontWeight={700} style={{ flex: 1 }}>
