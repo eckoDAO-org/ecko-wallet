@@ -4,6 +4,8 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import ReactJson from 'react-json-view';
+import Toast from 'src/components/Toast/Toast';
+import { toast } from 'react-toastify';
 import { getLocalSelectedNetwork, getLocalSigningCmd } from 'src/utils/storage';
 import Button from 'src/components/Buttons';
 import { DivFlex, SecondaryLabel } from 'src/components';
@@ -12,6 +14,8 @@ import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 import { getTimestamp } from 'src/utils';
 import { ECKO_WALLET_DAPP_SIGN_NONCE, WALLET_CONNECT_SIGN_METHOD } from 'src/utils/config';
 import { getSignatureFromHash } from 'src/utils/chainweb';
+import { bufferToHex, useLedgerContext } from 'src/contexts/LedgerContext';
+import { AccountType } from 'src/stores/wallet';
 import { SigningResponse } from './interfaces';
 
 export const DappWrapper = styled.div`
@@ -61,15 +65,17 @@ export interface WalletConnectParams {
 }
 
 const SignedCmd = () => {
-  const [domain, setDomain] = useState('example.com.vn');
+  const [domain, setDomain] = useState('');
   const [tabId, setTabId] = useState(null);
   const [cmd, setCmd] = useState<any>({});
+  const [hash, setHash] = useState<any>('');
   const [chainId, setChainId] = useState<any>();
   const [caps, setCaps] = useState<any[]>([]);
   const [walletConnectParams, setWalletConnectParams] = useState<WalletConnectParams | null>(null);
+  const { signHash, isWaitingLedger } = useLedgerContext();
 
   const rootState = useSelector((state) => state);
-  const { publicKey, secretKey } = rootState.wallet;
+  const { publicKey, secretKey, type } = rootState.wallet;
 
   const { theme } = useAppThemeContext();
 
@@ -126,7 +132,7 @@ const SignedCmd = () => {
       },
       () => {},
     );
-  }, [secretKey]);
+  }, [secretKey, type]);
 
   const signCommand = (signingCmd) =>
     new Promise((resolve, reject) => {
@@ -157,12 +163,30 @@ const SignedCmd = () => {
           meta,
           signingCmd.networkId,
         );
-        if (secretKey.length > 64) {
-          const signature = getSignatureFromHash(signedCmd.hash, secretKey);
-          const sigs = [{ sig: signature }];
-          signedCmd.sigs = sigs;
+        if (type === AccountType.LEDGER) {
+          setHash(signedCmd.hash);
+          signHash(signedCmd.hash)
+            .then((signHashResult) => {
+              toast.success(<Toast type="success" content="Ledger signed successfully" />);
+              const sigs = [{ sig: bufferToHex(signHashResult?.signature) }];
+              signedCmd.sigs = sigs;
+              resolve({ signedCmd, signingCmd });
+            })
+            .catch((ledgerError) => {
+              const result = {
+                status: 'fail',
+                message: ledgerError ?? 'Ledger signing error',
+              };
+              reject(result);
+            });
+        } else {
+          if (secretKey.length > 64) {
+            const signature = getSignatureFromHash(signedCmd.hash, secretKey);
+            const sigs = [{ sig: signature }];
+            signedCmd.sigs = sigs;
+          }
+          resolve({ signedCmd, signingCmd });
         }
-        resolve({ signedCmd, signingCmd });
       } catch (err: any) {
         console.log('Signing cmd err:', err);
         const result = {
@@ -208,22 +232,39 @@ const SignedCmd = () => {
       <SecondaryLabel style={{ textAlign: 'center' }} uppercase>
         signed command
       </SecondaryLabel>
-      <DappContentWrapper>
-        <ReactJson
-          name="signedCmd"
-          src={newCmd}
-          enableClipboard={false}
-          displayObjectSize={false}
-          displayDataTypes={false}
-          quotesOnKeys={false}
-          collapsed
-          indentWidth={2}
-          style={{ paddingBottom: 40 }}
-          theme={theme.isDark ? 'twilight' : 'rjv-default'}
-          collapseStringsAfterLength={false}
-        />
-      </DappContentWrapper>
-      {caps?.length ? (
+      {Object.keys(newCmd).length && (
+        <DappContentWrapper>
+          <ReactJson
+            name="signedCmd"
+            src={newCmd}
+            enableClipboard={false}
+            displayObjectSize={false}
+            displayDataTypes={false}
+            quotesOnKeys={false}
+            collapsed
+            indentWidth={2}
+            style={{ paddingBottom: 40 }}
+            theme={theme.isDark ? 'twilight' : 'rjv-default'}
+            collapseStringsAfterLength={false}
+          />
+        </DappContentWrapper>
+      )}
+      {type === AccountType.LEDGER && isWaitingLedger && (
+        <DivFlex flexDirection="column" alignItems="center" padding="24px">
+          <SecondaryLabel style={{ textAlign: 'center' }}>
+            Please enable BLIND SIGNING <br />
+            and follow the instruction on your ledger first
+          </SecondaryLabel>
+          {hash && (
+            <SecondaryLabel style={{ textAlign: 'center', marginTop: 30, wordBreak: 'break-all' }}>
+              HASH TO SIGN:
+              <br />
+              {hash}
+            </SecondaryLabel>
+          )}
+        </DivFlex>
+      )}
+      {!isWaitingLedger && caps?.length ? (
         <>
           <SecondaryLabel style={{ textAlign: 'center' }}>CAPABILITIES</SecondaryLabel>
           <DivFlex flexDirection="column">
@@ -249,10 +290,12 @@ const SignedCmd = () => {
         </>
       ) : null}
 
-      <DivFlex gap="10px" padding="24px">
-        <Button size="full" label="Reject" variant="disabled" onClick={onClose} />
-        <Button size="full" label="Confirm" onClick={onSave} />
-      </DivFlex>
+      {!isWaitingLedger && (
+        <DivFlex gap="10px" padding="24px">
+          <Button size="full" label="Reject" variant="disabled" onClick={onClose} />
+          <Button isDisabled={isWaitingLedger} size="full" label="Confirm" onClick={onSave} />
+        </DivFlex>
+      )}
     </DappWrapper>
   );
 };

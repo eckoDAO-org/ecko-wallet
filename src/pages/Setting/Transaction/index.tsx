@@ -30,8 +30,8 @@ const PageTransaction = () => {
     const xChainGasPriceDecimals = new BigNumber(txSettings?.xChainGasPrice ?? CONFIG.X_CHAIN_GAS_PRICE).decimalPlaces();
     return {
       ...txSettings,
-      gasPrice: txSettings?.gasPrice?.toFixed(gasPriceDecimals),
-      xChainGasPrice: txSettings?.xChainGasPrice?.toFixed(xChainGasPriceDecimals),
+      gasPrice: gasPriceDecimals ? txSettings?.gasPrice?.toFixed(gasPriceDecimals) : CONFIG.GAS_PRICE,
+      xChainGasPrice: xChainGasPriceDecimals ? txSettings?.xChainGasPrice?.toFixed(xChainGasPriceDecimals) : CONFIG.X_CHAIN_GAS_PRICE,
     };
   };
 

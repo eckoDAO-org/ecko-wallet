@@ -105,7 +105,7 @@ const ImportToken = () => {
     }
   }, []);
 
-  const onImport = async (fT: IFungibleToken) => {
+  const onImport = async (fT: IFungibleToken | any) => {
     const alreadyExists = fungibleTokens?.find((fungToken) => fungToken.contractAddress === fT.contractAddress);
     if (!token && alreadyExists) {
       toast.error(<Toast type="error" content="Token already added" />);

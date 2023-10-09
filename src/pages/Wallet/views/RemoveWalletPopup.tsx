@@ -28,11 +28,13 @@ const RemoveWalletContent = styled.div`
 `;
 const RemoveWalletText = styled(DivChild)`
   text-align: center;
+  color: ${({ theme }) => theme.text.primary};
 `;
 
 const DesRemoveWallet = styled.div`
   text-align: center;
   font-size: 16px;
+  color: ${({ theme }) => theme.text.primary};
   @media screen and (max-width: 480px) {
     font-size: 16px;
   }

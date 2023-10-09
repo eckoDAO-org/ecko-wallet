@@ -73,7 +73,7 @@ const Button = (props: Props) => {
     };
   } else if (variant === 'grey') {
     buttonType = {
-      color: '#787B8E',
+      color: '#37417E',
       background: '#ECECF5',
       border: 'none',
     };
@@ -81,7 +81,7 @@ const Button = (props: Props) => {
   return (
     <ButtonWrapper
       disabled={isDisabled}
-      onClick={onClick}
+      onClick={!isDisabled ? onClick : () => {}}
       size={size}
       color={buttonType.color}
       background={buttonType.background}

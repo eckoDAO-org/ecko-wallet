@@ -12,6 +12,7 @@ import { CommonLabel, DivBottomShadow, DivFlex, PaddedBodyStickyFooter, Secondar
 import { JazzAccount } from 'src/components/JazzAccount';
 import PopupConfirm from 'src/pages/SendTransactions/views/PopupConfirm';
 import { toast } from 'react-toastify';
+import { AccountType } from 'src/stores/wallet';
 import Toast from 'src/components/Toast/Toast';
 import { useSettingsContext } from 'src/contexts/SettingsContext';
 import { useAccountBalanceContext } from 'src/contexts/AccountBalanceContext';
@@ -41,6 +42,7 @@ interface Wallet {
   publicKey: string;
   chainId: string | number;
   secretKey: string;
+  type?: AccountType;
 }
 const defaultWallet: Wallet = {
   accountName: '',
@@ -161,7 +163,7 @@ const Transfer = (props: Props) => {
   };
 
   const initData = () => {
-    const { account, publicKey, secretKey } = rootState.wallet;
+    const { account, publicKey, secretKey, type } = rootState.wallet;
     const pactCodeCoin = `(coin.details "${account}")`;
     const pactCodeToken = `(${fungibleToken.contractAddress}.details "${account}")`;
     showLoading();
@@ -179,6 +181,7 @@ const Transfer = (props: Props) => {
               tokenBalance,
               publicKey,
               secretKey,
+              type,
               chainId: sourceChainId,
             });
           }
@@ -231,6 +234,7 @@ const Transfer = (props: Props) => {
     senderChainId: wallet?.chainId,
     senderPublicKey: wallet?.publicKey,
     senderPrivateKey: wallet?.secretKey,
+    type: wallet?.type,
     aliasName: destinationAccount?.aliasName,
     receiverName: destinationAccount?.accountName,
     receiverExists: destinationAccount?.receiverExists,

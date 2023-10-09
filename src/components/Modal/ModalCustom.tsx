@@ -17,7 +17,7 @@ const Modal = styled.div`
   bottom: 0;
 `;
 
-const Overlay = styled.div`
+export const Overlay = styled.div`
   background-color: rgba(0, 0, 0, 0.55);
   top: 0;
   bottom: 0;
@@ -25,7 +25,7 @@ const Overlay = styled.div`
   right: 0;
   position: fixed;
   display: none;
-  z-index: 5;
+  z-index: ${({ zIndex }) => zIndex || 5};
   display: block;
 `;
 

@@ -17,6 +17,7 @@ import { useSettingsContext } from 'src/contexts/SettingsContext';
 import useSessionStorage from 'src/hooks/useSessionStorage';
 import { STORAGE_PASSWORD_KEY } from 'src/utils/storage';
 import { RoundedArrow } from '../Wallet/views/FinishTransferItem';
+import packageJson from '../../../package.json';
 
 interface ISettingsMenu {
   img: React.ReactNode;
@@ -160,7 +161,7 @@ const PageSetting = () => {
       {settingsMenu.map((menuItem) => !menuItem.isHidden && getSettingsItem(menuItem))}
       <AboutDiv marginTop="48px" alignItems="center">
         <SecondaryLabel fontWeight={500}>
-          eckoWALLET V. 2.7.0
+          eckoWALLET V. {packageJson.version}
           <br />
           <br />
           The Kadena ecosystem gateway

@@ -106,6 +106,7 @@ import iconGear from './gear-icon.svg';
 import iconTrash from './trash-icon.svg';
 import iconShare from './share-icon.svg';
 import iconEdit from './icon-edit.svg';
+import iconSignHash from './ic_sign_hash.svg';
 import iconDownload from './icon-download.svg';
 import iconMorePurple from './more-purple.svg';
 import iconDropDown from './icon-dropdown.svg';
@@ -114,6 +115,9 @@ import iconBuy from './icon-buy.svg';
 import eckoWalletLogo from './ecko-wallet-logo.svg';
 import eckoWalletLogoRounded from './ecko-wallet-rounded.png';
 import eckoWalletIcon from './ecko-wallet-icon.svg';
+import ledgerLogo from './ledger-logo.svg';
+import ledgerLogoLong from './ledger-logo-long.svg';
+import trezorLogo from './trezor-logo-svg-vector.svg';
 import governanceMiningBg from './governance-mining-bg.png';
 import governanceMiningKdx from './governance-mining-kdx.svg';
 import info from './info.svg';
@@ -219,6 +223,7 @@ const settings = {
   iconGear,
   iconNft,
   iconEdit,
+  iconSignHash,
   iconDownload,
   iconTrash,
   iconShare,
@@ -268,6 +273,9 @@ const images = {
   eckoWalletIcon,
   eckoWalletLogo,
   eckoWalletLogoRounded,
+  ledgerLogo,
+  ledgerLogoLong,
+  trezorLogo,
   governance,
 };
 

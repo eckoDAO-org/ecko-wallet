@@ -93,3 +93,29 @@ export const DivBottomShadow = styled(DivFlex)`
   border-bottom-right-radius: 25px;
   padding-bottom: 24px;
 `;
+
+export const DivBody = styled.div`
+  width: 100%;
+  text-align: left;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+`;
+
+export const ActionFooter = styled.div`
+  width: 100%;
+  text-align: center;
+  margin-top: 50px;
+  @media screen and (max-width: 480px) {
+    margin-top: 25px;
+  }
+`;
+export const PageWrapper = styled.div`
+  padding: 0 20px;
+`;
+export const PageBody = styled.div`
+  height: auto;
+  font-size: 16px;
+`;

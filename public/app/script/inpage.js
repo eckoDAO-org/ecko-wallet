@@ -71,6 +71,9 @@ window.kadena = {
       case 'kda_checkStatus':
         return checkStatus(info);
 
+      case 'kda_checkIsConnected':
+        return checkIsConnected(info);
+
       case 'kda_getNetwork':
         return getKadenaNetwork();
 
@@ -145,6 +148,22 @@ const checkStatus = async (info) => {
   });
 
   let data = await listener.on('res_checkStatus');
+  return data.result;
+};
+
+const checkIsConnected = async (info) => {
+  const { networkId, domain } = info;
+  const listener = new Listener('kda_checkIsConnected');
+  listener.send({
+    target: 'kda.content',
+    action: listener.name,
+    data: {
+      networkId,
+      domain,
+    },
+  });
+
+  let data = await listener.on('res_checkIsConnected');
   return data.result;
 };
 

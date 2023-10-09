@@ -141,7 +141,8 @@ const SelectReceiver = ({ goToTransfer, sourceChainId, fungibleToken }: Props) =
       toast.error(<Toast type="fail" content="Can not send to yourself" />);
     } else {
       showLoading();
-      const code = `(coin.details "${receiver}")`;
+      const prefix = fungibleToken?.contractAddress || 'coin';
+      const code = `(${prefix}.details "${receiver}")`;
       fetchListLocal(code, selectedNetwork.url, selectedNetwork.networkId, chainId, txSettings?.gasPrice, txSettings?.gasLimit)
         .then((res) => {
           hideLoading();

@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import images from 'src/images';
@@ -8,13 +8,9 @@ import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import { ModalContext } from 'src/contexts/ModalContext';
-import ModalCustom from 'src/components/Modal/ModalCustom';
-import { BaseTextInput } from 'src/baseComponent';
-import Button from 'src/components/Buttons';
-import { getLocalWallets, setLocalWallets } from 'src/utils/storage';
-import { decryptKey } from 'src/utils/security';
-import { setWallets } from 'src/stores/wallet';
 import { useSelector } from 'react-redux';
+import { AliasModal } from '../modals/AliasModal';
+import { HashSignModal } from '../modals/HashSignModal';
 
 export const DoubleFooter = styled.div`
   margin: -1rem;
@@ -24,44 +20,22 @@ export const DoubleFooter = styled.div`
 export const AccountActions = ({
   onCreateAccount,
   onImportAccount,
+  onImportFromLedger,
   onRemoveWallet,
 }: {
   onCreateAccount: any;
   onImportAccount: any;
+  onImportFromLedger: any;
   onRemoveWallet: any;
 }) => {
   const history = useHistory();
   const stateWallet = useCurrentWallet();
   const rootState = useSelector((state) => state);
-  const [isOpenAliasModal, setIsOpenAliasModal] = useState(false);
-  const [alias, setAlias] = useState('');
-  const { closeModal } = useContext(ModalContext);
+  const { openModal } = useContext(ModalContext);
   const { wallets } = rootState?.wallet;
-  const { selectedNetwork, passwordHash } = rootState.extensions;
 
   const onActionClick = (clb) => {
-    closeModal();
     clb();
-  };
-
-  const setAccountAlias = () => {
-    getLocalWallets(
-      selectedNetwork.networkId,
-      (items) => {
-        const selectedIndex = items.findIndex((a) => decryptKey(a.account, passwordHash) === stateWallet?.account);
-        if (selectedIndex > -1) {
-          items[selectedIndex].alias = alias;
-        }
-        setLocalWallets(selectedNetwork.networkId, items);
-        const newWallets = [...wallets.filter((a) => a.account !== stateWallet?.account)];
-        const selectedWalletIndex = wallets.findIndex((a) => a.account === stateWallet?.account);
-        newWallets.splice(selectedWalletIndex, 0, { ...wallets[selectedWalletIndex], alias });
-        setWallets(newWallets);
-        toast.success(<Toast type="success" content="Alias changed successfully" />);
-        closeModal();
-      },
-      () => {},
-    );
   };
 
   const actions = [
@@ -69,16 +43,21 @@ export const AccountActions = ({
       src: images.settings.iconShare,
       label: 'Share Wallet',
       onClick: () => {
-        closeModal();
         navigator.clipboard.writeText(stateWallet?.account);
         toast.success(<Toast type="success" content="Copied!" />);
       },
     },
     { src: images.settings.iconShare, label: 'Export Recovery Phrase', onClick: () => onActionClick(history.push('/export-seed-phrase')) },
     {
+      src: images.settings.iconSignHash,
+      label: 'Sign Hash Transaction',
+      onClick: () => openModal({ title: 'Sign Hash Transaction', content: <HashSignModal /> }),
+      style: { marginLeft: -2, marginRight: 10, width: 22 },
+    },
+    {
       src: images.settings.iconEdit,
       label: 'Edit Account Alias',
-      onClick: () => setIsOpenAliasModal(true),
+      onClick: () => openModal({ title: 'Set Account Alias', content: <AliasModal /> }),
       style: { marginLeft: -2, marginRight: 10, width: 22 },
     },
   ];
@@ -99,54 +78,11 @@ export const AccountActions = ({
             actions={[
               { label: 'Create Wallet', onClick: () => onActionClick(onCreateAccount) },
               { label: 'Import Wallet', onClick: () => onActionClick(onImportAccount) },
+              { label: 'Import Hardware Wallet', onClick: () => onActionClick(onImportFromLedger) },
             ]}
           />
         </DivFlex>
       </DoubleFooter>
-      {isOpenAliasModal && (
-        <ModalCustom
-          isOpen={isOpenAliasModal}
-          title="Set Account Alias"
-          onCloseModal={() => {
-            setIsOpenAliasModal(false);
-            setAlias('');
-          }}
-        >
-          <div style={{ padding: 24 }}>
-            <BaseTextInput
-              inputProps={{ value: alias }}
-              title="Account Alias"
-              height="auto"
-              onChange={(e) => {
-                if (e.target?.value?.length < 20) {
-                  setAlias(e.target.value);
-                }
-              }}
-            />
-            <DivFlex justifyContent="space-between" alignItems="center" gap="10px" padding="10px">
-              <Button
-                label="Cancel"
-                size="full"
-                variant="disabled"
-                onClick={() => {
-                  setAlias('');
-                  setIsOpenAliasModal(false);
-                }}
-              />
-              <Button
-                type="submit"
-                label="Save"
-                size="full"
-                onClick={() => {
-                  setAccountAlias();
-                  setIsOpenAliasModal(false);
-                  setAlias('');
-                }}
-              />
-            </DivFlex>
-          </div>
-        </ModalCustom>
-      )}
     </>
   );
 };
