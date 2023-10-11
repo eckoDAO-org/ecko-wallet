@@ -133,6 +133,11 @@ const Transfer = (props: Props) => {
     });
   }, [txSettings]);
 
+  useEffect(() => {
+    setValue('gasLimit', selectedGas.GAS_LIMIT);
+    setValue('gasPrice', selectedGas.GAS_PRICE);
+  }, [selectedGas]);
+
   const {
     register,
     handleSubmit,
@@ -218,13 +223,11 @@ const Transfer = (props: Props) => {
       }
     }
     setSelectedGas({ ...selectedGas, GAS_PRICE: number });
-    setValue('gasPrice', number);
   };
   const handleChangeGasLimit = (e) => {
     const { value } = e.target;
     clearErrors('gasLimit');
     setSelectedGas({ ...selectedGas, GAS_LIMIT: value });
-    setValue('gasLimit', value);
   };
 
   const estimateFee = `${BigNumberConverter(Number(selectedGas?.GAS_LIMIT) * Number(selectedGas?.GAS_PRICE) * Number(usdPrices?.coin))}`;
@@ -283,8 +286,6 @@ const Transfer = (props: Props) => {
                 setSelectedGas(gas);
                 clearErrors('gasLimit');
                 clearErrors('gasPrice');
-                setValue('gasLimit', gas?.GAS_LIMIT);
-                setValue('gasPrice', gas.GAS_PRICE);
               }}
             >
               {gas.LABEL}
