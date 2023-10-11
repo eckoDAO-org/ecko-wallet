@@ -22,6 +22,7 @@ const TwoFactorAuthenticator: React.FC<Props> = ({ children }) => {
   }
 
   const handleFailed = () => {
+    // eslint-disable-next-line no-console
     console.warn('Failed to handle 2FA');
     dispatch(unrequire2FA());
     removeAccountPassword();

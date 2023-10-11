@@ -14,7 +14,7 @@ import { find, isEmpty } from 'lodash';
 import { encryptKey } from 'src/utils/security';
 import { AccountType, setCurrentWallet, setWallets } from 'src/stores/wallet';
 import { ACTIVE_TAB } from 'src/utils/constant';
-import { DEFAULT_BIP32_PATH, useLedgerContext } from 'src/contexts/LedgerContext';
+import { useLedgerContext } from 'src/contexts/LedgerContext';
 
 const ImportLedger = () => {
   const history = useHistory();
@@ -22,7 +22,7 @@ const ImportLedger = () => {
   const [ledgerPublicKey, setLedgerPublicKey] = useState<string>('');
   const { wallets } = rootState?.wallet;
   const { selectedNetwork } = rootState?.extensions;
-  const { getLedger, getPublicKey, error } = useLedgerContext();
+  const { getPublicKey, error } = useLedgerContext();
 
   const getLedgerAccount = async () => {
     try {
@@ -33,7 +33,7 @@ const ImportLedger = () => {
       showLoading();
       fetchLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, 0)
         .then((response) => {
-          console.log(`🚀 !!! ~ response:`, response);
+          console.log('🚀 !!! ~ response:', response);
           hideLoading();
           // if ()
         })
@@ -43,7 +43,7 @@ const ImportLedger = () => {
         });
       return publicKey;
     } catch (err: any) {
-      console.log(`Ledger ERROR:`, err);
+      console.log('Ledger ERROR:', err);
     }
     return null;
   };
@@ -55,7 +55,7 @@ const ImportLedger = () => {
       showLoading();
       fetchLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, 0)
         .then((response) => {
-          console.log(`🚀 !!! ~ response:`, response);
+          console.log('🚀 !!! ~ response:', response);
           hideLoading();
           getLocalPassword(
             (accountPassword) => {

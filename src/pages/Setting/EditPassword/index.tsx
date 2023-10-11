@@ -66,6 +66,7 @@ const EditPassword = () => {
         toast.success(<Toast type="success" content="Password modified successfully" />);
       },
       (error: Error) => {
+        // eslint-disable-next-line no-console
         console.error(error);
         setError('updatePassword', {
           type: 'custom',

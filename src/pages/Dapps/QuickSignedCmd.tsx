@@ -166,7 +166,8 @@ const QuickSignedCmd = () => {
               signature = kadenaJSSign(hash, { secretKey, publicKey }).sig;
             }
           } catch (err) {
-            console.log('QUICK-SIGN ERROR');
+            // eslint-disable-next-line no-console
+            console.error('QUICK-SIGN ERROR', err);
             const result = {
               status: 'fail',
               message: 'Ledger signing fail',

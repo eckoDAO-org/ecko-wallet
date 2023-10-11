@@ -22,7 +22,14 @@ export const DISCORD_INVITATION_LINK = 'https://discord.com/invite/QSJpHRFDcv';
 export const WEBSITE_LINK = 'https://wallet.ecko.finance/';
 export const TERM_LINK = 'https://wallet.ecko.finance/terms-of-use';
 export const PRIVACY_LINK = 'https://wallet.ecko.finance/privacy-policy';
-export const GAS_CONFIGS = {
+
+export type GasType = {
+  LABEL: string;
+  GAS_PRICE: number;
+  GAS_LIMIT: number;
+};
+
+export const GAS_CONFIGS: { [key: string]: GasType } = {
   ECONOMY: {
     LABEL: 'Economy',
     GAS_PRICE: 0.00000001,

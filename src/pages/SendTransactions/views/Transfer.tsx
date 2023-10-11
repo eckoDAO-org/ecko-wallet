@@ -5,13 +5,11 @@ import { hideLoading, showLoading } from 'src/stores/extensions';
 import { ReactComponent as AddIconSVG } from 'src/images/add-round.svg';
 import { ReactComponent as AlertIconSVG } from 'src/images/icon-alert.svg';
 import { ReactComponent as GearIconSVG } from 'src/images/gear-icon.svg';
-import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 import { fetchListLocal, fetchLocal, getBalanceFromChainwebApiResponse } from 'src/utils/chainweb';
 import { getLocalContacts, getExistContacts } from 'src/utils/storage';
 import ModalCustom from 'src/components/Modal/ModalCustom';
-import { CommonLabel, DivBottomShadow, DivFlex, PaddedBodyStickyFooter, PrimaryLabel, SecondaryLabel, StickyFooter } from 'src/components';
+import { CommonLabel, DivBottomShadow, DivFlex, PaddedBodyStickyFooter, SecondaryLabel, StickyFooter } from 'src/components';
 import { JazzAccount } from 'src/components/JazzAccount';
-import { SInput } from 'src/baseComponent/BaseTextInput';
 import PopupConfirm from 'src/pages/SendTransactions/views/PopupConfirm';
 import { toast } from 'react-toastify';
 import { AccountType } from 'src/stores/wallet';
@@ -22,18 +20,19 @@ import { useForm } from 'react-hook-form';
 import { CONFIG, GAS_CONFIGS, NUMBER_DECIMAL_AFTER_DOT } from 'src/utils/config';
 import { get } from 'lodash';
 import images from 'src/images';
-import { BigNumberConverter, humanReadableNumber, shortenAddress, toFixedDown } from 'src/utils';
+import { BigNumberConverter, humanReadableNumber, shortenAddress } from 'src/utils';
 import { IFungibleToken } from 'src/pages/ImportToken';
 import Button from 'src/components/Buttons';
+import CryptoAmountSelector from 'src/components/CryptoAmountSelector';
 import AddContact from './AddContact';
 import { Warning, Footer, Error, GasItem, ErrorWrapper } from '../styles';
-import { TransferImage, AmountWrapper, AccountTransferDetail, TransferAccountSpan } from './style';
+import { TransferImage, AccountTransferDetail, TransferAccountSpan } from './style';
 
 type Props = {
   isDappTransfer?: boolean;
   sourceChainId: any;
   destinationAccount: any;
-  fungibleToken: IFungibleToken | null;
+  fungibleToken: IFungibleToken;
 };
 
 interface Wallet {
@@ -105,11 +104,13 @@ const Transfer = (props: Props) => {
   const [isOpenAddContactModal, setIsOpenAddContactModal] = useState(false);
   const [isOpenGasOptionsModal, setIsOpenGasOptionsModal] = useState(false);
 
-  const { theme } = useAppThemeContext();
+  const onChangeAmount = (newAmount: string) => {
+    setAmount(newAmount);
+  };
 
   const checkTokenExists = async () => {
     showLoading();
-    const pactCode = `(${fungibleToken?.contractAddress}.details "${destinationAccount?.accountName}")`;
+    const pactCode = `(${fungibleToken.contractAddress}.details "${destinationAccount?.accountName}")`;
     const res = await fetchListLocal(
       pactCode,
       selectedNetwork.url,
@@ -138,7 +139,7 @@ const Transfer = (props: Props) => {
     formState: { errors },
     setValue,
     clearErrors,
-  } = useForm();
+  } = useForm<any>();
   const rootState = useSelector((state) => state);
   const { selectedNetwork } = rootState.extensions;
   useEffect(() => {
@@ -164,7 +165,7 @@ const Transfer = (props: Props) => {
   const initData = () => {
     const { account, publicKey, secretKey, type } = rootState.wallet;
     const pactCodeCoin = `(coin.details "${account}")`;
-    const pactCodeToken = `(${fungibleToken?.contractAddress}.details "${account}")`;
+    const pactCodeToken = `(${fungibleToken.contractAddress}.details "${account}")`;
     showLoading();
     fetchLocal(pactCodeCoin, selectedNetwork.url, selectedNetwork.networkId, sourceChainId)
       .then((resCoin) => {
@@ -226,23 +227,6 @@ const Transfer = (props: Props) => {
     setValue('gasLimit', value);
   };
 
-  const changeAmount = (e) => {
-    const { value } = e.target;
-    clearErrors('amount');
-    let number = value
-      .toString()
-      .replace(/[^0-9.]/g, '')
-      .replace(/(\..*?)\..*/g, '$1');
-    if (number.includes('.')) {
-      const numString = number.toString().split('.');
-      if (numString[1].length > NUMBER_DECIMAL_AFTER_DOT) {
-        number = number.substring(0, number.length - 1);
-      }
-    }
-    setAmount(number);
-    setValue('amount', number);
-  };
-
   const estimateFee = `${BigNumberConverter(Number(selectedGas?.GAS_LIMIT) * Number(selectedGas?.GAS_PRICE) * Number(usdPrices?.coin))}`;
   const isCrossChain = wallet?.chainId?.toString() !== destinationAccount?.chainId?.toString();
   const configs = {
@@ -280,34 +264,10 @@ const Transfer = (props: Props) => {
     setIsOpenAddContactModal(false);
   };
 
-  const setPrefilledBalance = (type: 'max' | 'half') => {
-    const gasFee = BigNumberConverter(Number(selectedGas?.GAS_PRICE) * Number(selectedGas?.GAS_LIMIT));
-    let amountValue = BigNumberConverter(wallet?.tokenBalance);
-    if (type === 'half') {
-      amountValue /= 2;
-    }
-    if (fungibleToken?.contractAddress === 'coin') {
-      amountValue -= gasFee;
-    }
-    const amountCustom = amountValue > 0 ? toFixedDown(amountValue, 12) : '0';
-    setAmount(amountCustom);
-    setValue('amount', amountCustom);
-  };
-
   const estimateUSDAmount =
-    fungibleToken?.contractAddress && Object.prototype.hasOwnProperty.call(usdPrices, fungibleToken?.contractAddress)
-      ? (usdPrices[fungibleToken?.contractAddress as any] || 0) * Number(amount)
+    fungibleToken.contractAddress && Object.prototype.hasOwnProperty.call(usdPrices, fungibleToken.contractAddress)
+      ? (usdPrices[fungibleToken.contractAddress as any] || 0) * Number(amount)
       : null;
-
-  const getInputFontSize = (length: number) => {
-    if (length < 5) {
-      return 40;
-    }
-    if (length < 12) {
-      return 40 - amount.toString().length;
-    }
-    return 22;
-  };
 
   const gasOptions = (
     <>
@@ -462,150 +422,26 @@ const Transfer = (props: Props) => {
         </Warning>
       )}
       <form onSubmit={handleSubmit(onNext, onErrors)} id="send-transaction" noValidate>
-        <DivFlex justifyContent="space-between" margin="10px 0" alignItems="center">
-          <SecondaryLabel uppercase fontWeight={700} style={{ flex: 1 }}>
-            Amount to send
-          </SecondaryLabel>
-          {!isDappTransfer && (
-            <DivFlex justifyContent="flex-end" style={{ flex: 1, gap: 5 }}>
-              <Button
-                type="button"
-                onClick={() => setPrefilledBalance('half')}
-                label="HALF"
-                size="full"
-                variant="grey"
-                style={{ height: 28, fontSize: 10, maxWidth: 60 }}
-              />
-              <Button
-                type="button"
-                onClick={() => setPrefilledBalance('max')}
-                label="MAX"
-                size="full"
-                variant="grey"
-                style={{ height: 28, fontSize: 10, maxWidth: 60 }}
-              />
-            </DivFlex>
-          )}
-        </DivFlex>
-        {/* amount */}
-        <AmountWrapper alignItems="center" justifyContent="space-between">
-          {destinationAccount?.dappAmount ? (
-            <SInput
-              readOnly
-              style={{
-                flex: 1,
-                fontSize: 45,
-                fontWeight: 500,
-                padding: '0px 5px 0px 13px',
-                background: theme.background,
-              }}
-              value={destinationAccount?.dappAmount}
-              {...register('amount', {
-                required: {
-                  value: true,
-                  message: 'This field is required.',
-                },
-                validate: {
-                  isZero: (v) => {
-                    const value = Number(v);
-                    return value !== 0;
-                  },
-                  positive: (v) => {
-                    const value = Number(v);
-                    const balance = Number(wallet.tokenBalance);
-                    const gasFee = BigNumberConverter(Number(selectedGas.GAS_PRICE) * Number(selectedGas.GAS_LIMIT));
-                    let amountValue = BigNumberConverter(balance);
-                    if (fungibleToken?.contractAddress === 'coin') {
-                      amountValue -= gasFee;
-                    }
-                    return value > 0 && value <= amountValue;
-                  },
-                },
-              })}
-              title=""
-              height="auto"
-            />
-          ) : (
-            <SInput
-              autoComplete="off"
-              type="number"
-              value={amount}
-              style={{
-                flex: 1,
-                fontSize: getInputFontSize(amount?.toString().length || 40),
-                fontWeight: 500,
-                padding: '0px 5px 0px 0px',
-                background: theme.background,
-              }}
-              onWheel={(event) => event.currentTarget.blur()}
-              {...register('amount', {
-                required: {
-                  value: true,
-                  message: 'This field is required.',
-                },
-                validate: {
-                  isZero: (v) => {
-                    const value = Number(v);
-                    return value !== 0;
-                  },
-                  positive: (v) => {
-                    const value = Number(v);
-                    const balance = Number(wallet.tokenBalance);
-                    const gasFee = BigNumberConverter(Number(selectedGas.GAS_PRICE) * Number(selectedGas.GAS_LIMIT));
-                    let amountValue = BigNumberConverter(balance);
-                    if (fungibleToken?.contractAddress === 'coin') {
-                      amountValue -= gasFee;
-                    }
-                    return value > 0 && value <= amountValue;
-                  },
-                },
-              })}
-              onFocus={(event) => event.target.select()}
-              onChange={changeAmount}
-            />
-          )}
-          {/** TODO: make dynamic length text <TextScaling /> */}
-          <PrimaryLabel fontSize={40} uppercase>
-            {fungibleToken?.symbol?.substring(0, 3)}
-          </PrimaryLabel>
-        </AmountWrapper>
-        {errors.amount && errors.amount.type === 'required' && (
-          <ErrorWrapper>
-            <DivFlex>
-              <Error>This field is required</Error>
-            </DivFlex>
-          </ErrorWrapper>
-        )}
-        {errors.amount && errors.amount.type === 'positive' && (
-          <ErrorWrapper>
-            <DivFlex>
-              <Error>Insufficient funds</Error>
-            </DivFlex>
-          </ErrorWrapper>
-        )}
-        {errors.amount && errors.amount.type === 'isZero' && (
-          <ErrorWrapper>
-            <DivFlex>
-              <Error>Invalid amount</Error>
-            </DivFlex>
-          </ErrorWrapper>
-        )}
-        <DivFlex justifyContent="space-between" alignItems="center" margin="0px">
-          {!isDappTransfer && (
-            <CommonLabel fontSize={12} fontWeight={600}>
-              {estimateUSDAmount && `${humanReadableNumber(estimateUSDAmount)} USD`}
-            </CommonLabel>
-          )}
-          <SecondaryLabel fontSize={12} fontWeight={600}>
-            {`Balance: ${BigNumberConverter(wallet?.tokenBalance)} ${fungibleToken?.symbol.toUpperCase()}`}
-          </SecondaryLabel>
-        </DivFlex>
+        <CryptoAmountSelector
+          fungibleToken={fungibleToken}
+          showPrefilledButtons={!isDappTransfer}
+          showEstimatedUSD={!isDappTransfer}
+          selectedGas={selectedGas}
+          tokenBalance={wallet.tokenBalance}
+          readOnly={!!destinationAccount?.dappAmount}
+          amount={destinationAccount?.dappAmount}
+          register={register}
+          setValue={setValue}
+          clearErrors={clearErrors}
+          errors={errors}
+          onChangeAmount={onChangeAmount}
+        />
         {isDestinationChainTokenError && (
           <Warning type="danger" margin="10px 0">
             <AlertIconSVG />
             <div>
               <span>
-                {fungibleToken?.contractAddress} could not exists on <b>CHAIN {destinationAccount?.chainId}</b>!
+                {fungibleToken.contractAddress} could not exists on <b>CHAIN {destinationAccount?.chainId}</b>!
               </span>
             </div>
           </Warning>

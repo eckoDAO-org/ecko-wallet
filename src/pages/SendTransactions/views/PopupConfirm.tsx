@@ -1,7 +1,5 @@
 import Button from 'src/components/Buttons';
 import Pact from 'pact-lang-api';
-import { ACTIVE_TAB } from 'src/utils/constant';
-import { useHistory } from 'react-router-dom';
 import { convertRecent, getTimestamp, humanReadableNumber, shortenAddress } from 'src/utils';
 import { getApiUrl, getSignatureFromHash, fetchLocal, pollRequestKey } from 'src/utils/chainweb';
 import { CONFIG, ECKO_WALLET_SEND_TX_NONCE } from 'src/utils/config';
@@ -12,8 +10,9 @@ import { ReactComponent as AlertIconSVG } from 'src/images/icon-alert.svg';
 import Toast from 'src/components/Toast/Toast';
 import { useLedgerContext } from 'src/contexts/LedgerContext';
 import { CrossChainContext } from 'src/contexts/CrossChainContext';
-import { setActiveTab, setRecent } from 'src/stores/extensions';
-import { getLocalActivities, getLocalRecent, setLocalActivities, setLocalRecent } from 'src/utils/storage';
+import { useGoHome } from 'src/hooks/ui';
+import { setRecent } from 'src/stores/extensions';
+import { addLocalActivity, getLocalRecent, setLocalRecent } from 'src/utils/storage';
 import { updateSendDapp } from 'src/utils/message';
 import { useContext, useState } from 'react';
 import SpokesLoading from 'src/components/Loading/Spokes';
@@ -38,7 +37,7 @@ const PopupConfirm = (props: Props) => {
   const [isSending, setIsSending] = useState(false);
   const { setCrossChainRequest, getCrossChainRequestsAsync } = useContext(CrossChainContext);
   const { sendTransaction, sendCrossChainTransaction } = useLedgerContext();
-  const history = useHistory();
+  const goHome = useGoHome();
   const {
     senderName,
     senderChainId,
@@ -227,7 +226,8 @@ const PopupConfirm = (props: Props) => {
           }
         } catch (error) {
           toast.error(<Toast type="fail" content="Ledger Sign Failed or Rejected" />);
-          console.log('Ledger Sign Error', error);
+          // eslint-disable-next-line no-console
+          console.error('Ledger Sign Error', error);
           return;
         }
       } else if (senderPrivateKey.length > 64) {
@@ -256,20 +256,7 @@ const PopupConfirm = (props: Props) => {
             aliasName: configs?.aliasName,
             status: 'pending',
           };
-          getLocalActivities(
-            selectedNetwork.networkId,
-            senderName,
-            (activities) => {
-              const newActivities = [...activities];
-              newActivities.push(activity);
-              setLocalActivities(selectedNetwork.networkId, senderName, newActivities);
-            },
-            () => {
-              const newActivities: any[] = [];
-              newActivities.push(activity);
-              setLocalActivities(selectedNetwork.networkId, senderName, newActivities);
-            },
-          );
+          addLocalActivity(selectedNetwork.networkId, senderName, activity);
           if (senderChainId.toString() !== receiverChainId.toString()) {
             const asyncCrossTx = await getCrossChainRequestsAsync();
             const requests = [...(asyncCrossTx || [])];
@@ -290,8 +277,7 @@ const PopupConfirm = (props: Props) => {
           onListenTransaction(requestKey);
           setIsLoading(false);
           toast.success(<Toast type="success" content="Transaction sent successfully! Please check the transaction status in the history tab" />);
-          history.push('/');
-          setActiveTab(ACTIVE_TAB.HOME);
+          goHome();
         })
         .catch(() => {
           if (domain) {

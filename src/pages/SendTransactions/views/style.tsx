@@ -263,18 +263,6 @@ export const AccountTransferDetail = styled(DivFlex)`
   padding: 0 20px;
 `;
 
-export const AmountWrapper = styled(DivFlex)`
-  input::-webkit-outer-spin-button,
-  input::-webkit-inner-spin-button {
-    /* display: none; <- Crashes Chrome on hover */
-    -webkit-appearance: none;
-    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
-  }
-  input[type='number'] {
-    -moz-appearance: textfield; /* Firefox */
-  }
-`;
-
 export const ContactSuggestion = styled.div`
   background: ${({ theme }) => theme.input.background};
   position: absolute;

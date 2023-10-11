@@ -23,7 +23,7 @@ export const HashSignModal = () => {
 
   const [hash, setHash] = useState('');
   const [signature, setSignature] = useState('');
-  const { signHash, isWaitingLedger } = useLedgerContext();
+  const { signHash } = useLedgerContext();
 
   const onCopy = (str: string) => {
     navigator.clipboard.writeText(str);

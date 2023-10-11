@@ -95,7 +95,6 @@
     "styled-components": "^5"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@types/bcrypt": "^5.0.0",
     "@types/chrome": "0.0.221",
     "@typescript-eslint/eslint-plugin": "^4.33.0",

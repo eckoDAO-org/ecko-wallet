@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { NavigationHeader } from 'src/components/NavigationHeader';
 import useLocalStorage from 'src/hooks/useLocalStorage';
-import { setActiveTab } from 'src/stores/extensions';
-import { ACTIVE_TAB } from 'src/utils/constant';
+import { useGoHome } from 'src/hooks/ui';
 import { Body, FormSend, SelectWrapper } from './styles';
 import Transfer from './views/Transfer';
 import SelectReceiver from './views/SelectReceiver';
@@ -15,7 +14,7 @@ const Wrapper = styled.div`
 `;
 
 const SendTransactions = () => {
-  const history = useHistory();
+  const goHome = useGoHome();
   const { search } = useLocation();
   const [fungibleTokens] = useLocalStorage<IFungibleToken[]>(LOCAL_KEY_FUNGIBLE_TOKENS, []);
   const [step, setStep] = useState(0);
@@ -32,8 +31,7 @@ const SendTransactions = () => {
     if (step > 0) {
       setStep(0);
     } else {
-      history.push('/');
-      setActiveTab(ACTIVE_TAB.HOME);
+      goHome();
     }
   };
   const goToTransfer = (account, sourceChainIdValue) => {

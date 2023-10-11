@@ -21,6 +21,8 @@ export interface IAppTheme {
   selectMenu: { color: string; background: string; selectedColor: string; selectedBackground: string };
   transferIcon: { border: string; background: string };
   alert: { color: string; background: string };
+  error: { color: string; background: string };
+  success: { color: string; background: string };
   boxShadow: string;
   iconBackground: string;
   iconSettingsBackground: string;
@@ -63,6 +65,8 @@ export const appThemes: {
       background: '#fff',
     },
     alert: { color: '#ce8900', background: '#fff7e6' },
+    error: { color: '#FF6F80', background: '#fff7e6' },
+    success: { color: '#41cc41', background: '#362f21' },
     modalBackground: '#fff',
     border: '#dfdfed',
     iconBackground: '#fff',
@@ -104,6 +108,8 @@ export const appThemes: {
       background: '#363636',
     },
     alert: { color: '#ffba33', background: '#362f21' },
+    error: { color: '#FF6F80', background: '#362f21' },
+    success: { color: '#41cc41', background: '#362f21' },
     border: '#313232',
     modalBackground: '#1f1f1f',
     iconBackground: '#2a2a2a',
@@ -146,6 +152,8 @@ export const appThemes: {
       background: '##FFFFFF1A',
     },
     alert: { color: '#ffba33', background: '#362f21' },
+    error: { color: '#FF6F80', background: '#362f21' },
+    success: { color: '#41cc41', background: '#362f21' },
     border: '#81878F80',
     modalBackground: '#1A1E3E',
     iconBackground: '#2a2a2a',

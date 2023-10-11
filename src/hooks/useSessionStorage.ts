@@ -15,7 +15,8 @@ function useSessionStorage<S>(key: string, initialValue: S): [S | null, (value: 
         }
       });
     } catch (error) {
-      console.log('useSessionStorageError', error);
+      // eslint-disable-next-line no-console
+      console.error('useSessionStorageError', error);
     }
   }, []);
 
@@ -40,7 +41,8 @@ function useSessionStorage<S>(key: string, initialValue: S): [S | null, (value: 
       setStoredValue(valueToStore);
       (window as any).chrome.storage.session.set({ [key]: valueToStore }, () => {});
     } catch (error) {
-      console.log('setValue useSessionStorageError', error);
+      // eslint-disable-next-line no-console
+      console.error('setValue useSessionStorageError', error);
     }
   };
 
@@ -49,7 +51,8 @@ function useSessionStorage<S>(key: string, initialValue: S): [S | null, (value: 
       setStoredValue(null);
       (window as any).chrome.storage.session.remove(key);
     } catch (error) {
-      console.log('removeValue useSessionStorageError', error);
+      // eslint-disable-next-line no-console
+      console.error('removeValue useSessionStorageError', error);
     }
   };
 

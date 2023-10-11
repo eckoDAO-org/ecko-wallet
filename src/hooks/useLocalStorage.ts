@@ -15,7 +15,8 @@ function useLocalStorage<S>(key: string, initialValue: S): [S | null, (value: an
         }
       });
     } catch (error) {
-      console.log('useLocalStorageError', error);
+      // eslint-disable-next-line no-console
+      console.error('useLocalStorageError', error);
     }
   }, []);
 
@@ -40,7 +41,8 @@ function useLocalStorage<S>(key: string, initialValue: S): [S | null, (value: an
       setStoredValue(valueToStore);
       (window as any).chrome.storage.local.set({ [key]: valueToStore }, () => {});
     } catch (error) {
-      console.log('setValue useLocalStorageError', error);
+      // eslint-disable-next-line no-console
+      console.error('setValue useLocalStorageError', error);
     }
   };
 
@@ -49,7 +51,8 @@ function useLocalStorage<S>(key: string, initialValue: S): [S | null, (value: an
       setStoredValue(null);
       (window as any).chrome.storage.local.remove(key);
     } catch (error) {
-      console.log('removeValue useLocalStorageError', error);
+      // eslint-disable-next-line no-console
+      console.error('removeValue useLocalStorageError', error);
     }
   };
 
