@@ -18,6 +18,14 @@ const Icon = styled.img`
   height: 24px;
 `;
 
+const StakeButton = styled(Button)`
+  width: 100%;
+`;
+
+const UnstakeButton = styled(StakeButton)`
+  background: #E6E6E67F;
+`;
+
 const UnstakeLabel = styled.span`
   color: ${({ theme }) => theme.background}
 `;
@@ -40,25 +48,22 @@ const Staking = () => {
 
   return (
     <DivFlex gap="16px" style={{ width: '100%' }}>
-      <Button
+      <StakeButton
         label={
           <LabelContainer>
             <Icon src={images.governance.stake} />
             <span>Stake</span>
           </LabelContainer>
         }
-        size="full"
         onClick={openStakeModal}
       />
-      <Button
+      <UnstakeButton
         label={
           <LabelContainer>
             <Icon src={images.governance.unstake} />
             <UnstakeLabel>Unstake</UnstakeLabel>
           </LabelContainer>
         }
-        variant="secondary"
-        size="full"
         onClick={openUnstakeModal}
       />
     </DivFlex>
