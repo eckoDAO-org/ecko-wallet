@@ -8,6 +8,12 @@ export const Page = styled(PageFullWidth)`
   padding: 0 20px;
 `;
 
+export const PageFullScreen = styled(PageFullWidth)`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+`;
+
 export const Header = styled.div`
   text-align: center;
   margin: 20px 0;
@@ -19,8 +25,22 @@ export const Body = styled.div`
   font-size: 16px;
 `;
 
+export const BodyFullScreen = styled(Body)`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+`;
+
 export const Footer = styled.div`
   display: flex;
   justify-content: space-between;
   margin: 20px auto;
+`;
+
+export const FooterFullScreen = styled.div`
+  padding: 0 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
 `;

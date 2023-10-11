@@ -1,13 +1,13 @@
 import React from 'react';
-import { useGetAccountDetails } from '../api/kaddex.dao';
 import AmountSelectorView from './AmountSelectorView';
+import { useGetAccountKdxDetails } from '../api/utils';
 
 interface AmountSelectorProps {
   onAmountSelected: (amount: number) => void;
 }
 
 const AmountSelector = ({ onAmountSelected }: AmountSelectorProps) => {
-  const getStakeableKDX = useGetAccountDetails();
+  const getStakeableKDX = useGetAccountKdxDetails();
   const [balance, setBalance] = React.useState(0);
 
   React.useEffect(() => {

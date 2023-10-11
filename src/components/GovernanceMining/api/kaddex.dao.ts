@@ -21,9 +21,3 @@ export interface KdxDetails {
   balance: number;
   guard: AccountGuard;
 }
-
-// This differs from total KDX balance because it is only the balance on the kaddex chain
-export const useGetAccountDetails = () => {
-  const STAKING_CONSTANTS = useStakingConstants();
-  return useExecPactWithLocalAccount<KdxDetails>('(kaddex.kdx.details "{{ACCOUNT}}")', STAKING_CONSTANTS.chainId);
-};
