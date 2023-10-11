@@ -53,21 +53,9 @@ export const useStake = () => {
     const parsedAmount = reduceBalance(amount);
     const pactCode = `(kaddex.staking.stake "${account}" (read-decimal 'amount))`;
 
-    const wrapKdxCap = Pact.lang.mkCap('wrap capability', 'wrapping skdx', 'kaddex.kdx.WRAP', [
-      'kaddex.skdx',
-      account,
-      account,
-      parsedAmount,
-    ]);
-    const stakeCap = Pact.lang.mkCap('stake capability', 'staking', 'kaddex.staking.STAKE', [
-      account,
-      parsedAmount,
-    ]);
-    const caps = [
-      payGasCap,
-      wrapKdxCap,
-      stakeCap,
-    ];
+    const wrapKdxCap = Pact.lang.mkCap('wrap capability', 'wrapping skdx', 'kaddex.kdx.WRAP', ['kaddex.skdx', account, account, parsedAmount]);
+    const stakeCap = Pact.lang.mkCap('stake capability', 'staking', 'kaddex.staking.STAKE', [account, parsedAmount]);
+    const caps = [payGasCap, wrapKdxCap, stakeCap];
 
     const envData = {
       amount: parsedAmount,
@@ -81,9 +69,7 @@ export const usePoolStakeRequest = () => {
   const poolRequestKey = usePoolRequestKey<string>();
   const STAKING_CONSTANTS = useStakingConstants();
 
-  return (requestKey: string) => (
-    poolRequestKey(requestKey, STAKING_CONSTANTS.chainId)
-  );
+  return (requestKey: string) => poolRequestKey(requestKey, STAKING_CONSTANTS.chainId);
 };
 
 export const useCreatePendingStakeActivity = () => {
@@ -96,7 +82,7 @@ export const useCreatePendingStakeActivity = () => {
       senderChainId: chainId,
       receiverChainId: chainId,
       receiver: 'Stake KDX',
-      createdTime: (new Date(stakeResult.request.meta.creationTime * 1000)).toString(),
+      createdTime: new Date(stakeResult.request.meta.creationTime * 1000).toString(),
       amount: stakeResult.request.payload.exec.data.amount,
       gasPrice: stakeResult.request.meta.gasPrice,
       sender: stakeResult.request.meta.sender,
@@ -114,11 +100,13 @@ export const useRollupAndUnstake = () => {
 
   return (amount: number, claimRewards: boolean) => {
     const parsedAmount = reduceBalance(amount);
-    const pactCode = claimRewards ? `
+    const pactCode = claimRewards
+      ? `
       (kaddex.staking.rollup "${account}")
       (kaddex.staking.claim "${account}")
       (kaddex.staking.unstake "${account}" (read-decimal 'amount))
-    ` : `
+    `
+      : `
       (kaddex.staking.rollup "${account}")
       (kaddex.staking.unstake "${account}" (read-decimal 'amount))
     `;
@@ -137,17 +125,9 @@ export const useRollupAndUnstake = () => {
       'kdx-staking',
       parsedAmount,
     ]);
-    const unstakeCap = Pact.lang.mkCap('unstake capability', 'unstaking', 'kaddex.staking.UNSTAKE', [
-      account,
-    ]);
+    const unstakeCap = Pact.lang.mkCap('unstake capability', 'unstaking', 'kaddex.staking.UNSTAKE', [account]);
 
-    const caps = [
-      payGasCap,
-      rollupCap,
-      unwrapRewardsKdxCap,
-      unwrapPenaltyKdxCap,
-      unstakeCap,
-    ];
+    const caps = [payGasCap, rollupCap, unwrapRewardsKdxCap, unwrapPenaltyKdxCap, unstakeCap];
 
     if (claimRewards) {
       caps.push(claimCap);
@@ -165,9 +145,7 @@ export const usePoolUnstakeRequest = () => {
   const poolRequestKey = usePoolRequestKey<boolean>();
   const { chainId } = useStakingConstants();
 
-  return (requestKey: string) => (
-    poolRequestKey(requestKey, chainId)
-  );
+  return (requestKey: string) => poolRequestKey(requestKey, chainId);
 };
 
 export const useCreatePendingUnstakeActivity = () => {
@@ -180,7 +158,7 @@ export const useCreatePendingUnstakeActivity = () => {
       senderChainId: chainId,
       receiverChainId: chainId,
       receiver: 'Unstake KDX',
-      createdTime: (new Date(unstakeResult.request.meta.creationTime * 1000)).toString(),
+      createdTime: new Date(unstakeResult.request.meta.creationTime * 1000).toString(),
       amount: unstakeResult.request.payload.exec.data.amount,
       gasPrice: unstakeResult.request.meta.gasPrice,
       sender: unstakeResult.request.meta.sender,
@@ -205,11 +183,7 @@ export const useClaim = () => {
     const claimCap = Pact.lang.mkCap('claim capability', 'claim', 'kaddex.staking.CLAIM', [account]);
     const rollupCap = Pact.lang.mkCap('rollup capability', 'rollup', 'kaddex.staking.ROLLUP', [account]);
 
-    const caps = [
-      payGasCap,
-      rollupCap,
-      claimCap,
-    ];
+    const caps = [payGasCap, rollupCap, claimCap];
 
     return execCommand(pactCode, chainId, caps);
   };
@@ -219,9 +193,7 @@ export const usePoolClaimRequest = () => {
   const poolRequestKey = usePoolRequestKey<boolean>();
   const { chainId } = useStakingConstants();
 
-  return (requestKey: string) => (
-    poolRequestKey(requestKey, chainId)
-  );
+  return (requestKey: string) => poolRequestKey(requestKey, chainId);
 };
 
 export const useCreatePendingClaimActivity = () => {
@@ -234,7 +206,7 @@ export const useCreatePendingClaimActivity = () => {
       senderChainId: chainId,
       receiverChainId: chainId,
       receiver: 'Claim KDX',
-      createdTime: (new Date(claimResult.request.meta.creationTime * 1000)).toString(),
+      createdTime: new Date(claimResult.request.meta.creationTime * 1000).toString(),
       amount: 0,
       gasPrice: claimResult.request.meta.gasPrice,
       sender: claimResult.request.meta.sender,

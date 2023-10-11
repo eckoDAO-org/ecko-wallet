@@ -1,20 +1,24 @@
 import Pact from 'pact-lang-api';
+import { useLedgerContext, bufferToHex } from 'src/contexts/LedgerContext';
 import { getSelectedNetwork } from 'src/stores/extensions';
 import { useAppSelector } from 'src/stores/hooks';
+import { AccountType } from 'src/stores/wallet';
 import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import { getTimestamp } from 'src/utils';
 import { fetchLocal, getApiUrl, getSignatureFromHash, pollRequestKey } from 'src/utils/chainweb';
 import { CONFIG, ECKO_WALLET_SEND_TX_NONCE } from 'src/utils/config';
 
-export type ResponseWrapper <Response = any> = {
-  status: 'success';
-  data: Response;
-} | {
-  status: 'failure';
-  error: {
-    message: string;
-  };
-};
+export type ResponseWrapper<Response = any> =
+  | {
+      status: 'success';
+      data: Response;
+    }
+  | {
+      status: 'failure';
+      error: {
+        message: string;
+      };
+    };
 
 export const useExecPact = <Response = any>(chainId: string) => {
   const selectedNetwork = useAppSelector(getSelectedNetwork);
@@ -69,7 +73,7 @@ export interface Command {
     exec: {
       data: Record<string, any>;
       code: string;
-    }
+    };
   };
   signers: Signer[];
   meta: {
@@ -86,7 +90,7 @@ export interface Command {
 export interface ExecCommandResult {
   request: Command;
   response: {
-    requestKeys: string[]
+    requestKeys: string[];
   };
 }
 
@@ -94,7 +98,8 @@ export const payGasCap: Capability = Pact.lang.mkCap('gas', 'pay gas', 'coin.GAS
 
 export const useExecCommand = () => {
   const selectedNetwork = useAppSelector(getSelectedNetwork);
-  const { account, publicKey, secretKey } = useCurrentWallet();
+  const { account, publicKey, secretKey, type } = useCurrentWallet();
+  const { signHash } = useLedgerContext();
 
   return async (pactCode: string, CHAIN_ID: string, capabilities: Capability[] = [], envData: object = {}) => {
     const gasLimit = 10000;
@@ -111,18 +116,15 @@ export const useExecCommand = () => {
       keyPairs.secretKey = secretKey;
     }
 
-    const cmd = Pact.api.prepareExecCmd(
-      keyPairs,
-      nonce,
-      pactCode,
-      envData,
-      meta,
-      selectedNetwork.networkId,
-    );
+    const cmd = Pact.api.prepareExecCmd(keyPairs, nonce, pactCode, envData, meta, selectedNetwork.networkId);
 
     if (secretKey.length > 64) {
       const signature = getSignatureFromHash(cmd.hash, secretKey);
       cmd.sigs = [{ sig: signature }];
+    } else if (type === AccountType.LEDGER) {
+      const signHashResult = await signHash(cmd.hash);
+      const sigs = [{ sig: bufferToHex(signHashResult?.signature) }];
+      cmd.sigs = sigs;
     }
 
     const url = getApiUrl(selectedNetwork.url, selectedNetwork.networkId, CHAIN_ID);

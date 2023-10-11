@@ -1,7 +1,16 @@
 import React, { createContext, useContext } from 'react';
 // import { useGetLastDayData } from 'src/components/GovernanceMining/api/analytics';
 import { useGetAccountData } from 'src/components/GovernanceMining/api/kaddex.dao';
-import { StakerInspection, useCreatePendingStakeActivity, useCreatePendingUnstakeActivity, useInspectStaker, useStake, useRollupAndUnstake, useClaim, useCreatePendingClaimActivity } from 'src/components/GovernanceMining/api/kaddex.staking';
+import {
+  StakerInspection,
+  useCreatePendingStakeActivity,
+  useCreatePendingUnstakeActivity,
+  useInspectStaker,
+  useStake,
+  useRollupAndUnstake,
+  useClaim,
+  useCreatePendingClaimActivity,
+} from 'src/components/GovernanceMining/api/kaddex.staking';
 import { PoolState, StakeRewards, StakeStatus } from 'src/components/GovernanceMining/types';
 import { getTimeByBlockchain } from 'src/components/GovernanceMining/helpers/stringUtils';
 
@@ -9,9 +18,9 @@ export interface GovernanceMiningContextValue {
   stakeStatus: StakeStatus;
   poolState: PoolState;
   fetch: () => void;
-  requestStake: (amount: number) => Promise<string|undefined>;
-  requestUnstake: (amount: number, claimRewards: boolean) => Promise<string|undefined>;
-  requestClaim: () => Promise<string|undefined>;
+  requestStake: (amount: number) => Promise<string | undefined>;
+  requestUnstake: (amount: number, claimRewards: boolean) => Promise<string | undefined>;
+  requestClaim: () => Promise<string | undefined>;
 }
 
 const emptyStakeStatus: StakeStatus = {
@@ -113,7 +122,7 @@ export const GovernanceMiningContextProvider: React.FC<GovernanceMiningContextPr
 
   const fetch = async () => {
     const newAccountData = await getAccountData();
-    const newStakerInpsection = await inspectStaker();
+    const newStakerInpsection: any = await inspectStaker();
     // const newLastDayData = [{ _id: '65025b14b9c3fa2a9d899238', communitySale: 49999981.92906779, liquidityMining: 378640486.4958971, daoTreasury: { amount: 247364000, lpPositions: [{ tokenAIdentifier: 'coin', tokenBIdentifier: 'kaddex.kdx', amountTokenA: 125133.03927029687, amountTokenB: 5881165.292362267, poolShare: 0.2117510098 }] }, burn: { tokenBurn: 99028327.76270387, stakingBurn: 208371.46149860538 }, circulatingSupply: { totalSupply: 224758815.79520985, lockedAmount: 69808635.07271297, stakedAmount: 136853384.06067222, vaultedAmount: 69808635.07271297 }, chain: 2, dayString: '2023-09-14', day: '2023-09-14T00:00:00.951Z', __v: 0 }, { _id: '6503ac93b9c3fa2a9d8a0c88', communitySale: 49999981.92906779, liquidityMining: 378640484.98058766, daoTreasury: { amount: 247364000, lpPositions: [{ tokenAIdentifier: 'coin', tokenBIdentifier: 'kaddex.kdx', amountTokenA: 124870.67662051246, amountTokenB: 5893564.337268905, poolShare: 0.2117775243 }] }, burn: { tokenBurn: 99028327.76270387, stakingBurn: 208371.46149860538 }, circulatingSupply: { totalSupply: 224758815.79520985, lockedAmount: 69808635.07271297, stakedAmount: 138502655.85213962, vaultedAmount: 69808635.07271297 }, chain: 2, dayString: '2023-09-15', day: '2023-09-15T00:00:00.367Z', __v: 0 }];
     /* await getLastDayData(); */
 
@@ -123,42 +132,51 @@ export const GovernanceMiningContextProvider: React.FC<GovernanceMiningContextPr
   };
 
   const requestStake = async (amount: number) => {
-    const result = await stake(amount);
-    const requestKey = result.response.requestKeys[0];
-
-    if (!requestKey) {
+    try {
+      const result = await stake(amount);
+      const requestKey = result.response.requestKeys[0];
+      if (!requestKey) {
+        return undefined;
+      }
+      createPendingStakeActivity(result);
+      return requestKey;
+    } catch (err) {
       return undefined;
     }
-
-    createPendingStakeActivity(result);
-
-    return requestKey;
   };
 
   const requestUnstake = async (amount: number, claimRewards: boolean) => {
-    const result = await unstake(amount, claimRewards);
-    const requestKey = result.response.requestKeys[0];
+    try {
+      const result = await unstake(amount, claimRewards);
+      const requestKey = result.response.requestKeys[0];
 
-    if (!requestKey) {
+      if (!requestKey) {
+        return undefined;
+      }
+
+      createPendingUnstakeActivity(result);
+
+      return requestKey;
+    } catch (err) {
       return undefined;
     }
-
-    createPendingUnstakeActivity(result);
-
-    return requestKey;
   };
 
   const requestClaim = async () => {
-    const result = await claim();
-    const requestKey = result.response.requestKeys[0];
+    try {
+      const result = await claim();
+      const requestKey = result.response.requestKeys[0];
 
-    if (!requestKey) {
+      if (!requestKey) {
+        return undefined;
+      }
+
+      createPendingClaimActivity(result);
+
+      return requestKey;
+    } catch (err) {
       return undefined;
     }
-
-    createPendingClaimActivity(result);
-
-    return requestKey;
   };
 
   const contextValue: GovernanceMiningContextValue = {
@@ -179,11 +197,7 @@ export const GovernanceMiningContextProvider: React.FC<GovernanceMiningContextPr
     getPoolState();
   }, [accountData, stakerInspection]);
 
-  return (
-    <GovernanceMiningContext.Provider value={contextValue}>
-      {children}
-    </GovernanceMiningContext.Provider>
-  );
+  return <GovernanceMiningContext.Provider value={contextValue}>{children}</GovernanceMiningContext.Provider>;
 };
 
 export const useGovernanceMining = () => {
