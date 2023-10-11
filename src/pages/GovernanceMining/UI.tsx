@@ -16,6 +16,11 @@ const Icon = styled.img`
   height: 72px;
 `;
 
+const PositionContainer = styled(DivFlex)`
+  width: 100%;
+  align-items: center;
+`;
+
 const GovernanceMining = () => {
   const history = useHistory();
 
@@ -30,8 +35,10 @@ const GovernanceMining = () => {
       </Header>
       <Body>
         <DivBottomShadow justifyContent="center" flexDirection="column" alignItems="center" gap="16px" padding="20px" marginBottom="24px">
-          <Icon src={images.governance.governanceMiningKdx} />
-          <Position />
+          <PositionContainer>
+            <Icon src={images.governance.governanceMiningKdx} />
+            <Position />
+          </PositionContainer>
           <Staking />
         </DivBottomShadow>
         <DivFlex justifyContent="center" flexDirection="column" padding="0 20px" gap="16px">
