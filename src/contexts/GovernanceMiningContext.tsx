@@ -1,5 +1,6 @@
 import React, { createContext, useContext } from 'react';
 // import { useGetLastDayData } from 'src/components/GovernanceMining/api/analytics';
+import { useCurrentWallet } from 'src/stores/wallet/hooks';
 import { useGetAccountData } from 'src/components/GovernanceMining/api/kaddex.dao';
 import { StakerInspection, useCreatePendingStakeActivity, useCreatePendingUnstakeActivity, useInspectStaker, useStake, useRollupAndUnstake, useClaim, useCreatePendingClaimActivity } from 'src/components/GovernanceMining/api/kaddex.staking';
 import { useGetAccountKdaDetails } from 'src/components/GovernanceMining/api/utils';
@@ -54,6 +55,7 @@ interface GovernanceMiningContextProviderProps {
 }
 
 export const GovernanceMiningContextProvider: React.FC<GovernanceMiningContextProviderProps> = ({ children }) => {
+  const { account } = useCurrentWallet();
   const [stakeStatus, setStakeStatus] = React.useState(emptyStakeStatus);
   const [poolState, setPoolState] = React.useState(emptyPoolState);
 
@@ -179,8 +181,10 @@ export const GovernanceMiningContextProvider: React.FC<GovernanceMiningContextPr
   };
 
   React.useEffect(() => {
-    fetch();
-  }, []);
+    if (account) {
+      fetch();
+    }
+  }, [account]);
 
   React.useEffect(() => {
     getStakeStatus();
