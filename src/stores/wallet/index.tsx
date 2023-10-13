@@ -15,7 +15,7 @@ export interface RawWallet {
   connectedSites: string[];
   type?: AccountType;
 }
-interface Wallet {
+export interface Wallet {
   chainId: string | number;
   balance: number;
   account: string;
