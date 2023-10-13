@@ -4,6 +4,7 @@ import { DivFlex, PrimaryLabel, SecondaryLabel } from 'src/components';
 
 const FullWidthDivFlex = styled(DivFlex)`
   width: 100%;
+  text-align: right;
 `;
 
 const PendingLabel = styled.div`
@@ -18,14 +19,13 @@ interface PositionProps {
 }
 
 const Position = ({ amount, pending }: PositionProps) => (
-  <FullWidthDivFlex justifyContent="center" flexDirection="column" alignItems="center">
-    <SecondaryLabel>POSITION</SecondaryLabel>
-    <PrimaryLabel>{amount} KDX</PrimaryLabel>
+  <FullWidthDivFlex flexDirection="column" alignItems="end">
+    <DivFlex flexDirection="column">
+      <SecondaryLabel>POSITION</SecondaryLabel>
+      <PrimaryLabel>{amount} KDX</PrimaryLabel>
+    </DivFlex>
     {pending > 0 && (
-      <FullWidthDivFlex justifyContent="space-between">
-        <PendingLabel>PENDING</PendingLabel>
-        <PendingLabel>{pending} KDX</PendingLabel>
-      </FullWidthDivFlex>
+      <PendingLabel>PENDING {pending} KDX</PendingLabel>
     )}
   </FullWidthDivFlex>
 );

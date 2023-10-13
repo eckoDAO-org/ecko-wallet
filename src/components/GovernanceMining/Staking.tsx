@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useGovernanceMining } from 'src/contexts/GovernanceMiningContext';
 import { DivFlex } from 'src/components';
 import Button from 'src/components/Buttons';
 import images from 'src/images';
@@ -18,12 +19,23 @@ const Icon = styled.img`
   height: 24px;
 `;
 
-const UnstakeLabel = styled.span`
-  color: ${({ theme }) => theme.background}
+const StakeButton = styled(Button)`
+  width: 100%;
+  ${({ disabled }) => (disabled && `
+    opacity: 0.2;
+    cursor: default;
+  `)}
+`;
+
+const UnstakeButton = styled(StakeButton)`
+  background: #E6E6E6;
+  color: #1A1E3E;
 `;
 
 const Staking = () => {
+  const { hasGas } = useGovernanceMining();
   const { openModal, closeModal } = useModalContext();
+
   const openStakeModal = () => {
     openModal({
       title: 'Stake',
@@ -40,26 +52,25 @@ const Staking = () => {
 
   return (
     <DivFlex gap="16px" style={{ width: '100%' }}>
-      <Button
+      <StakeButton
         label={
           <LabelContainer>
             <Icon src={images.governance.stake} />
             <span>Stake</span>
           </LabelContainer>
         }
-        size="full"
         onClick={openStakeModal}
+        disabled={!hasGas}
       />
-      <Button
+      <UnstakeButton
         label={
           <LabelContainer>
             <Icon src={images.governance.unstake} />
-            <UnstakeLabel>Unstake</UnstakeLabel>
+            <span>Unstake</span>
           </LabelContainer>
         }
-        variant="secondary"
-        size="full"
         onClick={openUnstakeModal}
+        disabled={!hasGas}
       />
     </DivFlex>
   );
