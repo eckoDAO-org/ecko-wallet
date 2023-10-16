@@ -78,7 +78,8 @@ export const LedgerProvider = ({ children }: any) => {
         setKadenaLedger(kadena);
         return kadena;
       } catch (err) {
-        console.log(`Ledger ERROR:`, err);
+        // eslint-disable-next-line no-console
+        console.error('Ledger ERROR:', err);
         setError(`Unable to get ledger: ${err}`);
       }
     }

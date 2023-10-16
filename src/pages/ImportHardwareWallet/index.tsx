@@ -57,7 +57,7 @@ const ImportHardwareWallet = () => {
       hideLoading();
       return publicKey;
     } catch (err: any) {
-      console.log(`Ledger ERROR:`, err);
+      console.log('Ledger ERROR:', err);
       hideLoading();
     }
     return null;

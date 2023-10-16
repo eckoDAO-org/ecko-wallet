@@ -1,8 +1,17 @@
 import styled from 'styled-components';
 
-export const Page = styled.div`
-  padding: 0 20px;
+export const PageFullWidth = styled.div`
   color: ${({ theme }) => theme.text.primary};
+`;
+
+export const Page = styled(PageFullWidth)`
+  padding: 0 20px;
+`;
+
+export const PageFullScreen = styled(PageFullWidth)`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 `;
 
 export const Header = styled.div`
@@ -16,8 +25,22 @@ export const Body = styled.div`
   font-size: 16px;
 `;
 
+export const BodyFullScreen = styled(Body)`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+`;
+
 export const Footer = styled.div`
   display: flex;
   justify-content: space-between;
   margin: 20px auto;
+`;
+
+export const FooterFullScreen = styled.div`
+  padding: 0 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
 `;

@@ -1,6 +1,6 @@
 import { useEffect, useContext } from 'react';
 import { useSelector } from 'react-redux';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
@@ -12,6 +12,7 @@ import { fetchListLocal } from 'src/utils/chainweb';
 import { hideLoading, showLoading } from 'src/stores/extensions';
 import { KNOWN_TOKENS } from 'src/utils/constant';
 import { SettingsContext } from 'src/contexts/SettingsContext';
+import { useGoHome } from 'src/hooks/ui';
 import Button from 'src/components/Buttons';
 import { NavigationHeader } from 'src/components/NavigationHeader';
 
@@ -52,7 +53,7 @@ const ImportToken = () => {
   const { search } = useLocation();
   const rootState = useSelector((state) => state);
   const { selectedNetwork } = rootState.extensions;
-  const history = useHistory();
+  const goHome = useGoHome();
   const [fungibleTokens, setFungibleTokens] = useLocalStorage<IFungibleToken[]>(LOCAL_KEY_FUNGIBLE_TOKENS, []);
   const { data: settings } = useContext(SettingsContext);
   const txSettings = settings?.txSettings;
@@ -125,7 +126,7 @@ const ImportToken = () => {
           },
         ]);
         toast.success(<Toast type="success" content="Token successfully saved" />);
-        history.push('/');
+        goHome();
       }
     }
   };

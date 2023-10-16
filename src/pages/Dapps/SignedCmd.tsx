@@ -188,7 +188,8 @@ const SignedCmd = () => {
           resolve({ signedCmd, signingCmd });
         }
       } catch (err: any) {
-        console.log('Signing cmd err:', err);
+        // eslint-disable-next-line no-console
+        console.error('Signing cmd err:', err);
         const result = {
           status: 'fail',
           message: err?.message ?? 'Signing cmd error',

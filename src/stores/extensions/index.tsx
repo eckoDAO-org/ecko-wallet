@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction, Store } from '@reduxjs/toolkit';
 import { ACTIVE_TAB } from 'src/utils/constant';
+import { RootState } from '..';
 
 let customStore: Store | undefined;
 
@@ -173,5 +174,7 @@ export const showFetching = () => {
 export const hideFetching = () => {
   customStore && customStore.dispatch(storeExtensions.actions.hideFetching());
 };
+
+export const getSelectedNetwork = (state: RootState) => state.extensions.selectedNetwork;
 
 export { storeExtensions };

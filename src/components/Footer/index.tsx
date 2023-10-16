@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { setActiveTab, setExtensionPassword, setIsHaveSeedPhrase } from 'src/stores/extensions';
 import { useSettingsContext } from 'src/contexts/SettingsContext';
+import { useGoHome } from 'src/hooks/ui';
 import { setCurrentWallet, setWallets } from 'src/stores/wallet';
 import { getLocalSeedPhrase, initDataFromLocal } from 'src/utils/storage';
 import { ReactComponent as EckoWalletLogoBar } from 'src/images/ecko-wallet-icon.svg';
@@ -86,6 +87,7 @@ const Footer = () => {
   const { isLocked } = useSettingsContext();
 
   const history = useHistory();
+  const goHome = useGoHome();
   useEffect(() => {
     // set up listener
     const setupListener = () => {
@@ -123,8 +125,7 @@ const Footer = () => {
           () => {
             setIsHaveSeedPhrase(true);
             if (!isSyncUrl) {
-              history.push('/');
-              setActiveTab(ACTIVE_TAB.HOME);
+              goHome();
             }
           },
           () => {},
@@ -137,8 +138,7 @@ const Footer = () => {
 
   const isLoggedIn = !isLocked;
   const setIconHomeActive = () => {
-    history.push('/');
-    setActiveTab(ACTIVE_TAB.HOME);
+    goHome();
   };
   const setIconHistoryActive = () => {
     history.push('/history');
