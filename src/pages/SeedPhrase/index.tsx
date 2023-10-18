@@ -116,7 +116,7 @@ const SeedPhrase = () => {
   }, []);
 
   const goToSignIn = () => {
-    toast.success(<Toast type="success" content="Verify Secret Recovery Phrase Successfully!" />);
+    toast.success(<Toast type="success" content="Secret Recovery Phrase verified successfully" />);
     history.push('/sign-in');
   };
 
