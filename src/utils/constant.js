@@ -150,3 +150,5 @@ export const CHAIN_AVAILABLE_TOKENS_FIXTURE = [
   baseTokenList,
   baseTokenList,
 ];
+
+export const SETTINGS_STORAGE_KEY = 'settingsV2';

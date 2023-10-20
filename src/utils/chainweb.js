@@ -4,6 +4,7 @@ import lib from 'cardano-crypto.js/kadena-crypto';
 import { CHAIN_AVAILABLE_TOKENS_FIXTURE, CHAIN_COUNT } from './constant';
 import { CONFIG, KADDEX_ANALYTICS_API } from './config';
 import { getTimestamp } from './index';
+// import { getLocalStorageDataByKey, SETTINGS_STORAGE_KEY } from './storage';
 
 export const MAINNET_NETWORK_ID = 'mainnet01';
 
@@ -157,3 +158,14 @@ export const getAccountExistsChains = async (accounts, networkUrl, networkId) =>
   }
   return accountResponse;
 };
+
+export const getLocalStorageDataByKey = (key) =>
+  new Promise((resolve, reject) => {
+    window?.chrome?.storage?.local?.get(key, (result) => {
+      if (result) {
+        resolve(result[key] || null);
+      } else {
+        reject();
+      }
+    });
+  });

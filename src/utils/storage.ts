@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import { get } from 'lodash';
 import {
   RawNetwork,
@@ -14,6 +15,7 @@ import {
 import { RawWallet, setCurrentWallet, setWallets } from 'src/stores/wallet';
 import { convertContacts, convertNetworks, convertRecent, revertNetworks } from '.';
 import { getKeyPairsFromSeedPhrase } from './chainweb';
+import { SETTINGS_STORAGE_KEY } from './constant';
 import { decryptKey, encryptKey } from './security';
 
 type RawWalletsMap = {
@@ -31,6 +33,17 @@ export const getLocalStorageData = (key, successCallback, failCallback?) => {
     }
   });
 };
+
+export const getLocalStorageDataByKey = <T = any>(key): Promise<T> =>
+  new Promise((resolve, reject) => {
+    (window as any)?.chrome?.storage?.local?.get(key, (result) => {
+      if (result) {
+        resolve(result[key] || null);
+      } else {
+        reject();
+      }
+    });
+  });
 
 export const setLocalStorageData = (key, data) => {
   const obj = {};
@@ -377,6 +390,17 @@ export const getLocalContacts = (network, successCallback, failCallback) => {
   });
 };
 
+export const getLocalSettings = () =>
+  new Promise((resolve, reject) => {
+    (window as any)?.chrome?.storage?.local?.get(SETTINGS_STORAGE_KEY, (result) => {
+      if (result && result[SETTINGS_STORAGE_KEY]) {
+        resolve(result[SETTINGS_STORAGE_KEY]);
+      } else {
+        reject();
+      }
+    });
+  });
+
 export const getExistContacts = (accountName, contacts) => {
   const findName = get(contacts, `0.${accountName}`, {});
   return get(findName, 'aliasName', '');
@@ -602,3 +626,27 @@ export const updateRecent = (networkId) => {
     () => {},
   );
 };
+export const STORAGE_KEY_PENDING_CROSSCHAIN = 'pendingCrossChainRequestKeys';
+interface PendingCrossChainRequest {
+  requestKey: string;
+  networkId: string;
+  sourceChainId: string;
+  targetChainId: string;
+}
+
+export const getPendingCrossChainRequestKey = (): Promise<PendingCrossChainRequest[]> => getLocalStorageDataByKey(STORAGE_KEY_PENDING_CROSSCHAIN);
+
+export const addPendingCrossChainRequestKey = ({ requestKey, networkId, sourceChainId, targetChainId }: PendingCrossChainRequest): Promise<boolean> =>
+  new Promise((resolve, reject) => {
+    getPendingCrossChainRequestKey().then((pendingCrossChains) => {
+      (window as any)?.chrome?.storage?.local
+        ?.set({
+          [STORAGE_KEY_PENDING_CROSSCHAIN]: [
+            ...(Array.isArray(pendingCrossChains) ? pendingCrossChains : []),
+            { networkId, requestKey, sourceChainId, targetChainId },
+          ],
+        })
+        .then(() => resolve(true))
+        .catch(() => reject());
+    });
+  });

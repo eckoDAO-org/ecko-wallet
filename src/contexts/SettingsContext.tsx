@@ -4,6 +4,7 @@ import useIdleTimeout from 'src/hooks/useIdleTimeout';
 import { CONFIG } from 'src/utils/config';
 import { STORAGE_PASSWORD_KEY } from 'src/utils/storage';
 import useSessionStorage from 'src/hooks/useSessionStorage';
+import { SETTINGS_STORAGE_KEY } from 'src/utils/constant';
 
 export interface TxSettings {
   gasLimit?: number;
@@ -56,7 +57,7 @@ export const SettingsProvider = ({ children }: any) => {
   const [isLocked, setIsLocked] = useState(false);
   const diff = lastActivityTimeout ? (new Date().getTime() - lastActivityTimeout) / 1000 : 0;
 
-  const [settings, setSettings, getSettingsAsync] = useLocalStorage<SettingsContextData>('settingsV2', defaultSettingsContextValue);
+  const [settings, setSettings, getSettingsAsync] = useLocalStorage<SettingsContextData>(SETTINGS_STORAGE_KEY, defaultSettingsContextValue);
   const [, , , removeAccountPassword] = useSessionStorage(STORAGE_PASSWORD_KEY, null);
 
   const lockWallet = () => {
