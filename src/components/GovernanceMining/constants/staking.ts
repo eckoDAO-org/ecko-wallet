@@ -14,7 +14,7 @@ type StakingEnvConfiguration = {
   percentagePenaltyHours: number;
   percentagePenalty: number,
   dynamicPenaltyDays: number;
-  maxPowerVoting: number;
+  maxMultiplier: number;
   withdrawDaysToWaitFromLastClaim: number;
   chainId: string;
 };
@@ -29,7 +29,7 @@ const stakingConfiguration: StakingConfiguration = {
     percentagePenaltyHours: 1,
     percentagePenalty: 3,
     dynamicPenaltyDays: 0,
-    maxPowerVoting: 2.5,
+    maxMultiplier: 2.5,
     withdrawDaysToWaitFromLastClaim: 7,
     chainId: '0',
   },
@@ -40,7 +40,7 @@ const stakingConfiguration: StakingConfiguration = {
     percentagePenaltyHours: 1,
     percentagePenalty: 3,
     dynamicPenaltyDays: 0,
-    maxPowerVoting: 2.5,
+    maxMultiplier: 2.5,
     withdrawDaysToWaitFromLastClaim: 7,
     chainId: '0',
   },
@@ -51,7 +51,7 @@ const stakingConfiguration: StakingConfiguration = {
     percentagePenaltyHours: 72,
     percentagePenalty: 3,
     dynamicPenaltyDays: 60,
-    maxPowerVoting: 2.5,
+    maxMultiplier: 2.5,
     withdrawDaysToWaitFromLastClaim: 7,
     chainId: '2',
   },

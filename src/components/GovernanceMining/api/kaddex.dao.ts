@@ -2,12 +2,14 @@ import { useExecPactWithLocalAccount } from 'src/hooks/pact';
 import { useStakingConstants } from '../constants/staking';
 
 export interface AccountData {
-  // TODO
+  'staked-amount': number;
+  multiplier: number;
+  vp: number;
 }
 
 export const useGetAccountData = () => {
   const STAKING_CONSTANTS = useStakingConstants();
-  return useExecPactWithLocalAccount('(kaddex.dao.get-account-data "{{ACCOUNT}}")', STAKING_CONSTANTS.chainId);
+  return useExecPactWithLocalAccount<AccountData>('(kaddex.dao.get-account-data "{{ACCOUNT}}")', STAKING_CONSTANTS.chainId);
 };
 
 // TODO: move in a more appropriated file

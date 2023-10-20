@@ -38,6 +38,7 @@ const emptyStakeStatus: StakeStatus = {
     lastClaimDate: '',
   },
   votingPower: 0,
+  multiplier: 0,
 };
 
 const emptyPoolState: PoolState = {
@@ -68,7 +69,7 @@ export const GovernanceMiningContextProvider: React.FC<GovernanceMiningContextPr
   const [stakeStatus, setStakeStatus] = React.useState(emptyStakeStatus);
   const [poolState, setPoolState] = React.useState(emptyPoolState);
 
-  const [accountData, setAccountData] = React.useState<any>();
+  const [accountData, setAccountData] = React.useState<AccountData>();
   const [stakerInspection, setStakerInspection] = React.useState<StakerInspection>();
   const [hasGas, setHasGas] = React.useState<undefined | boolean>(undefined);
   // const [lastDayData, setLastDayData] = React.useState<any>();
@@ -104,6 +105,7 @@ export const GovernanceMiningContextProvider: React.FC<GovernanceMiningContextPr
       pendingTokens: stakerInspection['stake-record']['pending-add'],
       rewards,
       votingPower: accountData.vp,
+      multiplier: accountData.multiplier,
     };
 
     setStakeStatus(newStakeStatus);
