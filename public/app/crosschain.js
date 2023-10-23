@@ -1,6 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import Pact from 'pact-lang-api';
 import { getApiUrl, pollRequestKey, fetchSend } from '../../src/utils/chainweb';
+import { delay } from '../../src/utils';
 
 const getLocalStorageDataByKey = (key) =>
   new Promise((resolve, reject) => {
@@ -15,14 +16,13 @@ const getLocalStorageDataByKey = (key) =>
 
 const getPendingCrossChainRequestKey = () => getLocalStorageDataByKey('pendingCrossChainRequestKeys');
 
-const processingRequestKeys = [];
+let processingRequestKeys = [];
 
 const checkForPendingCrossChainTx = async () => {
   try {
     const networks = await getLocalStorageDataByKey('networks');
     if (Array.isArray(Object.values(networks)) && Object.values(networks).length) {
       const pendingRequestKeys = await getPendingCrossChainRequestKey();
-      console.log(`🚀 ~ pendingRequestKeys:`, pendingRequestKeys);
       for (let i = 0; i < pendingRequestKeys?.length; i += 1) {
         const { networkId, requestKey, targetChainId, sourceChainId } = pendingRequestKeys[i];
         const network = Object.values(networks).find((n) => n.networkId === networkId);
@@ -33,6 +33,7 @@ const checkForPendingCrossChainTx = async () => {
             processingRequestKeys.push(requestKey);
             do {
               spv = await getTxSPV(requestKey, targetChainId, nodeUrl);
+              await delay(10000);
             } while (!spv);
             // finish with spv
             await finishCrossChain(spv, targetChainId, requestKey, network);
@@ -54,7 +55,6 @@ const getTxSPV = (requestKey, targetChainId, url) =>
     Pact.fetch
       .spv(spvCmd, url)
       .then((res) => {
-        console.log(`spv:`, res);
         if (res.includes('SPV target not reachable') || res.includes('Transaction hash not found')) {
           resolve(false);
         }
@@ -72,11 +72,10 @@ const finishCrossChain = async (proof, targetChainId, requestKey, network) => {
   const finishRequestKey = await finishCrossChainWithProof(proof, requestKey, targetChainId, network);
   const nodeUrl = getApiUrl(network.url, network.networkId, targetChainId);
   const pollRes = await pollRequestKey(finishRequestKey, nodeUrl);
-  console.log(`🚀 ~ pollRes:`, pollRes);
   if (pollRes) {
     const status = pollRes?.result?.status;
     if (status === 'success' || (pollRes?.result.error?.message && pollRes?.result.error?.message?.indexOf('resumePact: pact completed') > -1)) {
-      // set success
+      removePendingCrossChain(requestKey);
     } else if (status === 'failure') {
       //   toast.error(<Toast type="fail" content="Finish cross transfer Fail" />);
     }
@@ -133,6 +132,14 @@ const finishCrossChainWithProof = async (proof, requestKey, targetChainId, netwo
     console.log('finishCrossChainWithProof error', err);
     return false;
   }
+};
+
+const removePendingCrossChain = async (requestKey) => {
+  const pendingRequestKeys = await getPendingCrossChainRequestKey();
+  processingRequestKeys = processingRequestKeys.filter((rq) => rq !== requestKey);
+  chrome?.storage?.local.set({
+    pendingCrossChainRequestKeys: pendingRequestKeys?.filter((tx) => tx.requestKey !== requestKey),
+  });
 };
 
 setInterval(() => {
