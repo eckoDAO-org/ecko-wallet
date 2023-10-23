@@ -15,6 +15,7 @@ import { GovernanceMiningContextProvider } from './contexts/GovernanceMiningCont
 import ModalCustom from './components/Modal/ModalCustom';
 import { LedgerProvider } from './contexts/LedgerContext';
 import NotificationManager from './components/NotificationManager';
+import { NotificationContextProvider } from './contexts/NotificationsContext';
 
 const AppWrapper = styled.div`
   display: block;
@@ -65,15 +66,17 @@ const App = () => (
                   <AccountBalanceProvider>
                     <CrossChainProvider>
                       <GovernanceMiningContextProvider>
-                        <ModalConsumer>
-                          {({ isOpen, title, content, footer, closeModal, roundIcon }) => (
-                            <ModalCustom isOpen={isOpen || false} title={title} footer={footer} onCloseModal={closeModal} roundIcon={roundIcon}>
-                              {content}
-                            </ModalCustom>
-                          )}
-                        </ModalConsumer>
-                        <NotificationManager />
-                        <AppContainer />
+                        <NotificationContextProvider>
+                          <ModalConsumer>
+                            {({ isOpen, title, content, footer, closeModal, roundIcon }) => (
+                              <ModalCustom isOpen={isOpen || false} title={title} footer={footer} onCloseModal={closeModal} roundIcon={roundIcon}>
+                                {content}
+                              </ModalCustom>
+                            )}
+                          </ModalConsumer>
+                          <NotificationManager />
+                          <AppContainer />
+                        </NotificationContextProvider>
                       </GovernanceMiningContextProvider>
                     </CrossChainProvider>
                   </AccountBalanceProvider>
