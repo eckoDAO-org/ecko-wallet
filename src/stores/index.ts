@@ -6,6 +6,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import { setStoreWallet, storeWallet } from './slices/wallet';
 import { setStoreExtensions, storeExtensions } from './slices/extensions';
 import { authSlice } from './slices/auth';
+import { notificationsSlice } from './slices/notifications';
 
 let customStore: Store | undefined;
 
@@ -25,6 +26,7 @@ const appReducer = combineReducers({
   wallet: storeWallet.reducer,
   extensions: storeExtensions.reducer,
   auth: authSlice.reducer,
+  notifications: notificationsSlice.reducer,
 });
 
 const rootReducer = (state: any, action: any) => appReducer(state, action);
@@ -36,7 +38,7 @@ const enhancer = composeWithDevTools(applyMiddleware(...middlewares));
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['auth'],
+  whitelist: ['auth', 'notifications'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
