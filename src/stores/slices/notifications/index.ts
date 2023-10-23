@@ -1,14 +1,14 @@
 import { Dictionary, PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { RootState } from 'src/stores';
 
-interface NotificationState {
+interface Notification {
   id: string;
   content: string;
   readTimestamp?: number;
 }
 
-type NotificationsState = Dictionary<NotificationState>;
-type AddNotificationPayload = Pick<NotificationState, 'id' | 'content'>;
+type NotificationsState = Dictionary<Notification>;
+type AddNotificationPayload = Pick<Notification, 'id' | 'content'>;
 
 const initialState: NotificationsState = {};
 
@@ -49,11 +49,11 @@ export const {
 
 export const getNotifications = (state: RootState) => state.notifications;
 
-export const getNotification = (notificationId: NotificationState['id']) => (
+export const getNotification = (notificationId: Notification['id']) => (
   (state: RootState) => state.notifications[notificationId]
 );
 
-export const isRead = (notificationId: NotificationState['id']) => (
+export const isRead = (notificationId: Notification['id']) => (
   (state: RootState) => !!state.notifications[notificationId]?.readTimestamp
 );
 
