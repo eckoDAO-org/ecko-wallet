@@ -7,12 +7,12 @@ import { useHistory } from 'react-router-dom';
 import { DivFlex, PageWrapper, SecondaryLabel } from 'src/components';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
-import { hideLoading, setActiveTab, showLoading } from 'src/stores/extensions';
+import { hideLoading, setActiveTab, showLoading } from 'src/stores/slices/extensions';
 import { fetchLocal } from 'src/utils/chainweb';
 import { getLocalPassword, getLocalWallets, setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
 import { find, isEmpty } from 'lodash';
 import { encryptKey } from 'src/utils/security';
-import { AccountType, setCurrentWallet, setWallets } from 'src/stores/wallet';
+import { AccountType, setCurrentWallet, setWallets } from 'src/stores/slices/wallet';
 import { ACTIVE_TAB } from 'src/utils/constant';
 import { useLedgerContext } from 'src/contexts/LedgerContext';
 

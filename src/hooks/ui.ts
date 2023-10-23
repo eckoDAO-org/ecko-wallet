@@ -1,5 +1,5 @@
 import { useHistory } from 'react-router-dom';
-import { setActiveTab } from 'src/stores/extensions';
+import { setActiveTab } from 'src/stores/slices/extensions';
 import { ACTIVE_TAB } from 'src/utils/constant';
 
 export const useGoHome = () => {

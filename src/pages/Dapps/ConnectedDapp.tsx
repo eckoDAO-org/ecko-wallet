@@ -18,7 +18,7 @@ import { shortenAddress } from 'src/utils';
 import { DivFlex, SecondaryLabel } from 'src/components';
 import Button from 'src/components/Buttons';
 import { Radio } from 'src/components/Radio';
-import { setCurrentWallet, setWallets } from 'src/stores/wallet';
+import { setCurrentWallet, setWallets } from 'src/stores/slices/wallet';
 
 const Wrapper = styled.div`
   display: flex;

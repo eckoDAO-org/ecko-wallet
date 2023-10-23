@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { BaseTextInput } from 'src/baseComponent';
 import { useSelector } from 'react-redux';
-import { hideLoading, showLoading } from 'src/stores/extensions';
+import { hideLoading, showLoading } from 'src/stores/slices/extensions';
 import { ReactComponent as AddIconSVG } from 'src/images/add-round.svg';
 import { ReactComponent as AlertIconSVG } from 'src/images/icon-alert.svg';
 import { ReactComponent as GearIconSVG } from 'src/images/gear-icon.svg';
@@ -12,7 +12,7 @@ import { CommonLabel, DivBottomShadow, DivFlex, PaddedBodyStickyFooter, Secondar
 import { JazzAccount } from 'src/components/JazzAccount';
 import PopupConfirm from 'src/pages/SendTransactions/views/PopupConfirm';
 import { toast } from 'react-toastify';
-import { AccountType } from 'src/stores/wallet';
+import { AccountType } from 'src/stores/slices/wallet';
 import Toast from 'src/components/Toast/Toast';
 import { useSettingsContext } from 'src/contexts/SettingsContext';
 import { useAccountBalanceContext } from 'src/contexts/AccountBalanceContext';

@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import styled from 'styled-components';
 import ModalCustom from 'src/components/Modal/ModalCustom';
-import { hideLoading, showLoading } from 'src/stores/extensions';
+import { hideLoading, showLoading } from 'src/stores/slices/extensions';
 import { get } from 'lodash';
-import { useCurrentWallet } from 'src/stores/wallet/hooks';
+import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import { useSelector } from 'react-redux';
-import { setBalance } from 'src/stores/wallet';
+import { setBalance } from 'src/stores/slices/wallet';
 import { fetchLocal, getBalanceFromChainwebApiResponse } from '../../utils/chainweb';
 import TabWallet from '../Wallet/views/TabContent';
 

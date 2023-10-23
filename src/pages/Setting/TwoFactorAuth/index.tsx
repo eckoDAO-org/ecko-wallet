@@ -1,5 +1,5 @@
 import { useAppSelector } from 'src/stores/hooks';
-import { hasTOTPSharedKey } from 'src/stores/auth';
+import { hasTOTPSharedKey } from 'src/stores/slices/auth';
 import TOTPSetup from './TOTPSetup';
 import TOTPDisabler from './TOTPDisabler';
 

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { getLocalPassword } from 'src/utils/storage';
 import { decryptSharedKey, initTOTP } from 'src/utils/totp';
 import { useAppSelector } from 'src/stores/hooks';
-import { getTOTPSharedKey } from 'src/stores/auth';
+import { getTOTPSharedKey } from 'src/stores/slices/auth';
 import { InputError } from 'src/baseComponent';
 import { SInput } from 'src/baseComponent/BaseTextInput';
 import { CommonLabel } from 'src/components';

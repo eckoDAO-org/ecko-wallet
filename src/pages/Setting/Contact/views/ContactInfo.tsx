@@ -10,7 +10,7 @@ import Toast from 'src/components/Toast/Toast';
 import { useModalContext } from 'src/contexts/ModalContext';
 import images from 'src/images';
 import { Icon, ReceiveSection, ReceiveTitle } from 'src/pages/Wallet/views/ReceiveModal';
-import { setContacts } from 'src/stores/extensions';
+import { setContacts } from 'src/stores/slices/extensions';
 import { convertContacts } from 'src/utils';
 import { getLocalContacts, setLocalContacts } from 'src/utils/storage';
 import ContactForm from './ContactForm';

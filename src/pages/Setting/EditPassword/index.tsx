@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { useAppDispatch, useAppSelector } from 'src/stores/hooks';
-import { getTOTPSharedKey, setTOTPSharedKey } from 'src/stores/auth';
+import { getTOTPSharedKey, setTOTPSharedKey } from 'src/stores/slices/auth';
 import { reencryptSharedKey } from 'src/utils/totp';
 import Button from 'src/components/Buttons';
 import { NavigationHeader } from 'src/components/NavigationHeader';

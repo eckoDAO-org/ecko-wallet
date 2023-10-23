@@ -1,6 +1,6 @@
 import React, { createContext, useContext } from 'react';
 // import { useGetLastDayData } from 'src/components/GovernanceMining/api/analytics';
-import { useCurrentWallet } from 'src/stores/wallet/hooks';
+import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import { AccountData, useGetAccountData } from 'src/components/GovernanceMining/api/kaddex.dao';
 import {
   StakerInspection,

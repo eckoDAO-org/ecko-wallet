@@ -1,9 +1,9 @@
 import Pact from 'pact-lang-api';
 import { bufferToHex, useLedgerContext } from 'src/contexts/LedgerContext';
-import { getSelectedNetwork } from 'src/stores/extensions';
+import { getSelectedNetwork } from 'src/stores/slices/extensions';
 import { useAppSelector } from 'src/stores/hooks';
-import { AccountType } from 'src/stores/wallet';
-import { useCurrentWallet } from 'src/stores/wallet/hooks';
+import { AccountType } from 'src/stores/slices/wallet';
+import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import { getTimestamp } from 'src/utils';
 import { fetchLocal, getApiUrl, getSignatureFromHash, pollRequestKey } from 'src/utils/chainweb';
 import { CONFIG, ECKO_WALLET_SEND_TX_NONCE } from 'src/utils/config';

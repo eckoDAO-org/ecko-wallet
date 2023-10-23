@@ -2,8 +2,8 @@
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { DivFlex, PrimaryLabel, SecondaryLabel } from 'src/components';
-import { hideLoading, showLoading } from 'src/stores/extensions';
-import { useCurrentWallet } from 'src/stores/wallet/hooks';
+import { hideLoading, showLoading } from 'src/stores/slices/extensions';
+import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import { useSelector } from 'react-redux';
 import { groupBy, chunk } from 'lodash';
 import { fetchLocal } from '../../utils/chainweb';

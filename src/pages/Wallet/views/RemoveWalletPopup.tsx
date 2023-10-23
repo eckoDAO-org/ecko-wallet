@@ -3,7 +3,7 @@ import { useContext, useState } from 'react';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import Button from 'src/components/Buttons';
 import styled from 'styled-components';
-import { setCurrentWallet, setWallets } from 'src/stores/wallet';
+import { setCurrentWallet, setWallets } from 'src/stores/slices/wallet';
 import { setLocalActivities, setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
 import { encryptKey } from 'src/utils/security';
 import { useHistory } from 'react-router-dom';

@@ -3,9 +3,9 @@ import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import { setStoreWallet, storeWallet } from './wallet';
-import { setStoreExtensions, storeExtensions } from './extensions';
-import { authSlice } from './auth';
+import { setStoreWallet, storeWallet } from './slices/wallet';
+import { setStoreExtensions, storeExtensions } from './slices/extensions';
+import { authSlice } from './slices/auth';
 
 let customStore: Store | undefined;
 

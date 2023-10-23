@@ -1,4 +1,4 @@
-import { getSelectedNetwork } from 'src/stores/extensions';
+import { getSelectedNetwork } from 'src/stores/slices/extensions';
 import { useAppSelector } from 'src/stores/hooks';
 
 export const useStakingConstants = () => {

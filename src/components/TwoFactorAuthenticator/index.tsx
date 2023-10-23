@@ -1,5 +1,5 @@
 import React from 'react';
-import { is2FARequired, unrequire2FA } from 'src/stores/auth';
+import { is2FARequired, unrequire2FA } from 'src/stores/slices/auth';
 import { useAppDispatch, useAppSelector } from 'src/stores/hooks';
 import { useSettingsContext } from 'src/contexts/SettingsContext';
 import useSessionStorage from 'src/hooks/useSessionStorage';

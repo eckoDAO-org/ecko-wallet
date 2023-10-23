@@ -10,7 +10,7 @@ import Toast from 'src/components/Toast/Toast';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import images from 'src/images';
 import { getSignatureFromHash } from 'src/utils/chainweb';
-import { AccountType } from 'src/stores/wallet';
+import { AccountType } from 'src/stores/slices/wallet';
 import { bufferToHex, useLedgerContext } from 'src/contexts/LedgerContext';
 
 export const Icon = styled.img`
