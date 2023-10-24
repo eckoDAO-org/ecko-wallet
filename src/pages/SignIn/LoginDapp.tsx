@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
-import { require2FA } from 'src/stores/auth';
+import { require2FA } from 'src/stores/slices/auth';
 import { useAppDispatch } from 'src/stores/hooks';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import { useHistory } from 'react-router-dom';

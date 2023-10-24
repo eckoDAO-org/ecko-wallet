@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import Button from 'src/components/Buttons';
-import { setContacts } from 'src/stores/extensions';
+import { setContacts } from 'src/stores/slices/extensions';
 import { convertContacts } from 'src/utils';
 import { toast } from 'react-toastify';
 import { DivFlex } from 'src/components';

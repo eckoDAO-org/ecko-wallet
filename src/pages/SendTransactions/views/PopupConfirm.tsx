@@ -5,13 +5,13 @@ import { getApiUrl, getSignatureFromHash, fetchLocal, pollRequestKey } from 'src
 import { CONFIG, ECKO_WALLET_SEND_TX_NONCE } from 'src/utils/config';
 import { getFloatPrecision } from 'src/utils/numbers';
 import { toast } from 'react-toastify';
-import { AccountType } from 'src/stores/wallet';
+import { AccountType } from 'src/stores/slices/wallet';
 import { ReactComponent as AlertIconSVG } from 'src/images/icon-alert.svg';
 import Toast from 'src/components/Toast/Toast';
 import { useLedgerContext } from 'src/contexts/LedgerContext';
 import { CrossChainContext } from 'src/contexts/CrossChainContext';
 import { useGoHome } from 'src/hooks/ui';
-import { setRecent } from 'src/stores/extensions';
+import { setRecent } from 'src/stores/slices/extensions';
 import { addLocalActivity, getLocalRecent, setLocalRecent } from 'src/utils/storage';
 import { updateSendDapp } from 'src/utils/message';
 import { useContext, useState } from 'react';

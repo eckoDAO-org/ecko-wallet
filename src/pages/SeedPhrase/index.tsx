@@ -11,10 +11,10 @@ import { NavigationHeader } from 'src/components/NavigationHeader';
 import Toast from 'src/components/Toast/Toast';
 import { DivFlex, SecondaryLabel } from 'src/components';
 import { generateSeedPhrase, getKeyPairsFromSeedPhrase } from 'src/utils/chainweb';
-import { setIsHaveSeedPhrase } from 'src/stores/extensions';
+import { setIsHaveSeedPhrase } from 'src/stores/slices/extensions';
 import { encryptKey } from 'src/utils/security';
 import { getLocalWallets, setLocalSeedPhrase, setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
-import { setCurrentWallet, setWallets } from 'src/stores/wallet';
+import { setCurrentWallet, setWallets } from 'src/stores/slices/wallet';
 import { Warning } from '../SendTransactions/styles';
 import { SPWrapper } from '../Setting/ExportSeedPhrase';
 

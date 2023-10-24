@@ -6,7 +6,7 @@ import { ActionList } from 'src/components/ActionList';
 import { DivFlex } from 'src/components';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
-import { useCurrentWallet } from 'src/stores/wallet/hooks';
+import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import { ModalContext } from 'src/contexts/ModalContext';
 import { useSelector } from 'react-redux';
 import { AliasModal } from '../modals/AliasModal';

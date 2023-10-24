@@ -13,7 +13,7 @@ import { SeedPhraseRetrivier } from 'src/components/SeedPhraseRetrivier';
 import Toast from 'src/components/Toast/Toast';
 import { encryptSharedKey, generateSharedKey, initTOTP } from 'src/utils/totp';
 import { useAppDispatch } from 'src/stores/hooks';
-import { setTOTPSharedKey } from 'src/stores/auth';
+import { setTOTPSharedKey } from 'src/stores/slices/auth';
 import { Body, Footer, Page } from 'src/components/Page';
 
 const GA_LINK = 'https://support.google.com/accounts/answer/1066447?hl=en';

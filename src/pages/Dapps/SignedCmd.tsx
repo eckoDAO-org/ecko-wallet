@@ -15,7 +15,7 @@ import { getTimestamp } from 'src/utils';
 import { ECKO_WALLET_DAPP_SIGN_NONCE, WALLET_CONNECT_SIGN_METHOD } from 'src/utils/config';
 import { getSignatureFromHash } from 'src/utils/chainweb';
 import { bufferToHex, useLedgerContext } from 'src/contexts/LedgerContext';
-import { AccountType } from 'src/stores/wallet';
+import { AccountType } from 'src/stores/slices/wallet';
 import { SigningResponse } from './interfaces';
 
 export const DappWrapper = styled.div`

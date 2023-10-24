@@ -1,6 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import { useStakingConstants } from '../constants/staking';
+import { reduceBalance } from '../helpers/numberUtils';
 import { Container, Key, StatusValue, Value } from './UI';
 
 type DetailsProps = {
@@ -15,13 +16,13 @@ const Details = ({ collected, effectiveStartDate, rewardPenalty, votingPower }: 
   return (
     <Container>
       <Key>KDX collected</Key>
-      <Value>{collected.toFixed(6)} KDX</Value>
+      <Value>{reduceBalance(collected)} KDX</Value>
 
       <Key>Waiting time</Key>
       <StatusValue error={!!hasPenalty}>{waitingTime}</StatusValue>
 
       <Key>Reward penalty</Key>
-      <StatusValue error={!!hasPenalty}>{rewardPenalty ? rewardPenalty.toFixed(6) : 'None'}</StatusValue>
+      <StatusValue error={!!hasPenalty}>{rewardPenalty ? reduceBalance(rewardPenalty) : 'None'}</StatusValue>
 
       <Key>Voting Power</Key>
       <Value>{votingPower}</Value>

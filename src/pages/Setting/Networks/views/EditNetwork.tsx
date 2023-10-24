@@ -9,7 +9,7 @@ import Toast from 'src/components/Toast/Toast';
 import { DivFlex, SecondaryLabel } from 'src/components';
 import { convertNetworks, getTimestamp } from 'src/utils';
 import { getLocalNetworks, setLocalNetworks } from 'src/utils/storage';
-import { setNetworks } from 'src/stores/extensions';
+import { setNetworks } from 'src/stores/slices/extensions';
 import ModalCustom from 'src/components/Modal/ModalCustom';
 import { Content } from '../../style';
 import { ErrorWrapper, Footer } from '../../../SendTransactions/styles';

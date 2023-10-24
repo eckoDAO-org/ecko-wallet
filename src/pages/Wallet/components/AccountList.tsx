@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { useCurrentWallet } from 'src/stores/wallet/hooks';
+import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import { JazzAccount } from 'src/components/JazzAccount';
 import { shortenAddress } from 'src/utils';
 import { DivFlex, SecondaryLabel } from 'src/components';

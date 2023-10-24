@@ -15,7 +15,7 @@ import Button from 'src/components/Buttons';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import { sendWalletConnectMessage, updateQuickSignedCmdMessage } from 'src/utils/message';
 import { DEFAULT_BIP32_PATH, bufferToHex, useLedgerContext } from 'src/contexts/LedgerContext';
-import { AccountType } from 'src/stores/wallet';
+import { AccountType } from 'src/stores/slices/wallet';
 import { DappDescription, DappLogo, DappWrapper, WalletConnectParams } from './SignedCmd';
 
 const CommandListWrapper = styled.div`
