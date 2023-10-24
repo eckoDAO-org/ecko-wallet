@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import { Radio } from 'src/components/Radio';
 import images from 'src/images';
-import { setIsCreateSeedPhrase } from 'src/stores/extensions';
+import { setIsCreateSeedPhrase } from 'src/stores/slices/extensions';
 import { TERM_LINK } from 'src/utils/config';
 import styled from 'styled-components';
 

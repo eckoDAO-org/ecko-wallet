@@ -12,7 +12,7 @@ import { shortenAddress, convertContacts } from 'src/utils';
 import { PageConfirm, InfoWrapper } from 'src/pages/SendTransactions/views/style';
 import { useHistory } from 'react-router-dom';
 import { useWindowResizeMobile } from 'src/hooks/useWindowResizeMobile';
-import { hideLoading, setContacts, showLoading } from 'src/stores/extensions';
+import { hideLoading, setContacts, showLoading } from 'src/stores/slices/extensions';
 import { fetchLocal } from 'src/utils/chainweb';
 import { getLocalContacts, setLocalContacts } from 'src/utils/storage';
 import { useSelector } from 'react-redux';

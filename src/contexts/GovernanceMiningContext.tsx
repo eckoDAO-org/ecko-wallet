@@ -1,7 +1,7 @@
 import React, { createContext, useContext } from 'react';
 // import { useGetLastDayData } from 'src/components/GovernanceMining/api/analytics';
-import { useCurrentWallet } from 'src/stores/wallet/hooks';
-import { useGetAccountData } from 'src/components/GovernanceMining/api/kaddex.dao';
+import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
+import { AccountData, useGetAccountData } from 'src/components/GovernanceMining/api/kaddex.dao';
 import {
   StakerInspection,
   useCreatePendingStakeActivity,
@@ -15,6 +15,7 @@ import {
 import { useGetAccountKdaDetails } from 'src/components/GovernanceMining/api/utils';
 import { PoolState, StakeRewards, StakeStatus } from 'src/components/GovernanceMining/types';
 import { getTimeByBlockchain } from 'src/components/GovernanceMining/helpers/stringUtils';
+import { extractDecimal } from 'src/utils/chainweb';
 
 export interface GovernanceMiningContextValue {
   stakeStatus: StakeStatus;
@@ -38,6 +39,7 @@ const emptyStakeStatus: StakeStatus = {
     lastClaimDate: '',
   },
   votingPower: 0,
+  multiplier: 0,
 };
 
 const emptyPoolState: PoolState = {
@@ -68,7 +70,7 @@ export const GovernanceMiningContextProvider: React.FC<GovernanceMiningContextPr
   const [stakeStatus, setStakeStatus] = React.useState(emptyStakeStatus);
   const [poolState, setPoolState] = React.useState(emptyPoolState);
 
-  const [accountData, setAccountData] = React.useState<any>();
+  const [accountData, setAccountData] = React.useState<AccountData>();
   const [stakerInspection, setStakerInspection] = React.useState<StakerInspection>();
   const [hasGas, setHasGas] = React.useState<undefined | boolean>(undefined);
   // const [lastDayData, setLastDayData] = React.useState<any>();
@@ -90,20 +92,33 @@ export const GovernanceMiningContextProvider: React.FC<GovernanceMiningContextPr
       return;
     }
 
+    const collectedTokens = extractDecimal(stakerInspection['reward-accrued']);
+    const rewardPenaltyTokens = extractDecimal(stakerInspection['reward-penalty']);
+    const lastStakeDate = getTimeByBlockchain(stakerInspection['stake-record']['last-stake']);
+    const lastClaimDate = getTimeByBlockchain(stakerInspection['stake-record']['last-claim']);
+    const effectiveStartDate = getTimeByBlockchain(stakerInspection['stake-record']['effective-start']);
+    const canClaim = stakerInspection['can-claim'];
+
+    const stakedTokens = extractDecimal(accountData['staked-amount']);
+    const pendingTokens = extractDecimal(stakerInspection['stake-record']['pending-add']);
+    const votingPower = extractDecimal(accountData.vp);
+    const multiplier = extractDecimal(accountData.multiplier);
+
     const rewards: StakeRewards = {
-      collectedTokens: stakerInspection['reward-accrued'],
-      lastStakeDate: getTimeByBlockchain(stakerInspection['stake-record']['last-stake']),
-      effectiveStartDate: getTimeByBlockchain(stakerInspection['stake-record']['effective-start']),
-      rewardPenaltyTokens: stakerInspection['reward-penalty'],
-      canClaim: stakerInspection['can-claim'],
-      lastClaimDate: getTimeByBlockchain(stakerInspection['stake-record']['last-claim']),
+      collectedTokens,
+      lastStakeDate,
+      effectiveStartDate,
+      rewardPenaltyTokens,
+      canClaim,
+      lastClaimDate,
     };
 
     const newStakeStatus: StakeStatus = {
-      stakedTokens: accountData['staked-amount'],
-      pendingTokens: stakerInspection['stake-record']['pending-add'],
+      stakedTokens,
+      pendingTokens,
       rewards,
-      votingPower: accountData.vp,
+      votingPower,
+      multiplier,
     };
 
     setStakeStatus(newStakeStatus);

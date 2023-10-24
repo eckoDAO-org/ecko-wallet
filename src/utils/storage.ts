@@ -10,8 +10,8 @@ import {
   setRecent,
   setSelectedNetwork,
   showFetching,
-} from 'src/stores/extensions';
-import { RawWallet, setCurrentWallet, setWallets } from 'src/stores/wallet';
+} from 'src/stores/slices/extensions';
+import { RawWallet, setCurrentWallet, setWallets } from 'src/stores/slices/wallet';
 import { convertContacts, convertNetworks, convertRecent, revertNetworks } from '.';
 import { getKeyPairsFromSeedPhrase } from './chainweb';
 import { decryptKey, encryptKey } from './security';

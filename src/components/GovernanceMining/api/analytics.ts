@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { useSelector } from 'react-redux';
-import { getSelectedNetwork } from 'src/stores/extensions';
+import { getSelectedNetwork } from 'src/stores/slices/extensions';
 import { ANALYSIS_BASE_URL_DEV, ANALYSIS_BASE_URL_PROD } from '../constants';
 
 const headers = {

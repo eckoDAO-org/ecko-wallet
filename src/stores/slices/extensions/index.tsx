@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, Store } from '@reduxjs/toolkit';
 import { ACTIVE_TAB } from 'src/utils/constant';
-import { RootState } from '..';
+import { RootState } from 'src/stores';
 
 let customStore: Store | undefined;
 

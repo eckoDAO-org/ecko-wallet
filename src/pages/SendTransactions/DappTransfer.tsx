@@ -5,7 +5,7 @@ import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import { get } from 'lodash';
 import { useSelector } from 'react-redux';
 import { fetchLocal } from 'src/utils/chainweb';
-import { hideLoading, showLoading } from 'src/stores/extensions';
+import { hideLoading, showLoading } from 'src/stores/slices/extensions';
 import images from 'src/images';
 import Button from 'src/components/Buttons';
 import Transfer from './views/Transfer';

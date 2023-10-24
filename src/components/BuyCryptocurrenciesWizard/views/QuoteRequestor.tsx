@@ -2,7 +2,7 @@ import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import styled from 'styled-components';
 import { useAppSelector } from 'src/stores/hooks';
-import { getCurrentWallet, getWallets } from 'src/stores/wallet';
+import { getCurrentWallet, getWallets } from 'src/stores/slices/wallet';
 import { CryptoCurrency, FiatCurrency, PurchaseQuoteRequest } from 'src/utils/crypto-providers/types';
 import { CommonLabel, LabelWithLink } from 'src/components';
 import { BaseModalSelect, InputError } from 'src/baseComponent';

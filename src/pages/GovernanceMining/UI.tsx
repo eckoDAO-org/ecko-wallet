@@ -3,8 +3,8 @@ import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { DivBottomShadow, DivFlex } from 'src/components';
 import { NavigationHeader } from 'src/components/NavigationHeader';
-import { Body, BodyFullScreen, FooterFullScreen, PageFullScreen } from 'src/components/Page';
-import { Details, GasWarning, Position, Staking, VotingPowerBar, Withdraw } from 'src/components/GovernanceMining';
+import { BodyFullScreen, FooterFullScreen, PageFullScreen } from 'src/components/Page';
+import { Details, GasWarning, MultiplierBar, Position, Staking, Withdraw } from 'src/components/GovernanceMining';
 import images from 'src/images';
 
 const Header = styled.div`
@@ -44,7 +44,7 @@ const GovernanceMining = () => {
         </DivBottomShadow>
         <DivFlex justifyContent="center" flexDirection="column" padding="0 20px" gap="16px">
           <Details />
-          <VotingPowerBar />
+          <MultiplierBar />
         </DivFlex>
         <FooterFullScreen>
           <Withdraw />

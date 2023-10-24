@@ -65,18 +65,18 @@ const Ticks = ({ maxValue }: { maxValue: number }) => (
   </DivFlex>
 );
 
-interface VotingPowerBarProps {
-  votingPower: number;
+interface MultiplierProps {
+  multiplier: number;
   maxValue: number;
 }
 
-const VotingPowerBarUI = ({ votingPower, maxValue }: VotingPowerBarProps) => (
+const MultiplierUI = ({ multiplier, maxValue }: MultiplierProps) => (
   <Container>
     <Bar>
-      <Value value={votingPower} maxValue={maxValue} />
+      <Value value={multiplier} maxValue={maxValue} />
       <Ticks maxValue={maxValue} />
     </Bar>
   </Container>
 );
 
-export default VotingPowerBarUI;
+export default MultiplierUI;

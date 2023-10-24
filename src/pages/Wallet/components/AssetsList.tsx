@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { ActionList } from 'src/components/ActionList';
 import { useModalContext } from 'src/contexts/ModalContext';
-import { useCurrentWallet } from 'src/stores/wallet/hooks';
+import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import { getTokenList } from 'src/utils/chainweb';
 import { BaseTextInput } from 'src/baseComponent';
 import images from 'src/images';

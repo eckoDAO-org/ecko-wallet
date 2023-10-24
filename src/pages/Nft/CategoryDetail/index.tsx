@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { fetchLocal } from 'src/utils/chainweb';
 import { DivFlex, SecondaryLabel } from 'src/components';
 import { useHistory, useLocation } from 'react-router-dom';
-import { hideLoading, showLoading } from 'src/stores/extensions';
+import { hideLoading, showLoading } from 'src/stores/slices/extensions';
 import { NavigationHeader } from 'src/components/NavigationHeader';
 import nftList, { NFTTypes } from '../nft-data';
 import { NftContainer, NftPageContainer } from '../style';

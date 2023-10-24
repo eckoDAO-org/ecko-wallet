@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { hash } from '@kadena/cryptography-utils';
 import { useAppDispatch } from 'src/stores/hooks';
-import { require2FA } from 'src/stores/auth';
+import { require2FA } from 'src/stores/slices/auth';
 import images from 'src/images';
 import Button from 'src/components/Buttons';
 import { CommonLabel, DivFlex } from 'src/components';
