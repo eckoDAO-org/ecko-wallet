@@ -74,7 +74,6 @@ const App = () => (
                               </ModalCustom>
                             )}
                           </ModalConsumer>
-                          <NotificationManager />
                           <AppContainer />
                         </NotificationContextProvider>
                       </GovernanceMiningContextProvider>
