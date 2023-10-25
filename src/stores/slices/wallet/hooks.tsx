@@ -1,7 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { RootState } from '../types';
+import { RootState } from '../../types';
 import { Wallet } from '.';
 
 export const useCurrentWallet = (): Wallet => {

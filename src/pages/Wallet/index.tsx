@@ -18,11 +18,12 @@ import { ActionList } from 'src/components/ActionList';
 import KDXGovernanceMiningButton from 'src/components/GovernanceMining/KDXButton';
 import { roundNumber, BigNumberConverter, humanReadableNumber } from 'src/utils';
 import { extractDecimal } from 'src/utils/chainweb';
-import { useCurrentWallet } from 'src/stores/wallet/hooks';
+import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import useLocalStorage from 'src/hooks/useLocalStorage';
 import { useModalContext } from 'src/contexts/ModalContext';
 import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 import { useAccountBalanceContext } from 'src/contexts/AccountBalanceContext';
+import NotificationManager from 'src/components/NotificationManager';
 import ReceiveModal from './views/ReceiveModal';
 import { IFungibleToken, LOCAL_KEY_FUNGIBLE_TOKENS } from '../ImportToken';
 import { TokenElement } from './components/TokenElement';
@@ -260,6 +261,7 @@ const Wallet = () => {
             })}
         </DivAssetList>
       </DivAsset>
+      <NotificationManager />
     </div>
   );
 };

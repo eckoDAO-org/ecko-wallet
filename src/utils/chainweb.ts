@@ -68,11 +68,27 @@ export const getSignatureFromHash = (hash, privateKey) => {
   return Pact.crypto.binToHex(s);
 };
 
-export const extractDecimal = (num) => {
-  if (num?.int) return Number(num.int);
-  if (num?.decimal) return Number(num.decimal);
-  return Number(num);
+export type BlockchainNumber = number | {
+  int: string;
+} | {
+  decimal: string;
 };
+
+export function extractDecimal(input: BlockchainNumber) {
+  try {
+    if (typeof input === 'number') {
+      return Number(input);
+    }
+
+    if ('decimal' in input) {
+      return Number(input.decimal);
+    }
+
+    return Number(input.int);
+  } catch (error) {
+    return 0;
+  }
+}
 
 export const getBalanceFromChainwebApiResponse = (res) => {
   let balance = 0;
@@ -113,9 +129,9 @@ export const fetchTokenList = async () => {
   return CHAIN_AVAILABLE_TOKENS_FIXTURE;
 };
 
-export const getTokenList = async (chainId) => {
+export const getTokenList = async (chainId?: string) => {
   const allChainTokens = await fetchTokenList();
-  let uniqueAllChainTokens = [];
+  let uniqueAllChainTokens: Set<[]>[] = [];
   allChainTokens.forEach((tokens) => {
     uniqueAllChainTokens = [...new Set([...tokens, ...uniqueAllChainTokens])];
   });

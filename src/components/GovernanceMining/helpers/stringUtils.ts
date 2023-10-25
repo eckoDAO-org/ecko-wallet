@@ -1,5 +1,17 @@
-export const getTimeByBlockchain = (timestamp) => {
-  if (timestamp.time) return timestamp.time;
-  if (timestamp.timep) return timestamp.timep;
-  return timestamp;
+export type BlockchainTime = string | {
+  time: string;
+} | {
+  timep: string;
+};
+
+export const getTimeByBlockchain = (timestamp: BlockchainTime) => {
+  if (typeof timestamp === 'string') {
+    return timestamp;
+  }
+
+  if ('time' in timestamp) {
+    return timestamp.time;
+  }
+
+  return timestamp.timep;
 };

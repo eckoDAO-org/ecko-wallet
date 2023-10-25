@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { DivFlex, PrimaryLabel, SecondaryLabel } from 'src/components';
+import { reduceBalance } from '../helpers/numberUtils';
 
 const FullWidthDivFlex = styled(DivFlex)`
   width: 100%;
@@ -18,16 +19,20 @@ interface PositionProps {
   pending: number;
 }
 
-const Position = ({ amount, pending }: PositionProps) => (
-  <FullWidthDivFlex flexDirection="column" alignItems="end">
-    <DivFlex flexDirection="column">
-      <SecondaryLabel>POSITION</SecondaryLabel>
-      <PrimaryLabel>{amount} KDX</PrimaryLabel>
-    </DivFlex>
-    {pending > 0 && (
-      <PendingLabel>PENDING {pending} KDX</PendingLabel>
-    )}
-  </FullWidthDivFlex>
-);
+const Position = ({ amount, pending }: PositionProps) => {
+  const position = amount >= 100000 ? amount.toFixed(0) : reduceBalance(amount);
+
+  return (
+    <FullWidthDivFlex flexDirection="column" alignItems="end">
+      <DivFlex flexDirection="column">
+        <SecondaryLabel>POSITION</SecondaryLabel>
+        <PrimaryLabel>{position} KDX</PrimaryLabel>
+      </DivFlex>
+      {pending > 0 && (
+        <PendingLabel>PENDING {reduceBalance(pending)} KDX</PendingLabel>
+      )}
+    </FullWidthDivFlex>
+  );
+};
 
 export default Position;

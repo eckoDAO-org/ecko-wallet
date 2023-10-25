@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { RootState } from '..';
+import { RootState } from 'src/stores';
 
 interface AuthState {
     require2FA: boolean,

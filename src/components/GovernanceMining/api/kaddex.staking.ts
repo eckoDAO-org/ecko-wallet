@@ -1,5 +1,5 @@
 import Pact from 'pact-lang-api';
-import { useCurrentWallet } from 'src/stores/wallet/hooks';
+import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import { ExecCommandResult, payGasCap, useExecCommand, useExecPactWithLocalAccount, usePoolRequestKey } from 'src/hooks/pact';
 import { addLocalActivity } from 'src/utils/storage';
 import { useStakingConstants } from '../constants/staking';

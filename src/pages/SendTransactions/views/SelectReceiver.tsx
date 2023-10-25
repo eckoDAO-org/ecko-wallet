@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect, useRef } from 'react';
-import { hideLoading, showLoading } from 'src/stores/extensions';
+import { hideLoading, showLoading } from 'src/stores/slices/extensions';
 import { extractDecimal, fetchListLocal } from 'src/utils/chainweb';
 import { BaseSelect, BaseTextInput, BaseModalSelect, InputError } from 'src/baseComponent';
 import { useSelector } from 'react-redux';

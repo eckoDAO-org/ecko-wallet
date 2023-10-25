@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { setWallets } from 'src/stores/wallet';
-import { useCurrentWallet } from 'src/stores/wallet/hooks';
+import { setWallets } from 'src/stores/slices/wallet';
+import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import { decryptKey } from 'src/utils/security';
 import { getLocalWallets, setLocalWallets } from 'src/utils/storage';
 import { BaseTextInput } from 'src/baseComponent';

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction, Store } from '@reduxjs/toolkit';
-import { RootState } from '..';
+import { RootState } from 'src/stores';
 
 export enum AccountType {
   STANDARD = 'STANDARD',
