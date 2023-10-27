@@ -161,9 +161,6 @@ const PopupConfirm = (props: Props) => {
     } else {
       toast.error(<Toast type="fail" content="Transfer Fail" />);
     }
-    if (senderChainId.toString() !== receiverChainId.toString()) {
-      // NOTE: maybe no action on complete first tx part
-    }
   };
 
   const onSend = async () => {

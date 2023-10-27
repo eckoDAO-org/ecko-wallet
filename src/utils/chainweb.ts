@@ -68,11 +68,14 @@ export const getSignatureFromHash = (hash, privateKey) => {
   return Pact.crypto.binToHex(s);
 };
 
-export type BlockchainNumber = number | {
-  int: string;
-} | {
-  decimal: string;
-};
+export type BlockchainNumber =
+  | number
+  | {
+      int: string;
+    }
+  | {
+      decimal: string;
+    };
 
 export function extractDecimal(input: BlockchainNumber) {
   try {
@@ -174,14 +177,3 @@ export const getAccountExistsChains = async (accounts, networkUrl, networkId) =>
   }
   return accountResponse;
 };
-
-export const getLocalStorageDataByKey = (key) =>
-  new Promise((resolve, reject) => {
-    window?.chrome?.storage?.local?.get(key, (result) => {
-      if (result) {
-        resolve(result[key] || null);
-      } else {
-        reject();
-      }
-    });
-  });
