@@ -3,8 +3,6 @@ import { ReactComponent as ArrowSendIcon } from 'src/images/arrow-send.svg';
 import { shortenAddress } from 'src/utils';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import moment from 'moment';
-import { getLocalStorageDataByKey, getPendingCrossChainRequestKey } from 'src/utils/storage';
-import { useEffect, useState } from 'react';
 
 export const RoundedArrow = styled.div`
   box-shadow: 0px 167px 67px rgba(36, 8, 43, 0.01), 0px 94px 57px rgba(36, 8, 43, 0.03), 0px 42px 42px rgba(36, 8, 43, 0.06),
@@ -34,33 +32,15 @@ const FinishTransferItem = ({
   tokenType,
   receiver,
   status,
-  requestKey,
+  isFinishing,
 }: {
   createdTime: string;
   value: string;
   tokenType: string;
   receiver: string;
   status: string;
-  requestKey: string;
+  isFinishing?: boolean;
 }) => {
-  // TODO: make a prop
-  const [isFinishing, setIsFinishing] = useState<boolean>(false);
-
-  const setTxStatus = async () => {
-    try {
-      const pendingCross = await getPendingCrossChainRequestKey();
-      if (pendingCross.find((tx) => tx.requestKey === requestKey)) {
-        setIsFinishing(true);
-      }
-    } catch (err) {
-      // unable to fetch local storage
-    }
-  };
-
-  useEffect(() => {
-    setTxStatus();
-  }, []);
-
   let color = '#ff6058';
   if (status === 'pending' || isFinishing) {
     color = '#ffa500';

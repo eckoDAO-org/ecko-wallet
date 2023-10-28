@@ -12,6 +12,7 @@ import {
   setSelectedNetwork,
   showFetching,
 } from 'src/stores/slices/extensions';
+import { LocalActivity } from 'src/pages/Wallet/views/Activities';
 import { RawWallet, setCurrentWallet, setWallets } from 'src/stores/slices/wallet';
 import { convertContacts, convertNetworks, convertRecent, revertNetworks } from '.';
 import { getKeyPairsFromSeedPhrase } from './chainweb';
@@ -312,6 +313,20 @@ export const addLocalActivity = (network, account, activity) => {
       newActivities.push(activity);
       setLocalActivities(network, account, newActivities);
     },
+  );
+};
+
+export const updateLocalActivity = (network: string, account: string, activity: LocalActivity) => {
+  getLocalActivities(
+    network,
+    account,
+    (activities: LocalActivity[]) => {
+      const foundedActivity = activities?.find((a) => a.requestKey === activity.requestKey);
+      if (foundedActivity) {
+        setLocalActivities(network, account, [...activities.filter((a) => a.requestKey !== activity.requestKey), activity]);
+      }
+    },
+    () => {},
   );
 };
 

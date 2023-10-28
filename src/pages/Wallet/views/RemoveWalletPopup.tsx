@@ -83,7 +83,6 @@ const RemoveWalletPopup = (props: Props) => {
     const isValid = await isValidPassword(passwordInput);
     if (isValid) {
       const newWallets = wallets.filter((w: any) => w.account !== account);
-      const sameAccountWallet: any = newWallets.find((w: any) => w.account === account);
 
       if (newWallets.length === 0) {
         setCurrentWallet({

@@ -47,7 +47,7 @@ const checkForPendingCrossChainTx = async () => {
 };
 
 const getTxSPV = (requestKey, targetChainId, url) =>
-  new Promise((resolve, reject) => {
+  new Promise((resolve) => {
     const spvCmd = {
       requestKey,
       targetChainId,

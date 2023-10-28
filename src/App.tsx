@@ -14,7 +14,6 @@ import { AccountBalanceProvider } from './contexts/AccountBalanceContext';
 import { GovernanceMiningContextProvider } from './contexts/GovernanceMiningContext';
 import ModalCustom from './components/Modal/ModalCustom';
 import { LedgerProvider } from './contexts/LedgerContext';
-import NotificationManager from './components/NotificationManager';
 import { NotificationContextProvider } from './contexts/NotificationsContext';
 
 const AppWrapper = styled.div`

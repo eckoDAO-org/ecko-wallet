@@ -8,9 +8,15 @@ import { useSelector } from 'react-redux';
 import Spinner from 'src/components/Spinner';
 import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 import { DivFlex, SecondaryLabel } from 'src/components';
-import { getLocalActivities } from 'src/utils/storage';
+import { getLocalActivities, getPendingCrossChainRequestKey, updateLocalActivity } from 'src/utils/storage';
 import PopupDetailTransaction from './PopupDetailTransaction';
 import FinishTransferItem from './FinishTransferItem';
+
+const compareByCreatedTime = (a: LocalActivity, b: LocalActivity) => {
+  const timeA = moment(a.createdTime, 'ddd MMM DD YYYY HH:mm:ss ZZ');
+  const timeB = moment(b.createdTime, 'ddd MMM DD YYYY HH:mm:ss ZZ');
+  return timeB.unix() - timeA.unix();
+};
 
 const Div = styled.div`
   cursor: pointer;
@@ -34,10 +40,9 @@ const DayLabel = styled(SecondaryLabel)`
 `;
 
 const Activities = () => {
-  const [isShowDetailTxPopup, setShowDetailTxPopup] = useState(false);
-  const [activityDetails, setActivityDetails] = useState<any>({});
+  const [selectedActivity, setSelectedActivity] = useState<LocalActivity | null>(null);
+  const [pendingCrossChainRequestKey, setPendingCrossChainRequestKey] = useState<string[]>([]);
   const [accountActivities, setAccountActivities] = useState<LocalActivity[]>([]);
-  console.log(`🚀 ~ accountActivities:`, accountActivities);
 
   const rootState = useSelector((state) => state);
   const { account, chainId } = rootState.wallet;
@@ -55,13 +60,25 @@ const Activities = () => {
         setIsLoadData(false);
         setAccountActivities(activities);
         const promises = activities
-          .filter((a) => a.status === 'pending')
+          .filter((a) => a.status === 'pending' && a.requestKey !== null)
           .map((a) =>
-            Pact.fetch.poll({ requestKeys: [a.reqKey] }, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, a.senderChainId.toString())),
+            Pact.fetch.poll({ requestKeys: [a.requestKey] }, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, a.senderChainId.toString())),
           );
         Promise.all(promises)
-          .then((res) => {
-            console.log(`🚀 ~ res:`, res);
+          .then((pollResArray: any[]) => {
+            pollResArray?.forEach((pollRes) => {
+              const reqKey = Object.keys(pollRes)[0];
+              if (pollRes[reqKey] && pollRes[reqKey]?.result?.status === 'success') {
+                const activity = activities.find((a) => a.requestKey === reqKey);
+                if (activity) {
+                  updateLocalActivity(selectedNetwork.networkId, account, {
+                    ...activity,
+                    ...pollRes[reqKey],
+                    status: 'success',
+                  });
+                }
+              }
+            });
           })
           .catch(() => {});
       },
@@ -69,6 +86,9 @@ const Activities = () => {
         setIsLoadData(false);
       },
     );
+    getPendingCrossChainRequestKey().then((pendingTx) => {
+      setPendingCrossChainRequestKey(pendingTx.map((tx) => tx.requestKey));
+    });
   }, [account, chainId, selectedNetwork.networkId]);
   if (isLoadData) return <Spinner size={10} color={theme.text?.primary} weight={2} />;
 
@@ -83,19 +103,12 @@ const Activities = () => {
               {grouped && grouped[todayString] && (
                 <>
                   <DayLabel uppercase>Today</DayLabel>
-                  {grouped[todayString].map((item) => {
+                  {grouped[todayString].sort(compareByCreatedTime).map((item) => {
                     if (!item || !item.receiverChainId) return null;
                     return (
-                      <Div
-                        style={{ padding: '0px 24px' }}
-                        onClick={() => {
-                          setShowDetailTxPopup(true);
-                          setActivityDetails(item);
-                        }}
-                        key={item.createdTime}
-                      >
+                      <Div key={item.createdTime} style={{ padding: '0px 24px' }} onClick={() => setSelectedActivity(item)}>
                         <FinishTransferItem
-                          requestKey={item.reqKey}
+                          isFinishing={pendingCrossChainRequestKey.includes(item.requestKey)}
                           createdTime={item.createdTime}
                           value={item.amount}
                           tokenType={item.symbol?.toUpperCase() ?? 'KDA'}
@@ -110,19 +123,12 @@ const Activities = () => {
               {grouped && grouped[yesterdayString] && (
                 <>
                   <DayLabel uppercase>Yesterday</DayLabel>
-                  {grouped[yesterdayString].map((item) => {
+                  {grouped[yesterdayString].sort(compareByCreatedTime).map((item) => {
                     if (!item || !item.receiverChainId) return null;
                     return (
-                      <Div
-                        style={{ padding: '0px 24px' }}
-                        onClick={() => {
-                          setShowDetailTxPopup(true);
-                          setActivityDetails(item);
-                        }}
-                        key={item.createdTime}
-                      >
+                      <Div style={{ padding: '0px 24px' }} onClick={() => setSelectedActivity(item)} key={item.createdTime}>
                         <FinishTransferItem
-                          requestKey={item.reqKey}
+                          isFinishing={pendingCrossChainRequestKey.includes(item.requestKey)}
                           createdTime={item.createdTime}
                           value={item.amount}
                           tokenType={item.symbol?.toUpperCase() ?? 'KDA'}
@@ -139,19 +145,12 @@ const Activities = () => {
                 .map((date) => (
                   <React.Fragment key={date}>
                     <DayLabel uppercase>{moment(date, 'DD/MM/YYYY').format('DD/MM/YYYY')}</DayLabel>
-                    {grouped[date].map((item) => {
+                    {grouped[date].sort(compareByCreatedTime).map((item) => {
                       if (!item || !item.receiverChainId) return null;
                       return (
-                        <Div
-                          style={{ padding: '0px 24px' }}
-                          onClick={() => {
-                            setShowDetailTxPopup(true);
-                            setActivityDetails(item);
-                          }}
-                          key={item.createdTime}
-                        >
+                        <Div style={{ padding: '0px 24px' }} onClick={() => setSelectedActivity(item)} key={item.createdTime}>
                           <FinishTransferItem
-                            requestKey={item.reqKey}
+                            isFinishing={pendingCrossChainRequestKey.includes(item.requestKey)}
                             createdTime={item.createdTime}
                             value={item.amount}
                             tokenType={item.symbol?.toUpperCase() ?? 'KDA'}
@@ -173,13 +172,14 @@ const Activities = () => {
           </SecondaryLabel>
         </DivFlex>
       )}
-      {isShowDetailTxPopup && (
+      {selectedActivity && (
         <PopupDetailTransaction
+          isFinishing={pendingCrossChainRequestKey.includes(selectedActivity.requestKey)}
           selectedNetwork={selectedNetwork}
-          activityDetails={activityDetails}
-          isOpen={isShowDetailTxPopup}
+          activityDetails={selectedActivity}
+          isOpen={selectedActivity !== null}
           title="Transaction Details"
-          onCloseModal={() => setShowDetailTxPopup(false)}
+          onCloseModal={() => setSelectedActivity(null)}
         />
       )}
     </Div>
