@@ -1,3 +1,6 @@
+/**
+ * TODO: DELETE THIS CONTEXT IN THE NEXT RELEASE (empty old crosschain tx queue first) *
+ */
 import { createContext, useEffect, useContext } from 'react';
 import Pact from 'pact-lang-api';
 import { get } from 'lodash';
@@ -13,9 +16,6 @@ interface CrossChainContextValue {
   crossChainRequests: any[] | null;
   toFinishCrossChainTxs: any[] | null;
   pendingFinishRequestKeys: any[] | null;
-  setToFinishCrossChainTxs: (value: any) => void;
-  setPendingFinishRequestKeys: (value: any) => void;
-  setCrossChainRequest: (value: any) => void;
   getCrossChainRequestsAsync: () => Promise<any>;
 }
 
@@ -23,9 +23,6 @@ const defaultCrossChainContextValue: CrossChainContextValue = {
   toFinishCrossChainTxs: [],
   crossChainRequests: [],
   pendingFinishRequestKeys: [],
-  setToFinishCrossChainTxs: () => {},
-  setPendingFinishRequestKeys: () => {},
-  setCrossChainRequest: () => {},
   getCrossChainRequestsAsync: async () => {},
 };
 
@@ -229,11 +226,8 @@ export const CrossChainProvider = ({ children }: any) => {
     <CrossChainContext.Provider
       value={{
         toFinishCrossChainTxs,
-        setToFinishCrossChainTxs,
         pendingFinishRequestKeys,
-        setPendingFinishRequestKeys,
         crossChainRequests,
-        setCrossChainRequest,
         getCrossChainRequestsAsync,
       }}
     >

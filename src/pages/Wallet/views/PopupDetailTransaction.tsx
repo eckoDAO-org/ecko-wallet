@@ -25,6 +25,7 @@ const DivChild = styled.div`
 `;
 const CustomDiv = styled(DivChild)`
   font-weight: bold;
+  color: ${($props) => $props.color};
 `;
 const Image = styled.img<{ size: string; top: string; width: string }>`
   height: ${($props) => $props.size};
@@ -62,7 +63,7 @@ const convertedDateString = (newTime) => {
   return `${day}/${month}/${year} - ${hours}:${minutes}:${second}`;
 };
 const PopupDetailTransaction = (props: Props) => {
-  const { isOpen, onCloseModal, closeOnOverlayClick, title, showCloseIcon, activityDetails, selectedNetwork } = props;
+  const { isOpen, onCloseModal, closeOnOverlayClick, title, showCloseIcon, activityDetails, selectedNetwork, isFinishing } = props;
   const openTransactionDetails = () => {
     (window as any).chrome.tabs.create({ url: `${selectedNetwork.explorer}/tx/${activityDetails.requestKey}` });
   };
@@ -75,14 +76,14 @@ const PopupDetailTransaction = (props: Props) => {
   const isPending = activityDetails.status === 'pending';
   let color = '#ff6058';
   if (activityDetails.status === 'success') {
-    color = '#25d366';
+    color = isFinishing ? '#ffa500' : '#25d366';
   } else if (activityDetails.status === 'pending') {
     color = '#ffa500';
   }
   let statusText = 'Pending';
   if (!isPending) {
     if (status === 'success') {
-      statusText = 'Success';
+      statusText = isFinishing ? 'Finishing' : 'Success';
     } else {
       statusText = 'Failed';
     }
@@ -161,5 +162,6 @@ type Props = {
   showCloseIcon?: boolean;
   activityDetails: any;
   selectedNetwork: any;
+  isFinishing?: boolean;
 };
 export default PopupDetailTransaction;

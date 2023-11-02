@@ -9,12 +9,11 @@ import { AccountType } from 'src/stores/slices/wallet';
 import { ReactComponent as AlertIconSVG } from 'src/images/icon-alert.svg';
 import Toast from 'src/components/Toast/Toast';
 import { useLedgerContext } from 'src/contexts/LedgerContext';
-import { CrossChainContext } from 'src/contexts/CrossChainContext';
 import { useGoHome } from 'src/hooks/ui';
 import { setRecent } from 'src/stores/slices/extensions';
-import { addLocalActivity, getLocalRecent, setLocalRecent } from 'src/utils/storage';
+import { addLocalActivity, addPendingCrossChainRequestKey, getLocalRecent, setLocalRecent } from 'src/utils/storage';
 import { updateSendDapp } from 'src/utils/message';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import SpokesLoading from 'src/components/Loading/Spokes';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import { IFungibleToken } from 'src/pages/ImportToken';
@@ -35,7 +34,7 @@ const PopupConfirm = (props: Props) => {
   const { configs, onClose, aliasContact, fungibleToken, kdaUSDPrice, estimateUSDAmount } = props;
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
-  const { setCrossChainRequest, getCrossChainRequestsAsync } = useContext(CrossChainContext);
+  // const { setCrossChainRequest, getCrossChainRequestsAsync } = useContext(CrossChainContext);
   const { sendTransaction, sendCrossChainTransaction } = useLedgerContext();
   const goHome = useGoHome();
   const {
@@ -162,24 +161,6 @@ const PopupConfirm = (props: Props) => {
     } else {
       toast.error(<Toast type="fail" content="Transfer Fail" />);
     }
-    if (senderChainId.toString() !== receiverChainId.toString()) {
-      const activity = {
-        symbol: fungibleToken?.symbol,
-        requestKey: reqKey,
-        senderChainId: senderChainId.toString(),
-        receiverChainId: receiverChainId.toString(),
-        receiver: receiverName,
-        createdTime: new Date(pollRes?.metaData?.blockTime / 1000).toString(),
-        amount,
-        gasPrice,
-        sender: senderName,
-        domain,
-        status,
-      };
-      const asyncCrossChainRequests = await getCrossChainRequestsAsync();
-      const newCrossRequests = [...(asyncCrossChainRequests?.filter((ccr) => ccr.requestKey !== reqKey) || []), activity];
-      setCrossChainRequest(newCrossRequests);
-    }
   };
 
   const onSend = async () => {
@@ -258,10 +239,12 @@ const PopupConfirm = (props: Props) => {
           };
           addLocalActivity(selectedNetwork.networkId, senderName, activity);
           if (senderChainId.toString() !== receiverChainId.toString()) {
-            const asyncCrossTx = await getCrossChainRequestsAsync();
-            const requests = [...(asyncCrossTx || [])];
-            requests.push(activity);
-            setCrossChainRequest(requests);
+            await addPendingCrossChainRequestKey({
+              requestKey,
+              sourceChainId: senderChainId.toString(),
+              targetChainId: receiverChainId.toString(),
+              networkId: selectedNetwork.networkId,
+            });
           }
           if (domain) {
             const newData = {

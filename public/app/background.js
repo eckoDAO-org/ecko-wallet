@@ -5,6 +5,7 @@ import { WALLET_CONNECT_SIGN_METHOD, WALLET_CONNECT_QUICKSIGN_METHOD, WALLET_CON
 import { INTERNAL_MESSAGE_PREFIX } from '../../src/utils/message';
 import { getAccountExistsChains } from '../../src/utils/chainweb';
 import { WalletConnectProvider } from './wallet-connect';
+import './crosschain';
 
 let contentPort = null;
 const portMap = new Map();

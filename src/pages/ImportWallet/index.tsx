@@ -83,8 +83,9 @@ const ImportAccount = () => {
           const publicCodeFromRequest = get(request, 'result.data.guard.keys[0]');
           const keySets = get(request, 'result.data.guard.keys');
           const status = get(request, 'result.status');
-          if (keySets && keySets.length === 1) {
-            if (publicCodeFromRequest && publicCodeFromRequest === publicKey) {
+          const doesNotExist = request?.result?.error?.message?.startsWith('with-read: row not found:');
+          if ((keySets && keySets.length === 1) || doesNotExist) {
+            if ((publicCodeFromRequest && publicCodeFromRequest === publicKey) || doesNotExist) {
               getLocalPassword(
                 (accountPassword) => {
                   const isWalletEmpty = isEmpty(find(wallets, (e) => e.chainId === chainId.value && e.account === accountName));
@@ -126,10 +127,10 @@ const ImportAccount = () => {
                 () => {},
               );
             } else {
-              toast.error(<Toast type="fail" content="Invalid data" />);
+              toast.error(<Toast type="fail" content="Invalid account data" />);
             }
           } else if (status === 'success') {
-            toast.error(<Toast type="fail" content="Not supported multiple key sets" />);
+            toast.error(<Toast type="fail" content="Multiple key sets are not supported" />);
           } else {
             toast.error(<Toast type="fail" content="Invalid data" />);
           }
@@ -178,6 +179,7 @@ const ImportAccount = () => {
                   },
                   validate: {
                     required: (val) => val.trim().length > 0 || 'Invalid data',
+                    startsWithK: (val) => val.startsWith('k:') || 'Account name must start with "k:"',
                   },
                   maxLength: {
                     value: 1000,
