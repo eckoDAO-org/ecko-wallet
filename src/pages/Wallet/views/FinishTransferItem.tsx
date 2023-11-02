@@ -26,16 +26,27 @@ const ActivityElement = styled(DivFlex)`
   border-bottom: 1px solid #dfdfed;
 `;
 
-const FinishTransferItem = (props: any) => {
-  const { createdTime, value, tokenType, receiver, status } = props;
-
+const FinishTransferItem = ({
+  createdTime,
+  value,
+  tokenType,
+  receiver,
+  status,
+  isFinishing,
+}: {
+  createdTime: string;
+  value: string;
+  tokenType: string;
+  receiver: string;
+  status: string;
+  isFinishing?: boolean;
+}) => {
   let color = '#ff6058';
-  if (status === 'success') {
-    color = '#25d366';
-  } else if (status === 'pending') {
+  if (status === 'pending' || isFinishing) {
     color = '#ffa500';
+  } else if (status === 'success') {
+    color = '#25d366';
   }
-
   return (
     <ActivityElement justifyContent="space-between" alignItems="center" padding="10px 0px">
       <DivFlex alignItems="center">
@@ -44,7 +55,7 @@ const FinishTransferItem = (props: any) => {
         </RoundedArrow>
         <DivFlex flexDirection="column" justifyContent="flex-start">
           <CommonLabel fontWeight={700}>{`${shortenAddress(receiver)}`}</CommonLabel>
-          <SecondaryLabel>{moment(createdTime).format('DD/MM/YYYY HH:mm')}</SecondaryLabel>
+          <SecondaryLabel>{moment(new Date(createdTime)).format('DD/MM/YYYY HH:mm')}</SecondaryLabel>
         </DivFlex>
       </DivFlex>
       <CommonLabel fontWeight={500} color={color} fontSize={12}>

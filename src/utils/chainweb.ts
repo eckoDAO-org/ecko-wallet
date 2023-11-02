@@ -4,6 +4,7 @@ import lib from 'cardano-crypto.js/kadena-crypto';
 import { CHAIN_AVAILABLE_TOKENS_FIXTURE, CHAIN_COUNT } from './constant';
 import { CONFIG, KADDEX_ANALYTICS_API } from './config';
 import { getTimestamp } from './index';
+// import { getLocalStorageDataByKey, SETTINGS_STORAGE_KEY } from './storage';
 
 export const MAINNET_NETWORK_ID = 'mainnet01';
 
@@ -67,11 +68,14 @@ export const getSignatureFromHash = (hash, privateKey) => {
   return Pact.crypto.binToHex(s);
 };
 
-export type BlockchainNumber = number | {
-  int: string;
-} | {
-  decimal: string;
-};
+export type BlockchainNumber =
+  | number
+  | {
+      int: string;
+    }
+  | {
+      decimal: string;
+    };
 
 export function extractDecimal(input: BlockchainNumber) {
   try {

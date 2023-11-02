@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import Button from 'src/components/Buttons';
 import styled from 'styled-components';
@@ -9,7 +9,6 @@ import { encryptKey } from 'src/utils/security';
 import { useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
-import { CrossChainContext } from 'src/contexts/CrossChainContext';
 import { DivFlex } from 'src/components';
 import { isValidPassword } from 'src/pages/SignIn';
 
@@ -65,7 +64,6 @@ const RemoveWalletPopup = (props: Props) => {
   const rootState = useSelector((state) => state);
   const { passwordHash, selectedNetwork } = rootState.extensions;
   const { wallets, account } = rootState.wallet;
-  const { crossChainRequests, setCrossChainRequest } = useContext(CrossChainContext);
   const [passwordInput, setPasswordInput] = useState('');
 
   const {
@@ -85,11 +83,7 @@ const RemoveWalletPopup = (props: Props) => {
     const isValid = await isValidPassword(passwordInput);
     if (isValid) {
       const newWallets = wallets.filter((w: any) => w.account !== account);
-      const sameAccountWallet: any = newWallets.find((w: any) => w.account === account);
-      if (sameAccountWallet && sameAccountWallet.account) {
-        const requests = crossChainRequests?.filter((r: any) => r.sender !== account);
-        setCrossChainRequest(requests);
-      }
+
       if (newWallets.length === 0) {
         setCurrentWallet({
           chainId: '0',

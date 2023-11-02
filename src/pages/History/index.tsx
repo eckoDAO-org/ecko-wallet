@@ -7,7 +7,7 @@ import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import { useSelector } from 'react-redux';
 import { setBalance } from 'src/stores/slices/wallet';
 import { fetchLocal, getBalanceFromChainwebApiResponse } from '../../utils/chainweb';
-import TabWallet from '../Wallet/views/TabContent';
+import Activities from '../Wallet/views/Activities';
 
 const Div = styled.div`
   margin: auto 0;
@@ -59,7 +59,7 @@ const History = () => {
   return (
     <Div>
       <DivChild marginTop="20px" marginBottom="200px">
-        <TabWallet />
+        <Activities />
       </DivChild>
       <ModalCustom isOpen={false} title="Confirm Send Transaction" closeOnOverlayClick={false} />
     </Div>
