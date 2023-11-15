@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import moment from 'moment';
 import useLocalStorage from 'src/hooks/useLocalStorage';
 import { useInterval } from 'src/hooks/useInterval';
-import { IFungibleToken, LOCAL_KEY_FUNGIBLE_TOKENS } from 'src/pages/ImportToken';
+import { IFungibleToken, LOCAL_DEFAULT_FUNGIBLE_TOKENS, LOCAL_KEY_FUNGIBLE_TOKENS } from 'src/pages/ImportToken';
 import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import { fetchListLocal, fetchTokenList, MAINNET_NETWORK_ID } from 'src/utils/chainweb';
 import { KADDEX_ANALYTICS_API } from 'src/utils/config';
@@ -45,7 +45,7 @@ export const AccountBalanceProvider = ({ children }: any) => {
     extensions: { selectedNetwork },
   } = useSelector((state) => state);
 
-  const [fungibleTokens] = useLocalStorage<IFungibleToken[]>(LOCAL_KEY_FUNGIBLE_TOKENS, [{ contractAddress: 'kaddex.kdx', symbol: 'kdx' }]);
+  const [fungibleTokens] = useLocalStorage<IFungibleToken[]>(LOCAL_KEY_FUNGIBLE_TOKENS, LOCAL_DEFAULT_FUNGIBLE_TOKENS);
 
   const { account: selectedAccount } = useCurrentWallet();
   const { data: settings } = useContext(SettingsContext);
@@ -60,6 +60,12 @@ export const AccountBalanceProvider = ({ children }: any) => {
     for (let i = 0; i < CHAIN_COUNT; i += 1) {
       const availableChainTokens = allChainTokens && allChainTokens[i];
       let filteredAvailableFt = fungibleTokens?.filter((t) => availableChainTokens?.includes(t.contractAddress));
+      for (const localToken of LOCAL_DEFAULT_FUNGIBLE_TOKENS) {
+        if (!filteredAvailableFt?.find((t) => t.contractAddress === localToken.contractAddress)) {
+          filteredAvailableFt?.push(localToken);
+        }
+      }
+
       if (i === 2) {
         filteredAvailableFt = [...(filteredAvailableFt || []), { contractAddress: 'kaddex.skdx', symbol: 'sKDX' }];
       }

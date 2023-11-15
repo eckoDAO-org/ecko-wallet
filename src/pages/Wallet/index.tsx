@@ -25,13 +25,11 @@ import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 import { useAccountBalanceContext } from 'src/contexts/AccountBalanceContext';
 import NotificationManager from 'src/components/NotificationManager';
 import ReceiveModal from './views/ReceiveModal';
-import { IFungibleToken, LOCAL_KEY_FUNGIBLE_TOKENS } from '../ImportToken';
+import { IFungibleToken, LOCAL_DEFAULT_FUNGIBLE_TOKENS, LOCAL_KEY_FUNGIBLE_TOKENS } from '../ImportToken';
 import { TokenElement } from './components/TokenElement';
 import { TokenChainBalance } from './components/TokenChainBalance';
 import { AssetsList } from './components/AssetsList';
 import { Warning } from '../SendTransactions/styles';
-
-const DEFAULT_TOKENS = ['kaddex.kdx', 'n_b742b4e9c600892af545afb408326e82a6c0c6ed.zUSD'];
 
 export interface IFungibleTokenBalance {
   contractAddress: string;
@@ -64,9 +62,7 @@ const Wallet = () => {
   const history = useHistory();
   const { openModal, closeModal } = useModalContext();
   const { isLoadingBalances, selectedAccountBalance, allAccountsBalance, usdPrices } = useAccountBalanceContext();
-  const [fungibleTokens, setFungibleTokens] = useLocalStorage<IFungibleToken[]>(LOCAL_KEY_FUNGIBLE_TOKENS, [
-    { contractAddress: 'kaddex.kdx', symbol: 'kdx' },
-  ]);
+  const [fungibleTokens, setFungibleTokens] = useLocalStorage<IFungibleToken[]>(LOCAL_KEY_FUNGIBLE_TOKENS, LOCAL_DEFAULT_FUNGIBLE_TOKENS);
 
   const stateWallet = useCurrentWallet();
 
@@ -228,25 +224,25 @@ const Wallet = () => {
             logo={images.wallet.tokens.coin}
             onClick={() => selectedAccountBalance && openModal({ title: 'KDA Chain Distribution', content: renderChainDistribution('kda', 'coin') })}
           />
-          {DEFAULT_TOKENS.map((t) => (
+          {LOCAL_DEFAULT_FUNGIBLE_TOKENS.map((t) => (
             <TokenElement
               isLoadingBalances={isLoadingBalances}
-              balance={getTokenTotalBalance(t, stateWallet?.account)}
-              name={t.split('.')[1]?.toLocaleUpperCase()}
-              usdBalance={roundNumber(getUsdPrice(t, getTokenTotalBalance(t, stateWallet?.account)), 2)}
-              logo={images.wallet.tokens[t]}
+              balance={getTokenTotalBalance(t.contractAddress, stateWallet?.account)}
+              name={t.symbol?.toLocaleUpperCase()}
+              usdBalance={roundNumber(getUsdPrice(t.contractAddress, getTokenTotalBalance(t.contractAddress, stateWallet?.account)), 2)}
+              logo={images.wallet.tokens[t.contractAddress]}
               onClick={() =>
                 selectedAccountBalance &&
                 openModal({
-                  title: `${t.split('.')[1]} Chain Distribution`,
-                  content: renderChainDistribution(t.split('.')[1], t),
+                  title: `${t.symbol.toLocaleUpperCase()} Chain Distribution`,
+                  content: renderChainDistribution(t.symbol, t.contractAddress),
                 })
               }
             />
           ))}
 
           {fungibleTokens
-            ?.filter((fT) => !DEFAULT_TOKENS.includes(fT.contractAddress))
+            ?.filter((fT) => !LOCAL_DEFAULT_FUNGIBLE_TOKENS.map((t) => t.contractAddress).includes(fT.contractAddress))
             ?.map((fT) => {
               const tokenBalance = getTokenTotalBalance(fT.contractAddress, stateWallet?.account);
               return (

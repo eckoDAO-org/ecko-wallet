@@ -17,6 +17,10 @@ import Button from 'src/components/Buttons';
 import { NavigationHeader } from 'src/components/NavigationHeader';
 
 export const LOCAL_KEY_FUNGIBLE_TOKENS = 'fungibleTokens';
+export const LOCAL_DEFAULT_FUNGIBLE_TOKENS = [
+  { contractAddress: 'kaddex.kdx', symbol: 'kdx' },
+  { contractAddress: 'n_b742b4e9c600892af545afb408326e82a6c0c6ed.zUSD', symbol: 'zUSD' },
+];
 
 export interface IFungibleToken {
   contractAddress: string;
