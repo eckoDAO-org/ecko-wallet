@@ -21,6 +21,7 @@ import arrowRight from './arrow-right.png';
 import arrowTransfer from './arrow-transfer.svg';
 import startUser from './start-user.svg';
 import iconAlert from './icon-alert.svg';
+import iconAlertModal from './alert-modal.png';
 import loadMore from './load-more.svg';
 import qrCode from './frame.png';
 import lockImg from './lock-seed-phrase.svg';
@@ -86,6 +87,7 @@ import iconKds from './kds-logo.svg';
 import iconCrna from './corona-logo.svg';
 import iconKishu from './kishk-logo.svg';
 import iconArkd from './arkade-logo.png';
+import zUSD from './zUSD.png';
 import checkedV from './checked-v.svg';
 import violetAdd from './violet-add.svg';
 import trashViolet from './trash-violet.svg';
@@ -139,6 +141,7 @@ const wallet = {
   arrowTransfer,
   startUser,
   iconAlert,
+  iconAlertModal,
   iconTRYB,
   iconPending,
   iconSuccess,
@@ -192,6 +195,7 @@ const wallet = {
     'arkade.token': iconArkd,
     'free.KAYC': iconKayc,
     'free.corona-token': iconCrna,
+    'n_b742b4e9c600892af545afb408326e82a6c0c6ed.zUSD': zUSD,
   },
 };
 const initPage = {

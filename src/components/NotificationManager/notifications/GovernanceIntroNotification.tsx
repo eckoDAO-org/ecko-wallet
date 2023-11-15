@@ -12,6 +12,10 @@ const GovernanceIntroNotification = () => {
       id: govIntroKey,
       content: govIntroContent,
     });
+    notificationProvider.pushNotification({
+      id: 'zUSDBridge',
+      content: 'Go check out the only stable coin on Kadena and enjoy a booster with our multiplier by becoming a liquidity provider on eckoDEX',
+    });
   }, []);
 
   return null;

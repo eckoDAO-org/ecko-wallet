@@ -1,9 +1,10 @@
+import React from 'react';
 import { Dictionary, PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { RootState } from 'src/stores';
 
 export interface Notification {
   id: string;
-  content: string;
+  content: React.ReactNode;
   readTimestamp?: number;
 }
 
@@ -42,19 +43,12 @@ const notificationsSlice = createSlice({
   },
 });
 
-export const {
-  addNotification,
-  markAsRead,
-} = notificationsSlice.actions;
+export const { addNotification, markAsRead } = notificationsSlice.actions;
 
 export const getNotifications = (state: RootState) => state.notifications;
 
-export const getNotification = (notificationId: Notification['id']) => (
-  (state: RootState) => state.notifications[notificationId]
-);
+export const getNotification = (notificationId: Notification['id']) => (state: RootState) => state.notifications[notificationId];
 
-export const isRead = (notificationId: Notification['id']) => (
-  (state: RootState) => !!state.notifications[notificationId]?.readTimestamp
-);
+export const isRead = (notificationId: Notification['id']) => (state: RootState) => !!state.notifications[notificationId]?.readTimestamp;
 
 export { notificationsSlice };
