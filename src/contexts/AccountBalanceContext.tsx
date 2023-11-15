@@ -9,6 +9,8 @@ import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import { fetchListLocal, fetchTokenList, MAINNET_NETWORK_ID } from 'src/utils/chainweb';
 import { KADDEX_ANALYTICS_API } from 'src/utils/config';
 import { CHAIN_COUNT } from 'src/utils/constant';
+import { toast } from 'react-toastify';
+import Toast from 'src/components/Toast/Toast';
 import { SettingsContext } from './SettingsContext';
 
 interface TokenBalance {
@@ -56,6 +58,7 @@ export const AccountBalanceProvider = ({ children }: any) => {
   const sortedWallets = uniqueWallets.sort((a, b) => b.indexOf(selectedAccount));
 
   const fetchGroupedBalances = async (allChainTokens) => {
+    let hasGasLimitError = false;
     const promiseList: any[] = [];
     for (let i = 0; i < CHAIN_COUNT; i += 1) {
       const availableChainTokens = allChainTokens && allChainTokens[i];
@@ -111,6 +114,15 @@ export const AccountBalanceProvider = ({ children }: any) => {
             const account = sortedWallets[accountIndex];
             balanceProps[account] = [...(balanceProps[account] || [])];
             balanceProps[account][chainId] = { ...(balanceProps[account][chainId] || []), [contractAddress]: chainBalance?.result?.data[key] };
+          }
+        } else if (chainBalance?.result?.status === 'failure') {
+          // check for gasLimit error
+          const regex = /Gas limit \((\d+)\) exceeded: (\d+)/;
+          if (chainBalance?.result?.error?.message?.match(regex)) {
+            if (!hasGasLimitError) {
+              hasGasLimitError = true;
+              toast.error(<Toast type="fail" content="Please try to increase GAS LIMIT in your settings" />);
+            }
           }
         }
       });
