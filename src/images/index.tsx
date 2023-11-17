@@ -125,6 +125,7 @@ import governanceMiningKdx from './governance-mining-kdx.svg';
 import info from './info.svg';
 import stake from './stake.svg';
 import unstake from './unstake.svg';
+import iconAnalytics from './ic_analytics.svg';
 
 const wallet = {
   checked,
@@ -274,6 +275,7 @@ const images = {
   iconHistory,
   iconHistoryActive,
   iconSettingActive,
+  iconAnalytics,
   eckoWalletIcon,
   eckoWalletLogo,
   eckoWalletLogoRounded,

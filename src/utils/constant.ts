@@ -26,9 +26,9 @@ export const GAS_PAYER = [{ value: 0, label: 'Public Gas Station' }];
 
 export const ACTIVE_TAB = {
   HOME: 'home',
-  HISTORY: 'history',
   SETTINGS: 'settings',
   NFT: 'nft',
+  ANALYTICS: 'analytics',
 };
 
 export const CHAIN_COUNT = 20;
@@ -36,40 +36,40 @@ export const CHAIN_COUNT = 20;
 export const KNOWN_TOKENS = {
   'runonflux.flux': {
     symbol: 'flux',
-    image: images.wallet.tokens.flux,
+    image: images.wallet.tokens['runonflux.flux'],
     coingeckoId: 'zelcash',
   },
   'kaddex.kdx': {
     symbol: 'kdx',
-    image: images.wallet.tokens.kdx,
+    image: images.wallet.tokens['kaddex.kdx'],
   },
   'hypercent.prod-hype-coin': {
     symbol: 'hype',
-    image: images.wallet.tokens.hypercent,
+    image: images.wallet.tokens['hypercent.prod-hype-coin'],
   },
   'kdlaunch.token': {
     symbol: 'kdl',
-    image: images.wallet.tokens.kdl,
+    image: images.wallet.tokens['kdlaunch.token'],
   },
   'free.anedak': {
     symbol: 'anedak',
-    image: images.wallet.tokens.anedak,
+    image: images.wallet.tokens['free.anedak'],
   },
   'free.babena': {
     symbol: 'babena',
-    image: images.wallet.tokens.babena,
+    image: images.wallet.tokens['free.babena'],
   },
   'mok.token': {
     symbol: 'mok',
-    image: images.wallet.tokens.mok,
+    image: images.wallet.tokens['mok.token'],
   },
   'lago.kwUSDC': {
     symbol: 'usdc',
-    image: images.wallet.tokens.usdc,
+    image: images.wallet.tokens['lago.kwUSDC'],
   },
   'kaddex.skdx': {
     symbol: 'skdx',
-    image: images.wallet.tokens.skdx,
+    image: images.wallet.tokens['kaddex.skdx'],
   },
 };
 

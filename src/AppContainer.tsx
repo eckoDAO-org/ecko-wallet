@@ -41,6 +41,7 @@ import CategoryDetail from './pages/Nft/CategoryDetail';
 import ImportHardwareWallet from './pages/ImportHardwareWallet';
 import ImportLedger from './pages/ImportHardwareWallet/ImportLedger';
 import GovernanceMining from './pages/GovernanceMining';
+import Analytics from './pages/Analytics';
 
 const Container = styled.div`
   width: 1000px;
@@ -95,6 +96,7 @@ const AppContainer = () => {
           <PrivateRoute path="/nft" component={Nft} />
           <PrivateRoute path="/nft-details" component={CategoryDetail} />
           <PrivateRoute path="/governance-mining" component={GovernanceMining} />
+          <PrivateRoute path="/analytics" component={Analytics} />
           <PrivateRoute path="/" component={Wallet} />
           <Redirect to="/" />
         </Switch>
