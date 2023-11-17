@@ -8,7 +8,6 @@ import { useGoHome } from 'src/hooks/ui';
 import { setCurrentWallet, setWallets } from 'src/stores/slices/wallet';
 import { getLocalSeedPhrase, initDataFromLocal } from 'src/utils/storage';
 import { ReactComponent as EckoWalletLogoBar } from 'src/images/ecko-wallet-icon.svg';
-import { ReactComponent as HistoryIcon } from 'src/images/history-icon.svg';
 import { ReactComponent as GearIcon } from 'src/images/gear-icon.svg';
 import { ReactComponent as NFTIcon } from 'src/images/nft-icon.svg';
 import { ACTIVE_TAB } from 'src/utils/constant';
@@ -140,10 +139,6 @@ const Footer = () => {
   const setIconHomeActive = () => {
     goHome();
   };
-  const setIconHistoryActive = () => {
-    history.push('/history');
-    setActiveTab(ACTIVE_TAB.HISTORY);
-  };
   const setIconSettingActive = () => {
     history.push('/setting');
     setActiveTab(ACTIVE_TAB.SETTINGS);
@@ -161,12 +156,6 @@ const Footer = () => {
             <EckoWalletLogoBar style={{ width: 24, height: 24 }} />
           </span>
           <SecondaryLabel fontWeight={700}>WALLET</SecondaryLabel>
-        </ActionBarElement>
-        <ActionBarElement className={activeTab === ACTIVE_TAB.HISTORY && 'active'} onClick={setIconHistoryActive}>
-          <span>
-            <HistoryIcon />
-          </span>
-          <SecondaryLabel fontWeight={700}>HISTORY</SecondaryLabel>
         </ActionBarElement>
         <ActionBarElement className={activeTab === ACTIVE_TAB.NFT && 'active'} onClick={setIconNftActive}>
           <span>

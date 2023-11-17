@@ -175,6 +175,10 @@ const Wallet = () => {
     window.open(url, '_blank');
   };
 
+  const handleHistory = () => {
+    history.push('/history');
+  };
+
   return (
     <div>
       <Header />
@@ -205,6 +209,7 @@ const Wallet = () => {
             variant="secondary"
           />
           <CircledButton onClick={handleBuy} label="Buy" iconUrl={images.wallet.iconBuy} variant="brand" />
+          <CircledButton onClick={handleHistory} label="History" iconUrl={images.iconHistory} variant="empty" />
         </DivFlex>
       </DivBottomShadow>
       <DivAsset>

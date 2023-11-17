@@ -5,7 +5,7 @@ interface CircledButtonProps {
   label?: string;
   iconUrl: string;
   onClick: () => void;
-  variant?: 'primary' | 'secondary' | 'brand';
+  variant?: 'primary' | 'secondary' | 'brand' | 'empty';
 }
 
 const ButtonWrapper = styled.button`
@@ -43,6 +43,12 @@ const Circle = styled.div`
     variant === 'brand' &&
     css`
       outline: 1px solid ${theme.brand};
+    `}
+  
+  ${({ theme, variant }) =>
+    variant === 'empty' &&
+    css`
+      outline: 1px solid ${theme.button.secondary};
     `}
 `;
 
