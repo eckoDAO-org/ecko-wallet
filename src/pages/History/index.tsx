@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import ModalCustom from 'src/components/Modal/ModalCustom';
 import { hideLoading, showLoading } from 'src/stores/slices/extensions';
@@ -6,32 +7,24 @@ import { get } from 'lodash';
 import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import { useSelector } from 'react-redux';
 import { setBalance } from 'src/stores/slices/wallet';
+import { NavigationHeader } from 'src/components/NavigationHeader';
+import { BodyFullScreen, PageFullScreen } from 'src/components/Page';
 import { fetchLocal, getBalanceFromChainwebApiResponse } from '../../utils/chainweb';
 import Activities from '../Wallet/views/Activities';
 
-const Div = styled.div`
-  margin: auto 0;
-  font-size: ${(props) => props.fontSize};
-  margin-right: ${(props) => props.marginRight};
-  text-align: ${(props) => props.textAlign};
-  color: ${(props) => props.color};
-  margin-left: ${(props) => props.marginLeft};
-  font-weight: ${(props) => props.fontWeight};
-`;
-const DivChild = styled.div`
-  font-size: ${(props) => props.fontSize};
-  color: ${(props) => props.color};
-  margin-top: ${(props) => props.marginTop};
-  margin-left: ${(props) => props.marginLeft};
-  margin-right: ${(props) => props.marginRight};
-  margin-bottom: ${(props) => props.marginBottom};
-  font-weight: ${(props) => props.fontWeight};
+const Header = styled.div`
+  padding: 0 20px;
 `;
 
 const History = () => {
   const rootState = useSelector((state) => state);
   const { selectedNetwork } = rootState.extensions;
   const stateWallet = useCurrentWallet();
+  const history = useHistory();
+
+  const goBack = () => {
+    history.goBack();
+  };
 
   useEffect(() => {
     if (stateWallet) {
@@ -57,12 +50,15 @@ const History = () => {
   }, [stateWallet?.account, stateWallet?.chainId]);
 
   return (
-    <Div>
-      <DivChild marginTop="20px" marginBottom="200px">
+    <PageFullScreen>
+      <Header>
+        <NavigationHeader title="History" onBack={goBack} />
+      </Header>
+      <BodyFullScreen>
         <Activities />
-      </DivChild>
+      </BodyFullScreen>
       <ModalCustom isOpen={false} title="Confirm Send Transaction" closeOnOverlayClick={false} />
-    </Div>
+    </PageFullScreen>
   );
 };
 export default History;
