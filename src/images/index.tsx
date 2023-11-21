@@ -126,6 +126,13 @@ import info from './info.svg';
 import stake from './stake.svg';
 import unstake from './unstake.svg';
 import iconAnalytics from './ic_analytics.svg';
+import valuechart from './ic_valuechart.svg';
+import heatmap from './ic_heatmap.svg';
+import piechart from './ic_piechart.svg';
+import assetAllocation from './ic_asset_allocation.svg';
+import profitAndLoss from './ic_profit_and_loss.svg';
+import uptrend from './ic_uptrend.svg';
+import downtrend from './ic_downtrend.svg';
 
 const wallet = {
   checked,
@@ -250,6 +257,15 @@ const governance = {
   stake,
   unstake,
 };
+const analytics = {
+  valuechart,
+  heatmap,
+  piechart,
+  assetAllocation,
+  profitAndLoss,
+  uptrend,
+  downtrend,
+};
 const images = {
   wallet,
   logoName,
@@ -283,6 +299,7 @@ const images = {
   ledgerLogoLong,
   trezorLogo,
   governance,
+  analytics,
 };
 
 export default images;

@@ -162,7 +162,7 @@ const Footer = () => {
           </span>
           <SecondaryLabel fontWeight={700}>WALLET</SecondaryLabel>
         </ActionBarElement>
-        <ActionBarElement onClick={setIconAnalyticsActive}>
+        <ActionBarElement className={activeTab === ACTIVE_TAB.ANALYTICS && 'active'} onClick={setIconAnalyticsActive}>
           <span>
             <AnalyticsIcon />
           </span>
