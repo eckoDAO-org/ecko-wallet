@@ -1,7 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import { DivFlex, SecondaryLabel } from 'src/components';
+import { DivFlex } from 'src/components';
 import Trend from './Trend';
+import { Label, LabeledRow } from '../UI';
 
 export const Container = styled(DivFlex)`
   flex-direction: column;
@@ -15,12 +16,6 @@ export const Icon = styled.img`
   height: 24px;
 `;
 
-export const Symbol = styled(SecondaryLabel)`
-  color: ${({ theme }) => theme.text.primary};
-  font-size: 14px;
-  flex: 1;
-`;
-
 export interface TokenTrendProps {
   title: string;
   iconPath: string;
@@ -30,14 +25,11 @@ export interface TokenTrendProps {
 }
 
 const TokenTrend = ({ title, iconPath, symbol, value, isUp }: TokenTrendProps) => (
-  <Container>
-    <SecondaryLabel>{title}</SecondaryLabel>
-    <DivFlex flexDirection="row" alignItems="center" gap="12px">
-      <Icon src={iconPath} />
-      <Symbol>{symbol}</Symbol>
-      <Trend value={value} isUp={isUp} />
-    </DivFlex>
-  </Container>
+  <LabeledRow label={title}>
+    <Icon src={iconPath} />
+    <Label>{symbol}</Label>
+    <Trend value={value} isUp={isUp} />
+  </LabeledRow>
 );
 
 export default TokenTrend;
