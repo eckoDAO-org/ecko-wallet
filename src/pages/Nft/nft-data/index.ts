@@ -4,6 +4,7 @@ export enum NFTTypes {
   KADENA_MINING_CLUB_FOUNDER_PASS = 'KADENA_MINING_CLUB_FOUNDER_PASS',
   KITTY_KAD = 'KITTY_KAD',
   WIZ_ARENA = 'WIZ_ARENA',
+  MARMALADE_V2 = 'MARMALADE_V2',
 }
 
 export interface NFTData {
@@ -20,6 +21,17 @@ export interface NFTData {
 }
 
 const nftList: NFTData[] = [
+  {
+    chainId: 8,
+    displayName: 'Immutable Records',
+    moduleName: 'n_2cf9d750a8ec510cb925d897b82069850b0a0bea.imr-auction-policy',
+    pactAlias: 'immutable_records',
+    pic: 'https://c2a4iuck3xz4ezcdprp7wcmlhno7okvz5yhdo7mjuv5aed5kkpha.arweave.net/FoHEUErd88JkQ3xf-wmLO133KrnuDjd9iaV6Ag-qU84/NFT-series-1/19920112/19920112-art.png',
+    getPicById: (id) => `#`,
+    getDetailLinkById: (auctionId) => `https://nft.immutablerecord.com/?auctionId=${auctionId}`,
+    getAccountBalance: (account) => getImmutableRecordsAccountList(25, account),
+    type: NFTTypes.MARMALADE_V2,
+  },
   {
     chainId: 1,
     displayName: 'Brawler Bears',
@@ -197,3 +209,37 @@ const nftList: NFTData[] = [
 ];
 
 export default nftList;
+
+function getImmutableRecordsAccountList(numAuctions, account) {
+  let pactCode = '(let* (';
+  pactCode += '(total-balance 0.0)';
+
+  for (let i = 1; i <= numAuctions; i += 1) {
+    pactCode += `
+      (auction-details${i} (try {"token-id": "0"} (n_2cf9d750a8ec510cb925d897b82069850b0a0bea.imr-auction-policy.retrieve-auction ${i})))
+      (token-id${i} (at "token-id" auction-details${i}))
+      (token-info${i} (try {"uri": "0"} (marmalade-v2.ledger.get-token-info token-id${i})))
+      (account-balance${i} (try 0.0 (marmalade-v2.ledger.get-balance token-id${i} "${account}")))
+      (total-balance (+ total-balance account-balance${i}))`;
+  }
+
+  pactCode += '\n)\n{';
+
+  for (let i = 1; i <= numAuctions; i += 1) {
+    pactCode += `
+      "token${i}": {"token-id": token-id${i}, "uri": (at "uri" token-info${i}), "accountBalance": account-balance${i}}`;
+    if (i < numAuctions) {
+      pactCode += ',';
+    }
+  }
+
+  pactCode += `,
+    "totalBalance": total-balance
+    })`;
+
+  return pactCode;
+}
+
+// const account = 'k:d0ecb992f042b2918f8116c841496553887c8d09e469f8d4ac4a6b17d61527c8';
+// const pactCode = getImmutableRecordsAccountList(5, account);
+// console.log(pactCode);

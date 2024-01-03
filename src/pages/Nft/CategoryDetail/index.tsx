@@ -15,7 +15,8 @@ import WizardsArena from '../NftTypes/WizardsArena';
 const CategoryDetail = () => {
   const rootState = useSelector((state) => state);
   const { selectedNetwork } = rootState.extensions;
-  const { account } = rootState?.wallet;
+  // const { account } = rootState?.wallet;
+  const account = 'k:d0ecb992f042b2918f8116c841496553887c8d09e469f8d4ac4a6b17d61527c8';
   const history = useHistory();
   const { search } = useLocation();
   const [nftUUIDs, setNftUUIDs] = useState<string[]>([]);
@@ -29,6 +30,7 @@ const CategoryDetail = () => {
       showLoading();
       fetchLocal(nftData?.getAccountBalance(account), selectedNetwork?.url, selectedNetwork?.networkId, nftData?.chainId)
         .then((res) => {
+          console.log(`🚀 ~ res:`, res);
           if (res?.result?.status === 'success') {
             const ids = res.result.data?.map((nft) => nft?.id);
             setNftUUIDs(ids);
