@@ -36,6 +36,7 @@ export const NftCardContainer = styled.div`
     font-weight: 500;
     font-size: 11px;
     position: absolute;
+    max-width: 80%;
     left: 10px;
     bottom: 6px;
     span {

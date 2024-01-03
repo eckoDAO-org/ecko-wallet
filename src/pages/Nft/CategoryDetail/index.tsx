@@ -11,6 +11,7 @@ import ArkadeNFT from '../NftTypes/Arkade';
 import KadenaMiningClub from '../NftTypes/KadenaMiningClub';
 import KadenaMiningClubFoundersPass from '../NftTypes/KadenaMiningClubFoundersPass';
 import WizardsArena from '../NftTypes/WizardsArena';
+import MarmaladeV2 from '../NftTypes/MarmaladeV2';
 
 const CategoryDetail = () => {
   const rootState = useSelector((state) => state);
@@ -32,8 +33,18 @@ const CategoryDetail = () => {
         .then((res) => {
           console.log(`🚀 ~ res:`, res);
           if (res?.result?.status === 'success') {
-            const ids = res.result.data?.map((nft) => nft?.id);
-            setNftUUIDs(ids);
+            if (nftData?.type === NFTTypes.MARMALADE_V2) {
+              const uris: string[] = [];
+              Object.keys(res.result.data).forEach((tokenKey) => {
+                if (res.result.data[tokenKey]?.accountBalance > 0) {
+                  uris.push(res.result.data[tokenKey]?.uri);
+                }
+              });
+              setNftUUIDs(uris);
+            } else {
+              const ids = res.result.data?.map((nft) => nft?.id);
+              setNftUUIDs(ids);
+            }
           } else {
             // eslint-disable-next-line no-console
             console.log('fetch error');
@@ -62,6 +73,9 @@ const CategoryDetail = () => {
       }
       case NFTTypes.WIZ_ARENA: {
         return <WizardsArena id={id} nftData={nftData} cardStyle={{ imageRendering: 'pixelated' }} />;
+      }
+      case NFTTypes.MARMALADE_V2: {
+        return <MarmaladeV2 uri={id} />;
       }
       default: {
         return null;
