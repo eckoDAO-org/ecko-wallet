@@ -1,10 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Header as PageHeader, PageFullScreen, BodyFullScreen } from 'src/components/Page';
-import images from 'src/images';
 import Toolbar from 'src/components/Analytics/Toolbar';
-import TokenTrend from 'src/components/Analytics/TokenTrend';
 import TotalTransactions from 'src/components/Analytics/TotalTransactions';
+import PortfolioValue from 'src/components/Analytics/PortfolioValue';
 import TopTokens from './TopTokens';
 
 const Header = styled(PageHeader)`
@@ -19,13 +18,14 @@ const Body = styled(BodyFullScreen)`
 `;
 
 const Analytics = () => (
-  <PageFullScreen>
+  <PageFullScreen addFooter>
     <Header>
       <Toolbar />
     </Header>
     <Body>
       <TopTokens />
       <TotalTransactions />
+      <PortfolioValue />
     </Body>
   </PageFullScreen>
 );

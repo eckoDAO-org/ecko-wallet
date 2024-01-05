@@ -8,10 +8,13 @@ export const Page = styled(PageFullWidth)`
   padding: 0 20px;
 `;
 
+// TODO: replace addFooter with flex
+// 70px is the height of the Footer
 export const PageFullScreen = styled(PageFullWidth)`
   height: 100%;
   display: flex;
   flex-direction: column;
+  ${({ addFooter }) => addFooter && 'padding-bottom: 70px'};
 `;
 
 export const Header = styled.div`

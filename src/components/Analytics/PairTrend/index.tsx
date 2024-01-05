@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Icon, TokenTrendProps } from '../TokenTrend';
-import Trend from '../TokenTrend/Trend';
+import Trend from '../Trend';
 import { Label, LabeledRow } from '../UI';
 
 export const SecondIcon = styled(Icon)`

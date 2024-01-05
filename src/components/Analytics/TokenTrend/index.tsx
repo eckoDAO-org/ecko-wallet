@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { DivFlex } from 'src/components';
-import Trend from './Trend';
+import Trend from '../Trend';
 import { Label, LabeledRow } from '../UI';
 
 export const Container = styled(DivFlex)`
