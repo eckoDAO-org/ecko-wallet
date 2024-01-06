@@ -7,7 +7,7 @@ import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import { useSelector } from 'react-redux';
 import { groupBy, chunk } from 'lodash';
 import { fetchLocal } from '../../utils/chainweb';
-import nftList from './nft-data';
+import nftList, { NFTTypes } from './nft-data';
 import { NftContainer, NftPageContainer } from './style';
 import NftCard from './NftTypes/NftCard';
 
@@ -68,6 +68,14 @@ const Nft = () => {
     }
   }, [account]);
 
+  const getNFTTotal = (nftPactAlias) => {
+    const nft = nftList?.find((n) => n.pactAlias === nftPactAlias);
+    if (nft?.type === NFTTypes.MARMALADE_V2) {
+      return nftAccount[nftPactAlias]?.totalBalance;
+    }
+    return nftAccount[nftPactAlias]?.length;
+  };
+
   return (
     <NftPageContainer>
       <PrimaryLabel fontSize={18} uppercase>
@@ -85,7 +93,7 @@ const Nft = () => {
                     src={nft.pic}
                     label={
                       <>
-                        {nft.displayName} <span>({nftAccount[nftPactAlias]?.length})</span>
+                        {nft.displayName} <span>({getNFTTotal(nftPactAlias)})</span>
                       </>
                     }
                     onClick={() => history.push(`/nft-details?category=${nftPactAlias}`)}
