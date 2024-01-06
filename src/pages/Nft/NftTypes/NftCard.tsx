@@ -13,7 +13,6 @@ export const NftCardContainer = styled.div`
     background-image: url('${({ src }) => src}');
     background-size: cover;
     background-repeat: no-repeat;
-    background-position: center center;
     position: relative;
     width: 140px;
     height: 140px;

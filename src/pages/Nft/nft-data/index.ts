@@ -227,7 +227,7 @@ function getImmutableRecordsAccountList(numAuctions, account) {
 
   for (let i = 1; i <= numAuctions; i += 1) {
     pactCode += `
-      "token${i}": {"token-id": token-id${i}, "uri": (at "uri" token-info${i}), "accountBalance": account-balance${i}}`;
+      "token${i}": {"auctionNumber": "${i}", "token-id": token-id${i}, "uri": (at "uri" token-info${i}), "accountBalance": account-balance${i}}`;
     if (i < numAuctions) {
       pactCode += ',';
     }
@@ -235,11 +235,7 @@ function getImmutableRecordsAccountList(numAuctions, account) {
 
   pactCode += `,
     "totalBalance": total-balance
-    })`;
+  })`;
 
   return pactCode;
 }
-
-// const account = 'k:d0ecb992f042b2918f8116c841496553887c8d09e469f8d4ac4a6b17d61527c8';
-// const pactCode = getImmutableRecordsAccountList(5, account);
-// console.log(pactCode);

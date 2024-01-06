@@ -1,18 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { fetchLocal } from 'src/utils/chainweb';
 import NftCard from '../NftCard';
-import { NFTData } from '../../nft-data';
 import MarmaladeV2ModalContent from './ModalContent';
 
-const MarmaladeV2 = ({ uri }: { uri: string }) => {
+const MarmaladeV2 = ({ data: { uri, auctionNumber } }: { data: { uri: string; auctionNumber: string } }) => {
   const [asyncData, setAsyncData] = useState<any>();
-  console.log(`🚀 !!! ~ asyncData:`, asyncData);
-  const [errorMessage, setErrorMessage] = useState<string>();
 
   useEffect(() => {
     if (uri) {
-      setErrorMessage('');
       const options = { method: 'GET' };
       fetch(uri, options)
         .then(async (response) => {
@@ -22,7 +16,6 @@ const MarmaladeV2 = ({ uri }: { uri: string }) => {
         .catch((err: any) => {
           // eslint-disable-next-line no-console
           console.error('MarmaladeV2 json error', err);
-          setErrorMessage('Unable to fetch NFT data, try again later');
         });
     }
     return () => {
@@ -33,9 +26,9 @@ const MarmaladeV2 = ({ uri }: { uri: string }) => {
   return (
     <NftCard
       src={asyncData?.image}
-      label={asyncData?.name}
-      modalTitle={asyncData?.name}
-      modalContent={<MarmaladeV2ModalContent uriData={asyncData} />}
+      label={`#${auctionNumber}`}
+      modalTitle={`#${auctionNumber}`}
+      modalContent={<MarmaladeV2ModalContent uriData={asyncData} auctionNumber={auctionNumber} />}
     />
   );
 };

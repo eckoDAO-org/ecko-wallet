@@ -16,8 +16,7 @@ import MarmaladeV2 from '../NftTypes/MarmaladeV2';
 const CategoryDetail = () => {
   const rootState = useSelector((state) => state);
   const { selectedNetwork } = rootState.extensions;
-  // const { account } = rootState?.wallet;
-  const account = 'k:d0ecb992f042b2918f8116c841496553887c8d09e469f8d4ac4a6b17d61527c8';
+  const { account } = rootState?.wallet;
   const history = useHistory();
   const { search } = useLocation();
   const [nftUUIDs, setNftUUIDs] = useState<string[]>([]);
@@ -31,13 +30,12 @@ const CategoryDetail = () => {
       showLoading();
       fetchLocal(nftData?.getAccountBalance(account), selectedNetwork?.url, selectedNetwork?.networkId, nftData?.chainId)
         .then((res) => {
-          console.log(`🚀 ~ res:`, res);
           if (res?.result?.status === 'success') {
             if (nftData?.type === NFTTypes.MARMALADE_V2) {
-              const uris: string[] = [];
+              const uris: any[] = [];
               Object.keys(res.result.data).forEach((tokenKey) => {
                 if (res.result.data[tokenKey]?.accountBalance > 0) {
-                  uris.push(res.result.data[tokenKey]?.uri);
+                  uris.push(res.result.data[tokenKey]);
                 }
               });
               setNftUUIDs(uris);
@@ -57,7 +55,7 @@ const CategoryDetail = () => {
     }
   }, [category, account]);
 
-  const renderNFT = (id: string) => {
+  const renderNFT = (id: any) => {
     switch (nftData?.type) {
       case NFTTypes.ARKADE: {
         return <ArkadeNFT id={id} nftData={nftData} />;
@@ -75,7 +73,7 @@ const CategoryDetail = () => {
         return <WizardsArena id={id} nftData={nftData} cardStyle={{ imageRendering: 'pixelated' }} />;
       }
       case NFTTypes.MARMALADE_V2: {
-        return <MarmaladeV2 uri={id} />;
+        return <MarmaladeV2 data={id} />;
       }
       default: {
         return null;

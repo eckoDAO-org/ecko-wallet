@@ -17,4 +17,9 @@ export const NftTableRow = styled(DivFlex)`
   margin-top: 20px;
   width: 100%;
   max-width: 300px;
+  overflow: hidden;
+  span {
+    flex: 1;
+    word-break: break-word;
+  }
 `;

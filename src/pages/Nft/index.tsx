@@ -18,9 +18,7 @@ const Nft = () => {
   const history = useHistory();
 
   const stateWallet = useCurrentWallet();
-  // const account = stateWallet?.account;
-
-  const account = 'k:d0ecb992f042b2918f8116c841496553887c8d09e469f8d4ac4a6b17d61527c8';
+  const account = stateWallet?.account;
 
   const [nftAccount, setNftAccount] = useState({});
 
