@@ -10,7 +10,7 @@ export const setStoreExtensions = (store: Store) => {
 
 const selectedNetwork: RawNetwork = {
   name: 'Mainnet',
-  url: 'https://chainweb.kaddex.com',
+  url: 'https://chainweb.ecko.finance',
   explorer: 'https://explorer.chainweb.com/mainnet',
   networkId: 'mainnet01',
   isDefault: true,
@@ -19,7 +19,7 @@ const selectedNetwork: RawNetwork = {
 export const defaultNetworks: RawNetwork[] = [
   {
     name: 'Mainnet',
-    url: 'https://chainweb.kaddex.com',
+    url: 'https://chainweb.ecko.finance',
     explorer: 'https://explorer.chainweb.com/mainnet',
     networkId: 'mainnet01',
     isDefault: true,
