@@ -1,6 +1,6 @@
 {
   "name": "ecko-wallet",
-  "version": "2.9.3",
+  "version": "2.9.4",
   "private": true,
   "dependencies": {
     "@babel/core": "^7.15.5",
