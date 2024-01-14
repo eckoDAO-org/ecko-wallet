@@ -251,7 +251,7 @@ const Wallet = () => {
                   balance={tokenBalance || 0}
                   name={fT.symbol?.toUpperCase()}
                   usdBalance={roundNumber(getUsdPrice(fT.contractAddress, tokenBalance || 0), 2)}
-                  logo={images.wallet.tokens[fT.contractAddress] || images.wallet.tokens.coin}
+                  logo={images.wallet.tokens[fT.contractAddress] || images.wallet.iconUnknownKadenaToken}
                   onClick={() => {
                     selectedAccountBalance &&
                       openModal({

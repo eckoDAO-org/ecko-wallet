@@ -87,6 +87,8 @@ import iconKds from './kds-logo.svg';
 import iconCrna from './corona-logo.svg';
 import iconKishu from './kishk-logo.svg';
 import iconArkd from './arkade-logo.png';
+import iconWiz from './wizz.svg';
+import iconCrankk from './crankk.svg';
 import zUSD from './zUSD.png';
 import checkedV from './checked-v.svg';
 import violetAdd from './violet-add.svg';
@@ -96,6 +98,7 @@ import logoWallet from './logo-wallet.svg';
 import iconSend from './arrow-down.svg';
 import logoWalletKadena from './logo-wallet-kaden.svg';
 import iconKadenaToken from './icon-kadena-token.svg';
+import iconUnknownKadenaToken from './unknown_token.svg';
 import iconHome from './icon-home.svg';
 import iconHistory from './history-icon.svg';
 import iconHistoryActive from './icon-history-active.svg';
@@ -171,6 +174,7 @@ const wallet = {
   iconSend,
   logoWalletKadena,
   iconKadenaToken,
+  iconUnknownKadenaToken,
   iconMorePurple,
   iconDropDown,
   iconCreate,
@@ -194,6 +198,8 @@ const wallet = {
     'kdlaunch.kdswap-token': iconKds,
     'arkade.token': iconArkd,
     'free.KAYC': iconKayc,
+    'free.wiza': iconWiz,
+    'free.crankk01': iconCrankk,
     'free.corona-token': iconCrna,
     'n_b742b4e9c600892af545afb408326e82a6c0c6ed.zUSD': zUSD,
   },
