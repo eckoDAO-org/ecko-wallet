@@ -140,8 +140,8 @@ const SignedCmd = () => {
         const meta = Pact.lang.mkMeta(
           signingCmd.sender,
           signingCmd.chainId.toString(),
-          signingCmd.gasPrice,
-          signingCmd.gasLimit,
+          parseFloat(signingCmd.gasPrice),
+          parseFloat(signingCmd.gasLimit),
           getTimestamp(),
           signingCmd.ttl,
         );
