@@ -88,6 +88,7 @@ import iconCrna from './corona-logo.svg';
 import iconKishu from './kishk-logo.svg';
 import iconArkd from './arkade-logo.png';
 import iconWiz from './wizz.svg';
+import iconTeckel from './teckel-coin.png';
 import iconCrankk from './crankk.svg';
 import zUSD from './zUSD.png';
 import checkedV from './checked-v.svg';
@@ -199,6 +200,7 @@ const wallet = {
     'arkade.token': iconArkd,
     'free.KAYC': iconKayc,
     'free.wiza': iconWiz,
+    'free.teckel': iconTeckel,
     'free.crankk01': iconCrankk,
     'free.corona-token': iconCrna,
     'n_b742b4e9c600892af545afb408326e82a6c0c6ed.zUSD': zUSD,
