@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import ReactJson from 'react-json-view';
 import Toast from 'src/components/Toast/Toast';
 import { toast } from 'react-toastify';
+import { InputError } from 'src/baseComponent';
 import { getLocalSelectedNetwork, getLocalSigningCmd } from 'src/utils/storage';
 import Button from 'src/components/Buttons';
 import { DivFlex, SecondaryLabel } from 'src/components';
@@ -68,6 +69,7 @@ const SignedCmd = () => {
   const [domain, setDomain] = useState('');
   const [tabId, setTabId] = useState(null);
   const [cmd, setCmd] = useState<any>({});
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const [hash, setHash] = useState<any>('');
   const [chainId, setChainId] = useState<any>();
   const [caps, setCaps] = useState<any[]>([]);
@@ -115,11 +117,7 @@ const SignedCmd = () => {
                     setCmd(signedResponse?.signedCmd);
                     setCaps(signedResponse?.signingCmd.caps);
                   } else {
-                    const result = {
-                      status: 'fail',
-                      message: 'Invalid network',
-                    };
-                    returnSignedMessage(result, result, signingCmd?.signingCmd?.id, signingCmd?.signingCmd.topic);
+                    setErrorMessage('Invalid Network');
                   }
                 },
                 () => {},
@@ -127,7 +125,7 @@ const SignedCmd = () => {
             }
           })
           .catch((result) => {
-            returnSignedMessage(result, result, signingCmd?.signingCmd?.id, signingCmd?.signingCmd.topic);
+            setErrorMessage(result?.message ?? 'Signing cmd error, please check your payload');
           });
       },
       () => {},
@@ -140,8 +138,8 @@ const SignedCmd = () => {
         const meta = Pact.lang.mkMeta(
           signingCmd.sender,
           signingCmd.chainId.toString(),
-          signingCmd.gasPrice,
-          signingCmd.gasLimit,
+          parseFloat(signingCmd.gasPrice),
+          parseFloat(signingCmd.gasLimit),
           getTimestamp(),
           signingCmd.ttl,
         );
@@ -217,11 +215,11 @@ const SignedCmd = () => {
   const onClose = () => {
     const result = {
       status: 'fail',
-      message: 'Rejected by user',
+      message: errorMessage || 'Rejected by user',
     };
     returnSignedMessage(result, {
       code: 5000,
-      message: 'User rejected.',
+      message: errorMessage || 'User rejected.',
     });
   };
 
@@ -292,10 +290,15 @@ const SignedCmd = () => {
       ) : null}
 
       {!isWaitingLedger && (
-        <DivFlex gap="10px" padding="24px">
-          <Button size="full" label="Reject" variant="disabled" onClick={onClose} />
-          <Button isDisabled={isWaitingLedger} size="full" label="Confirm" onClick={onSave} />
-        </DivFlex>
+        <>
+          <DivFlex gap="10px" padding="24px">
+            <InputError>{errorMessage}</InputError>
+          </DivFlex>
+          <DivFlex gap="10px" padding="24px">
+            <Button size="full" label={errorMessage ? 'Close' : 'Reject'} variant="disabled" onClick={onClose} />
+            {!errorMessage && <Button isDisabled={isWaitingLedger} size="full" label="Confirm" onClick={onSave} />}
+          </DivFlex>
+        </>
       )}
     </DappWrapper>
   );
