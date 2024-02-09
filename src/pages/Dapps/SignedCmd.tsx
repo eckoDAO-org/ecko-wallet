@@ -156,7 +156,7 @@ const SignedCmd = () => {
         const signedCmd = Pact.api.prepareExecCmd(
           keyPairs,
           `${ECKO_WALLET_DAPP_SIGN_NONCE}-"${new Date().toISOString()}"`,
-          signingCmd?.pactCode || signingCmd?.pactCode,
+          signingCmd?.pactCode || signingCmd?.code,
           signingCmd?.data || signingCmd?.envData,
           meta,
           signingCmd.networkId,
