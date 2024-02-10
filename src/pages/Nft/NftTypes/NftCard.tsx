@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useModalContext } from 'src/contexts/ModalContext';
 import styled from 'styled-components';
 
@@ -53,6 +53,7 @@ export const NftCardContainer = styled.div`
 
 const NftCard = ({
   src,
+  srcFallback,
   label,
   modalTitle,
   modalContent,
@@ -60,6 +61,7 @@ const NftCard = ({
   cardStyle,
 }: {
   src: string;
+  srcFallback?: string;
   label: React.ReactNode;
   modalTitle?: string;
   modalContent?: React.ReactNode;
@@ -67,6 +69,7 @@ const NftCard = ({
   cardStyle?: React.CSSProperties;
 }) => {
   const { openModal } = useModalContext();
+  const [restoredSrc, setRestoredSrc] = useState(src);
 
   const onClickCard = () => {
     if (onClick) {
@@ -79,8 +82,15 @@ const NftCard = ({
     }
   };
 
+  useEffect(() => {
+    const img = new Image();
+    img.src = src;
+    img.onload = () => setRestoredSrc(src);
+    img.onerror = () => setRestoredSrc(srcFallback ?? src);
+  }, [src]);
+
   return (
-    <NftCardContainer src={src} onClick={onClickCard}>
+    <NftCardContainer src={restoredSrc} onClick={onClickCard}>
       <div style={cardStyle}>
         <span className="categoryNft">{label}</span>
       </div>
