@@ -157,7 +157,7 @@ const SignedCmd = () => {
           keyPairs,
           `${ECKO_WALLET_DAPP_SIGN_NONCE}-"${new Date().toISOString()}"`,
           signingCmd?.pactCode || signingCmd?.code,
-          signingCmd.envData,
+          signingCmd?.data || signingCmd?.envData,
           meta,
           signingCmd.networkId,
         );
