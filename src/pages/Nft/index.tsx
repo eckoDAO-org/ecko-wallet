@@ -10,6 +10,7 @@ import { fetchLocal } from '../../utils/chainweb';
 import nftList, { NFTTypes } from './nft-data';
 import { NftContainer, NftPageContainer } from './style';
 import NftCard from './NftTypes/NftCard';
+import MarmaladeNGCollectionList from './NftTypes/MarmaladeNG/MarmaladeNGCollectionList';
 
 const Nft = () => {
   const rootState = useSelector((state) => state);
@@ -82,6 +83,7 @@ const Nft = () => {
         Your collectibles
       </PrimaryLabel>
       <NftContainer marginTop="40px">
+        <MarmaladeNGCollectionList key="ng" />
         {Object.keys(nftAccount)?.length ? (
           Object.keys(nftAccount)
             ?.sort((a, b) => a.localeCompare(b))
@@ -90,6 +92,7 @@ const Nft = () => {
               return (
                 nft && (
                   <NftCard
+                    key={nft.displayName}
                     src={nft.pic}
                     label={
                       <>
