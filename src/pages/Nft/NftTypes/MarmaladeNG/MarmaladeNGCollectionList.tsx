@@ -25,8 +25,7 @@ const MarmaladeNGCollectionList = () => {
   const history = useHistory();
 
   const stateWallet = useCurrentWallet();
-  // const account = stateWallet?.account;
-  const account = 'k:e266a7ab7ecbfb127d75205a0974f7149249ec27597bd410dc8bb5d68edf2d54';
+  const account = stateWallet?.account;
   useEffect(() => {
     const fetchNGNftAsync = async () => {
       const ownedTokens: string[] = [];

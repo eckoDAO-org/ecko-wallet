@@ -33,8 +33,7 @@ const MarmaladeNGCollectionDetails = () => {
   const history = useHistory();
 
   const stateWallet = useCurrentWallet();
-  // const account = stateWallet?.account;
-  const account = 'k:e266a7ab7ecbfb127d75205a0974f7149249ec27597bd410dc8bb5d68edf2d54';
+  const account = stateWallet?.account;
   useEffect(() => {
     const fetchNGNftAsync = async () => {
       const ngNftsResponse = await fetchLocal(
@@ -88,7 +87,7 @@ const MarmaladeNGCollectionDetails = () => {
               src={token.src}
               srcFallback={images.iconMarmaladeNG}
               label={`#${token.number}`}
-              modalTitle={`#${token.number}`}
+              modalTitle={`${name} #${token.number}`}
               modalContent={<NGModalContent token={token} />}
             />
           ))
