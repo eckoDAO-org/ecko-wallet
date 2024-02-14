@@ -9,6 +9,11 @@ export enum NFTTypes {
 
 export const MARMALADE_NG_CHAINS = ['8', '1'];
 export const MARMALADE_NG_CONTRACT = 'n_4e470a97222514a8662dd1219000a0431451b0ee';
+export const MARMALADE_NG_WHITELISTED_COLLECTIONS = [
+  'c_Marmalade_NG_launch_Q9AJ859ISCW2BoqPumvm-T3XetV0-4SJzKpjc9G-LZg',
+  'c_NGE_UyGj-2fVLsysbfa6hTobIIE9nOh_aqPDDfYEhWlJv6c',
+  'c_kadena-kings_dyedla8EGc56PDwvcF9VrO5RvpssA0jD4XUS2pvBWxA',
+];
 
 export interface NFTData {
   chainId: number;

@@ -7,7 +7,13 @@ import { useHistory } from 'react-router-dom';
 import { idToPascalCase } from 'src/utils';
 import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import { fetchLocal } from 'src/utils/chainweb';
-import { MARMALADE_NG_CHAINS, MARMALADE_NG_CONTRACT, getCollectionsAndTokens, getGatewayUrlByIPFS } from '../../nft-data';
+import {
+  MARMALADE_NG_CHAINS,
+  MARMALADE_NG_CONTRACT,
+  getCollectionsAndTokens,
+  getGatewayUrlByIPFS,
+  MARMALADE_NG_WHITELISTED_COLLECTIONS,
+} from '../../nft-data';
 import NftCard from '../NftCard';
 
 export interface NgCollection {
@@ -71,30 +77,32 @@ const MarmaladeNGCollectionList = () => {
                 }[] = Object.values(res?.result?.data);
                 const prepareNgCollections: NgCollection[] = [];
                 for (const collection of collections) {
-                  try {
-                    let ownedCount = 0;
-                    const allCollectionTokensResponse = await fetchLocal(
-                      `(${MARMALADE_NG_CONTRACT}.policy-collection.list-tokens-of-collection "${collection.id}")`,
-                      selectedNetwork?.url,
-                      selectedNetwork?.networkId,
-                      res?.metaData?.publicMeta?.chainId,
-                    );
-                    if (allCollectionTokensResponse?.result?.status === 'success') {
-                      ownedCount = allCollectionTokensResponse?.result?.data?.filter((t) => ownedTokens.includes(t))?.length;
-                    }
-                    const uriDataResponse = await fetch(getGatewayUrlByIPFS(collection?.firstTokenURI, res?.metaData?.publicMeta?.chainId));
-                    const uriData = await uriDataResponse.json();
-                    const src = uriData?.image;
+                  if (MARMALADE_NG_WHITELISTED_COLLECTIONS.includes(collection.id)) {
+                    try {
+                      let ownedCount = 0;
+                      const allCollectionTokensResponse = await fetchLocal(
+                        `(${MARMALADE_NG_CONTRACT}.policy-collection.list-tokens-of-collection "${collection.id}")`,
+                        selectedNetwork?.url,
+                        selectedNetwork?.networkId,
+                        res?.metaData?.publicMeta?.chainId,
+                      );
+                      if (allCollectionTokensResponse?.result?.status === 'success') {
+                        ownedCount = allCollectionTokensResponse?.result?.data?.filter((t) => ownedTokens.includes(t))?.length;
+                      }
+                      const uriDataResponse = await fetch(getGatewayUrlByIPFS(collection?.firstTokenURI, res?.metaData?.publicMeta?.chainId));
+                      const uriData = await uriDataResponse.json();
+                      const src = uriData?.image;
 
-                    prepareNgCollections.push({
-                      id: collection.id,
-                      name: collection?.name,
-                      src,
-                      chainId: res?.metaData?.publicMeta?.chainId,
-                      ownedCount,
-                    });
-                  } catch (err) {
-                    console.error('Error fetching IPFS', err);
+                      prepareNgCollections.push({
+                        id: collection.id,
+                        name: collection?.name,
+                        src,
+                        chainId: res?.metaData?.publicMeta?.chainId,
+                        ownedCount,
+                      });
+                    } catch (err) {
+                      console.error('Error fetching IPFS', err);
+                    }
                   }
                 }
                 setNgCollections(prepareNgCollections);
