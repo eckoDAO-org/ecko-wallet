@@ -103,3 +103,5 @@ export const toFixedDown = (num, fixed) => {
 };
 
 export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+
+export const idToPascalCase = (string) => string.replace(/[-_]+/g, ' ').replace(/\b(\w)/g, (char) => char.toUpperCase());

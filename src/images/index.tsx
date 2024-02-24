@@ -129,6 +129,7 @@ import governanceMiningKdx from './governance-mining-kdx.svg';
 import info from './info.svg';
 import stake from './stake.svg';
 import unstake from './unstake.svg';
+import iconMarmaladeNG from './marm_ng_default_logo.png';
 
 const wallet = {
   checked,
@@ -289,6 +290,7 @@ const images = {
   ledgerLogoLong,
   trezorLogo,
   governance,
+  iconMarmaladeNG,
 };
 
 export default images;

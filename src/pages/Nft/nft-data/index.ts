@@ -7,6 +7,14 @@ export enum NFTTypes {
   MARMALADE_V2 = 'MARMALADE_V2',
 }
 
+export const MARMALADE_NG_CHAINS = ['8', '1'];
+export const MARMALADE_NG_CONTRACT = 'n_4e470a97222514a8662dd1219000a0431451b0ee';
+export const MARMALADE_NG_WHITELISTED_COLLECTIONS = [
+  'c_Marmalade_NG_launch_Q9AJ859ISCW2BoqPumvm-T3XetV0-4SJzKpjc9G-LZg',
+  'c_NGE_UyGj-2fVLsysbfa6hTobIIE9nOh_aqPDDfYEhWlJv6c',
+  'c_kadena-kings_dyedla8EGc56PDwvcF9VrO5RvpssA0jD4XUS2pvBWxA',
+];
+
 export interface NFTData {
   chainId: number;
   moduleName: string;
@@ -236,6 +244,76 @@ function getImmutableRecordsAccountList(numAuctions, account) {
   pactCode += `,
     "totalBalance": total-balance
   })`;
+
+  return pactCode;
+}
+
+const getIPFSGatewayUrl = (cid: string) => `https://gateway.pinata.cloud/ipfs/${cid}`;
+const getKDAFSGatewayUrl = (cid: string, chain: string | number) =>
+  `https://gw.kadena-gw.io/kdafs/mainnet01:${chain}/nice-namespace.storage-module/${cid}`;
+
+export const getGatewayUrlByIPFS = (ipfsUrl, chainId) => {
+  const { protocol, cid } = extractProtocolAndCID(ipfsUrl);
+  if (protocol === 'ipfs') {
+    return getIPFSGatewayUrl(cid);
+  }
+  if (protocol === 'kdafs') {
+    return getKDAFSGatewayUrl(cid, chainId);
+  }
+  return '#';
+};
+
+export function extractProtocolAndCID(url) {
+  const [protocol, rest] = url.split('://');
+  const cid = rest.split('/').pop();
+  return { protocol, cid };
+}
+
+export function getCollectionsAndTokens(numCollections) {
+  let pactCode = '(let* (';
+  pactCode += `(collections (${MARMALADE_NG_CONTRACT}.policy-collection.get-all-collections))`;
+
+  for (let i = 0; i < numCollections; i += 1) {
+    pactCode += `
+      (collection${i} (at ${i} collections))
+      (collection-details${i} (${MARMALADE_NG_CONTRACT}.policy-collection.get-collection collection${i}))
+      (tokens${i} (${MARMALADE_NG_CONTRACT}.policy-collection.list-tokens-of-collection collection${i}))
+      (first-token${i} (at 0 tokens${i}))
+      (first-token-uri${i} (if (not (= "0" first-token${i})) (${MARMALADE_NG_CONTRACT}.ledger.get-uri first-token${i}) "No URI"))`;
+  }
+
+  pactCode += '\n)\n{';
+
+  for (let i = 0; i < numCollections; i += 1) {
+    pactCode += `
+      "collection${i}": {"id": collection${i}, "name": (at "name" collection-details${i}), "firstToken": first-token${i}, "firstTokenURI": first-token-uri${i}}`;
+    if (i < numCollections - 1) {
+      pactCode += ',';
+    }
+  }
+
+  pactCode += '})';
+
+  return pactCode;
+}
+
+export function getTokensUris(tokenIds: string[]) {
+  let pactCode = '(let* (';
+  tokenIds.forEach((id, index) => {
+    pactCode += `
+      (token${index} (let ((uri (${MARMALADE_NG_CONTRACT}.ledger.get-uri "${id}")))
+                      {"tokenId": "${id}", "uri": uri}))`;
+  });
+
+  pactCode += '\n)\n[';
+  tokenIds.forEach((_, index) => {
+    pactCode += `token${index}`;
+    if (index < tokenIds.length - 1) {
+      pactCode += ', ';
+    }
+  });
+
+  pactCode += '])';
 
   return pactCode;
 }
