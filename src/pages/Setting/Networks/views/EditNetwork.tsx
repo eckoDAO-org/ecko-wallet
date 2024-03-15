@@ -8,8 +8,9 @@ import { useSelector } from 'react-redux';
 import Toast from 'src/components/Toast/Toast';
 import { DivFlex, SecondaryLabel } from 'src/components';
 import { convertNetworks, getTimestamp } from 'src/utils';
-import { getLocalNetworks, setLocalNetworks } from 'src/utils/storage';
-import { setNetworks } from 'src/stores/slices/extensions';
+import { getLocalNetworks, setLocalNetworks, setLocalSelectedNetwork } from 'src/utils/storage';
+import { useAppSelector } from 'src/stores/hooks';
+import { getSelectedNetwork, setNetworks, setSelectedNetwork } from 'src/stores/slices/extensions';
 import ModalCustom from 'src/components/Modal/ModalCustom';
 import { Content } from '../../style';
 import { ErrorWrapper, Footer } from '../../../SendTransactions/styles';
@@ -29,6 +30,7 @@ const EditNetwork = (props: Props) => {
   const [errMessageDuplicateUrl, setErrorMessageDuplicateUrl] = useState('');
   const [errMessageDuplicateNetworksId, setErrorMessageDuplicateNetworksId] = useState('');
   const networks = useSelector((state) => state.extensions.networks);
+  const selectedNetwork = useAppSelector(getSelectedNetwork);
   const [isModalRemoveNetwork, setModalRemoveNetwork] = useState(false);
   const {
     register,
@@ -52,6 +54,14 @@ const EditNetwork = (props: Props) => {
       setErrorMessageDuplicateUrl('URL already exist');
       return;
     }
+
+    const isEditingSelectedNetwork = selectedNetwork.id === network.id;
+    if (isEditingSelectedNetwork) {
+      console.log("Changing selected network");
+      setSelectedNetwork(newNetwork);
+      setLocalSelectedNetwork(newNetwork);
+    }
+
     getLocalNetworks(
       (data) => {
         const localNetworks = data;
