@@ -176,5 +176,6 @@ export const hideFetching = () => {
 };
 
 export const getSelectedNetwork = (state: RootState) => state.extensions.selectedNetwork;
+export const getPasswordHash = (state: RootState) => state.extensions.passwordHash;
 
 export { storeExtensions };

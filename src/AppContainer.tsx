@@ -2,6 +2,7 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Switch, Redirect, Route } from 'react-router-dom';
 import Footer from './components/Footer';
+import WalletCreator from './components/WalletCreator';
 import CreatePassword from './pages/CreatePassword';
 import HomePage from './pages/Home';
 import Condition from './pages/Condition';
@@ -100,6 +101,7 @@ const AppContainer = () => {
         </Switch>
         <Footer />
         {isLoading && <Loading />}
+        <WalletCreator />
       </TwoFactorAuthenticator>
     </Container>
   );
