@@ -1,5 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import Pact from 'pact-lang-api';
+import nacl from 'tweetnacl';
+import { base64UrlDecodeArr, binToHex, toTweetNaclSecretKey } from '@kadena/cryptography-utils';
 import lib from 'cardano-crypto.js/kadena-crypto';
 import { CHAIN_AVAILABLE_TOKENS_FIXTURE, CHAIN_COUNT } from './constant';
 import { CONFIG, KADDEX_ANALYTICS_API } from './config';
@@ -66,6 +68,12 @@ export const getSignatureFromHash = (hash, privateKey) => {
   const signature = lib.kadenaSign('', newHash, u8PrivateKey);
   const s = new Uint8Array(signature);
   return Pact.crypto.binToHex(s);
+};
+
+export const getSignatureFromHashWithPrivateKey64 = (hash, { secretKey, publicKey }) => {
+  const u8hash = base64UrlDecodeArr(hash);
+  const sigBin = nacl.sign.detached(u8hash, toTweetNaclSecretKey({ secretKey, publicKey }));
+  return binToHex(sigBin);
 };
 
 export type BlockchainNumber =

@@ -42,6 +42,7 @@ import CategoryDetail from './pages/Nft/CategoryDetail';
 import ImportHardwareWallet from './pages/ImportHardwareWallet';
 import ImportLedger from './pages/ImportHardwareWallet/ImportLedger';
 import GovernanceMining from './pages/GovernanceMining';
+import MarmaladeNGCollectionDetails from './pages/Nft/NftTypes/MarmaladeNG/MarmaladeNGCollectionDetails';
 
 const Container = styled.div`
   width: 1000px;
@@ -95,6 +96,7 @@ const AppContainer = () => {
           <PrivateRoute path="/buy" component={BuyCryptocurrencies} />
           <PrivateRoute path="/nft" component={Nft} />
           <PrivateRoute path="/nft-details" component={CategoryDetail} />
+          <PrivateRoute path="/ng-details" component={MarmaladeNGCollectionDetails} />
           <PrivateRoute path="/governance-mining" component={GovernanceMining} />
           <PrivateRoute path="/" component={Wallet} />
           <Redirect to="/" />
