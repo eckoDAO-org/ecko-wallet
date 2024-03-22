@@ -12,6 +12,7 @@ import { getLocalNetworks, setLocalNetworks, setLocalSelectedNetwork } from 'src
 import { useAppSelector } from 'src/stores/hooks';
 import { getSelectedNetwork, setNetworks, setSelectedNetwork } from 'src/stores/slices/extensions';
 import ModalCustom from 'src/components/Modal/ModalCustom';
+import { useSelectNetwork } from 'src/hooks/wallet';
 import { Content } from '../../style';
 import { ErrorWrapper, Footer } from '../../../SendTransactions/styles';
 import { DivBodyNetwork } from './style';
@@ -32,6 +33,8 @@ const EditNetwork = (props: Props) => {
   const networks = useSelector((state) => state.extensions.networks);
   const selectedNetwork = useAppSelector(getSelectedNetwork);
   const [isModalRemoveNetwork, setModalRemoveNetwork] = useState(false);
+  const selectNetwork = useSelectNetwork();
+  const isEditingSelectedNetwork = selectedNetwork.id === network.id;
   const {
     register,
     handleSubmit,
@@ -55,9 +58,7 @@ const EditNetwork = (props: Props) => {
       return;
     }
 
-    const isEditingSelectedNetwork = selectedNetwork.id === network.id;
     if (isEditingSelectedNetwork) {
-      console.log("Changing selected network");
       setSelectedNetwork(newNetwork);
       setLocalSelectedNetwork(newNetwork);
     }
@@ -103,6 +104,11 @@ const EditNetwork = (props: Props) => {
         setNetworks(convertNetworks(localNetworks));
         onClickPopup();
         setModalRemoveNetwork(false);
+
+        if (isEditingSelectedNetwork) {
+          selectNetwork('0');
+        }
+
         toast.success(<Toast type="success" content="Delete network successfully" />);
       },
       () => {},

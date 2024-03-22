@@ -5,7 +5,6 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { encryptKey } from 'src/utils/security';
-import { setSelectedNetwork } from 'src/stores/slices/extensions';
 import { toast } from 'react-toastify';
 import { ReactComponent as LedgerIcon } from 'src/images/ledger-logo.svg';
 import { ModalContext } from 'src/contexts/ModalContext';
@@ -16,11 +15,10 @@ import { shortenAddress } from 'src/utils';
 import images from 'src/images';
 import {
   getLocalPassword,
-  setLocalSelectedNetwork,
   setLocalSelectedWallet,
 } from 'src/utils/storage';
 import RemoveWalletPopup from 'src/pages/Wallet/views/RemoveWalletPopup';
-import { useCreateFirstAccountAvailable } from 'src/hooks/wallet';
+import { useCreateFirstAccountAvailable, useSelectNetwork } from 'src/hooks/wallet';
 import { DropdownModal } from '../DropdownModal';
 import { DivFlex } from '..';
 import Toast from '../Toast/Toast';
@@ -39,6 +37,7 @@ export const Header = ({ hideAccounts }: { hideAccounts?: boolean }) => {
   const stateWallet = useCurrentWallet();
   const { openModal, closeModal } = useContext(ModalContext);
   const createFirstAccountAvailable = useCreateFirstAccountAvailable();
+  const selectNetwork = useSelectNetwork();
 
   const { selectedNetwork, networks } = rootState.extensions;
   const { wallets, type } = rootState?.wallet;
@@ -87,26 +86,7 @@ export const Header = ({ hideAccounts }: { hideAccounts?: boolean }) => {
 
   const handleSelectNetwork = (id) => {
     closeModal();
-    const newSelectedNetwork = networks.find((network) => network.id.toString() === id);
-    setSelectedNetwork(newSelectedNetwork);
-    setCurrentWallet({
-      chainId: 0,
-      account: '',
-      alias: '',
-      publicKey: '',
-      secretKey: '',
-      connectedSites: [],
-    });
-    setLocalSelectedWallet({
-      chainId: 0,
-      account: '',
-      alias: '',
-      publicKey: '',
-      secretKey: '',
-      connectedSites: [],
-    });
-    setBalance(0);
-    setLocalSelectedNetwork(newSelectedNetwork);
+    selectNetwork(id);
   };
 
   return (

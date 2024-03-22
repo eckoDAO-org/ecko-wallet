@@ -1,10 +1,10 @@
 import { useAppSelector } from 'src/stores/hooks';
-import { getPasswordHash, getSelectedNetwork } from 'src/stores/slices/extensions';
-import { getWallets, setCurrentWallet, setWallets } from 'src/stores/slices/wallet';
+import { RawNetwork, getNetworks, getPasswordHash, getSelectedNetwork, setSelectedNetwork } from 'src/stores/slices/extensions';
+import { getWallets, setBalance, setCurrentWallet, setWallets } from 'src/stores/slices/wallet';
 import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import { getKeyPairsFromSeedPhrase } from 'src/utils/chainweb';
 import { decryptKey, encryptKey } from 'src/utils/security';
-import { getLocalSeedPhrase, getLocalWallets, setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
+import { getLocalSeedPhrase, getLocalWallets, setLocalSelectedNetwork, setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
 
 export const useCreateAccount = () => {
   const selectedNetwork = useAppSelector(getSelectedNetwork);
@@ -79,9 +79,19 @@ export const useCreateFirstAccountAvailable = () => {
 
   return () => (
     new Promise<void>((resolve, reject) => {
+      if (!passwordHash || passwordHash === '') {
+        reject();
+        return;
+      }
+
       getLocalSeedPhrase(
         (hash) => {
           const seedPhrase = decryptKey(hash, passwordHash);
+
+          if (!seedPhrase || seedPhrase === '') {
+            reject();
+            return;
+          }
 
           for (
             let index = 0, created = false;
@@ -99,4 +109,32 @@ export const useCreateFirstAccountAvailable = () => {
       );
     })
   );
+};
+
+export const useSelectNetwork = () => {
+  const networks = useAppSelector(getNetworks);
+
+  return (newNetworkOrId: RawNetwork | string) => {
+    const id = typeof newNetworkOrId === 'string' ? newNetworkOrId : newNetworkOrId.id;
+    const newSelectedNetwork = networks.find((network) => network.id.toString() === id);
+      setSelectedNetwork(newSelectedNetwork);
+      setCurrentWallet({
+        chainId: 0,
+        account: '',
+        alias: '',
+        publicKey: '',
+        secretKey: '',
+        connectedSites: [],
+      });
+      setLocalSelectedWallet({
+        chainId: 0,
+        account: '',
+        alias: '',
+        publicKey: '',
+        secretKey: '',
+        connectedSites: [],
+      });
+      setBalance(0);
+      setLocalSelectedNetwork(newSelectedNetwork);
+  };
 };
