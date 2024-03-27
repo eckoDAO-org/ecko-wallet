@@ -6,6 +6,7 @@ import { get } from 'lodash';
 import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import { useSelector } from 'react-redux';
 import { setBalance } from 'src/stores/slices/wallet';
+import { useIncomingTransactions } from 'src/hooks/transactions';
 import { fetchLocal, getBalanceFromChainwebApiResponse } from '../../utils/chainweb';
 import Activities from '../Wallet/views/Activities';
 
@@ -32,6 +33,8 @@ const History = () => {
   const rootState = useSelector((state) => state);
   const { selectedNetwork } = rootState.extensions;
   const stateWallet = useCurrentWallet();
+  const { data: transactions } = useIncomingTransactions();
+  console.log(transactions);
 
   useEffect(() => {
     if (stateWallet) {
