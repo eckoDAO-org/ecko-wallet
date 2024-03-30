@@ -34,6 +34,11 @@ export const ACTIVE_TAB = {
 export const CHAIN_COUNT = 20;
 
 export const KNOWN_TOKENS = {
+  coin: {
+    symbol: 'KDX',
+    image: images.wallet.tokens.coin,
+    coinGeckoId: 'kadena',
+  },
   'runonflux.flux': {
     symbol: 'flux',
     image: images.wallet.tokens.flux,

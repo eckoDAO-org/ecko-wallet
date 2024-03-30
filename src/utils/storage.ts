@@ -281,11 +281,11 @@ export const getLocalSelectedWallet = (successCallback, failCallback) => {
 };
 
 // Activities
-export const setLocalActivities = (network, account, activities) => {
+export const setLocalActivities = async (network, account, activities) => {
   const key = `${network}.activities.${account}`;
   const obj = {};
   obj[key] = activities;
-  (window as any)?.chrome?.storage?.local?.set(obj);
+  return (window as any)?.chrome?.storage?.local?.set(obj) as Promise<void>;
 };
 
 export const getLocalActivities = (network, account, successCallback, failCallback) => {
@@ -299,22 +299,26 @@ export const getLocalActivities = (network, account, successCallback, failCallba
   });
 };
 
-export const addLocalActivity = (network, account, activity) => {
-  getLocalActivities(
-    network,
-    account,
-    (activities) => {
-      const newActivities = [...activities];
-      newActivities.push(activity);
-      setLocalActivities(network, account, newActivities);
-    },
-    () => {
-      const newActivities: any[] = [];
-      newActivities.push(activity);
-      setLocalActivities(network, account, newActivities);
-    },
-  );
-};
+export const addLocalActivity = async (network, account, activity) => (
+  new Promise<void>((resolve) => {
+    getLocalActivities(
+      network,
+      account,
+      async (activities) => {
+        const newActivities = [...activities];
+        newActivities.push(activity);
+        await setLocalActivities(network, account, newActivities);
+        resolve();
+      },
+      async () => {
+        const newActivities: any[] = [];
+        newActivities.push(activity);
+        await setLocalActivities(network, account, newActivities);
+        resolve();
+      },
+    );
+  })
+);
 
 export const updateLocalActivity = (network: string, account: string, activity: LocalActivity) => {
   getLocalActivities(

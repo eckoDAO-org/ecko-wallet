@@ -124,18 +124,20 @@ const PopupDetailTransaction = (props: Props) => {
         <DivChild margin="0 0 10px 0" fontSize="16px" fontWeight={700}>
           Activity Log
         </DivChild>
-        <ActivityDetail>
-          <DetailItem borderLeft>
-            <TxStepText padding={`0 0 ${isPending ? '0' : '20px'} 20px`}>
-              {convertedDateString(newTime)}
-              <br />
-              {`Transaction created with a Value of ${activityDetails?.amount} ${activityDetails?.symbol?.toUpperCase() || 'KDA'}`}
-            </TxStepText>
-            <ImageBox>
-              <Image src={images?.wallet?.addGray} alt="icon-add" />
-            </ImageBox>
-          </DetailItem>
-        </ActivityDetail>
+        { (activityDetails?.direction !== 'IN') && (
+          <ActivityDetail>
+            <DetailItem borderLeft>
+              <TxStepText padding={`0 0 ${isPending ? '0' : '20px'} 20px`}>
+                {convertedDateString(newTime)}
+                <br />
+                {`Transaction created with a Value of ${activityDetails?.amount} ${activityDetails?.symbol?.toUpperCase() || 'KDA'}`}
+              </TxStepText>
+              <ImageBox>
+                <Image src={images?.wallet?.addGray} alt="icon-add" />
+              </ImageBox>
+            </DetailItem>
+          </ActivityDetail>
+        )}
         {!isPending && (
           <ActivityDetail>
             <DetailItem>

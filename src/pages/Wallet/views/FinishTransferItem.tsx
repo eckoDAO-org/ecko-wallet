@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { ReactComponent as ArrowSendIcon } from 'src/images/arrow-send.svg';
+import { ReactComponent as ArrowReceiveIcon } from 'src/images/arrow-receive.svg';
 import { shortenAddress } from 'src/utils';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import moment from 'moment';
@@ -33,6 +34,7 @@ const FinishTransferItem = ({
   receiver,
   status,
   isFinishing,
+  isIncoming = false,
 }: {
   createdTime: string;
   value: string;
@@ -40,6 +42,7 @@ const FinishTransferItem = ({
   receiver: string;
   status: string;
   isFinishing?: boolean;
+  isIncoming?: boolean;
 }) => {
   let color = '#ff6058';
   if (status === 'pending' || isFinishing) {
@@ -47,11 +50,15 @@ const FinishTransferItem = ({
   } else if (status === 'success') {
     color = '#25d366';
   }
+
+  const Icon = isIncoming ? ArrowReceiveIcon : ArrowSendIcon;
+  const sign = isIncoming ? '+' : '-';
+
   return (
     <ActivityElement justifyContent="space-between" alignItems="center" padding="10px 0px">
       <DivFlex alignItems="center">
         <RoundedArrow margin="0px 5px 0px 0px" color={color}>
-          <ArrowSendIcon />
+          <Icon />
         </RoundedArrow>
         <DivFlex flexDirection="column" justifyContent="flex-start">
           <CommonLabel fontWeight={700}>{`${shortenAddress(receiver)}`}</CommonLabel>
@@ -59,7 +66,7 @@ const FinishTransferItem = ({
         </DivFlex>
       </DivFlex>
       <CommonLabel fontWeight={500} color={color} fontSize={12}>
-        - {value} {tokenType}
+        {sign} {value} {tokenType}
       </CommonLabel>
     </ActivityElement>
   );

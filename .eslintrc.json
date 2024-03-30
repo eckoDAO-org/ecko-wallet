@@ -53,7 +53,8 @@
         "ts": "never",
         "tsx": "never"
       }
-    ]
+    ],
+    "no-await-in-loop": "off"
   },
   "settings": {
     "import/resolver": {

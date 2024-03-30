@@ -114,6 +114,7 @@ const Activities = () => {
                           tokenType={item.symbol?.toUpperCase() ?? 'KDA'}
                           receiver={item.receiver}
                           status={item.status}
+                          isIncoming={item.direction === 'IN'}
                         />
                       </Div>
                     );
@@ -134,6 +135,7 @@ const Activities = () => {
                           tokenType={item.symbol?.toUpperCase() ?? 'KDA'}
                           receiver={item.receiver}
                           status={item.status}
+                          isIncoming={item.direction === 'IN'}
                         />
                       </Div>
                     );
@@ -156,6 +158,7 @@ const Activities = () => {
                             tokenType={item.symbol?.toUpperCase() ?? 'KDA'}
                             receiver={item.receiver}
                             status={item.status}
+                            isIncoming={item.direction === 'IN'}
                           />
                         </Div>
                       );
@@ -209,4 +212,5 @@ export interface LocalActivity {
   domain?: string;
   symbol: string;
   txId: number;
+  direction?: "IN" | "OUT";
 }
