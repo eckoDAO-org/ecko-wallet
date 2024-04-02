@@ -1,15 +1,15 @@
 import { useAppSelector } from 'src/stores/hooks';
 import { getSelectedNetwork } from 'src/stores/slices/extensions';
-import MainnetIncomingTransactionsImporter from './Mainnet';
+import MainnetTransactionsImporter from './Mainnet';
 
-const IncomingTransactionsImporter = () => {
+const TransactionsImporter = () => {
   const selectedNetwork = useAppSelector(getSelectedNetwork);
 
   if (selectedNetwork.networkId === 'mainnet01') {
-    return <MainnetIncomingTransactionsImporter />;
+    return <MainnetTransactionsImporter />;
   }
 
   return null;
 };
 
-export default IncomingTransactionsImporter;
+export default TransactionsImporter;

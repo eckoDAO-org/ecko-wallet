@@ -43,7 +43,7 @@ import ImportHardwareWallet from './pages/ImportHardwareWallet';
 import ImportLedger from './pages/ImportHardwareWallet/ImportLedger';
 import GovernanceMining from './pages/GovernanceMining';
 import MarmaladeNGCollectionDetails from './pages/Nft/NftTypes/MarmaladeNG/MarmaladeNGCollectionDetails';
-import IncomingTransactionsImporter from './components/IncomingTransactionsImporter';
+import TransactionsImporter from './components/TransactionsImporter';
 
 const Container = styled.div`
   width: 1000px;
@@ -105,7 +105,7 @@ const AppContainer = () => {
         <Footer />
         {isLoading && <Loading />}
         <WalletCreator />
-        <IncomingTransactionsImporter />
+        <TransactionsImporter />
       </TwoFactorAuthenticator>
     </Container>
   );

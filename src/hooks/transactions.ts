@@ -4,13 +4,13 @@ import { getCurrentWallet } from 'src/stores/slices/wallet';
 
 const API_URL = 'https://api.dexscan.ecko.finance/api/';
 
-export type IncomingTransactionsResponse = {
+export type TransactionsResponse = {
   amount: string;
   chainid: string;
   code: string;
   creationtime: string;
   direction: 'IN' | 'OUT';
-  error: string;
+  error: string | null;
   // eslint-disable-next-line camelcase
   from_acct: string;
   gas: string;
@@ -19,18 +19,19 @@ export type IncomingTransactionsResponse = {
   modulename: string;
   requestkey: string;
   status: 'SUCCESS' | 'ERROR';
+  targetChainId: string | null;
   // eslint-disable-next-line camelcase
   to_acct: string;
   transactionType: 'TRANSFER' | 'SWAP';
 }[];
 
-export type IncomingTransaction = IncomingTransactionsResponse[number];
+export type Transaction = TransactionsResponse[number];
 
-export const useIncomingTransactions = () => {
+export const useTransactions = () => {
   const currentWallet = useAppSelector(getCurrentWallet);
 
   return useQuery({
-    queryKey: ['incoming-transactions', { account: currentWallet?.account }] as const,
+    queryKey: ['transactions', { account: currentWallet?.account }] as const,
     queryFn: async ({ queryKey }) => {
       const [, { account }] = queryKey;
       if (!account) {
@@ -48,7 +49,7 @@ export const useIncomingTransactions = () => {
       }
 
       const data = await response.json();
-      return data as IncomingTransaction[];
+      return data as Transaction[];
     },
     initialData: [],
   });

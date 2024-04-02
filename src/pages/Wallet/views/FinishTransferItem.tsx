@@ -4,6 +4,7 @@ import { ReactComponent as ArrowReceiveIcon } from 'src/images/arrow-receive.svg
 import { shortenAddress } from 'src/utils';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import moment from 'moment';
+import { useFungibleTokensList } from 'src/hooks/fungibleTokens';
 
 export const RoundedArrow = styled.div`
   box-shadow: 0px 167px 67px rgba(36, 8, 43, 0.01), 0px 94px 57px rgba(36, 8, 43, 0.03), 0px 42px 42px rgba(36, 8, 43, 0.06),
@@ -30,25 +31,30 @@ const ActivityElement = styled(DivFlex)`
 const FinishTransferItem = ({
   createdTime,
   value,
-  tokenType,
+  symbol,
   receiver,
   status,
   isFinishing,
   isIncoming = false,
+  module,
 }: {
   createdTime: string;
   value: string;
-  tokenType: string;
+  symbol: string;
   receiver: string;
   status: string;
   isFinishing?: boolean;
   isIncoming?: boolean;
+  module?: string;
 }) => {
+  const tokens = useFungibleTokensList();
+  const inferredToken = (tokens.find((t) => t.contractAddress === module))?.symbol || symbol;
+
   let color = '#ff6058';
   if (status === 'pending' || isFinishing) {
     color = '#ffa500';
   } else if (status === 'success') {
-    color = '#25d366';
+    color = isIncoming ? '#00d395' : '#ff6058';
   }
 
   const Icon = isIncoming ? ArrowReceiveIcon : ArrowSendIcon;
@@ -66,7 +72,7 @@ const FinishTransferItem = ({
         </DivFlex>
       </DivFlex>
       <CommonLabel fontWeight={500} color={color} fontSize={12}>
-        {sign} {value} {tokenType}
+        {sign} {value} {inferredToken}
       </CommonLabel>
     </ActivityElement>
   );

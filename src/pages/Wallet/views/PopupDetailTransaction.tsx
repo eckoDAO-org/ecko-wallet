@@ -7,6 +7,8 @@ import BigNumber from 'bignumber.js';
 import Button from 'src/components/Buttons';
 import { renderTransactionInfo } from 'src/pages/SendTransactions/views/Transfer';
 import { DivFlex } from 'src/components';
+import { useFungibleTokensList } from 'src/hooks/fungibleTokens';
+import { LocalActivity } from './Activities';
 
 const DetailTx = styled.div`
   padding: 0 20px 20px 20px;
@@ -63,6 +65,7 @@ const convertedDateString = (newTime) => {
   return `${day}/${month}/${year} - ${hours}:${minutes}:${second}`;
 };
 const PopupDetailTransaction = (props: Props) => {
+  const tokens = useFungibleTokensList();
   const { isOpen, onCloseModal, closeOnOverlayClick, title, showCloseIcon, activityDetails, selectedNetwork, isFinishing } = props;
   const openTransactionDetails = () => {
     (window as any).chrome.tabs.create({ url: `${selectedNetwork.explorer}/tx/${activityDetails.requestKey}` });
@@ -74,6 +77,9 @@ const PopupDetailTransaction = (props: Props) => {
   const finishDate = get(activityDetails, 'metaData.blockTime');
   const finishDateValue = new Date(finishDate / 1000);
   const isPending = activityDetails.status === 'pending';
+  const inferredToken = (tokens.find((t) => t.contractAddress === activityDetails.module))?.symbol || activityDetails.symbol;
+  console.log(activityDetails.module, tokens);
+
   let color = '#ff6058';
   if (activityDetails.status === 'success') {
     color = isFinishing ? '#ffa500' : '#25d366';
@@ -99,8 +105,12 @@ const PopupDetailTransaction = (props: Props) => {
           </CustomDiv>
         </Item>
         <Item>
+          <DivChild fontWeight="700">Direction</DivChild>
+          <DivChild fontWeight="700">{activityDetails?.direction}</DivChild>
+        </Item>
+        <Item>
           <DivChild fontWeight="700">Symbol</DivChild>
-          <DivChild fontWeight="700">{activityDetails?.symbol?.toUpperCase() ?? 'KDA'}</DivChild>
+          <DivChild fontWeight="700">{inferredToken}</DivChild>
         </Item>
         <Item>
           <DivChild fontWeight="700">Quantity</DivChild>
@@ -124,20 +134,18 @@ const PopupDetailTransaction = (props: Props) => {
         <DivChild margin="0 0 10px 0" fontSize="16px" fontWeight={700}>
           Activity Log
         </DivChild>
-        { (activityDetails?.direction !== 'IN') && (
-          <ActivityDetail>
-            <DetailItem borderLeft>
-              <TxStepText padding={`0 0 ${isPending ? '0' : '20px'} 20px`}>
-                {convertedDateString(newTime)}
-                <br />
-                {`Transaction created with a Value of ${activityDetails?.amount} ${activityDetails?.symbol?.toUpperCase() || 'KDA'}`}
-              </TxStepText>
-              <ImageBox>
-                <Image src={images?.wallet?.addGray} alt="icon-add" />
-              </ImageBox>
-            </DetailItem>
-          </ActivityDetail>
-        )}
+        <ActivityDetail>
+          <DetailItem borderLeft>
+            <TxStepText padding={`0 0 ${isPending ? '0' : '20px'} 20px`}>
+              {convertedDateString(newTime)}
+              <br />
+              {`Transaction created with a Value of ${activityDetails?.amount} ${activityDetails?.symbol?.toUpperCase() || 'KDA'}`}
+            </TxStepText>
+            <ImageBox>
+              <Image src={images?.wallet?.addGray} alt="icon-add" />
+            </ImageBox>
+          </DetailItem>
+        </ActivityDetail>
         {!isPending && (
           <ActivityDetail>
             <DetailItem>
@@ -162,7 +170,7 @@ type Props = {
   closeOnOverlayClick?: boolean;
   title?: string;
   showCloseIcon?: boolean;
-  activityDetails: any;
+  activityDetails: LocalActivity;
   selectedNetwork: any;
   isFinishing?: boolean;
 };

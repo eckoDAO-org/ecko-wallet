@@ -87,6 +87,7 @@ const Activities = () => {
       },
     );
     getPendingCrossChainRequestKey().then((pendingTx) => {
+      if (!pendingTx) return;
       setPendingCrossChainRequestKey(pendingTx.map((tx) => tx.requestKey));
     });
   }, [account, chainId, selectedNetwork.networkId]);
@@ -106,15 +107,16 @@ const Activities = () => {
                   {grouped[todayString].sort(compareByCreatedTime).map((item) => {
                     if (!item || !item.receiverChainId) return null;
                     return (
-                      <Div key={item.createdTime} style={{ padding: '0px 24px' }} onClick={() => setSelectedActivity(item)}>
+                      <Div key={item.txId} style={{ padding: '0px 24px' }} onClick={() => setSelectedActivity(item)}>
                         <FinishTransferItem
                           isFinishing={pendingCrossChainRequestKey.includes(item.requestKey)}
                           createdTime={item.createdTime}
                           value={item.amount}
-                          tokenType={item.symbol?.toUpperCase() ?? 'KDA'}
+                          symbol={item.symbol}
                           receiver={item.receiver}
                           status={item.status}
                           isIncoming={item.direction === 'IN'}
+                          module={item.module}
                         />
                       </Div>
                     );
@@ -127,15 +129,16 @@ const Activities = () => {
                   {grouped[yesterdayString].sort(compareByCreatedTime).map((item) => {
                     if (!item || !item.receiverChainId) return null;
                     return (
-                      <Div style={{ padding: '0px 24px' }} onClick={() => setSelectedActivity(item)} key={item.createdTime}>
+                      <Div style={{ padding: '0px 24px' }} onClick={() => setSelectedActivity(item)} key={item.txId}>
                         <FinishTransferItem
                           isFinishing={pendingCrossChainRequestKey.includes(item.requestKey)}
                           createdTime={item.createdTime}
                           value={item.amount}
-                          tokenType={item.symbol?.toUpperCase() ?? 'KDA'}
+                          symbol={item.symbol}
                           receiver={item.receiver}
                           status={item.status}
                           isIncoming={item.direction === 'IN'}
+                          module={item.module}
                         />
                       </Div>
                     );
@@ -150,15 +153,16 @@ const Activities = () => {
                     {grouped[date].sort(compareByCreatedTime).map((item) => {
                       if (!item || !item.receiverChainId) return null;
                       return (
-                        <Div style={{ padding: '0px 24px' }} onClick={() => setSelectedActivity(item)} key={item.createdTime}>
+                        <Div style={{ padding: '0px 24px' }} onClick={() => setSelectedActivity(item)} key={item.txId}>
                           <FinishTransferItem
                             isFinishing={pendingCrossChainRequestKey.includes(item.requestKey)}
                             createdTime={item.createdTime}
                             value={item.amount}
-                            tokenType={item.symbol?.toUpperCase() ?? 'KDA'}
+                            symbol={item.symbol}
                             receiver={item.receiver}
                             status={item.status}
                             isIncoming={item.direction === 'IN'}
+                            module={item.module}
                           />
                         </Div>
                       );
@@ -212,5 +216,6 @@ export interface LocalActivity {
   domain?: string;
   symbol: string;
   txId: number;
-  direction?: "IN" | "OUT";
+  direction?: 'IN' | 'OUT';
+  module?: string;
 }
