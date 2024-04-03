@@ -5,7 +5,7 @@ import { decryptKey } from 'src/utils/security';
 import Toast from 'src/components/Toast/Toast';
 import { toast } from 'react-toastify';
 import { useAppThemeContext } from 'src/contexts/AppThemeContext';
-import { RoundedArrow } from 'src/pages/Wallet/views/FinishTransferItem';
+import { RoundedArrow } from 'src/components/Activities/FinishTransferItem';
 import { ConfirmModal } from 'src/components/ConfirmModal';
 import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import { CommonLabel, DivFlex } from 'src/components';

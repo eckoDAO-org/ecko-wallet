@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { useState } from 'react';
 import images from 'src/images';
 import Button from 'src/components/Buttons';
-import { RoundedArrow } from 'src/pages/Wallet/views/FinishTransferItem';
+import { RoundedArrow } from 'src/components/Activities/FinishTransferItem';
 import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 import { CommonLabel, DivFlex, StickyFooter } from 'src/components';
 import { ReactComponent as IconNetwork } from 'src/images/icon-network.svg';

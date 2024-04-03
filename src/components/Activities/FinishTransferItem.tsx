@@ -1,9 +1,9 @@
 import styled from 'styled-components';
+import moment from 'moment';
 import { ReactComponent as ArrowSendIcon } from 'src/images/arrow-send.svg';
 import { ReactComponent as ArrowReceiveIcon } from 'src/images/arrow-receive.svg';
 import { shortenAddress } from 'src/utils';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
-import moment from 'moment';
 import { useFungibleTokensList } from 'src/hooks/fungibleTokens';
 
 export const RoundedArrow = styled.div`
