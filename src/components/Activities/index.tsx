@@ -9,8 +9,9 @@ import Spinner from 'src/components/Spinner';
 import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 import { DivFlex, SecondaryLabel } from 'src/components';
 import { getLocalActivities, getPendingCrossChainRequestKey, updateLocalActivity } from 'src/utils/storage';
-import PopupDetailTransaction from './PopupDetailTransaction';
-import FinishTransferItem from './FinishTransferItem';
+import { Header } from 'src/components/Header';
+import PopupDetailTransaction from '../../pages/Wallet/views/PopupDetailTransaction';
+import FinishTransferItem from '../../pages/Wallet/views/FinishTransferItem';
 
 const compareByCreatedTime = (a: LocalActivity, b: LocalActivity) => {
   const timeA = moment(a.createdTime, 'ddd MMM DD YYYY HH:mm:ss ZZ');
@@ -96,61 +97,39 @@ const Activities = () => {
   const todayString = moment().format('DD/MM/YYYY');
   const yesterdayString = moment().subtract(1, 'days').format('DD/MM/YYYY');
   return (
-    <Div>
-      {Object.keys(grouped)?.length ? (
-        <>
-          <DivChild>
-            <DivScroll>
-              {grouped && grouped[todayString] && (
-                <>
-                  <DayLabel uppercase>Today</DayLabel>
-                  {grouped[todayString].sort(compareByCreatedTime).map((item) => {
-                    if (!item || !item.receiverChainId) return null;
-                    return (
-                      <Div key={item.txId} style={{ padding: '0px 24px' }} onClick={() => setSelectedActivity(item)}>
-                        <FinishTransferItem
-                          isFinishing={pendingCrossChainRequestKey.includes(item.requestKey)}
-                          createdTime={item.createdTime}
-                          value={item.amount}
-                          symbol={item.symbol}
-                          receiver={item.receiver}
-                          status={item.status}
-                          isIncoming={item.direction === 'IN'}
-                          module={item.module}
-                        />
-                      </Div>
-                    );
-                  })}
-                </>
-              )}
-              {grouped && grouped[yesterdayString] && (
-                <>
-                  <DayLabel uppercase>Yesterday</DayLabel>
-                  {grouped[yesterdayString].sort(compareByCreatedTime).map((item) => {
-                    if (!item || !item.receiverChainId) return null;
-                    return (
-                      <Div style={{ padding: '0px 24px' }} onClick={() => setSelectedActivity(item)} key={item.txId}>
-                        <FinishTransferItem
-                          isFinishing={pendingCrossChainRequestKey.includes(item.requestKey)}
-                          createdTime={item.createdTime}
-                          value={item.amount}
-                          symbol={item.symbol}
-                          receiver={item.receiver}
-                          status={item.status}
-                          isIncoming={item.direction === 'IN'}
-                          module={item.module}
-                        />
-                      </Div>
-                    );
-                  })}
-                </>
-              )}
-              {Object.keys(grouped)
-                .filter((key) => key !== yesterdayString && key !== todayString)
-                .map((date) => (
-                  <React.Fragment key={date}>
-                    <DayLabel uppercase>{moment(date, 'DD/MM/YYYY').format('DD/MM/YYYY')}</DayLabel>
-                    {grouped[date].sort(compareByCreatedTime).map((item) => {
+    <div>
+      <Header />
+      <Div>
+        {Object.keys(grouped)?.length ? (
+          <>
+            <DivChild>
+              <DivScroll>
+                {grouped && grouped[todayString] && (
+                  <>
+                    <DayLabel uppercase>Today</DayLabel>
+                    {grouped[todayString].sort(compareByCreatedTime).map((item) => {
+                      if (!item || !item.receiverChainId) return null;
+                      return (
+                        <Div key={item.txId} style={{ padding: '0px 24px' }} onClick={() => setSelectedActivity(item)}>
+                          <FinishTransferItem
+                            isFinishing={pendingCrossChainRequestKey.includes(item.requestKey)}
+                            createdTime={item.createdTime}
+                            value={item.amount}
+                            symbol={item.symbol}
+                            receiver={item.receiver}
+                            status={item.status}
+                            isIncoming={item.direction === 'IN'}
+                            module={item.module}
+                          />
+                        </Div>
+                      );
+                    })}
+                  </>
+                )}
+                {grouped && grouped[yesterdayString] && (
+                  <>
+                    <DayLabel uppercase>Yesterday</DayLabel>
+                    {grouped[yesterdayString].sort(compareByCreatedTime).map((item) => {
                       if (!item || !item.receiverChainId) return null;
                       return (
                         <Div style={{ padding: '0px 24px' }} onClick={() => setSelectedActivity(item)} key={item.txId}>
@@ -167,29 +146,54 @@ const Activities = () => {
                         </Div>
                       );
                     })}
-                  </React.Fragment>
-                ))}
-            </DivScroll>
-          </DivChild>
-        </>
-      ) : (
-        <DivFlex marginTop="200px">
-          <SecondaryLabel textCenter style={{ flex: 1 }}>
-            You have no transactions
-          </SecondaryLabel>
-        </DivFlex>
-      )}
-      {selectedActivity && (
-        <PopupDetailTransaction
-          isFinishing={pendingCrossChainRequestKey.includes(selectedActivity.requestKey)}
-          selectedNetwork={selectedNetwork}
-          activityDetails={selectedActivity}
-          isOpen={selectedActivity !== null}
-          title="Transaction Details"
-          onCloseModal={() => setSelectedActivity(null)}
-        />
-      )}
-    </Div>
+                  </>
+                )}
+                {Object.keys(grouped)
+                  .filter((key) => key !== yesterdayString && key !== todayString)
+                  .map((date) => (
+                    <React.Fragment key={date}>
+                      <DayLabel uppercase>{moment(date, 'DD/MM/YYYY').format('DD/MM/YYYY')}</DayLabel>
+                      {grouped[date].sort(compareByCreatedTime).map((item) => {
+                        if (!item || !item.receiverChainId) return null;
+                        return (
+                          <Div style={{ padding: '0px 24px' }} onClick={() => setSelectedActivity(item)} key={item.txId}>
+                            <FinishTransferItem
+                              isFinishing={pendingCrossChainRequestKey.includes(item.requestKey)}
+                              createdTime={item.createdTime}
+                              value={item.amount}
+                              symbol={item.symbol}
+                              receiver={item.receiver}
+                              status={item.status}
+                              isIncoming={item.direction === 'IN'}
+                              module={item.module}
+                            />
+                          </Div>
+                        );
+                      })}
+                    </React.Fragment>
+                  ))}
+              </DivScroll>
+            </DivChild>
+          </>
+        ) : (
+          <DivFlex marginTop="200px">
+            <SecondaryLabel textCenter style={{ flex: 1 }}>
+              You have no transactions
+            </SecondaryLabel>
+          </DivFlex>
+        )}
+        {selectedActivity && (
+          <PopupDetailTransaction
+            isFinishing={pendingCrossChainRequestKey.includes(selectedActivity.requestKey)}
+            selectedNetwork={selectedNetwork}
+            activityDetails={selectedActivity}
+            isOpen={selectedActivity !== null}
+            title="Transaction Details"
+            onCloseModal={() => setSelectedActivity(null)}
+          />
+        )}
+      </Div>
+    </div>
   );
 };
 

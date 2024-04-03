@@ -12,7 +12,7 @@ import {
   setSelectedNetwork,
   showFetching,
 } from 'src/stores/slices/extensions';
-import { LocalActivity } from 'src/pages/Wallet/views/Activities';
+import { LocalActivity } from 'src/components/Activities';
 import { RawWallet, setCurrentWallet, setWallets } from 'src/stores/slices/wallet';
 import { convertContacts, convertNetworks, convertRecent, revertNetworks } from '.';
 import { getKeyPairsFromSeedPhrase } from './chainweb';

@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { Transaction, useTransactions } from 'src/hooks/transactions';
 import { IFungibleToken } from 'src/pages/ImportToken';
-import { LocalActivity } from 'src/pages/Wallet/views/Activities';
+import { LocalActivity } from 'src/components/Activities';
 import { useAppSelector } from 'src/stores/hooks';
 import { getAccount } from 'src/stores/slices/wallet';
 import { useFungibleTokensList } from 'src/hooks/fungibleTokens';

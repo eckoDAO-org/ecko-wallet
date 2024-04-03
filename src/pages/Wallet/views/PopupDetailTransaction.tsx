@@ -7,8 +7,8 @@ import BigNumber from 'bignumber.js';
 import Button from 'src/components/Buttons';
 import { renderTransactionInfo } from 'src/pages/SendTransactions/views/Transfer';
 import { DivFlex } from 'src/components';
+import { LocalActivity } from 'src/components/Activities';
 import { useFungibleTokensList } from 'src/hooks/fungibleTokens';
-import { LocalActivity } from './Activities';
 
 const DetailTx = styled.div`
   padding: 0 20px 20px 20px;
@@ -78,7 +78,6 @@ const PopupDetailTransaction = (props: Props) => {
   const finishDateValue = new Date(finishDate / 1000);
   const isPending = activityDetails.status === 'pending';
   const inferredToken = (tokens.find((t) => t.contractAddress === activityDetails.module))?.symbol || activityDetails.symbol;
-  console.log(activityDetails.module, tokens);
 
   let color = '#ff6058';
   if (activityDetails.status === 'success') {
