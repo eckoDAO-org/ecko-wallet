@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
 import { groupBy } from 'lodash';
 import { DivFlex, SecondaryLabel } from 'src/components';
 import ActivityGroup from './ActivityGroup';
+import Filters from './Filters/index';
 import { LocalActivity } from './types';
+import { StatusValue } from './Filters/types';
 
 const Div = styled.div`
   cursor: pointer;
@@ -29,12 +32,30 @@ const List = ({
   pendingCrossChainRequestKeys,
   openActivityDetail,
 }: Props) => {
-  const grouped = groupBy(activities, (activity) => moment(new Date(activity.createdTime)).format('DD/MM/YYYY'));
+  const [status, setStatus] = useState<StatusValue>();
+
+  const filteredActivities = status ? activities.filter(
+    (activity) => {
+      switch (status) {
+        case 'IN':
+          return activity.direction === 'IN';
+        case 'OUT':
+          return activity.direction === 'OUT';
+        case 'PENDING':
+          return activity.status === 'pending';
+        default:
+          return true;
+      }
+    },
+  ) : activities;
+
+  const grouped = groupBy(filteredActivities, (activity) => moment(new Date(activity.createdTime)).format('DD/MM/YYYY'));
   const todayString = moment().format('DD/MM/YYYY');
   const yesterdayString = moment().subtract(1, 'days').format('DD/MM/YYYY');
 
   return (
     <Div>
+      <Filters status={status} onChangeStatus={setStatus} />
       {Object.keys(grouped)?.length ? (
         <>
           <DivChild>

@@ -1,3 +1,6 @@
+export type LocalActivityStatus = 'success' | 'error' | 'pending';
+export type LocalActivityDirection = 'IN' | 'OUT';
+
 export interface LocalActivity {
   aliasName: null | string;
   amount: string;
@@ -15,10 +18,10 @@ export interface LocalActivity {
   result: any;
   sender: string;
   senderChainId: string;
-  status: string;
+  status: LocalActivityStatus;
   domain?: string;
   symbol: string;
   txId: number;
-  direction?: 'IN' | 'OUT';
+  direction?: LocalActivityDirection;
   module?: string;
 }

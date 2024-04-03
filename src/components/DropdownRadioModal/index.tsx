@@ -3,11 +3,20 @@ import { ModalContext } from 'src/contexts/ModalContext';
 import { DropdownModal } from '../DropdownModal';
 import { RadioSelection, SelectionOption } from '../RadioSelection';
 
-export const DropdownRadioModal = ({ value, options, modalTitle, modalFooter, onChange, containerStyle, titleStyle }: DropdownRadioModalProps) => {
+export const DropdownRadioModal = ({
+  value,
+  options,
+  modalTitle,
+  modalFooter,
+  onChange,
+  containerStyle,
+  titleStyle,
+  displayValue,
+}: DropdownRadioModalProps) => {
   const { closeModal } = useContext(ModalContext);
   return (
     <DropdownModal
-      title={value !== null && options.find((opt) => opt.value === value?.value)?.label}
+      title={displayValue || (value !== null && options.find((opt) => opt.value === value?.value)?.label)}
       modalTitle={modalTitle}
       containerStyle={containerStyle}
       titleStyle={titleStyle}
@@ -36,4 +45,5 @@ interface DropdownRadioModalProps {
   containerStyle?: React.CSSProperties;
   titleStyle?: React.CSSProperties;
   onChange?: any;
+  displayValue?: string;
 }
