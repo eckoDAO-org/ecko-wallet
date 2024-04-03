@@ -7,7 +7,7 @@ import BigNumber from 'bignumber.js';
 import Button from 'src/components/Buttons';
 import { renderTransactionInfo } from 'src/pages/SendTransactions/views/Transfer';
 import { DivFlex } from 'src/components';
-import { LocalActivity } from 'src/components/Activities';
+import { LocalActivity } from 'src/components/Activities/types';
 import { useFungibleTokensList } from 'src/hooks/fungibleTokens';
 
 const DetailTx = styled.div`
