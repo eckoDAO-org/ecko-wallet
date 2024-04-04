@@ -16,4 +16,5 @@ export const statuses = [
     label: 'Pending',
   },
 ];
-export type StatusValue = typeof statuses[number]['value'];
+export type Status = typeof statuses[number];
+export type StatusValue = Status['value'];

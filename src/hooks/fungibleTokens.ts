@@ -27,9 +27,19 @@ export const useFungibleTokensList = () => {
     symbol: token.symbol.toUpperCase(),
   }));
 
-  return [
+  const allTokens = [
     coinToken,
     ...localFungibleTokensParsed,
     ...knownTokens,
   ];
+
+  const withoutDuplicates = allTokens.reduce((acc, token) => {
+    if (!acc[token.contractAddress]) {
+      acc[token.contractAddress] = token;
+    }
+
+    return acc;
+  }, {} as Record<string, IFungibleToken>);
+
+  return Object.values(withoutDuplicates);
 };

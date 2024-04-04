@@ -4,7 +4,7 @@ import moment from 'moment';
 import { groupBy } from 'lodash';
 import { DivFlex, SecondaryLabel } from 'src/components';
 import ActivityGroup from './ActivityGroup';
-import Filters from './Filters/index';
+import Filters from './Filters';
 import { LocalActivity } from './types';
 import { StatusValue } from './Filters/types';
 
@@ -33,8 +33,9 @@ const List = ({
   openActivityDetail,
 }: Props) => {
   const [status, setStatus] = useState<StatusValue>();
+  const [token, setToken] = useState<string>();
 
-  const filteredActivities = status ? activities.filter(
+  const filteredActivitiesByStatus = status ? activities.filter(
     (activity) => {
       switch (status) {
         case 'IN':
@@ -48,6 +49,9 @@ const List = ({
       }
     },
   ) : activities;
+  const filteredActivities = token ? filteredActivitiesByStatus.filter(
+    (activity) => activity.module === token,
+  ) : filteredActivitiesByStatus;
 
   const grouped = groupBy(filteredActivities, (activity) => moment(new Date(activity.createdTime)).format('DD/MM/YYYY'));
   const todayString = moment().format('DD/MM/YYYY');
@@ -55,7 +59,12 @@ const List = ({
 
   return (
     <Div>
-      <Filters status={status} onChangeStatus={setStatus} />
+      <Filters
+        status={status}
+        onChangeStatus={setStatus}
+        token={token}
+        onChangeToken={setToken}
+      />
       {Object.keys(grouped)?.length ? (
         <>
           <DivChild>
