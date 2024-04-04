@@ -299,7 +299,7 @@ export const getLocalActivities = (network, account, successCallback, failCallba
   });
 };
 
-export const addLocalActivity = async (network, account, activity) => (
+export const addLocalActivity = async (network: string, account: string, activity: LocalActivity) => (
   new Promise<void>((resolve) => {
     getLocalActivities(
       network,

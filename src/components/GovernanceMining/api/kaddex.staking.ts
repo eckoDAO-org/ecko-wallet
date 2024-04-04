@@ -2,6 +2,7 @@ import Pact from 'pact-lang-api';
 import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import { ExecCommandResult, payGasCap, useExecCommand, useExecPactWithLocalAccount, usePoolRequestKey } from 'src/hooks/pact';
 import { addLocalActivity } from 'src/utils/storage';
+import { LocalActivity } from 'src/components/Activities/types';
 import { useStakingConstants } from '../constants/staking';
 import { reduceBalance } from '../helpers/numberUtils';
 
@@ -90,7 +91,7 @@ export const useCreatePendingStakeActivity = () => {
   const { chainId } = useStakingConstants();
 
   return (stakeResult: ExecCommandResult) => {
-    const activity = {
+    const activity: LocalActivity = {
       symbol: 'KDX',
       module: 'kaddex.kdx',
       requestKey: stakeResult.response.requestKeys[0],
@@ -175,7 +176,7 @@ export const useCreatePendingUnstakeActivity = () => {
   const { chainId } = useStakingConstants();
 
   return (unstakeResult: ExecCommandResult) => {
-    const activity = {
+    const activity: LocalActivity = {
       symbol: 'KDX',
       module: 'kaddex.kdx',
       requestKey: unstakeResult.response.requestKeys[0],
@@ -230,7 +231,7 @@ export const useCreatePendingClaimActivity = () => {
   const { chainId } = useStakingConstants();
 
   return (claimResult: ExecCommandResult) => {
-    const activity = {
+    const activity: LocalActivity = {
       symbol: 'KDX',
       module: 'kaddex.kdx',
       requestKey: claimResult.response.requestKeys[0],
@@ -238,7 +239,7 @@ export const useCreatePendingClaimActivity = () => {
       receiverChainId: chainId,
       receiver: 'Claim KDX',
       createdTime: (new Date(claimResult.request.meta.creationTime * 1000)).toString(),
-      amount: 0,
+      amount: '0',
       gasPrice: claimResult.request.meta.gasPrice,
       sender: claimResult.request.meta.sender,
       status: 'pending',

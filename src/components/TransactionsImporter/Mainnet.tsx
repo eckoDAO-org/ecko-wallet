@@ -17,7 +17,7 @@ const transactionToActivity = (transaction: Transaction, tokens: IFungibleToken[
   const date = new Date(transaction.creationtime);
   const inferredToken = tokens.find((t) => t.contractAddress === transaction.modulename);
 
-  return {
+  const activity: LocalActivity = {
     amount: transaction.amount,
     createdTime: date.toString(),
     direction: transaction.direction,
@@ -28,7 +28,7 @@ const transactionToActivity = (transaction: Transaction, tokens: IFungibleToken[
     requestKey: transaction.requestkey,
     sender: transaction.from_acct,
     senderChainId: transaction.chainid,
-    status: transaction.status.toLowerCase(),
+    status: transaction.status.toLowerCase() as ('success' | 'error'),
     symbol: inferredToken?.symbol || transaction.modulename,
     module: transaction.modulename,
 
@@ -40,6 +40,8 @@ const transactionToActivity = (transaction: Transaction, tokens: IFungibleToken[
       blockTime: date.getTime() * 1000,
     },
   };
+
+  return activity;
 };
 
 const MainnetTransactionsImporter = () => {

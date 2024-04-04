@@ -2,26 +2,26 @@ export type LocalActivityStatus = 'success' | 'error' | 'pending';
 export type LocalActivityDirection = 'IN' | 'OUT';
 
 export interface LocalActivity {
-  aliasName: null | string;
+  aliasName?: string;
   amount: string;
-  continuation: any;
+  continuation?: any;
   createdTime: string;
-  events: Event[];
-  gas: number;
+  events?: Event[];
+  gas?: number;
   gasPrice: number;
-  logs: string;
-  metaData: any;
+  logs?: string;
+  metaData?: any;
   receiver: string;
   receiverChainId: string;
-  reqKey: string;
+  reqKey?: string;
   requestKey: string;
-  result: any;
+  result?: any;
   sender: string;
   senderChainId: string;
   status: LocalActivityStatus;
   domain?: string;
   symbol: string;
-  txId: number;
+  txId?: number;
   direction?: LocalActivityDirection;
   module: string;
 }
