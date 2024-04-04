@@ -92,6 +92,7 @@ export const useCreatePendingStakeActivity = () => {
   return (stakeResult: ExecCommandResult) => {
     const activity = {
       symbol: 'KDX',
+      module: 'kaddex.kdx',
       requestKey: stakeResult.response.requestKeys[0],
       senderChainId: chainId,
       receiverChainId: chainId,
@@ -176,6 +177,7 @@ export const useCreatePendingUnstakeActivity = () => {
   return (unstakeResult: ExecCommandResult) => {
     const activity = {
       symbol: 'KDX',
+      module: 'kaddex.kdx',
       requestKey: unstakeResult.response.requestKeys[0],
       senderChainId: chainId,
       receiverChainId: chainId,
@@ -230,6 +232,7 @@ export const useCreatePendingClaimActivity = () => {
   return (claimResult: ExecCommandResult) => {
     const activity = {
       symbol: 'KDX',
+      module: 'kaddex.kdx',
       requestKey: claimResult.response.requestKeys[0],
       senderChainId: chainId,
       receiverChainId: chainId,

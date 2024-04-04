@@ -23,5 +23,5 @@ export interface LocalActivity {
   symbol: string;
   txId: number;
   direction?: LocalActivityDirection;
-  module?: string;
+  module: string;
 }

@@ -225,6 +225,7 @@ const PopupConfirm = (props: Props) => {
           addRecent(createdTime);
           const activity = {
             symbol: fungibleToken?.symbol,
+            module: fungibleToken?.contractAddress,
             requestKey,
             senderChainId: senderChainId.toString(),
             receiverChainId: receiverChainId.toString(),
