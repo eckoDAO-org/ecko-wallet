@@ -40,7 +40,7 @@ const ActivityGroup = ({
     {activities.sort(compareByCreatedTime).map((item) => {
       if (!item || !item.receiverChainId) return null;
       return (
-        <Div key={item.txId} style={{ padding: '0px 24px' }} onClick={() => openActivityDetail(item)}>
+        <Div key={item.requestKey} style={{ padding: '0px 24px' }} onClick={() => openActivityDetail(item)}>
           <FinishTransferItem
             isFinishing={pendingCrossChainRequestKeys.includes(item.requestKey)}
             createdTime={item.createdTime}
