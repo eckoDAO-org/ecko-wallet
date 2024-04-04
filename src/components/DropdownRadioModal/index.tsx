@@ -1,7 +1,7 @@
-import React, { useContext } from 'react';
-import { ModalContext } from 'src/contexts/ModalContext';
+import React from 'react';
 import { DropdownModal } from '../DropdownModal';
-import { RadioSelection, SelectionOption } from '../RadioSelection';
+import { SelectionOption } from '../RadioSelection';
+import ModalContent from './ModalContent';
 
 export const DropdownRadioModal = ({
   value,
@@ -12,38 +12,26 @@ export const DropdownRadioModal = ({
   containerStyle,
   titleStyle,
   displayValue,
-}: DropdownRadioModalProps) => {
-  const { closeModal } = useContext(ModalContext);
-  return (
-    <DropdownModal
-      title={displayValue || (value !== null && options.find((opt) => opt.value === value?.value)?.label)}
-      modalTitle={modalTitle}
-      containerStyle={containerStyle}
-      titleStyle={titleStyle}
-      modalContent={
-        <div style={{ padding: '1rem' }}>
-          <RadioSelection
-            value={value?.value}
-            options={options}
-            onChange={(newValue) => {
-              closeModal();
-              onChange(options.find((opt) => opt.value === newValue));
-            }}
-          />
-        </div>
-      }
-      modalFooter={modalFooter}
-    />
-  );
-};
+  showFilter,
+}: DropdownRadioModalProps) => (
+  <DropdownModal
+    title={displayValue || (value !== null && options.find((opt) => opt.value === value?.value)?.label)}
+    modalTitle={modalTitle}
+    containerStyle={containerStyle}
+    titleStyle={titleStyle}
+    modalContent={<ModalContent value={value} options={options} onChange={onChange} showFilter={showFilter} />}
+    modalFooter={modalFooter}
+  />
+);
 
 interface DropdownRadioModalProps {
-  value: any;
+  value: SelectionOption;
   options: SelectionOption[];
   modalTitle: React.ReactNode;
   modalFooter?: React.ReactNode;
   containerStyle?: React.CSSProperties;
   titleStyle?: React.CSSProperties;
-  onChange?: any;
+  onChange?: (value: SelectionOption) => void;
   displayValue?: string;
+  showFilter?: boolean;
 }
