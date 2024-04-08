@@ -127,13 +127,13 @@ export const AccountBalanceProvider = ({ children }: any) => {
     });
   };
 
-  const fetchSinglesBalances = async (account: string) => {
+  const fetchSinglesBalances = async () => {
     const fts: IFungibleToken[] = [{ contractAddress: 'coin', symbol: 'KDA' }, ...fungibleTokensByNetwork];
     const chainBalance: TokenBalance[] = [];
     for (let i = 0; i < CHAIN_COUNT; i += 1) {
       const tokenBalance: TokenBalance = {};
       for (const ft of fts) {
-        const pactCode = `(${ft.contractAddress}.get-balance "${account}")`;
+        const pactCode = `(${ft.contractAddress}.get-balance "${selectedAccount}")`;
         console.log(`FETCHING BALANCE FOR ${ft.contractAddress} AT CHAIN ${i}`, pactCode);
         // eslint-disable-next-line no-await-in-loop
         const pactResponse = await fetchListLocal(
@@ -151,7 +151,7 @@ export const AccountBalanceProvider = ({ children }: any) => {
 
     setAccountBalanceState((prev) => ({
       ...prev,
-      [account]: chainBalance,
+      [selectedAccount]: chainBalance,
     }));
     setIsLoadingBalances(false);
   };
@@ -196,12 +196,13 @@ export const AccountBalanceProvider = ({ children }: any) => {
         const tokens = await fetchTokenList();
         fetchGroupedBalances(tokens);
       } else {
-        fetchSinglesBalances(sortedWallets[0]);
+        fetchSinglesBalances();
       }
     }
   };
 
   const refreshBalances = async () => {
+    console.log(`🚀 !!! ~ refreshing Balances`);
     updateUsdPrices();
     updateAllBalances();
   };
@@ -211,10 +212,11 @@ export const AccountBalanceProvider = ({ children }: any) => {
   }, 120000);
 
   useEffect(() => {
-    if (fungibleTokensByNetwork?.length) {
-      refreshBalances();
-    }
-  }, [sortedWallets?.length, fungibleTokensByNetwork?.length, networkId]);
+    refreshBalances();
+  }, [sortedWallets?.length, fungibleTokensByNetwork?.length, networkId, selectedAccount]);
+  console.log(`🚀 !!! ~ networkId:`, networkId);
+  console.log(`🚀 !!! ~ fungibleTokensByNetwork:`, fungibleTokensByNetwork);
+  console.log(`🚀 !!! ~ sortedWallets:`, sortedWallets);
 
   return (
     <AccountBalanceContext.Provider

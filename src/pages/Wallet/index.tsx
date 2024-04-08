@@ -231,25 +231,31 @@ const Wallet = () => {
             logo={images.wallet.tokens.coin}
             onClick={() => selectedAccountBalance && openModal({ title: 'KDA Chain Distribution', content: renderChainDistribution('kda', 'coin') })}
           />
-          {LOCAL_DEFAULT_FUNGIBLE_TOKENS[networkId].map((t) => (
-            <TokenElement
-              isLoadingBalances={isLoadingBalances}
-              balance={getTokenTotalBalance(t.contractAddress, stateWallet?.account)}
-              name={t.symbol?.toLocaleUpperCase()}
-              usdBalance={roundNumber(getUsdPrice(t.contractAddress, getTokenTotalBalance(t.contractAddress, stateWallet?.account)), 2)}
-              logo={images.wallet.tokens[t.contractAddress]}
-              onClick={() =>
-                selectedAccountBalance &&
-                openModal({
-                  title: `${t.symbol.toLocaleUpperCase()} Chain Distribution`,
-                  content: renderChainDistribution(t.symbol, t.contractAddress),
-                })
-              }
-            />
-          ))}
+          {LOCAL_DEFAULT_FUNGIBLE_TOKENS[networkId] &&
+            LOCAL_DEFAULT_FUNGIBLE_TOKENS[networkId].map((t) => (
+              <TokenElement
+                isLoadingBalances={isLoadingBalances}
+                balance={getTokenTotalBalance(t.contractAddress, stateWallet?.account)}
+                name={t.symbol?.toLocaleUpperCase()}
+                usdBalance={roundNumber(getUsdPrice(t.contractAddress, getTokenTotalBalance(t.contractAddress, stateWallet?.account)), 2)}
+                logo={images.wallet.tokens[t.contractAddress]}
+                onClick={() =>
+                  selectedAccountBalance &&
+                  openModal({
+                    title: `${t.symbol.toLocaleUpperCase()} Chain Distribution`,
+                    content: renderChainDistribution(t.symbol, t.contractAddress),
+                  })
+                }
+              />
+            ))}
 
           {fungibleTokensByNetwork
-            ?.filter((fT) => !LOCAL_DEFAULT_FUNGIBLE_TOKENS[networkId].map((t) => t.contractAddress).includes(fT.contractAddress))
+            ?.filter(
+              (fT) =>
+                !(LOCAL_DEFAULT_FUNGIBLE_TOKENS[networkId] && LOCAL_DEFAULT_FUNGIBLE_TOKENS[networkId])
+                  .map((t) => t.contractAddress)
+                  .includes(fT.contractAddress),
+            )
             ?.map((fT) => {
               const tokenBalance = getTokenTotalBalance(fT.contractAddress, stateWallet?.account);
               return (
