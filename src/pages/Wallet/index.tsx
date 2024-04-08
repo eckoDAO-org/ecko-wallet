@@ -15,6 +15,7 @@ import { DivBottomShadow, DivFlex, PrimaryLabel, SecondaryLabel } from 'src/comp
 import { ConfirmModal } from 'src/components/ConfirmModal';
 import { IconButton } from 'src/components/IconButton';
 import { ActionList } from 'src/components/ActionList';
+import { useSelector } from 'react-redux';
 import KDXGovernanceMiningButton from 'src/components/GovernanceMining/KDXButton';
 import { roundNumber, BigNumberConverter, humanReadableNumber } from 'src/utils';
 import { extractDecimal } from 'src/utils/chainweb';
@@ -25,7 +26,7 @@ import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 import { useAccountBalanceContext } from 'src/contexts/AccountBalanceContext';
 import NotificationManager from 'src/components/NotificationManager';
 import ReceiveModal from './views/ReceiveModal';
-import { IFungibleToken, LOCAL_DEFAULT_FUNGIBLE_TOKENS, LOCAL_KEY_FUNGIBLE_TOKENS } from '../ImportToken';
+import { IFungibleTokensByNetwork, LOCAL_DEFAULT_FUNGIBLE_TOKENS, LOCAL_KEY_FUNGIBLE_TOKENS } from '../ImportToken';
 import { TokenElement } from './components/TokenElement';
 import { TokenChainBalance } from './components/TokenChainBalance';
 import { AssetsList } from './components/AssetsList';
@@ -62,7 +63,11 @@ const Wallet = () => {
   const history = useHistory();
   const { openModal, closeModal } = useModalContext();
   const { isLoadingBalances, selectedAccountBalance, allAccountsBalance, usdPrices } = useAccountBalanceContext();
-  const [fungibleTokens, setFungibleTokens] = useLocalStorage<IFungibleToken[]>(LOCAL_KEY_FUNGIBLE_TOKENS, LOCAL_DEFAULT_FUNGIBLE_TOKENS);
+  const rootState = useSelector((state) => state);
+  const { selectedNetwork } = rootState.extensions;
+  const networkId = selectedNetwork?.networkId;
+  const [fungibleTokens, setFungibleTokens] = useLocalStorage<IFungibleTokensByNetwork>(LOCAL_KEY_FUNGIBLE_TOKENS, LOCAL_DEFAULT_FUNGIBLE_TOKENS);
+  const fungibleTokensByNetwork = (fungibleTokens && fungibleTokens[networkId]) || [];
 
   const stateWallet = useCurrentWallet();
 
@@ -79,8 +84,10 @@ const Wallet = () => {
 
   const getAccountBalance = (account: string) => {
     const totalTokenUSD =
-      fungibleTokens?.reduce((prev, curr) => prev + getUsdPrice(curr.contractAddress, getTokenTotalBalance(curr.contractAddress, account) || 0), 0) ??
-      0;
+      fungibleTokensByNetwork?.reduce(
+        (prev, curr) => prev + getUsdPrice(curr.contractAddress, getTokenTotalBalance(curr.contractAddress, account) || 0),
+        0,
+      ) ?? 0;
 
     return totalTokenUSD + getUsdPrice('coin', getTokenTotalBalance('coin', account) || 0);
   };
@@ -99,7 +106,7 @@ const Wallet = () => {
   };
 
   const handleRemoveToken = (contractAddress) => {
-    const newFungibleTokens = fungibleTokens?.filter((ft) => ft.contractAddress !== contractAddress) ?? [];
+    const newFungibleTokens = fungibleTokensByNetwork?.filter((ft) => ft.contractAddress !== contractAddress) ?? [];
     setFungibleTokens([...newFungibleTokens]);
     toast.success(<Toast type="success" content="Token successfully removed" />);
     closeModal();
@@ -224,7 +231,7 @@ const Wallet = () => {
             logo={images.wallet.tokens.coin}
             onClick={() => selectedAccountBalance && openModal({ title: 'KDA Chain Distribution', content: renderChainDistribution('kda', 'coin') })}
           />
-          {LOCAL_DEFAULT_FUNGIBLE_TOKENS.map((t) => (
+          {LOCAL_DEFAULT_FUNGIBLE_TOKENS[networkId].map((t) => (
             <TokenElement
               isLoadingBalances={isLoadingBalances}
               balance={getTokenTotalBalance(t.contractAddress, stateWallet?.account)}
@@ -241,8 +248,8 @@ const Wallet = () => {
             />
           ))}
 
-          {fungibleTokens
-            ?.filter((fT) => !LOCAL_DEFAULT_FUNGIBLE_TOKENS.map((t) => t.contractAddress).includes(fT.contractAddress))
+          {fungibleTokensByNetwork
+            ?.filter((fT) => !LOCAL_DEFAULT_FUNGIBLE_TOKENS[networkId].map((t) => t.contractAddress).includes(fT.contractAddress))
             ?.map((fT) => {
               const tokenBalance = getTokenTotalBalance(fT.contractAddress, stateWallet?.account);
               return (

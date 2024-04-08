@@ -16,15 +16,23 @@ import { useGoHome } from 'src/hooks/ui';
 import Button from 'src/components/Buttons';
 import { NavigationHeader } from 'src/components/NavigationHeader';
 
-export const LOCAL_KEY_FUNGIBLE_TOKENS = 'fungibleTokens';
-export const LOCAL_DEFAULT_FUNGIBLE_TOKENS = [
-  { contractAddress: 'kaddex.kdx', symbol: 'kdx' },
-  { contractAddress: 'n_b742b4e9c600892af545afb408326e82a6c0c6ed.zUSD', symbol: 'zUSD' },
-];
+export const LOCAL_KEY_FUNGIBLE_TOKENS = 'fungibleTokensByNetwork';
+export const LOCAL_DEFAULT_FUNGIBLE_TOKENS = {
+  mainnet01: [
+    { contractAddress: 'kaddex.kdx', symbol: 'kdx' },
+    { contractAddress: 'n_b742b4e9c600892af545afb408326e82a6c0c6ed.zUSD', symbol: 'zUSD' },
+  ],
+  testnet04: [{ contractAddress: 'n_dd05101ff4df21179bfc038a912fc88c38d777a1.kdx', symbol: 'kdx' }],
+  development: [],
+};
 
 export interface IFungibleToken {
   contractAddress: string;
   symbol: string;
+}
+
+export interface IFungibleTokensByNetwork {
+  [network: string]: IFungibleToken[];
 }
 
 const ImportTokenWrapper = styled.div`
@@ -57,15 +65,18 @@ const ImportToken = () => {
   const { search } = useLocation();
   const rootState = useSelector((state) => state);
   const { selectedNetwork } = rootState.extensions;
+  const networkId = selectedNetwork?.networkId;
   const goHome = useGoHome();
-  const [fungibleTokens, setFungibleTokens] = useLocalStorage<IFungibleToken[]>(LOCAL_KEY_FUNGIBLE_TOKENS, []);
+  const [fungibleTokens, setFungibleTokens] = useLocalStorage<IFungibleTokensByNetwork>(LOCAL_KEY_FUNGIBLE_TOKENS, LOCAL_DEFAULT_FUNGIBLE_TOKENS);
   const { data: settings } = useContext(SettingsContext);
   const txSettings = settings?.txSettings;
+
+  const fungibleTokensByNetwork = (fungibleTokens && fungibleTokens[networkId]) || [];
 
   const params = new URLSearchParams(search);
   const coin = params.get('coin');
   const suggest = params.get('suggest');
-  const token = fungibleTokens?.find((ft) => ft.contractAddress === coin);
+  const token = fungibleTokensByNetwork?.find((ft) => ft.contractAddress === coin);
 
   const checkTokenExists = async (contractAddress: string) => {
     showLoading();
@@ -110,7 +121,7 @@ const ImportToken = () => {
   }, []);
 
   const onImport = async (fT: IFungibleToken | any) => {
-    const alreadyExists = fungibleTokens?.find((fungToken) => fungToken.contractAddress === fT.contractAddress);
+    const alreadyExists = fungibleTokensByNetwork?.find((fungToken) => fungToken.contractAddress === fT.contractAddress);
     if (!token && alreadyExists) {
       toast.error(<Toast type="error" content="Token already added" />);
     } else {
@@ -118,17 +129,20 @@ const ImportToken = () => {
       if (!tokenExists) {
         toast.error(<Toast type="error" content={`Cannot resolve ${fT.contractAddress}.details`} />);
       } else {
-        let newFungibleTokens = fungibleTokens || [];
+        let newFungibleTokens = fungibleTokensByNetwork || [];
         if (token) {
-          newFungibleTokens = fungibleTokens?.filter((ft) => ft.contractAddress !== token.contractAddress) ?? [];
+          newFungibleTokens = fungibleTokensByNetwork?.filter((ft) => ft.contractAddress !== token.contractAddress) ?? [];
         }
-        setFungibleTokens([
-          ...newFungibleTokens,
-          {
-            ...fT,
-            symbol: fT.symbol?.toLowerCase(),
-          },
-        ]);
+        setFungibleTokens({
+          ...fungibleTokens,
+          [networkId]: [
+            ...newFungibleTokens,
+            {
+              ...fT,
+              symbol: fT.symbol?.toLowerCase(),
+            },
+          ],
+        });
         toast.success(<Toast type="success" content="Token successfully saved" />);
         goHome();
       }
