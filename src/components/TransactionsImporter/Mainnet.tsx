@@ -7,7 +7,7 @@ import { getAccount } from 'src/stores/slices/wallet';
 import { useFungibleTokensList } from 'src/hooks/fungibleTokens';
 import { addLocalActivity, getLocalActivities } from 'src/utils/storage';
 
-const supportedTransactions = ['TRANSFER'/* , 'SWAP' */];
+const supportedTransactions = ['TRANSFER', 'SWAP'];
 
 const transactionToActivity = (transaction: Transaction, tokens: IFungibleToken[]) => {
   if (!supportedTransactions.includes(transaction.transactionType)) {
@@ -16,6 +16,7 @@ const transactionToActivity = (transaction: Transaction, tokens: IFungibleToken[
 
   const date = new Date(transaction.creationtime);
   const inferredToken = tokens.find((t) => t.contractAddress === transaction.modulename);
+  const receiver = transaction.transactionType === 'SWAP' ? 'Swap' : transaction.to_acct;
 
   const activity: LocalActivity = {
     amount: transaction.amount,
@@ -23,7 +24,7 @@ const transactionToActivity = (transaction: Transaction, tokens: IFungibleToken[
     direction: transaction.direction,
     gas: Number(transaction.gas),
     gasPrice: transaction.gasprice,
-    receiver: transaction.to_acct,
+    receiver,
     receiverChainId: transaction.targetChainId || transaction.chainid,
     requestKey: transaction.requestkey,
     sender: transaction.from_acct,
