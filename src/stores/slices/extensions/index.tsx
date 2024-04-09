@@ -33,14 +33,6 @@ export const defaultNetworks: RawNetwork[] = [
     isDefault: true,
     id: '1',
   },
-  {
-    name: 'Ecko Devnet',
-    url: 'https://devnet.ecko.finance',
-    explorer: 'https://explorer.chainweb.com/testnet',
-    networkId: 'development',
-    isDefault: true,
-    id: '101',
-  },
 ];
 
 export interface RawNetwork {
