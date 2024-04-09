@@ -238,6 +238,7 @@ const PopupConfirm = (props: Props) => {
             domain,
             aliasName: configs?.aliasName,
             status: 'pending',
+            transactionType: 'TRANSFER',
           };
           addLocalActivity(selectedNetwork.networkId, senderName, activity);
           if (senderChainId.toString() !== receiverChainId.toString()) {

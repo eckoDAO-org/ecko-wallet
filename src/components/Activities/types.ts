@@ -24,4 +24,5 @@ export interface LocalActivity {
   txId?: number;
   direction?: LocalActivityDirection;
   module: string;
+  transactionType: 'TRANSFER' | 'SWAP' | 'STAKE' | 'UNSTAKE' | 'CLAIM';
 }

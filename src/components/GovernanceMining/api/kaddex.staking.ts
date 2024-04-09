@@ -103,6 +103,7 @@ export const useCreatePendingStakeActivity = () => {
       gasPrice: stakeResult.request.meta.gasPrice,
       sender: stakeResult.request.meta.sender,
       status: 'pending',
+      transactionType: 'STAKE',
     };
 
     addLocalActivity(stakeResult.request.networkId, stakeResult.request.meta.sender, activity);
@@ -188,6 +189,7 @@ export const useCreatePendingUnstakeActivity = () => {
       gasPrice: unstakeResult.request.meta.gasPrice,
       sender: unstakeResult.request.meta.sender,
       status: 'pending',
+      transactionType: 'UNSTAKE',
     };
 
     addLocalActivity(unstakeResult.request.networkId, unstakeResult.request.meta.sender, activity);
@@ -243,6 +245,7 @@ export const useCreatePendingClaimActivity = () => {
       gasPrice: claimResult.request.meta.gasPrice,
       sender: claimResult.request.meta.sender,
       status: 'pending',
+      transactionType: 'CLAIM',
     };
 
     addLocalActivity(claimResult.request.networkId, claimResult.request.meta.sender, activity);

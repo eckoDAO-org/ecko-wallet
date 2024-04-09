@@ -31,6 +31,7 @@ const transactionToActivity = (transaction: Transaction, tokens: IFungibleToken[
     status: transaction.status.toLowerCase() as ('success' | 'error'),
     symbol: inferredToken?.symbol || transaction.modulename,
     module: transaction.modulename,
+    transactionType: transaction.transactionType,
 
     result: {
       status: transaction.status.toLowerCase(),
