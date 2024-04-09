@@ -18,7 +18,7 @@ import { ActionList } from 'src/components/ActionList';
 import { useSelector } from 'react-redux';
 import KDXGovernanceMiningButton from 'src/components/GovernanceMining/KDXButton';
 import { roundNumber, BigNumberConverter, humanReadableNumber } from 'src/utils';
-import { extractDecimal } from 'src/utils/chainweb';
+import { MAINNET_NETWORK_ID, extractDecimal } from 'src/utils/chainweb';
 import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import useLocalStorage from 'src/hooks/useLocalStorage';
 import { useModalContext } from 'src/contexts/ModalContext';
@@ -107,7 +107,7 @@ const Wallet = () => {
 
   const handleRemoveToken = (contractAddress) => {
     const newFungibleTokens = fungibleTokensByNetwork?.filter((ft) => ft.contractAddress !== contractAddress) ?? [];
-    setFungibleTokens([...newFungibleTokens]);
+    setFungibleTokens({ ...fungibleTokens, [networkId]: newFungibleTokens });
     toast.success(<Toast type="success" content="Token successfully removed" />);
     closeModal();
   };
@@ -218,7 +218,9 @@ const Wallet = () => {
         <DivFlex justifyContent="space-between">
           <SecondaryLabel style={{ paddingTop: 10 }}>ASSETS</SecondaryLabel>
           <DivFlex>
-            <IconButton onClick={() => openModal({ title: 'Token list', content: <AssetsList /> })} svgComponent={<SearchIconSVG />} />
+            {selectedNetwork.networkId === MAINNET_NETWORK_ID && (
+              <IconButton onClick={() => openModal({ title: 'Token list', content: <AssetsList /> })} svgComponent={<SearchIconSVG />} />
+            )}
             <IconButton onClick={() => history.push('/import-token')} svgComponent={<AddIconSVG />} style={{ marginLeft: 5 }} />
           </DivFlex>
         </DivFlex>

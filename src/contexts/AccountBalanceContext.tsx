@@ -134,7 +134,6 @@ export const AccountBalanceProvider = ({ children }: any) => {
       const tokenBalance: TokenBalance = {};
       for (const ft of fts) {
         const pactCode = `(${ft.contractAddress}.get-balance "${selectedAccount}")`;
-        console.log(`FETCHING BALANCE FOR ${ft.contractAddress} AT CHAIN ${i}`, pactCode);
         // eslint-disable-next-line no-await-in-loop
         const pactResponse = await fetchListLocal(
           pactCode,
@@ -202,7 +201,6 @@ export const AccountBalanceProvider = ({ children }: any) => {
   };
 
   const refreshBalances = async () => {
-    console.log(`🚀 !!! ~ refreshing Balances`);
     updateUsdPrices();
     updateAllBalances();
   };
@@ -214,9 +212,6 @@ export const AccountBalanceProvider = ({ children }: any) => {
   useEffect(() => {
     refreshBalances();
   }, [sortedWallets?.length, fungibleTokensByNetwork?.length, networkId, selectedAccount]);
-  console.log(`🚀 !!! ~ networkId:`, networkId);
-  console.log(`🚀 !!! ~ fungibleTokensByNetwork:`, fungibleTokensByNetwork);
-  console.log(`🚀 !!! ~ sortedWallets:`, sortedWallets);
 
   return (
     <AccountBalanceContext.Provider

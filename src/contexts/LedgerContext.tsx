@@ -73,6 +73,7 @@ export const LedgerProvider = ({ children }: any) => {
     if (!kadenaLedger?.transport) {
       try {
         const transport = await TransportWebHID.create();
+        // eslint-disable-next-line no-console
         listen((log) => console.log('ledger log -->', log));
         const kadena = new KadenaLedger(transport);
         setKadenaLedger(kadena);

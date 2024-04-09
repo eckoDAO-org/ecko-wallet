@@ -86,7 +86,7 @@ const ImportToken = () => {
       try {
         /* eslint-disable no-await-in-loop */
         const res = await fetchListLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, i, txSettings?.gasPrice, txSettings?.gasLimit);
-        if (res?.result?.error?.message?.startsWith('with-read: row not found') || res?.result?.status === 'success') {
+        if (res?.result?.error?.message?.includes('row not found') || res?.result?.status === 'success') {
           hideLoading();
           return true;
         }
@@ -127,7 +127,7 @@ const ImportToken = () => {
     } else {
       const tokenExists = await checkTokenExists(fT.contractAddress);
       if (!tokenExists) {
-        toast.error(<Toast type="error" content={`Cannot resolve ${fT.contractAddress}.details`} />);
+        toast.error(<Toast type="error" content={`Cannot resolve ${fT.contractAddress}.details - Please check the token exists on ${networkId}`} />);
       } else {
         let newFungibleTokens = fungibleTokensByNetwork || [];
         if (token) {
