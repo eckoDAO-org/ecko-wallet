@@ -196,11 +196,13 @@ const PopupConfirm = (props: Props) => {
               ...ledgerSendTxParams,
               recipient_chainId: Number(receiverChainId),
             });
+            // eslint-disable-next-line no-console
             console.log('ledgerSignCrosschainRes', ledgerSignCrosschainRes);
             toast.success(<Toast type="success" content="Ledger Sign Success" />);
             sendCmd = ledgerSignCrosschainRes?.pact_command;
           } else {
             const ledgerSignRes = await sendTransaction(ledgerSendTxParams);
+            // eslint-disable-next-line no-console
             console.log('ledgerSignRes', ledgerSignRes);
             toast.success(<Toast type="success" content="Ledger Sign Success" />);
             sendCmd = ledgerSignRes?.pact_command;

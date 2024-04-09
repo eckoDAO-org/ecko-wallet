@@ -8,9 +8,11 @@ import { useSelector } from 'react-redux';
 import Toast from 'src/components/Toast/Toast';
 import { DivFlex, SecondaryLabel } from 'src/components';
 import { convertNetworks, getTimestamp } from 'src/utils';
-import { getLocalNetworks, setLocalNetworks } from 'src/utils/storage';
-import { setNetworks } from 'src/stores/slices/extensions';
+import { getLocalNetworks, setLocalNetworks, setLocalSelectedNetwork } from 'src/utils/storage';
+import { useAppSelector } from 'src/stores/hooks';
+import { getSelectedNetwork, setNetworks, setSelectedNetwork } from 'src/stores/slices/extensions';
 import ModalCustom from 'src/components/Modal/ModalCustom';
+import { useSelectNetwork } from 'src/hooks/wallet';
 import { Content } from '../../style';
 import { ErrorWrapper, Footer } from '../../../SendTransactions/styles';
 import { DivBodyNetwork } from './style';
@@ -29,7 +31,10 @@ const EditNetwork = (props: Props) => {
   const [errMessageDuplicateUrl, setErrorMessageDuplicateUrl] = useState('');
   const [errMessageDuplicateNetworksId, setErrorMessageDuplicateNetworksId] = useState('');
   const networks = useSelector((state) => state.extensions.networks);
+  const selectedNetwork = useAppSelector(getSelectedNetwork);
   const [isModalRemoveNetwork, setModalRemoveNetwork] = useState(false);
+  const selectNetwork = useSelectNetwork();
+  const isEditingSelectedNetwork = selectedNetwork.id === network.id;
   const {
     register,
     handleSubmit,
@@ -52,6 +57,12 @@ const EditNetwork = (props: Props) => {
       setErrorMessageDuplicateUrl('URL already exist');
       return;
     }
+
+    if (isEditingSelectedNetwork) {
+      setSelectedNetwork(newNetwork);
+      setLocalSelectedNetwork(newNetwork);
+    }
+
     getLocalNetworks(
       (data) => {
         const localNetworks = data;
@@ -93,6 +104,11 @@ const EditNetwork = (props: Props) => {
         setNetworks(convertNetworks(localNetworks));
         onClickPopup();
         setModalRemoveNetwork(false);
+
+        if (isEditingSelectedNetwork) {
+          selectNetwork('0');
+        }
+
         toast.success(<Toast type="success" content="Delete network successfully" />);
       },
       () => {},

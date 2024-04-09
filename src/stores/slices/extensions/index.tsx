@@ -33,14 +33,6 @@ export const defaultNetworks: RawNetwork[] = [
     isDefault: true,
     id: '1',
   },
-  {
-    name: 'Ecko Devnet',
-    url: 'https://devnet.ecko.finance',
-    explorer: 'https://explorer.chainweb.com/testnet',
-    networkId: 'development',
-    isDefault: true,
-    id: '101',
-  },
 ];
 
 export interface RawNetwork {
@@ -176,5 +168,7 @@ export const hideFetching = () => {
 };
 
 export const getSelectedNetwork = (state: RootState) => state.extensions.selectedNetwork;
+export const getPasswordHash = (state: RootState) => state.extensions.passwordHash;
+export const getNetworks = (state: RootState) => state.extensions.networks;
 
 export { storeExtensions };

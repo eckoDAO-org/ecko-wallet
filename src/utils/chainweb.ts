@@ -10,7 +10,9 @@ import { getTimestamp } from './index';
 
 export const MAINNET_NETWORK_ID = 'mainnet01';
 
-export const getApiUrl = (url, networkId, chainId) => `${url}/chainweb/0.0/${networkId}/chain/${chainId}/pact`;
+export const getApiUrl = (url, networkId, chainId) =>
+  // old storage issue
+  `${url === 'https://chainweb.kaddex.com' ? 'https://chainweb.ecko.finance' : url}/chainweb/0.0/${networkId}/chain/${chainId}/pact`;
 
 export const fetchLocal = (code, url, networkId, chainId) => {
   const localCmd = {
@@ -127,6 +129,7 @@ export const pollRequestKey = async (reqKey, network) => {
 
 export const fetchTokenList = async () => {
   try {
+    // TODO: retrieve module list from dextools-api
     const tokensResponse = await fetch(`${KADDEX_ANALYTICS_API}/chain-data/fungible-tokens`);
     const tokensData = await tokensResponse.json();
     if (tokensData && tokensData[0] && tokensData[0]?.fungibleTokens) {
