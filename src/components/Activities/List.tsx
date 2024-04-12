@@ -66,41 +66,39 @@ const List = ({
         onChangeToken={setToken}
       />
       {Object.keys(grouped)?.length ? (
-        <>
-          <DivChild>
-            <DivScroll>
-              {grouped && grouped[todayString] && (
+        <DivChild>
+          <DivScroll>
+            {grouped && grouped[todayString] && (
+              <ActivityGroup
+                label="Today"
+                activities={grouped[todayString]}
+                pendingCrossChainRequestKeys={pendingCrossChainRequestKeys}
+                openActivityDetail={openActivityDetail}
+              />
+            )}
+
+            {grouped && grouped[yesterdayString] && (
+              <ActivityGroup
+                label="Yesterday"
+                activities={grouped[yesterdayString]}
+                pendingCrossChainRequestKeys={pendingCrossChainRequestKeys}
+                openActivityDetail={openActivityDetail}
+              />
+            )}
+
+            {Object.keys(grouped)
+              .filter((key) => key !== yesterdayString && key !== todayString)
+              .map((date) => (
                 <ActivityGroup
-                  label="Today"
-                  activities={grouped[todayString]}
+                  key={date}
+                  label={moment(date, 'DD/MM/YYYY').format('DD/MM/YYYY')}
+                  activities={grouped[date]}
                   pendingCrossChainRequestKeys={pendingCrossChainRequestKeys}
                   openActivityDetail={openActivityDetail}
                 />
-              )}
-
-              {grouped && grouped[yesterdayString] && (
-                <ActivityGroup
-                  label="Yesterday"
-                  activities={grouped[yesterdayString]}
-                  pendingCrossChainRequestKeys={pendingCrossChainRequestKeys}
-                  openActivityDetail={openActivityDetail}
-                />
-              )}
-
-              {Object.keys(grouped)
-                .filter((key) => key !== yesterdayString && key !== todayString)
-                .map((date) => (
-                  <ActivityGroup
-                    key={date}
-                    label={moment(date, 'DD/MM/YYYY').format('DD/MM/YYYY')}
-                    activities={grouped[date]}
-                    pendingCrossChainRequestKeys={pendingCrossChainRequestKeys}
-                    openActivityDetail={openActivityDetail}
-                  />
-                ))}
-            </DivScroll>
-          </DivChild>
-        </>
+              ))}
+          </DivScroll>
+        </DivChild>
       ) : (
         <DivFlex marginTop="200px">
           <SecondaryLabel textCenter style={{ flex: 1 }}>

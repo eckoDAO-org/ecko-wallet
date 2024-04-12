@@ -1,6 +1,8 @@
-import { IFungibleToken, LOCAL_KEY_FUNGIBLE_TOKENS } from 'src/pages/ImportToken';
+import { IFungibleToken, IFungibleTokensByNetwork, LOCAL_DEFAULT_FUNGIBLE_TOKENS, LOCAL_KEY_FUNGIBLE_TOKENS } from 'src/pages/ImportToken';
 import useLocalStorage from 'src/hooks/useLocalStorage';
 import { KNOWN_TOKENS } from 'src/utils/constant';
+import { useAppSelector } from 'src/stores/hooks';
+import { getSelectedNetwork } from 'src/stores/slices/extensions';
 
 const coinToken: IFungibleToken = {
   contractAddress: 'coin',
@@ -21,7 +23,10 @@ const knownTokens = Object.keys(KNOWN_TOKENS as TKnownToken).map(
 );
 
 export const useFungibleTokensList = () => {
-  const [localFungibleTokens] = useLocalStorage<IFungibleToken[]>(LOCAL_KEY_FUNGIBLE_TOKENS, []);
+  const selectedNetwork = useAppSelector(getSelectedNetwork);
+  const [allLocalFungibleTokens] = useLocalStorage<IFungibleTokensByNetwork>(LOCAL_KEY_FUNGIBLE_TOKENS, LOCAL_DEFAULT_FUNGIBLE_TOKENS);
+  const localFungibleTokens = allLocalFungibleTokens?.[selectedNetwork.networkId];
+
   const localFungibleTokensParsed = (localFungibleTokens || []).map((token) => ({
     contractAddress: token.contractAddress,
     symbol: token.symbol.toUpperCase(),
