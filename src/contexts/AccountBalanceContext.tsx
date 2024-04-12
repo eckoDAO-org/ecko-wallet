@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import moment from 'moment';
 import useLocalStorage from 'src/hooks/useLocalStorage';
 import { useInterval } from 'src/hooks/useInterval';
-import { IFungibleToken, LOCAL_DEFAULT_FUNGIBLE_TOKENS, LOCAL_KEY_FUNGIBLE_TOKENS } from 'src/pages/ImportToken';
+import { IFungibleToken, IFungibleTokensByNetwork, LOCAL_DEFAULT_FUNGIBLE_TOKENS, LOCAL_KEY_FUNGIBLE_TOKENS } from 'src/pages/ImportToken';
 import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import { fetchListLocal, fetchTokenList, MAINNET_NETWORK_ID } from 'src/utils/chainweb';
 import { KADDEX_ANALYTICS_API } from 'src/utils/config';
@@ -47,7 +47,10 @@ export const AccountBalanceProvider = ({ children }: any) => {
     extensions: { selectedNetwork },
   } = useSelector((state) => state);
 
-  const [fungibleTokens] = useLocalStorage<IFungibleToken[]>(LOCAL_KEY_FUNGIBLE_TOKENS, LOCAL_DEFAULT_FUNGIBLE_TOKENS);
+  const networkId = selectedNetwork?.networkId;
+
+  const [fungibleTokens] = useLocalStorage<IFungibleTokensByNetwork>(LOCAL_KEY_FUNGIBLE_TOKENS, LOCAL_DEFAULT_FUNGIBLE_TOKENS);
+  const fungibleTokensByNetwork = (fungibleTokens && fungibleTokens[networkId]) || [];
 
   const { account: selectedAccount } = useCurrentWallet();
   const { data: settings } = useContext(SettingsContext);
@@ -62,8 +65,8 @@ export const AccountBalanceProvider = ({ children }: any) => {
     const promiseList: any[] = [];
     for (let i = 0; i < CHAIN_COUNT; i += 1) {
       const availableChainTokens = allChainTokens && allChainTokens[i];
-      let filteredAvailableFt = fungibleTokens?.filter((t) => availableChainTokens?.includes(t.contractAddress));
-      for (const localToken of LOCAL_DEFAULT_FUNGIBLE_TOKENS) {
+      let filteredAvailableFt = fungibleTokensByNetwork?.filter((t) => availableChainTokens?.includes(t.contractAddress));
+      for (const localToken of LOCAL_DEFAULT_FUNGIBLE_TOKENS[networkId]) {
         if (!filteredAvailableFt?.find((t) => t.contractAddress === localToken.contractAddress)) {
           filteredAvailableFt?.push(localToken);
         }
@@ -93,14 +96,7 @@ export const AccountBalanceProvider = ({ children }: any) => {
                   `,
                 )}}
         )`;
-      const promise = fetchListLocal(
-        pactCode,
-        selectedNetwork.url,
-        selectedNetwork.networkId,
-        i.toString(),
-        txSettings?.gasPrice,
-        txSettings?.gasLimit,
-      );
+      const promise = fetchListLocal(pactCode, selectedNetwork.url, selectedNetwork.networkId, i.toString(), txSettings?.gasPrice, 300000);
       promiseList.push(promise);
     }
     return Promise.all(promiseList).then((allRes) => {
@@ -131,17 +127,13 @@ export const AccountBalanceProvider = ({ children }: any) => {
     });
   };
 
-  const fetchSinglesBalances = async (account: string) => {
-    const fts: IFungibleToken[] = [
-      { contractAddress: 'coin', symbol: 'KDA' },
-      { contractAddress: 'kaddex.kdx', symbol: 'KDX' },
-      ...(fungibleTokens || []),
-    ];
+  const fetchSinglesBalances = async () => {
+    const fts: IFungibleToken[] = [{ contractAddress: 'coin', symbol: 'KDA' }, ...fungibleTokensByNetwork];
     const chainBalance: TokenBalance[] = [];
     for (let i = 0; i < CHAIN_COUNT; i += 1) {
       const tokenBalance: TokenBalance = {};
       for (const ft of fts) {
-        const pactCode = `(${ft.contractAddress}.get-balance "${account}")`;
+        const pactCode = `(${ft.contractAddress}.get-balance "${selectedAccount}")`;
         // eslint-disable-next-line no-await-in-loop
         const pactResponse = await fetchListLocal(
           pactCode,
@@ -158,7 +150,7 @@ export const AccountBalanceProvider = ({ children }: any) => {
 
     setAccountBalanceState((prev) => ({
       ...prev,
-      [account]: chainBalance,
+      [selectedAccount]: chainBalance,
     }));
     setIsLoadingBalances(false);
   };
@@ -171,7 +163,7 @@ export const AccountBalanceProvider = ({ children }: any) => {
         )}&currency=USDT&asset=KDA`,
       ),
     ];
-    fungibleTokens?.forEach((tok) => {
+    fungibleTokensByNetwork?.forEach((tok) => {
       promises.push(
         fetch(
           `${KADDEX_ANALYTICS_API}/candles?dateStart=${moment().subtract(3, 'days').format('YYYY-MM-DD')}&dateEnd=${moment().format(
@@ -203,7 +195,7 @@ export const AccountBalanceProvider = ({ children }: any) => {
         const tokens = await fetchTokenList();
         fetchGroupedBalances(tokens);
       } else {
-        fetchSinglesBalances(sortedWallets[0]);
+        fetchSinglesBalances();
       }
     }
   };
@@ -218,10 +210,8 @@ export const AccountBalanceProvider = ({ children }: any) => {
   }, 120000);
 
   useEffect(() => {
-    if (fungibleTokens?.length) {
-      refreshBalances();
-    }
-  }, [sortedWallets?.length, fungibleTokens?.length]);
+    refreshBalances();
+  }, [sortedWallets?.length, fungibleTokensByNetwork?.length, networkId, selectedAccount]);
 
   return (
     <AccountBalanceContext.Provider

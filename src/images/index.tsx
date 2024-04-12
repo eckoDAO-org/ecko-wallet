@@ -184,6 +184,7 @@ const wallet = {
   tokens: {
     coin: iconKadenaToken,
     'kaddex.kdx': iconKdx,
+    'n_dd05101ff4df21179bfc038a912fc88c38d777a1.kdx': iconKdx,
     'hypercent.prod-hype-coin': iconHype,
     'runonflux.flux': iconFlux,
     'kdlaunch.token': iconKdl,
