@@ -35,7 +35,7 @@ const nftList: NFTData[] = [
     moduleName: 'n_2cf9d750a8ec510cb925d897b82069850b0a0bea.imr-auction-policy',
     pactAlias: 'immutable_records',
     pic: 'https://c2a4iuck3xz4ezcdprp7wcmlhno7okvz5yhdo7mjuv5aed5kkpha.arweave.net/FoHEUErd88JkQ3xf-wmLO133KrnuDjd9iaV6Ag-qU84/NFT-series-1/19920112/19920112-art.png',
-    getPicById: (id) => `#`,
+    getPicById: () => '#',
     getDetailLinkById: (auctionId) => `https://nft.immutablerecord.com/?auctionId=${auctionId}`,
     getAccountBalance: (account) => getImmutableRecordsAccountList(25, account),
     type: NFTTypes.MARMALADE_V2,

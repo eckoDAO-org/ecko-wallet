@@ -12,6 +12,7 @@
     "@ledgerhq/hw-transport-webhid": "^6.27.19",
     "@ledgerhq/logs": "^6.10.1",
     "@reduxjs/toolkit": "^1.6.2",
+    "@tanstack/react-query": "^4.36.1",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -70,9 +71,10 @@
     "parcel:build": "parcel build public/app/* -d build/app --no-source-maps --no-minify",
     "test": "craco test",
     "eject": "react-scripts eject",
-    "lint": "eslint ./src",
-    "lint:fix": "eslint . --ext js --fix",
-    "pretty": "prettier --write \"./src/**/*.{tsx,js,jsx,json}\""
+    "lint": "eslint --ext js,jsx,ts,tsx ./src",
+    "lint:fix": "eslint --ext js,jsx,ts,tsx ./src --fix",
+    "pretty": "prettier --write \"./src/**/*.{tsx,js,jsx,json}\"",
+    "tsc": "tsc --noEmit"
   },
   "eslintConfig": {
     "extends": [
@@ -96,6 +98,7 @@
     "styled-components": "^5"
   },
   "devDependencies": {
+    "@tanstack/eslint-plugin-query": "^4.38.0",
     "@types/bcrypt": "^5.0.0",
     "@types/chrome": "0.0.221",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
