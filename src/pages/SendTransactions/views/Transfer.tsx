@@ -57,7 +57,7 @@ interface TransactionInfo {
   sender: string;
   senderChainId: string;
   receiver: string;
-  aliasName?: string;
+  aliasName?: string | null;
   receiverChainId: string;
 }
 

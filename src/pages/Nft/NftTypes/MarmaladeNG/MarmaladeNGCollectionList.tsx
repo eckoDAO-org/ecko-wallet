@@ -63,6 +63,7 @@ const MarmaladeNGCollectionList = () => {
             }
           }
         } catch (err) {
+          // eslint-disable-next-line no-console
           console.error('Error fetching NG NFTs', err);
         }
 
@@ -102,6 +103,7 @@ const MarmaladeNGCollectionList = () => {
                         ownedCount,
                       });
                     } catch (err) {
+                      // eslint-disable-next-line no-console
                       console.error('Error fetching IPFS', err);
                     }
                   }

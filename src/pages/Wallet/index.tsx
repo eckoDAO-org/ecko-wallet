@@ -236,6 +236,7 @@ const Wallet = () => {
           {LOCAL_DEFAULT_FUNGIBLE_TOKENS[networkId] &&
             LOCAL_DEFAULT_FUNGIBLE_TOKENS[networkId].map((t) => (
               <TokenElement
+                key={t.contractAddress}
                 isLoadingBalances={isLoadingBalances}
                 balance={getTokenTotalBalance(t.contractAddress, stateWallet?.account)}
                 name={t.symbol?.toLocaleUpperCase()}
@@ -262,6 +263,7 @@ const Wallet = () => {
               const tokenBalance = getTokenTotalBalance(fT.contractAddress, stateWallet?.account);
               return (
                 <TokenElement
+                  key={fT.contractAddress}
                   isLoadingBalances={isLoadingBalances}
                   balance={tokenBalance || 0}
                   name={fT.symbol?.toUpperCase()}

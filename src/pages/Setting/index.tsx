@@ -16,7 +16,7 @@ import { DISCORD_INVITATION_LINK, PRIVACY_LINK, TERM_LINK, WEBSITE_LINK } from '
 import { useSettingsContext } from 'src/contexts/SettingsContext';
 import useSessionStorage from 'src/hooks/useSessionStorage';
 import { STORAGE_PASSWORD_KEY } from 'src/utils/storage';
-import { RoundedArrow } from '../Wallet/views/FinishTransferItem';
+import { RoundedArrow } from '../../components/Activities/FinishTransferItem';
 import packageJson from '../../../package.json';
 
 interface ISettingsMenu {

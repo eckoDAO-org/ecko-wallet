@@ -177,6 +177,7 @@ const ImportHardwareWallet = () => {
         value={selectedPublicKey}
         options={[{ label: `k:${ledgerPublicKey}`, value: ledgerPublicKey }]}
         onChange={(pk) => {
+          if (!pk) return;
           setSelectedPublicKey(pk);
         }}
       />

@@ -1,21 +1,15 @@
-import { useEffect } from 'react';
-import { useCreateFirstAccountAvailable } from 'src/hooks/wallet';
 import { useAppSelector } from 'src/stores/hooks';
-import { getWallets } from 'src/stores/slices/wallet';
+import { getAccount } from 'src/stores/slices/wallet';
+import Creator from './Creator';
 
-const WalletCreatorContextProvider = () => {
-  const wallets = useAppSelector(getWallets);
-  const createAccount = useCreateFirstAccountAvailable();
+const WalletCreator = () => {
+  const account = useAppSelector(getAccount);
 
-  useEffect(() => {
-    if (wallets.length > 0) {
-      return;
-    }
+  if (!account) {
+    return null;
+  }
 
-    createAccount();
-  }, [wallets]);
-
-  return null;
+  return <Creator />;
 };
 
-export default WalletCreatorContextProvider;
+export default WalletCreator;
