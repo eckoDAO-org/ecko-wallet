@@ -30,7 +30,7 @@ const ActivityElement = styled(DivFlex)`
 
 const FinishTransferItem = ({
   createdTime,
-  value,
+  value: fullValue,
   symbol,
   receiver,
   status,
@@ -48,7 +48,9 @@ const FinishTransferItem = ({
   module?: string;
 }) => {
   const tokens = useFungibleTokensList();
-  const inferredToken = (tokens.find((t) => t.contractAddress === module))?.symbol || symbol;
+  const inferredSymbol = (tokens.find((t) => t.contractAddress === module))?.symbol || symbol;
+  const inferredToken = inferredSymbol === module ? shortenAddress(module) : inferredSymbol;
+  const value = fullValue; //parseFloat(parseFloat(fullValue).toFixed(6));
 
   let color = '#ff6058';
   if (status === 'pending' || isFinishing) {
@@ -71,7 +73,7 @@ const FinishTransferItem = ({
           <SecondaryLabel>{moment(new Date(createdTime)).format('DD/MM/YYYY HH:mm')}</SecondaryLabel>
         </DivFlex>
       </DivFlex>
-      <CommonLabel fontWeight={500} color={color} fontSize={12}>
+      <CommonLabel fontWeight={500} color={color} fontSize={12} textAlign="right">
         {sign} {value} {inferredToken}
       </CommonLabel>
     </ActivityElement>
