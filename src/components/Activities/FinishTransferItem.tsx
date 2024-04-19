@@ -50,7 +50,7 @@ const FinishTransferItem = ({
   const tokens = useFungibleTokensList();
   const inferredSymbol = (tokens.find((t) => t.contractAddress === module))?.symbol || symbol;
   const inferredToken = inferredSymbol === module ? shortenAddress(module) : inferredSymbol;
-  const value = fullValue; //parseFloat(parseFloat(fullValue).toFixed(6));
+  const value = fullValue.slice(0, 21);
 
   let color = '#ff6058';
   if (status === 'pending' || isFinishing) {
