@@ -4,26 +4,21 @@ import { useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-import { decryptKey, encryptKey } from 'src/utils/security';
-import { setSelectedNetwork } from 'src/stores/slices/extensions';
+import { encryptKey } from 'src/utils/security';
 import { toast } from 'react-toastify';
 import { ReactComponent as LedgerIcon } from 'src/images/ledger-logo.svg';
 import { ModalContext } from 'src/contexts/ModalContext';
 import { AccountList } from 'src/pages/Wallet/components/AccountList';
 import { AccountActions } from 'src/pages/Wallet/components/AccountActions';
-import { AccountType, setBalance, setCurrentWallet, setWallets } from 'src/stores/slices/wallet';
-import { getKeyPairsFromSeedPhrase } from 'src/utils/chainweb';
+import { AccountType, setBalance, setCurrentWallet } from 'src/stores/slices/wallet';
 import { shortenAddress } from 'src/utils';
 import images from 'src/images';
 import {
   getLocalPassword,
-  getLocalSeedPhrase,
-  getLocalWallets,
-  setLocalSelectedNetwork,
   setLocalSelectedWallet,
-  setLocalWallets,
 } from 'src/utils/storage';
 import RemoveWalletPopup from 'src/pages/Wallet/views/RemoveWalletPopup';
+import { useCreateFirstAccountAvailable, useSelectNetwork } from 'src/hooks/wallet';
 import { DropdownModal } from '../DropdownModal';
 import { DivFlex } from '..';
 import Toast from '../Toast/Toast';
@@ -41,66 +36,12 @@ export const Header = ({ hideAccounts }: { hideAccounts?: boolean }) => {
   const rootState = useSelector((state) => state);
   const stateWallet = useCurrentWallet();
   const { openModal, closeModal } = useContext(ModalContext);
+  const createFirstAccountAvailable = useCreateFirstAccountAvailable();
+  const selectNetwork = useSelectNetwork();
 
-  const { selectedNetwork, passwordHash, networks } = rootState.extensions;
+  const { selectedNetwork, networks } = rootState.extensions;
   const { wallets, type } = rootState?.wallet;
   const selectedWallet = wallets?.find((a) => a.account === stateWallet?.account);
-
-  const checkWallet = (pub) => {
-    let result = true;
-    if (wallets && wallets.length) {
-      for (let i = 0; i < wallets.length; i += 1) {
-        if (wallets[i].publicKey === pub) {
-          result = false;
-        }
-      }
-    }
-    return result;
-  };
-
-  const createAccount = (seedPhrase, index) => {
-    const keyPairs = getKeyPairsFromSeedPhrase(seedPhrase, index);
-    const { publicKey, secretKey } = keyPairs;
-    if (checkWallet(publicKey)) {
-      const accountName = `k:${publicKey}`;
-      const wallet = {
-        account: encryptKey(accountName, passwordHash),
-        publicKey: encryptKey(publicKey, passwordHash),
-        secretKey: encryptKey(secretKey, passwordHash),
-        chainId: '0',
-        alias: '',
-        connectedSites: [],
-      };
-      getLocalWallets(
-        selectedNetwork.networkId,
-        (item) => {
-          const newData = [...item, wallet];
-          setLocalWallets(selectedNetwork.networkId, newData);
-        },
-        () => {
-          setLocalWallets(selectedNetwork.networkId, [wallet]);
-        },
-      );
-      const newStateWallet = {
-        chainId: '0',
-        alias: '',
-        account: accountName,
-        publicKey,
-        secretKey,
-        connectedSites: [],
-      };
-      const newWallets = stateWallet.wallets ? [...stateWallet.wallets] : [];
-      newWallets.push(newStateWallet);
-      setWallets(newWallets);
-      setLocalSelectedWallet(wallet);
-      setCurrentWallet(newStateWallet);
-      toast.success(<Toast type="success" content="Create account successfully!" />);
-      closeModal();
-    } else {
-      createAccount(seedPhrase, index + 1);
-      closeModal();
-    }
-  };
 
   const setSelectedLocalWallet = (wallet) => {
     getLocalPassword(
@@ -137,37 +78,15 @@ export const Header = ({ hideAccounts }: { hideAccounts?: boolean }) => {
   };
 
   const onCreateAccount = () => {
-    getLocalSeedPhrase(
-      (hash) => {
-        const plainSeedPhrase = decryptKey(hash, passwordHash);
-        createAccount(plainSeedPhrase, 0);
-      },
-      () => {},
-    );
+    createFirstAccountAvailable().then(() => {
+      toast.success(<Toast type="success" content="Create account successfully!" />);
+      closeModal();
+    });
   };
 
   const handleSelectNetwork = (id) => {
     closeModal();
-    const newSelectedNetwork = networks.find((network) => network.id.toString() === id);
-    setSelectedNetwork(newSelectedNetwork);
-    setCurrentWallet({
-      chainId: 0,
-      account: '',
-      alias: '',
-      publicKey: '',
-      secretKey: '',
-      connectedSites: [],
-    });
-    setLocalSelectedWallet({
-      chainId: 0,
-      account: '',
-      alias: '',
-      publicKey: '',
-      secretKey: '',
-      connectedSites: [],
-    });
-    setBalance(0);
-    setLocalSelectedNetwork(newSelectedNetwork);
+    selectNetwork(id);
   };
 
   return (

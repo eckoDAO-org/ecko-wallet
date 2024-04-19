@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-import { sign as kadenaJSSign } from '@kadena/cryptography-utils';
 import styled from 'styled-components';
 import { BaseTextInput } from 'src/baseComponent';
 import Button from 'src/components/Buttons';
@@ -9,7 +8,7 @@ import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import images from 'src/images';
-import { getSignatureFromHash } from 'src/utils/chainweb';
+import { getSignatureFromHash, getSignatureFromHashWithPrivateKey64 } from 'src/utils/chainweb';
 import { AccountType } from 'src/stores/slices/wallet';
 import { bufferToHex, useLedgerContext } from 'src/contexts/LedgerContext';
 
@@ -97,8 +96,13 @@ export const HashSignModal = () => {
                   signatureOutput = getSignatureFromHash(hash, secretKey);
                   setSignature(signatureOutput);
                 } else {
-                  signatureOutput = kadenaJSSign(hash, { secretKey, publicKey })?.sig ?? '';
-                  setSignature(signatureOutput);
+                  try {
+                    signatureOutput = getSignatureFromHashWithPrivateKey64(hash, { secretKey, publicKey });
+                  } catch (err) {
+                    // eslint-disable-next-line no-console
+                    console.log('err', err);
+                  }
+                  setSignature(signatureOutput ?? '');
                 }
               }
             }}

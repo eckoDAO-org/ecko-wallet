@@ -1,6 +1,7 @@
 import './App.scss';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import styled from 'styled-components';
 import { ToastContainer } from 'react-toastify';
 import store, { persistor } from './stores';
@@ -53,6 +54,8 @@ const ToastWrapper = styled.div`
   }
 `;
 
+const queryClient = new QueryClient();
+
 const App = () => (
   <Provider store={store}>
     <PersistGate persistor={persistor}>
@@ -64,18 +67,20 @@ const App = () => (
                 <SettingsProvider>
                   <AccountBalanceProvider>
                     <CrossChainProvider>
-                      <GovernanceMiningContextProvider>
-                        <NotificationContextProvider>
-                          <ModalConsumer>
-                            {({ isOpen, title, content, footer, closeModal, roundIcon }) => (
-                              <ModalCustom isOpen={isOpen || false} title={title} footer={footer} onCloseModal={closeModal} roundIcon={roundIcon}>
-                                {content}
-                              </ModalCustom>
-                            )}
-                          </ModalConsumer>
-                          <AppContainer />
-                        </NotificationContextProvider>
-                      </GovernanceMiningContextProvider>
+                      <QueryClientProvider client={queryClient}>
+                        <GovernanceMiningContextProvider>
+                          <NotificationContextProvider>
+                            <ModalConsumer>
+                              {({ isOpen, title, content, footer, closeModal, roundIcon }) => (
+                                <ModalCustom isOpen={isOpen || false} title={title} footer={footer} onCloseModal={closeModal} roundIcon={roundIcon}>
+                                  {content}
+                                </ModalCustom>
+                              )}
+                            </ModalConsumer>
+                            <AppContainer />
+                          </NotificationContextProvider>
+                        </GovernanceMiningContextProvider>
+                      </QueryClientProvider>
                     </CrossChainProvider>
                   </AccountBalanceProvider>
                 </SettingsProvider>

@@ -12,6 +12,7 @@ import { getSignatureFromHash } from 'src/utils/chainweb';
 import { WALLET_CONNECT_QUICKSIGN_METHOD } from 'src/utils/config';
 import { getLocalQuickSignedCmd, getLocalSelectedNetwork } from 'src/utils/storage';
 import Button from 'src/components/Buttons';
+import { InputError } from 'src/baseComponent';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import { sendWalletConnectMessage, updateQuickSignedCmdMessage } from 'src/utils/message';
 import { DEFAULT_BIP32_PATH, bufferToHex, useLedgerContext } from 'src/contexts/LedgerContext';
@@ -43,6 +44,7 @@ const CodeWrapper = styled.div`
 const QuickSignedCmd = () => {
   const [domain, setDomain] = useState('');
   const [tabId, setTabId] = useState(null);
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const [currentHash, setCurrentHash] = useState<{ hash: string; count: number }>({ hash: '', count: 0 });
   const [isWaitingLedger, setIsWaitingLedger] = useState(false);
   const [totalCommands, setTotalCommands] = useState(0);
@@ -109,20 +111,12 @@ const QuickSignedCmd = () => {
   const quickSignCmd = async (data) => {
     const isValidPayload = checkIsValidQuickSignPayload(data);
     if (!isValidPayload) {
-      const result = {
-        status: 'fail',
-        message: 'QuickSign fail: your data structure is invalid',
-      };
-      returnSignedMessage(result);
+      setErrorMessage('QuickSign fail: your data structure is invalid');
       return null;
     }
     const hasQuickSignValidSignature = await checkHasQuickSignValidSignature(data.commandSigDatas);
     if (!hasQuickSignValidSignature) {
-      const result = {
-        status: 'fail',
-        message: 'QuickSign fail: wallet public key not found',
-      };
-      returnSignedMessage(result);
+      setErrorMessage('QuickSign fail: wallet public key not found');
       return null;
     }
     let ledger: any = null;
@@ -163,17 +157,13 @@ const QuickSignedCmd = () => {
             } else if (secretKey.length > 64) {
               signature = getSignatureFromHash(hash, secretKey);
             } else {
-              signature = kadenaJSSign(hash, { secretKey, publicKey }).sig;
+              signature = kadenaJSSign(cmd, { secretKey, publicKey }).sig;
             }
           } catch (err) {
             // eslint-disable-next-line no-console
             console.error('QUICK-SIGN ERROR', err);
-            const result = {
-              status: 'fail',
-              message: 'Ledger signing fail',
-            };
             setIsWaitingLedger(false);
-            returnSignedMessage(result);
+            setErrorMessage('Ledger signing fail');
             return null;
           }
         }
@@ -212,9 +202,12 @@ const QuickSignedCmd = () => {
   const onClose = () => {
     const result = {
       status: 'fail',
-      message: 'Rejected by user',
+      message: errorMessage || 'Rejected by user',
     };
-    returnSignedMessage(result);
+    returnSignedMessage(result, {
+      code: 5000,
+      message: errorMessage || 'User rejected.',
+    });
   };
 
   return (
@@ -305,10 +298,15 @@ const QuickSignedCmd = () => {
         );
       })}
       {!isWaitingLedger && (
-        <DivFlex gap="10px" padding="24px">
-          <Button size="full" label="Reject" variant="disabled" onClick={onClose} />
-          <Button size="full" label="Confirm" onClick={onSave} />
-        </DivFlex>
+        <>
+          <DivFlex gap="10px" padding="24px">
+            <InputError>{errorMessage}</InputError>
+          </DivFlex>
+          <DivFlex gap="10px" padding="24px">
+            <Button size="full" label={errorMessage ? 'Close' : 'Reject'} variant="disabled" onClick={onClose} />
+            {!errorMessage && <Button isDisabled={isWaitingLedger} size="full" label="Confirm" onClick={onSave} />}
+          </DivFlex>
+        </>
       )}
     </DappWrapper>
   );

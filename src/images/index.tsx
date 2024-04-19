@@ -87,6 +87,9 @@ import iconKds from './kds-logo.svg';
 import iconCrna from './corona-logo.svg';
 import iconKishu from './kishk-logo.svg';
 import iconArkd from './arkade-logo.png';
+import iconWiz from './wizz.svg';
+import iconTeckel from './teckel-coin.png';
+import iconCrankk from './crankk.svg';
 import zUSD from './zUSD.png';
 import checkedV from './checked-v.svg';
 import violetAdd from './violet-add.svg';
@@ -96,6 +99,7 @@ import logoWallet from './logo-wallet.svg';
 import iconSend from './arrow-down.svg';
 import logoWalletKadena from './logo-wallet-kaden.svg';
 import iconKadenaToken from './icon-kadena-token.svg';
+import iconUnknownKadenaToken from './unknown_token.svg';
 import iconHome from './icon-home.svg';
 import iconHistory from './history-icon.svg';
 import iconHistoryActive from './icon-history-active.svg';
@@ -125,6 +129,7 @@ import governanceMiningKdx from './governance-mining-kdx.svg';
 import info from './info.svg';
 import stake from './stake.svg';
 import unstake from './unstake.svg';
+import iconMarmaladeNG from './marm_ng_default_logo.png';
 import iconAnalytics from './ic_analytics.svg';
 import valuechart from './ic_valuechart.svg';
 import heatmap from './ic_heatmap.svg';
@@ -179,6 +184,7 @@ const wallet = {
   iconSend,
   logoWalletKadena,
   iconKadenaToken,
+  iconUnknownKadenaToken,
   iconMorePurple,
   iconDropDown,
   iconCreate,
@@ -186,6 +192,7 @@ const wallet = {
   tokens: {
     coin: iconKadenaToken,
     'kaddex.kdx': iconKdx,
+    'n_dd05101ff4df21179bfc038a912fc88c38d777a1.kdx': iconKdx,
     'hypercent.prod-hype-coin': iconHype,
     'runonflux.flux': iconFlux,
     'kdlaunch.token': iconKdl,
@@ -202,6 +209,9 @@ const wallet = {
     'kdlaunch.kdswap-token': iconKds,
     'arkade.token': iconArkd,
     'free.KAYC': iconKayc,
+    'free.wiza': iconWiz,
+    'free.teckel': iconTeckel,
+    'free.crankk01': iconCrankk,
     'free.corona-token': iconCrna,
     'n_b742b4e9c600892af545afb408326e82a6c0c6ed.zUSD': zUSD,
   },
@@ -299,6 +309,7 @@ const images = {
   ledgerLogoLong,
   trezorLogo,
   governance,
+  iconMarmaladeNG,
   analytics,
 };
 

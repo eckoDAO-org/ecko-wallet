@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useModalContext } from 'src/contexts/ModalContext';
 import styled from 'styled-components';
 
@@ -13,7 +13,6 @@ export const NftCardContainer = styled.div`
     background-image: url('${({ src }) => src}');
     background-size: cover;
     background-repeat: no-repeat;
-    background-position: center center;
     position: relative;
     width: 140px;
     height: 140px;
@@ -36,6 +35,7 @@ export const NftCardContainer = styled.div`
     font-weight: 500;
     font-size: 11px;
     position: absolute;
+    max-width: 80%;
     left: 10px;
     bottom: 6px;
     span {
@@ -53,6 +53,7 @@ export const NftCardContainer = styled.div`
 
 const NftCard = ({
   src,
+  srcFallback,
   label,
   modalTitle,
   modalContent,
@@ -60,6 +61,7 @@ const NftCard = ({
   cardStyle,
 }: {
   src: string;
+  srcFallback?: string;
   label: React.ReactNode;
   modalTitle?: string;
   modalContent?: React.ReactNode;
@@ -67,6 +69,7 @@ const NftCard = ({
   cardStyle?: React.CSSProperties;
 }) => {
   const { openModal } = useModalContext();
+  const [restoredSrc, setRestoredSrc] = useState(src);
 
   const onClickCard = () => {
     if (onClick) {
@@ -79,8 +82,15 @@ const NftCard = ({
     }
   };
 
+  useEffect(() => {
+    const img = new Image();
+    img.src = src;
+    img.onload = () => setRestoredSrc(src);
+    img.onerror = () => setRestoredSrc(srcFallback ?? src);
+  }, [src]);
+
   return (
-    <NftCardContainer src={src} onClick={onClickCard}>
+    <NftCardContainer src={restoredSrc} onClick={onClickCard}>
       <div style={cardStyle}>
         <span className="categoryNft">{label}</span>
       </div>

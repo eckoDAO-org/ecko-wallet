@@ -30,7 +30,7 @@ export const DivFlex = styled.div<DivFlexProps>`
 
 export const CommonLabel = styled.span<LabelProps>`
   text-transform: ${(props) => props.uppercase && 'uppercase'};
-  text-align: ${(props) => props.textCenter && 'center'};
+  text-align: ${(props) => props.textCenter ? 'center' : props.textAlign};
   color: ${($props) => $props.color || $props.theme?.text?.primary || '#000000'};
   font-weight: ${($props) => $props.fontWeight};
   font-size: ${($props) => $props.fontSize}px;
@@ -51,6 +51,7 @@ interface LabelProps {
   fontSize?: number;
   lineHeight?: string;
   wordBreak?: string;
+  textAlign?: string;
 }
 
 export const PrimaryLabel = styled.span<LabelProps>`

@@ -17,6 +17,7 @@ import { useState } from 'react';
 import SpokesLoading from 'src/components/Loading/Spokes';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import { IFungibleToken } from 'src/pages/ImportToken';
+import { LocalActivity } from 'src/components/Activities/types';
 import { LoadingTitle, SpinnerWrapper } from './style';
 import { renderTransactionInfo } from './Transfer';
 import { Warning } from '../styles';
@@ -25,7 +26,7 @@ type Props = {
   configs: any;
   onClose: any;
   aliasContact: string;
-  fungibleToken: IFungibleToken | null;
+  fungibleToken: IFungibleToken;
   estimateUSDAmount?: number | null;
   kdaUSDPrice?: number;
 };
@@ -63,12 +64,12 @@ const PopupConfirm = (props: Props) => {
 
   const getCmd = async () => {
     const decimals = getFloatPrecision(Number.parseFloat(amount)) || 2;
-    let pactCode = `(${fungibleToken?.contractAddress}.transfer${receiverExists ? '' : '-create'} "${senderName}" "${receiverName}" ${
+    let pactCode = `(${fungibleToken.contractAddress}.transfer${receiverExists ? '' : '-create'} "${senderName}" "${receiverName}" ${
       receiverExists ? '' : '(read-keyset "ks")'
     } ${Number.parseFloat(amount).toFixed(decimals)})`;
     if (isCrossChain) {
       pactCode = `(${
-        fungibleToken?.contractAddress
+        fungibleToken.contractAddress
       }.transfer-crosschain "${senderName}" "${receiverName}" (read-keyset "ks") "${receiverChainId}" ${Number.parseFloat(amount).toFixed(
         decimals,
       )})`;
@@ -77,7 +78,7 @@ const PopupConfirm = (props: Props) => {
       publicKey: senderPublicKey,
     };
     const interfaces = await fetchLocal(
-      `(at 'interfaces (describe-module "${fungibleToken?.contractAddress}"))`,
+      `(at 'interfaces (describe-module "${fungibleToken.contractAddress}"))`,
       selectedNetwork.url,
       selectedNetwork.networkId,
       senderChainId.toString(),
@@ -86,7 +87,7 @@ const PopupConfirm = (props: Props) => {
       if (interfaces?.result?.data?.some((moduleInterface) => moduleInterface === 'fungible-xchain-v1')) {
         crossKeyPairs.clist = [
           Pact.lang.mkCap('gas', 'pay gas', 'coin.GAS').cap,
-          Pact.lang.mkCap('transfer', 'transfer coin', `${fungibleToken?.contractAddress}.TRANSFER_XCHAIN`, [
+          Pact.lang.mkCap('transfer', 'transfer coin', `${fungibleToken.contractAddress}.TRANSFER_XCHAIN`, [
             senderName,
             receiverName,
             validAmount,
@@ -99,7 +100,7 @@ const PopupConfirm = (props: Props) => {
       publicKey: senderPublicKey,
       clist: [
         Pact.lang.mkCap('gas', 'pay gas', 'coin.GAS').cap,
-        Pact.lang.mkCap('transfer', 'transfer coin', `${fungibleToken?.contractAddress}.TRANSFER`, [senderName, receiverName, validAmount]).cap,
+        Pact.lang.mkCap('transfer', 'transfer coin', `${fungibleToken.contractAddress}.TRANSFER`, [senderName, receiverName, validAmount]).cap,
       ],
     };
     const keyPairs: any = isCrossChain ? crossKeyPairs : normalKeyPairs;
@@ -182,8 +183,8 @@ const PopupConfirm = (props: Props) => {
         try {
           const ledgerSendTxParams = {
             recipient: receiverName,
-            namespace: fungibleToken?.contractAddress !== 'coin' ? fungibleToken?.contractAddress?.split('.')[0] ?? undefined : undefined,
-            module: fungibleToken?.contractAddress !== 'coin' ? fungibleToken?.contractAddress?.split('.')[1] ?? undefined : undefined,
+            namespace: fungibleToken.contractAddress !== 'coin' ? fungibleToken.contractAddress?.split('.')[0] ?? undefined : undefined,
+            module: fungibleToken.contractAddress !== 'coin' ? fungibleToken.contractAddress?.split('.')[1] ?? undefined : undefined,
             amount,
             chainId: Number(senderChainId),
             network: selectedNetwork.networkId,
@@ -196,11 +197,13 @@ const PopupConfirm = (props: Props) => {
               ...ledgerSendTxParams,
               recipient_chainId: Number(receiverChainId),
             });
+            // eslint-disable-next-line no-console
             console.log('ledgerSignCrosschainRes', ledgerSignCrosschainRes);
             toast.success(<Toast type="success" content="Ledger Sign Success" />);
             sendCmd = ledgerSignCrosschainRes?.pact_command;
           } else {
             const ledgerSignRes = await sendTransaction(ledgerSendTxParams);
+            // eslint-disable-next-line no-console
             console.log('ledgerSignRes', ledgerSignRes);
             toast.success(<Toast type="success" content="Ledger Sign Success" />);
             sendCmd = ledgerSignRes?.pact_command;
@@ -223,8 +226,9 @@ const PopupConfirm = (props: Props) => {
         .then(async (data) => {
           const requestKey = data.requestKeys[0];
           addRecent(createdTime);
-          const activity = {
-            symbol: fungibleToken?.symbol,
+          const activity: LocalActivity = {
+            symbol: fungibleToken.symbol,
+            module: fungibleToken.contractAddress,
             requestKey,
             senderChainId: senderChainId.toString(),
             receiverChainId: receiverChainId.toString(),
@@ -236,6 +240,7 @@ const PopupConfirm = (props: Props) => {
             domain,
             aliasName: configs?.aliasName,
             status: 'pending',
+            transactionType: 'TRANSFER',
           };
           addLocalActivity(selectedNetwork.networkId, senderName, activity);
           if (senderChainId.toString() !== receiverChainId.toString()) {
@@ -313,7 +318,7 @@ const PopupConfirm = (props: Props) => {
           </SecondaryLabel>
           <DivFlex flexDirection="column" alignItems="flex-end">
             <SecondaryLabel uppercase fontSize={16}>
-              {amount} {fungibleToken?.symbol}
+              {amount} {fungibleToken.symbol}
             </SecondaryLabel>
             <CommonLabel fontSize={12} fontWeight={600} lineHeight="8px">
               {estimateUSDAmount && `${humanReadableNumber(estimateUSDAmount)} USD`}

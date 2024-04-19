@@ -7,7 +7,7 @@ export interface FiatCurrencyAvailability {
   symbol: FiatCurrency;
   minAmount: number;
   maxAmount: number;
-};
+}
 
 export interface FiatCurrencyAvailabilities {
   [key: FiatCurrency]: FiatCurrencyAvailability;
@@ -18,7 +18,7 @@ export interface PurchaseQuoteRequest {
   fiatCurrency: FiatCurrency;
   amountToSpend: number;
   cryptoToBuy: CryptoCurrency;
-};
+}
 
 export interface PurchaseQuote {
   id: string;
@@ -29,17 +29,17 @@ export interface PurchaseQuote {
   cryptoCurrency: CryptoCurrency;
   cryptoAmount: number;
   validUntil: number;
-};
+}
 
 export interface PurchasePayment {
   id: string;
   quote: PurchaseQuote;
-};
+}
 
 export interface PurchaseCheckoutStatus {
   payment: PurchasePayment;
   success: boolean;
-};
+}
 
 export interface BuyCryptoProvider {
   getQuote: () => PurchaseQuote|undefined;
@@ -53,4 +53,4 @@ export interface BuyCryptoProvider {
   refreshQuote: () => Promise<PurchaseQuote>;
   requestPayment: () => Promise<PurchasePayment>;
   checkoutPayment: () => Promise<PurchaseCheckoutStatus>;
-};
+}

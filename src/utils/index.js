@@ -68,6 +68,9 @@ export const convertRecent = (data) => {
 export const shortenAddress = (address = '', start = 5, chars = 5) =>
   address.length > 14 ? `${address.substring(0, start)} ... ${address.substring(address.length - chars)}` : address;
 
+export const shortenString = (string = '', limit = 20) =>
+  string.length > limit ? `${string.substring(0, limit)}...` : string;
+
 export const shortenPrivateKey = (address = '', start = 5, chars = 5) =>
   `${address.substring(0, start)}****************${address.substring(address.length - chars)}`;
 
@@ -103,3 +106,5 @@ export const toFixedDown = (num, fixed) => {
 };
 
 export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+
+export const idToPascalCase = (string) => string.replace(/[-_]+/g, ' ').replace(/\b(\w)/g, (char) => char.toUpperCase());

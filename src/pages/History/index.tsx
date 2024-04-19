@@ -7,10 +7,10 @@ import { get } from 'lodash';
 import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import { useSelector } from 'react-redux';
 import { setBalance } from 'src/stores/slices/wallet';
+import Activities from 'src/components/Activities';
 import { NavigationHeader } from 'src/components/NavigationHeader';
 import { BodyFullScreen, PageFullScreen } from 'src/components/Page';
 import { fetchLocal, getBalanceFromChainwebApiResponse } from '../../utils/chainweb';
-import Activities from '../Wallet/views/Activities';
 
 const Header = styled.div`
   padding: 0 20px;

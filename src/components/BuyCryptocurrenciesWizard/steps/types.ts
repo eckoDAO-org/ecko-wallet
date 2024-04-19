@@ -1,5 +1,5 @@
 import React from 'react';
-import { BuyCryptoProvider } from "src/utils/crypto-providers/types";
+import { BuyCryptoProvider } from 'src/utils/crypto-providers/types';
 import { CheckoutCompletedViewProps, PaymentCheckoutViewProps, PaymentRequestorViewProps, QuoteRequestorViewProps, ViewProps } from '../views/types';
 import { CheckoutCompletedLogicProps, LogicProps, PaymentCheckoutLogicProps, PaymentRequestorLogicProps, QuoteRequestorLogicProps } from '../logics/types';
 

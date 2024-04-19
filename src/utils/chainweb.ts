@@ -1,5 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import Pact from 'pact-lang-api';
+import nacl from 'tweetnacl';
+import { base64UrlDecodeArr, binToHex, toTweetNaclSecretKey } from '@kadena/cryptography-utils';
 import lib from 'cardano-crypto.js/kadena-crypto';
 import { CHAIN_AVAILABLE_TOKENS_FIXTURE, CHAIN_COUNT } from './constant';
 import { CONFIG, KADDEX_ANALYTICS_API } from './config';
@@ -8,7 +10,9 @@ import { getTimestamp } from './index';
 
 export const MAINNET_NETWORK_ID = 'mainnet01';
 
-export const getApiUrl = (url, networkId, chainId) => `${url}/chainweb/0.0/${networkId}/chain/${chainId}/pact`;
+export const getApiUrl = (url, networkId, chainId) =>
+  // old storage issue
+  `${url === 'https://chainweb.kaddex.com' ? 'https://chainweb.ecko.finance' : url}/chainweb/0.0/${networkId}/chain/${chainId}/pact`;
 
 export const fetchLocal = (code, url, networkId, chainId) => {
   const localCmd = {
@@ -68,6 +72,12 @@ export const getSignatureFromHash = (hash, privateKey) => {
   return Pact.crypto.binToHex(s);
 };
 
+export const getSignatureFromHashWithPrivateKey64 = (hash, { secretKey, publicKey }) => {
+  const u8hash = base64UrlDecodeArr(hash);
+  const sigBin = nacl.sign.detached(u8hash, toTweetNaclSecretKey({ secretKey, publicKey }));
+  return binToHex(sigBin);
+};
+
 export type BlockchainNumber =
   | number
   | {
@@ -119,6 +129,7 @@ export const pollRequestKey = async (reqKey, network) => {
 
 export const fetchTokenList = async () => {
   try {
+    // TODO: retrieve module list from dextools-api
     const tokensResponse = await fetch(`${KADDEX_ANALYTICS_API}/chain-data/fungible-tokens`);
     const tokensData = await tokensResponse.json();
     if (tokensData && tokensData[0] && tokensData[0]?.fungibleTokens) {

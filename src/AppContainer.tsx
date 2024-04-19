@@ -2,6 +2,7 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Switch, Redirect, Route } from 'react-router-dom';
 import Footer from './components/Footer';
+import WalletCreator from './components/WalletCreator';
 import CreatePassword from './pages/CreatePassword';
 import HomePage from './pages/Home';
 import Condition from './pages/Condition';
@@ -41,6 +42,8 @@ import CategoryDetail from './pages/Nft/CategoryDetail';
 import ImportHardwareWallet from './pages/ImportHardwareWallet';
 import ImportLedger from './pages/ImportHardwareWallet/ImportLedger';
 import GovernanceMining from './pages/GovernanceMining';
+import MarmaladeNGCollectionDetails from './pages/Nft/NftTypes/MarmaladeNG/MarmaladeNGCollectionDetails';
+import TransactionsImporter from './components/TransactionsImporter';
 import Analytics from './pages/Analytics';
 
 const Container = styled.div`
@@ -95,6 +98,7 @@ const AppContainer = () => {
           <PrivateRoute path="/buy" component={BuyCryptocurrencies} />
           <PrivateRoute path="/nft" component={Nft} />
           <PrivateRoute path="/nft-details" component={CategoryDetail} />
+          <PrivateRoute path="/ng-details" component={MarmaladeNGCollectionDetails} />
           <PrivateRoute path="/governance-mining" component={GovernanceMining} />
           <PrivateRoute path="/analytics" component={Analytics} />
           <PrivateRoute path="/" component={Wallet} />
@@ -102,6 +106,8 @@ const AppContainer = () => {
         </Switch>
         <Footer />
         {isLoading && <Loading />}
+        <WalletCreator />
+        <TransactionsImporter />
       </TwoFactorAuthenticator>
     </Container>
   );

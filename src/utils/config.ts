@@ -16,7 +16,7 @@ export const CONFIG = {
 };
 export const NUMBER_DECIMAL_AFTER_DOT = 12;
 export const ESTIMATE_KDA_TO_USD_API = 'https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&ids=kadena,';
-export const KADDEX_ANALYTICS_API = 'https://analytics-api.kaddex.com';
+export const KADDEX_ANALYTICS_API = 'https://api.ecko.finance';
 export const TELEGRAM_GROUP_LINK = 'https://t.me/kadena_io';
 export const DISCORD_INVITATION_LINK = 'https://discord.com/invite/QSJpHRFDcv';
 export const WEBSITE_LINK = 'https://wallet.ecko.finance/';

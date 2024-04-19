@@ -32,8 +32,8 @@ export const Error = styled.span`
 
 export const AmountInput = styled(SInput)`
   flex: 1;
-  fontSize: 45px;
-  fontWeight: 500;
+  fontsize: 45px;
+  fontweight: 500;
   background: ${({ theme }) => theme.background};
 `;
 
@@ -74,10 +74,9 @@ const CryptoAmountSelector = ({
 
   const [amount, setAmount] = React.useState(props.amount || '0.0');
 
-  const estimateUSDAmount =
-    Object.prototype.hasOwnProperty.call(usdPrices, fungibleToken.contractAddress)
-      ? (usdPrices[fungibleToken.contractAddress as any] || 0) * Number(amount)
-      : null;
+  const estimateUSDAmount = Object.prototype.hasOwnProperty.call(usdPrices, fungibleToken.contractAddress)
+    ? (usdPrices[fungibleToken.contractAddress as any] || 0) * Number(amount)
+    : null;
 
   const gasFee = selectedGas ? BigNumberConverter(Number(selectedGas.GAS_PRICE) * Number(selectedGas.GAS_LIMIT)) : 0;
 
@@ -191,7 +190,7 @@ const CryptoAmountSelector = ({
         />
         {/** TODO: make dynamic length text <TextScaling /> */}
         <PrimaryLabel fontSize={40} uppercase>
-          {fungibleToken.symbol.substring(0, 3)}
+          {fungibleToken.symbol.substring(0, 5)}
         </PrimaryLabel>
       </AmountWrapper>
       {errors.amount && errors.amount.type === 'required' && (
