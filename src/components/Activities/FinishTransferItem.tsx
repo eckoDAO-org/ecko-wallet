@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import moment from 'moment';
 import { ReactComponent as ArrowSendIcon } from 'src/images/arrow-send.svg';
 import { ReactComponent as ArrowReceiveIcon } from 'src/images/arrow-receive.svg';
-import { shortenAddress } from 'src/utils';
+import { shortenAddress, shortenString } from 'src/utils';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import { useFungibleTokensList } from 'src/hooks/fungibleTokens';
 
@@ -50,7 +50,7 @@ const FinishTransferItem = ({
   const tokens = useFungibleTokensList();
   const inferredSymbol = (tokens.find((t) => t.contractAddress === module))?.symbol || symbol;
   const inferredToken = inferredSymbol === module ? shortenAddress(module) : inferredSymbol;
-  const value = fullValue.slice(0, 21);
+  const value = shortenString(fullValue, 20);
 
   let color = '#ff6058';
   if (status === 'pending' || isFinishing) {
