@@ -23,15 +23,21 @@ const Icon = styled.img`
 interface TrendProps {
   value: number;
   isUp: boolean;
+  precision?: number;
 }
 
-const Trend = ({ value, isUp }: TrendProps) => {
+const Trend = ({
+  value,
+  isUp,
+  precision = 2,
+}: TrendProps) => {
   const image = isUp ? images.analytics.uptrend : images.analytics.downtrend;
+  const formattedValue = value.toFixed(precision);
 
   return (
     <Container isUp={isUp}>
       <Icon src={image} />
-      {value}%
+      {formattedValue}%
     </Container>
   );
 };
