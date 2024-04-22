@@ -25,4 +25,5 @@ export interface LocalActivity {
   direction?: LocalActivityDirection;
   module: string;
   transactionType: 'TRANSFER' | 'SWAP' | 'STAKE' | 'UNSTAKE' | 'CLAIM';
+  ticker?: string;
 }

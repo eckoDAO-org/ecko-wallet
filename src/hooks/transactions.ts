@@ -20,6 +20,7 @@ export type TransactionsResponse = {
   requestkey: string;
   status: 'SUCCESS' | 'ERROR';
   targetChainId: string | null;
+  ticker: string;
   // eslint-disable-next-line camelcase
   to_acct: string;
   transactionType: 'TRANSFER' | 'SWAP';

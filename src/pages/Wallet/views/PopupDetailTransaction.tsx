@@ -4,11 +4,12 @@ import images from 'src/images';
 import { get } from 'lodash';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
+import { useFungibleTokensList } from 'src/hooks/fungibleTokens';
 import Button from 'src/components/Buttons';
 import { renderTransactionInfo } from 'src/pages/SendTransactions/views/Transfer';
 import { DivFlex } from 'src/components';
 import { LocalActivity } from 'src/components/Activities/types';
-import { useFungibleTokensList } from 'src/hooks/fungibleTokens';
+import { inferSymbolFromLocalActivity } from 'src/components/Activities/utils';
 
 const DetailTx = styled.div`
   padding: 0 20px 20px 20px;
@@ -77,7 +78,7 @@ const PopupDetailTransaction = (props: Props) => {
   const finishDate = get(activityDetails, 'metaData.blockTime');
   const finishDateValue = new Date(finishDate / 1000);
   const isPending = activityDetails.status === 'pending';
-  const inferredToken = (tokens.find((t) => t.contractAddress === activityDetails.module))?.symbol || activityDetails.symbol;
+  const inferredToken = inferSymbolFromLocalActivity(activityDetails, tokens);
 
   let color = '#ff6058';
   if (activityDetails.status === 'success') {

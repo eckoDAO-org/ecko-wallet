@@ -43,13 +43,7 @@ const ActivityGroup = ({
         <Div key={`${item.requestKey}${item.direction}${item.sender}${item.receiver}`} style={{ padding: '0px 24px' }} onClick={() => openActivityDetail(item)}>
           <FinishTransferItem
             isFinishing={pendingCrossChainRequestKeys.includes(item.requestKey)}
-            createdTime={item.createdTime}
-            value={item.amount}
-            symbol={item.symbol}
-            receiver={item.receiver}
-            status={item.status}
-            isIncoming={item.direction === 'IN'}
-            module={item.module}
+            activity={item}
           />
         </Div>
       );
