@@ -1,11 +1,12 @@
 import { useCallback, useEffect } from 'react';
+import { isEqual } from 'lodash';
 import { Transaction, useTransactions } from 'src/hooks/transactions';
 import { IFungibleToken } from 'src/pages/ImportToken';
 import { LocalActivity } from 'src/components/Activities/types';
 import { useAppSelector } from 'src/stores/hooks';
 import { getAccount } from 'src/stores/slices/wallet';
 import { useFungibleTokensList } from 'src/hooks/fungibleTokens';
-import { addLocalActivity, getLocalActivities } from 'src/utils/storage';
+import { getLocalActivities, setLocalActivities } from 'src/utils/storage';
 
 const supportedTransactions = ['TRANSFER', 'SWAP'];
 
@@ -53,18 +54,34 @@ const MainnetTransactionsImporter = () => {
   const tokens = useFungibleTokensList();
 
   const processActivities = useCallback(async (activities: LocalActivity[]) => {
-    const activitiesByRequestKey = activities.reduce((acc, activity) => {
-      acc[activity.requestKey] = activity;
-      return acc;
-    }, {} as Record<string, LocalActivity>);
+    const newActivities: Record<string, LocalActivity> = {};
 
     for (let i = 0; i < transactions.length; i += 1) {
       const transaction = transactions[i];
       const activity = transactionToActivity(transaction, tokens);
 
-      if (activity && !(activitiesByRequestKey[activity.requestKey])) {
-        await addLocalActivity('mainnet01', account, activity);
+      if (activity) {
+        newActivities[activity.requestKey] = activity;
       }
+    }
+
+    const updatedActivities = activities.map((activity) => {
+      if (newActivities[activity.requestKey]) {
+        return {
+          ...activity,
+          ...newActivities[activity.requestKey],
+        };
+      }
+
+      return activity;
+    });
+
+    const updatedActivitiesWithNew = updatedActivities.concat(
+      Object.values(newActivities).filter((activity) => !updatedActivities.find((a) => a.requestKey === activity.requestKey)),
+    );
+
+    if (!isEqual(updatedActivitiesWithNew, activities)) {
+      await setLocalActivities('mainnet01', account, updatedActivitiesWithNew);
     }
   }, [transactions]);
 
