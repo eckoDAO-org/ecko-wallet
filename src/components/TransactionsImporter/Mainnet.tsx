@@ -7,6 +7,7 @@ import { useAppSelector } from 'src/stores/hooks';
 import { getAccount } from 'src/stores/slices/wallet';
 import { useFungibleTokensList } from 'src/hooks/fungibleTokens';
 import { getLocalActivities, setLocalActivities } from 'src/utils/storage';
+import { generateActivityId, generateActivityWithId } from '../Activities/utils';
 
 const supportedTransactions = ['TRANSFER', 'SWAP'];
 
@@ -19,7 +20,7 @@ const transactionToActivity = (transaction: Transaction, tokens: IFungibleToken[
   const inferredToken = tokens.find((t) => t.contractAddress === transaction.modulename);
   const receiver = transaction.transactionType === 'SWAP' ? 'Swap' : transaction.to_acct;
 
-  const activity: LocalActivity = {
+  const activity: LocalActivity = generateActivityWithId({
     amount: transaction.amount,
     createdTime: date.toString(),
     direction: transaction.direction,
@@ -43,7 +44,7 @@ const transactionToActivity = (transaction: Transaction, tokens: IFungibleToken[
     metaData: {
       blockTime: date.getTime() * 1000,
     },
-  };
+  });
 
   return activity;
 };
@@ -61,15 +62,25 @@ const MainnetTransactionsImporter = () => {
       const activity = transactionToActivity(transaction, tokens);
 
       if (activity) {
-        newActivities[activity.requestKey] = activity;
+        newActivities[activity.id] = activity;
       }
     }
 
     const updatedActivities = activities.map((activity) => {
-      if (newActivities[activity.requestKey]) {
+      if (newActivities[activity.id]) {
+        const id = activity.id || generateActivityId(newActivities[activity.id]);
         return {
           ...activity,
-          ...newActivities[activity.requestKey],
+          ...newActivities[activity.id],
+          id,
+        };
+      }
+
+      if (!activity.id) {
+        const id = generateActivityId(activity);
+        return {
+          ...activity,
+          id,
         };
       }
 
@@ -77,7 +88,7 @@ const MainnetTransactionsImporter = () => {
     });
 
     const updatedActivitiesWithNew = updatedActivities.concat(
-      Object.values(newActivities).filter((activity) => !updatedActivities.find((a) => a.requestKey === activity.requestKey)),
+      Object.values(newActivities).filter((activity) => !updatedActivities.find((a) => a.id === activity.id)),
     );
 
     if (!isEqual(updatedActivitiesWithNew, activities)) {

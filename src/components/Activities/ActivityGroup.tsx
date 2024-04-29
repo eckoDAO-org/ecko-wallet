@@ -33,7 +33,7 @@ const ActivityGroup = ({
     {activities.map((item) => {
       if (!item || !item.receiverChainId) return null;
       return (
-        <Div key={`${item.requestKey}${item.direction}${item.sender}${item.receiver}`} style={{ padding: '0px 24px' }} onClick={() => openActivityDetail(item)}>
+        <Div key={item.id} style={{ padding: '0px 24px' }} onClick={() => openActivityDetail(item)}>
           <FinishTransferItem
             isFinishing={pendingCrossChainRequestKeys.includes(item.requestKey)}
             activity={item}

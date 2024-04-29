@@ -2,6 +2,7 @@ export type LocalActivityStatus = 'success' | 'error' | 'pending';
 export type LocalActivityDirection = 'IN' | 'OUT';
 
 export interface LocalActivity {
+  id: string;
   aliasName?: string;
   amount: string;
   continuation?: any;

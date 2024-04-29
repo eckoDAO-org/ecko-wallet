@@ -14,3 +14,12 @@ export const inferSymbolFromLocalActivity = (activity: LocalActivity, tokens: IF
   const inferredToken = inferredSymbol === activity.module ? shortenAddress(activity.module) : inferredSymbol;
   return inferredToken;
 };
+
+export const generateActivityWithId = (activity: Omit<LocalActivity, 'id'>): LocalActivity => ({
+  ...activity,
+  id: generateActivityId(activity),
+});
+
+export const generateActivityId = (activity: Omit<LocalActivity, 'id'>): string => (
+  `${activity.requestKey}${activity.direction}${activity.sender}${activity.receiver}${activity.module}`
+);
