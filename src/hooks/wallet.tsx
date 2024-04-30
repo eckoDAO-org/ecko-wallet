@@ -1,10 +1,14 @@
+import { hash as kadenaJSHash, sign as kadenaJSSign } from '@kadena/cryptography-utils';
+import { toast } from 'react-toastify';
+import { DEFAULT_BIP32_PATH, bufferToHex, useLedgerContext } from 'src/contexts/LedgerContext';
 import { useAppSelector } from 'src/stores/hooks';
 import { RawNetwork, getNetworks, getPasswordHash, getSelectedNetwork, setSelectedNetwork } from 'src/stores/slices/extensions';
-import { getWallets, setBalance, setCurrentWallet, setWallets } from 'src/stores/slices/wallet';
+import { AccountType, getWalletInfo, getWallets, setBalance, setCurrentWallet, setWallets } from 'src/stores/slices/wallet';
 import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
-import { getKeyPairsFromSeedPhrase } from 'src/utils/chainweb';
+import { getKeyPairsFromSeedPhrase, getSignatureFromHash } from 'src/utils/chainweb';
 import { decryptKey, encryptKey } from 'src/utils/security';
 import { getLocalSeedPhrase, getLocalWallets, setLocalSelectedNetwork, setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
+import Toast from 'src/components/Toast/Toast';
 
 export const useCreateAccount = () => {
   const selectedNetwork = useAppSelector(getSelectedNetwork);
@@ -136,5 +140,29 @@ export const useSelectNetwork = () => {
       });
       setBalance(0);
       setLocalSelectedNetwork(newSelectedNetwork);
+  };
+};
+
+export const useSignMessage = () => {
+  const { publicKey, secretKey, type } = useAppSelector(getWalletInfo);
+  const { getLedger } = useLedgerContext();
+
+  return async (message: string) => {
+    const hash = kadenaJSHash(message);
+
+    if (type === AccountType.LEDGER) {
+      toast.info(
+        <Toast type="info" content="Please, enable BLIND SIGNING and follow the instruction on your ledger first" />,
+      );
+      const ledger = await getLedger();
+      const ledgerSignature = await ledger?.signHash(DEFAULT_BIP32_PATH, hash);
+      return bufferToHex(ledgerSignature?.signature);
+    }
+
+    if (secretKey.length > 64) {
+      return getSignatureFromHash(hash, secretKey) as string;
+    }
+
+    return kadenaJSSign(message, { secretKey, publicKey }).sig;
   };
 };

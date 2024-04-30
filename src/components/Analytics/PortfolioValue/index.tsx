@@ -1,50 +1,54 @@
-import { useMemo } from 'react';
-import moment from 'moment';
 import styled from 'styled-components';
-import { useAccountBalanceChart } from 'src/hooks/analytics';
-import { DivFlex } from 'src/components';
-import PortfolioValueChart from '../PortfolioValueChart';
-import TimeSelector from '../TimeSelector';
-import Trend from '../Trend';
-import { Label, LabeledContainer } from '../UI';
+import Button from 'src/components/Buttons';
+import { useModalContext } from 'src/contexts/ModalContext';
+import { useAppSelector } from 'src/stores/hooks';
+import { canTrackPortfolio } from 'src/stores/slices/analytics';
+import { getAccount } from 'src/stores/slices/wallet';
+import images from 'src/images';
+import PortfolioValueApproved from '../PortfolioValueApproved';
+import { LabeledContainer } from '../UI';
+import Confirm from './Confirm';
 
 const Container = styled.div`
   width: 100%;
   height: 240px;
+  background: url(${images.analytics.portfolioValueBlurred}) no-repeat center center;
+  background-size: 100% 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const TrackButton = styled(Button)`
+  background: transparent;
+  border: 1px solid white;
+  color: white;
+  margin: 16px;
+  width: 100%;
+  max-width: 400px;
 `;
 
 const PortfolioValue = () => {
-  const from = moment().subtract(1, 'month').format('YYYY-MM-DD');
-  const to = moment().format('YYYY-MM-DD');
-  const { data } = useAccountBalanceChart(from, to);
+  const account = useAppSelector(getAccount);
+  const trackPortfolio = useAppSelector(canTrackPortfolio(account));
+  const { openModal, closeModal } = useModalContext();
 
-  const points = useMemo(() => (
-    data.map((item) => [
-      new Date(item.date).getTime(),
-      item.totalUsdValue,
-    ])
-  ), [data]);
-
-  if (points.length === 0) {
-    return 'No data available';
+  if (trackPortfolio) {
+    return <PortfolioValueApproved />;
   }
 
-  const firstValue = points[0][1];
-  const lastValue = points[points.length - 1][1];
-  const value = Number((lastValue).toFixed(2)).toLocaleString();
-  const growingFactor = ((lastValue / firstValue) - 1) * 100;
-  const trendValue = points.length > 1 ? growingFactor : 0;
+  const handleTrackPortfolio = () => {
+    openModal({
+      title: 'Track Portfolio Value',
+      content: <Confirm onConfirm={closeModal} />,
+    });
+  };
 
   return (
     <LabeledContainer label="PORTFOLIO VALUE CHART">
-      <DivFlex flexDirection="row" alignItems="center" gap="12px">
-        <Label>{`$ ${value}`}</Label>
-        <Trend value={trendValue} isUp={lastValue > firstValue} />
-      </DivFlex>
       <Container>
-        <PortfolioValueChart points={points} />
+        <TrackButton label="Start Tracking" onClick={handleTrackPortfolio} />
       </Container>
-      <TimeSelector />
     </LabeledContainer>
   );
 };

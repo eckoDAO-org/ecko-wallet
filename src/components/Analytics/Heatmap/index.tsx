@@ -12,7 +12,7 @@ const Container = styled.div`
 const Heatmap = () => (
   <LabeledContainer label="HEATMAP">
     <Container>
-      <PortfolioValueChart />
+      WIP
     </Container>
     <TimeSelector />
   </LabeledContainer>

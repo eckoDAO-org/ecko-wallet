@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useAppSelector } from 'src/stores/hooks';
 import { getCurrentWallet } from 'src/stores/slices/wallet';
+import { useSignMessage } from './wallet';
 
 const API_URL = 'https://api.dexscan.ecko.finance/api/';
 
@@ -34,4 +35,33 @@ export const useAccountBalanceChart = (from: string, to: string) => {
     },
     initialData: [],
   });
+};
+
+const ADD_ME_MESSAGE = 'please-add-me-to-ecko-balance-tracking';
+
+export const useTrackAccountBalance = () => {
+  const currentWallet = useAppSelector(getCurrentWallet);
+  const signMessage = useSignMessage();
+
+  return async () => {
+    const signature = await signMessage(ADD_ME_MESSAGE);
+
+    if (!signature) {
+      throw new Error('Cannot sign the track request');
+    }
+
+    const accountId = currentWallet?.account;
+    const apiUrl = `${API_URL}account-balance-chart?account=${accountId}&from=2024-04-01&to=2024-04-30`;
+    const response = await fetch(apiUrl, {
+      headers: {
+        'x-signature': signature,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    return true;
+  };
 };

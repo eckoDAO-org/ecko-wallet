@@ -138,6 +138,7 @@ import assetAllocation from './ic_asset_allocation.svg';
 import profitAndLoss from './ic_profit_and_loss.svg';
 import uptrend from './ic_uptrend.svg';
 import downtrend from './ic_downtrend.svg';
+import portfolioValueBlurred from './portfolio-blurred.png';
 
 const wallet = {
   checked,
@@ -275,6 +276,7 @@ const analytics = {
   profitAndLoss,
   uptrend,
   downtrend,
+  portfolioValueBlurred,
 };
 const images = {
   wallet,
