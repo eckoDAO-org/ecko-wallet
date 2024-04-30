@@ -2,9 +2,11 @@ import styled from 'styled-components';
 import moment from 'moment';
 import { ReactComponent as ArrowSendIcon } from 'src/images/arrow-send.svg';
 import { ReactComponent as ArrowReceiveIcon } from 'src/images/arrow-receive.svg';
-import { shortenAddress } from 'src/utils';
+import { shortenAddress, shortenString } from 'src/utils';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
 import { useFungibleTokensList } from 'src/hooks/fungibleTokens';
+import { LocalActivity } from './types';
+import { inferSymbolFromLocalActivity } from './utils';
 
 export const RoundedArrow = styled.div`
   box-shadow: 0px 167px 67px rgba(36, 8, 43, 0.01), 0px 94px 57px rgba(36, 8, 43, 0.03), 0px 42px 42px rgba(36, 8, 43, 0.06),
@@ -28,27 +30,27 @@ const ActivityElement = styled(DivFlex)`
   border-bottom: 1px solid #dfdfed;
 `;
 
-const FinishTransferItem = ({
-  createdTime,
-  value,
-  symbol,
-  receiver,
-  status,
-  isFinishing,
-  isIncoming = false,
-  module,
-}: {
-  createdTime: string;
-  value: string;
-  symbol: string;
-  receiver: string;
-  status: string;
+interface Props {
   isFinishing?: boolean;
-  isIncoming?: boolean;
-  module?: string;
-}) => {
+  activity: LocalActivity;
+}
+
+const FinishTransferItem = ({
+  isFinishing,
+  activity,
+}: Props) => {
+  const {
+    createdTime,
+    amount,
+    receiver,
+    status,
+  } = activity;
+  const isIncoming = activity.direction === 'IN';
+
   const tokens = useFungibleTokensList();
-  const inferredToken = (tokens.find((t) => t.contractAddress === module))?.symbol || symbol;
+  const inferredToken = inferSymbolFromLocalActivity(activity, tokens);
+
+  const value = shortenString(amount, 20);
 
   let color = '#ff6058';
   if (status === 'pending' || isFinishing) {
@@ -71,7 +73,7 @@ const FinishTransferItem = ({
           <SecondaryLabel>{moment(new Date(createdTime)).format('DD/MM/YYYY HH:mm')}</SecondaryLabel>
         </DivFlex>
       </DivFlex>
-      <CommonLabel fontWeight={500} color={color} fontSize={12}>
+      <CommonLabel fontWeight={500} color={color} fontSize={12} textAlign="right">
         {sign} {value} {inferredToken}
       </CommonLabel>
     </ActivityElement>

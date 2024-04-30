@@ -2,6 +2,7 @@ export type LocalActivityStatus = 'success' | 'error' | 'pending';
 export type LocalActivityDirection = 'IN' | 'OUT';
 
 export interface LocalActivity {
+  id: string;
   aliasName?: string;
   amount: string;
   continuation?: any;
@@ -25,4 +26,5 @@ export interface LocalActivity {
   direction?: LocalActivityDirection;
   module: string;
   transactionType: 'TRANSFER' | 'SWAP' | 'STAKE' | 'UNSTAKE' | 'CLAIM';
+  ticker?: string;
 }

@@ -1,23 +1,24 @@
-import Button from 'src/components/Buttons';
+import { useState } from 'react';
+import { toast } from 'react-toastify';
 import Pact from 'pact-lang-api';
+import Button from 'src/components/Buttons';
 import { convertRecent, getTimestamp, humanReadableNumber, shortenAddress } from 'src/utils';
 import { getApiUrl, getSignatureFromHash, fetchLocal, pollRequestKey } from 'src/utils/chainweb';
-import { CONFIG, ECKO_WALLET_SEND_TX_NONCE } from 'src/utils/config';
 import { getFloatPrecision } from 'src/utils/numbers';
-import { toast } from 'react-toastify';
+import { setRecent } from 'src/stores/slices/extensions';
 import { AccountType } from 'src/stores/slices/wallet';
+import { CONFIG, ECKO_WALLET_SEND_TX_NONCE } from 'src/utils/config';
+import { updateSendDapp } from 'src/utils/message';
+import { addLocalActivity, addPendingCrossChainRequestKey, getLocalRecent, setLocalRecent } from 'src/utils/storage';
 import { ReactComponent as AlertIconSVG } from 'src/images/icon-alert.svg';
-import Toast from 'src/components/Toast/Toast';
 import { useLedgerContext } from 'src/contexts/LedgerContext';
 import { useGoHome } from 'src/hooks/ui';
-import { setRecent } from 'src/stores/slices/extensions';
-import { addLocalActivity, addPendingCrossChainRequestKey, getLocalRecent, setLocalRecent } from 'src/utils/storage';
-import { updateSendDapp } from 'src/utils/message';
-import { useState } from 'react';
-import SpokesLoading from 'src/components/Loading/Spokes';
 import { CommonLabel, DivFlex, SecondaryLabel } from 'src/components';
-import { IFungibleToken } from 'src/pages/ImportToken';
 import { LocalActivity } from 'src/components/Activities/types';
+import { generateActivityWithId } from 'src/components/Activities/utils';
+import SpokesLoading from 'src/components/Loading/Spokes';
+import Toast from 'src/components/Toast/Toast';
+import { IFungibleToken } from 'src/pages/ImportToken';
 import { LoadingTitle, SpinnerWrapper } from './style';
 import { renderTransactionInfo } from './Transfer';
 import { Warning } from '../styles';
@@ -226,7 +227,7 @@ const PopupConfirm = (props: Props) => {
         .then(async (data) => {
           const requestKey = data.requestKeys[0];
           addRecent(createdTime);
-          const activity: LocalActivity = {
+          const activity: LocalActivity = generateActivityWithId({
             symbol: fungibleToken.symbol,
             module: fungibleToken.contractAddress,
             requestKey,
@@ -241,7 +242,7 @@ const PopupConfirm = (props: Props) => {
             aliasName: configs?.aliasName,
             status: 'pending',
             transactionType: 'TRANSFER',
-          };
+          });
           addLocalActivity(selectedNetwork.networkId, senderName, activity);
           if (senderChainId.toString() !== receiverChainId.toString()) {
             await addPendingCrossChainRequestKey({

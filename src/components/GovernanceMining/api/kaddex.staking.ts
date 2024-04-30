@@ -3,6 +3,7 @@ import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import { ExecCommandResult, payGasCap, useExecCommand, useExecPactWithLocalAccount, usePoolRequestKey } from 'src/hooks/pact';
 import { addLocalActivity } from 'src/utils/storage';
 import { LocalActivity } from 'src/components/Activities/types';
+import { generateActivityWithId } from 'src/components/Activities/utils';
 import { useStakingConstants } from '../constants/staking';
 import { reduceBalance } from '../helpers/numberUtils';
 
@@ -91,7 +92,7 @@ export const useCreatePendingStakeActivity = () => {
   const { chainId } = useStakingConstants();
 
   return (stakeResult: ExecCommandResult) => {
-    const activity: LocalActivity = {
+    const activity: LocalActivity = generateActivityWithId({
       symbol: 'KDX',
       module: 'kaddex.kdx',
       requestKey: stakeResult.response.requestKeys[0],
@@ -104,7 +105,7 @@ export const useCreatePendingStakeActivity = () => {
       sender: stakeResult.request.meta.sender,
       status: 'pending',
       transactionType: 'STAKE',
-    };
+    });
 
     addLocalActivity(stakeResult.request.networkId, stakeResult.request.meta.sender, activity);
   };
@@ -177,7 +178,7 @@ export const useCreatePendingUnstakeActivity = () => {
   const { chainId } = useStakingConstants();
 
   return (unstakeResult: ExecCommandResult) => {
-    const activity: LocalActivity = {
+    const activity: LocalActivity = generateActivityWithId({
       symbol: 'KDX',
       module: 'kaddex.kdx',
       requestKey: unstakeResult.response.requestKeys[0],
@@ -190,7 +191,7 @@ export const useCreatePendingUnstakeActivity = () => {
       sender: unstakeResult.request.meta.sender,
       status: 'pending',
       transactionType: 'UNSTAKE',
-    };
+    });
 
     addLocalActivity(unstakeResult.request.networkId, unstakeResult.request.meta.sender, activity);
   };
@@ -233,7 +234,7 @@ export const useCreatePendingClaimActivity = () => {
   const { chainId } = useStakingConstants();
 
   return (claimResult: ExecCommandResult) => {
-    const activity: LocalActivity = {
+    const activity: LocalActivity = generateActivityWithId({
       symbol: 'KDX',
       module: 'kaddex.kdx',
       requestKey: claimResult.response.requestKeys[0],
@@ -246,7 +247,7 @@ export const useCreatePendingClaimActivity = () => {
       sender: claimResult.request.meta.sender,
       status: 'pending',
       transactionType: 'CLAIM',
-    };
+    });
 
     addLocalActivity(claimResult.request.networkId, claimResult.request.meta.sender, activity);
   };

@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { groupBy, orderBy } from 'lodash';
 import moment from 'moment';
-import { groupBy } from 'lodash';
 import { DivFlex, SecondaryLabel } from 'src/components';
 import ActivityGroup from './ActivityGroup';
 import Filters from './Filters';
@@ -19,6 +19,7 @@ const DivChild = styled.div`
 
 const DivScroll = styled.div`
   display: block;
+  padding-bottom: 90px;
 `;
 
 interface Props {
@@ -27,72 +28,81 @@ interface Props {
   openActivityDetail: (activity: LocalActivity) => void;
 }
 
-const List = ({
-  activities,
-  pendingCrossChainRequestKeys,
-  openActivityDetail,
-}: Props) => {
+const List = ({ activities, pendingCrossChainRequestKeys, openActivityDetail }: Props) => {
   const [status, setStatus] = useState<StatusValue>();
   const [token, setToken] = useState<string>();
 
-  const filteredActivitiesByStatus = status ? activities.filter(
-    (activity) => {
-      switch (status) {
-        case 'IN':
-          return activity.direction === 'IN';
-        case 'OUT':
-          return activity.direction === 'OUT';
-        case 'PENDING':
-          return activity.status === 'pending';
-        default:
-          return true;
-      }
-    },
-  ) : activities;
-  const filteredActivities = token ? filteredActivitiesByStatus.filter(
-    (activity) => activity.module === token,
-  ) : filteredActivitiesByStatus;
+  const sorted = useMemo(() => {
+    const localActivities = activities || [];
+    const filteredActivitiesByStatus = status
+      ? localActivities.filter((activity) => {
+          switch (status) {
+            case 'IN':
+              return activity.direction === 'IN';
+            case 'OUT':
+              return activity.direction === 'OUT';
+            case 'PENDING':
+              return activity.status === 'pending';
+            default:
+              return true;
+          }
+        })
+      : localActivities;
+    const filteredActivities = token ? filteredActivitiesByStatus.filter((activity) => activity.module === token) : filteredActivitiesByStatus;
 
-  const grouped = groupBy(filteredActivities, (activity) => moment(new Date(activity.createdTime)).format('DD/MM/YYYY'));
+    const groupedActivities = groupBy(filteredActivities, (activity) => moment(new Date(activity.createdTime)).format('DD/MM/YYYY'));
+
+    const sortedActivities = Object.keys(groupedActivities).reduce((acc, key) => {
+      acc[key] = orderBy(groupedActivities[key], (activity) => moment(new Date(activity.createdTime)).unix(), 'desc');
+      return acc;
+    }, {} as Record<string, LocalActivity[]>);
+
+    const sortedKeys = Object.keys(groupedActivities).sort((a, b) => moment(b, 'DD/MM/YYYY').unix() - moment(a, 'DD/MM/YYYY').unix());
+    const withSortedKeys = sortedKeys.reduce((acc, key) => {
+      acc.set(key, sortedActivities[key]);
+      return acc;
+    }, new Map<string, LocalActivity[]>());
+
+    return withSortedKeys;
+  }, [activities, status, token]);
+
   const todayString = moment().format('DD/MM/YYYY');
+  const todayActivities = sorted.get(todayString);
   const yesterdayString = moment().subtract(1, 'days').format('DD/MM/YYYY');
+  const yesterdayActivities = sorted.get(yesterdayString);
+  const keys = [...sorted.keys()];
 
   return (
     <Div>
-      <Filters
-        status={status}
-        onChangeStatus={setStatus}
-        token={token}
-        onChangeToken={setToken}
-      />
-      {Object.keys(grouped)?.length ? (
+      <Filters status={status} onChangeStatus={setStatus} token={token} onChangeToken={setToken} />
+      {keys.length ? (
         <DivChild>
           <DivScroll>
-            {grouped && grouped[todayString] && (
+            {todayActivities && (
               <ActivityGroup
                 label="Today"
-                activities={grouped[todayString]}
+                activities={todayActivities}
                 pendingCrossChainRequestKeys={pendingCrossChainRequestKeys}
                 openActivityDetail={openActivityDetail}
               />
             )}
 
-            {grouped && grouped[yesterdayString] && (
+            {yesterdayActivities && (
               <ActivityGroup
                 label="Yesterday"
-                activities={grouped[yesterdayString]}
+                activities={yesterdayActivities}
                 pendingCrossChainRequestKeys={pendingCrossChainRequestKeys}
                 openActivityDetail={openActivityDetail}
               />
             )}
 
-            {Object.keys(grouped)
+            {keys
               .filter((key) => key !== yesterdayString && key !== todayString)
               .map((date) => (
                 <ActivityGroup
                   key={date}
                   label={moment(date, 'DD/MM/YYYY').format('DD/MM/YYYY')}
-                  activities={grouped[date]}
+                  activities={sorted.get(date) || []}
                   pendingCrossChainRequestKeys={pendingCrossChainRequestKeys}
                   openActivityDetail={openActivityDetail}
                 />
