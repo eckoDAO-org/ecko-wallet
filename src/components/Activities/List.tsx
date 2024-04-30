@@ -19,6 +19,7 @@ const DivChild = styled.div`
 
 const DivScroll = styled.div`
   display: block;
+  padding-bottom: 90px;
 `;
 
 interface Props {
@@ -27,33 +28,27 @@ interface Props {
   openActivityDetail: (activity: LocalActivity) => void;
 }
 
-const List = ({
-  activities,
-  pendingCrossChainRequestKeys,
-  openActivityDetail,
-}: Props) => {
+const List = ({ activities, pendingCrossChainRequestKeys, openActivityDetail }: Props) => {
   const [status, setStatus] = useState<StatusValue>();
   const [token, setToken] = useState<string>();
 
   const sorted = useMemo(() => {
     const localActivities = activities || [];
-    const filteredActivitiesByStatus = status ? localActivities.filter(
-      (activity) => {
-        switch (status) {
-          case 'IN':
-            return activity.direction === 'IN';
-          case 'OUT':
-            return activity.direction === 'OUT';
-          case 'PENDING':
-            return activity.status === 'pending';
-          default:
-            return true;
-        }
-      },
-    ) : localActivities;
-    const filteredActivities = token ? filteredActivitiesByStatus.filter(
-      (activity) => activity.module === token,
-    ) : filteredActivitiesByStatus;
+    const filteredActivitiesByStatus = status
+      ? localActivities.filter((activity) => {
+          switch (status) {
+            case 'IN':
+              return activity.direction === 'IN';
+            case 'OUT':
+              return activity.direction === 'OUT';
+            case 'PENDING':
+              return activity.status === 'pending';
+            default:
+              return true;
+          }
+        })
+      : localActivities;
+    const filteredActivities = token ? filteredActivitiesByStatus.filter((activity) => activity.module === token) : filteredActivitiesByStatus;
 
     const groupedActivities = groupBy(filteredActivities, (activity) => moment(new Date(activity.createdTime)).format('DD/MM/YYYY'));
 
@@ -79,12 +74,7 @@ const List = ({
 
   return (
     <Div>
-      <Filters
-        status={status}
-        onChangeStatus={setStatus}
-        token={token}
-        onChangeToken={setToken}
-      />
+      <Filters status={status} onChangeStatus={setStatus} token={token} onChangeToken={setToken} />
       {keys.length ? (
         <DivChild>
           <DivScroll>

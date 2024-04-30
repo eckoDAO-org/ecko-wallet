@@ -31,7 +31,7 @@ const transactionToActivity = (transaction: Transaction, tokens: IFungibleToken[
     requestKey: transaction.requestkey,
     sender: transaction.from_acct,
     senderChainId: transaction.chainid,
-    status: transaction.status.toLowerCase() as ('success' | 'error'),
+    status: transaction.status.toLowerCase() as 'success' | 'error',
     symbol: inferredToken?.symbol || transaction.modulename,
     module: transaction.modulename,
     ticker: transaction.ticker,
@@ -54,55 +54,36 @@ const MainnetTransactionsImporter = () => {
   const account = useAppSelector(getAccount);
   const tokens = useFungibleTokensList();
 
-  const processActivities = useCallback(async (activities: LocalActivity[]) => {
-    const newActivities: Record<string, LocalActivity> = {};
+  const processActivities = useCallback(
+    async (activities: LocalActivity[]) => {
+      const newActivities: Record<string, LocalActivity> = {};
 
-    for (let i = 0; i < transactions.length; i += 1) {
-      const transaction = transactions[i];
-      const activity = transactionToActivity(transaction, tokens);
+      for (let i = 0; i < transactions.length; i += 1) {
+        const transaction = transactions[i];
+        const activity = transactionToActivity(transaction, tokens);
 
-      if (activity) {
-        newActivities[activity.id] = activity;
-      }
-    }
-
-    const updatedActivities = activities.map((activity) => {
-      if (newActivities[activity.id]) {
-        const id = activity.id || generateActivityId(newActivities[activity.id]);
-        return {
-          ...activity,
-          ...newActivities[activity.id],
-          id,
-        };
+        if (activity) {
+          newActivities[activity.id] = activity;
+        }
       }
 
-      if (!activity.id) {
-        const id = generateActivityId(activity);
-        return {
-          ...activity,
-          id,
-        };
+      const updatedActivities = Object.keys(newActivities).map((requestKeyId) => newActivities[requestKeyId]);
+
+      const updatedActivitiesWithNew = updatedActivities.concat(
+        Object.values(newActivities).filter((activity) => !updatedActivities.find((a) => a.id === activity.id)),
+      );
+
+      if (!isEqual(updatedActivitiesWithNew, activities)) {
+        await setLocalActivities('mainnet01', account, updatedActivitiesWithNew);
       }
-
-      return activity;
-    });
-
-    const updatedActivitiesWithNew = updatedActivities.concat(
-      Object.values(newActivities).filter((activity) => !updatedActivities.find((a) => a.id === activity.id)),
-    );
-
-    if (!isEqual(updatedActivitiesWithNew, activities)) {
-      await setLocalActivities('mainnet01', account, updatedActivitiesWithNew);
-    }
-  }, [transactions]);
+    },
+    [transactions],
+  );
 
   useEffect(() => {
-    getLocalActivities(
-      'mainnet01',
-      account,
-      processActivities,
-      () => { processActivities([]); },
-    );
+    getLocalActivities('mainnet01', account, processActivities, () => {
+      processActivities([]);
+    });
   }, [transactions, account, processActivities]);
 
   return null;
