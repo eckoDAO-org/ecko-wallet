@@ -1,10 +1,10 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import moment from 'moment';
 import styled from 'styled-components';
 import { useAccountBalanceChart } from 'src/hooks/analytics';
 import { DivFlex } from 'src/components';
 import PortfolioValueChart from '../PortfolioValueChart';
-import TimeSelector from '../TimeSelector';
+import TimeSelector, { TIME_EPOCH, TimeStep, stepsInDays } from '../TimeSelector';
 import Trend from '../Trend';
 import { Label, LabeledContainer } from '../UI';
 
@@ -14,8 +14,10 @@ const Container = styled.div`
 `;
 
 const PortfolioValueApproved = () => {
-  const from = moment().subtract(1, 'month').format('YYYY-MM-DD');
+  const [step, setStep] = useState<TimeStep>('1W');
+  const stepInDays = stepsInDays[step];
   const to = moment().format('YYYY-MM-DD');
+  const from = stepInDays === -1 ? TIME_EPOCH : moment().subtract(stepInDays, 'days').format('YYYY-MM-DD');
   const { data } = useAccountBalanceChart(from, to);
 
   const points = useMemo(() => (
@@ -35,6 +37,10 @@ const PortfolioValueApproved = () => {
   const growingFactor = ((lastValue / firstValue) - 1) * 100;
   const trendValue = points.length > 1 ? growingFactor : 0;
 
+  const onTimeSelected = (newStep: TimeStep) => {
+    setStep(newStep);
+  };
+
   return (
     <LabeledContainer label="PORTFOLIO VALUE CHART">
       <DivFlex flexDirection="row" alignItems="center" gap="12px">
@@ -44,7 +50,7 @@ const PortfolioValueApproved = () => {
       <Container>
         <PortfolioValueChart points={points} />
       </Container>
-      <TimeSelector />
+      <TimeSelector defaultStep={step} onTimeSelected={onTimeSelected} />
     </LabeledContainer>
   );
 };

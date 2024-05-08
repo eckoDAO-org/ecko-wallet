@@ -17,15 +17,27 @@ const Pill = styled.div`
   `)}
 `;
 
-const steps = ['24H', '1W', '1M', '1Y', 'ALL'] as const;
-type TimeStep = typeof steps[number];
+export const timeSteps = ['1W', '1M', 'ALL'] as const;
+export type TimeStep = typeof timeSteps[number];
+
+export const stepsInDays: Record<TimeStep, number> = {
+  '1W': 7,
+  '1M': 30,
+  ALL: -1,
+};
+
+export const TIME_EPOCH = '2024-03-25';
 
 interface TimeSelectorProps {
+  defaultStep?: TimeStep;
   onTimeSelected?: (step: TimeStep) => void;
 }
 
-const TimeSelector = ({ onTimeSelected }: TimeSelectorProps) => {
-  const [currentStep, setCurrentStep] = React.useState<TimeStep>(steps[0]);
+const TimeSelector = ({
+  defaultStep = '1W',
+  onTimeSelected,
+}: TimeSelectorProps) => {
+  const [currentStep, setCurrentStep] = React.useState<TimeStep>(defaultStep);
 
   const handleClick = (step: TimeStep) => () => {
     setCurrentStep(step);
@@ -34,7 +46,7 @@ const TimeSelector = ({ onTimeSelected }: TimeSelectorProps) => {
 
   return (
     <DivFlex justifyContent="space-between">
-      {steps.map((step) => (
+      {timeSteps.map((step) => (
         <Pill key={step} active={step === currentStep} onClick={handleClick(step)}>
           {step}
         </Pill>

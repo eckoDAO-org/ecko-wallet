@@ -15,7 +15,11 @@ export const useAccountBalanceChart = (from: string, to: string) => {
   const currentWallet = useAppSelector(getCurrentWallet);
 
   return useQuery({
-    queryKey: ['account-balance-chart', { account: currentWallet?.account }] as const,
+    queryKey: ['account-balance-chart', {
+      account: currentWallet?.account,
+      from,
+      to,
+    }] as const,
     queryFn: async ({ queryKey }) => {
       const [, { account }] = queryKey;
       if (!account) {

@@ -1,6 +1,4 @@
-import React from 'react';
 import styled from 'styled-components';
-import PortfolioValueChart from '../PortfolioValueChart';
 import TimeSelector from '../TimeSelector';
 import { LabeledContainer } from '../UI';
 
