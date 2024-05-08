@@ -5,10 +5,10 @@ import Button from 'src/components/Buttons';
 import { useAppDispatch, useAppSelector } from 'src/stores/hooks';
 import { startTrackPortfolio } from 'src/stores/slices/analytics';
 import { getAccount } from 'src/stores/slices/wallet';
-import { ReactComponent as AlertIconSVG } from 'src/images/icon-alert.svg';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
 import { useTrackAccountBalance } from 'src/hooks/analytics';
+import Disclaimer from './Disclaimer';
 
 const Subtitle = styled(SecondaryLabel)`
   text-transform: uppercase;
@@ -25,38 +25,6 @@ const Description = styled(SecondaryLabel)`
 const Separator = styled.div`
   margin: 8px 0px;
   border-bottom: 1px solid ${({ theme }) => theme.border};
-`;
-
-export const Warning = styled.div`
-  margin-bottom: 24px;
-  background: ${({ theme }) => theme.alert.background};
-  color: ${({ theme }) => theme.alert.color};
-  padding: 10px;
-  border-radius: 10px;
-  display: flex;
-  svg {
-    margin-right: 10px;
-    path {
-      fill: ${(props) => (props.type === 'danger' ? '#000000' : '#ffa900')};
-    }
-  }
-  margin: ${(props) => props.margin};
-`;
-
-const Info = styled.div`
-  width: calc(100% - 32px);
-`;
-
-const InfoCaption = styled.div`
-  text-align: left;
-  font-size: 12px;
-  padding-bottom: 8px;
-  font-weight: bold;
-`;
-const InfoText = styled.div`
-  text-align: left;
-  font-size: 11px;
-  font-weight: normal;
 `;
 
 const Confirm = ({ onConfirm }: ConfirmProps) => {
@@ -85,14 +53,7 @@ const Confirm = ({ onConfirm }: ConfirmProps) => {
       <Description>By confirming, you&apos;re authorising the start of tracking for your account balance.</Description>
       <Description>Proceed?</Description>
       <Separator />
-
-      <Warning>
-        <AlertIconSVG />
-        <Info>
-          <InfoCaption>Info!</InfoCaption>
-          <InfoText>The information displayed on this page is currently under BETA testing, and is provided on an &quot;as is&quot; and &quot;as available&quot; basis.</InfoText>
-        </Info>
-      </Warning>
+      <Disclaimer />
 
       <DivFlex justifyContent="center" padding="4px" paddingTop="8px">
         { loading ? (

@@ -10,7 +10,7 @@ export const Container = styled(DivFlex)`
 `;
 
 export type LabeledContainerProps = React.PropsWithChildren<{
-  label: string;
+  label: React.ReactNode;
 }>;
 
 export const LabeledRow = ({ label, children }: LabeledContainerProps) => (

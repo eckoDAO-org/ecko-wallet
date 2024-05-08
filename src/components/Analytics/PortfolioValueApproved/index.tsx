@@ -6,9 +6,9 @@ import { DivFlex } from 'src/components';
 import PortfolioValueChart from '../PortfolioValueChart';
 import TimeSelector, { TIME_EPOCH, TimeStep, stepsInDays } from '../TimeSelector';
 import Trend from '../Trend';
-import { Label, LabeledContainer } from '../UI';
+import { Label } from '../UI';
 
-const Container = styled.div`
+const Content = styled.div`
   width: 100%;
   height: 240px;
 `;
@@ -42,16 +42,16 @@ const PortfolioValueApproved = () => {
   };
 
   return (
-    <LabeledContainer label="PORTFOLIO VALUE CHART">
+    <>
       <DivFlex flexDirection="row" alignItems="center" gap="12px">
         <Label>{`$ ${value}`}</Label>
         <Trend value={trendValue} isUp={lastValue > firstValue} />
       </DivFlex>
-      <Container>
+      <Content>
         <PortfolioValueChart points={points} />
-      </Container>
+      </Content>
       <TimeSelector defaultStep={step} onTimeSelected={onTimeSelected} />
-    </LabeledContainer>
+    </>
   );
 };
 

@@ -1,15 +1,20 @@
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import Button from 'src/components/Buttons';
+import SimpleToast from 'src/components/Toast/SimpleToast';
 import { useModalContext } from 'src/contexts/ModalContext';
 import { useAppSelector } from 'src/stores/hooks';
 import { canTrackPortfolio } from 'src/stores/slices/analytics';
 import { getAccount } from 'src/stores/slices/wallet';
+import { DivFlex, SecondaryLabel } from 'src/components';
 import images from 'src/images';
+import InfoIcon from 'src/images/info.svg';
 import PortfolioValueApproved from '../PortfolioValueApproved';
-import { LabeledContainer } from '../UI';
+import { Container } from '../UI';
 import Confirm from './Confirm';
+import DisclaimerInfo from './DisclaimerInfo';
 
-const Container = styled.div`
+const Content = styled.div`
   width: 100%;
   height: 240px;
   background: url(${images.analytics.portfolioValueBlurred}) no-repeat center center;
@@ -28,14 +33,22 @@ const TrackButton = styled(Button)`
   max-width: 400px;
 `;
 
+const ButtonWrapper = styled.button`
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0px;
+`;
+
+const IconContainer = styled.img`
+  width: 24px;
+  height: 24px;
+`;
+
 const PortfolioValue = () => {
   const account = useAppSelector(getAccount);
   const trackPortfolio = useAppSelector(canTrackPortfolio(account));
   const { openModal, closeModal } = useModalContext();
-
-  if (trackPortfolio) {
-    return <PortfolioValueApproved />;
-  }
 
   const handleTrackPortfolio = () => {
     openModal({
@@ -44,12 +57,36 @@ const PortfolioValue = () => {
     });
   };
 
-  return (
-    <LabeledContainer label="PORTFOLIO VALUE CHART">
-      <Container>
+  const onInfo = () => {
+    toast.warning(
+      <SimpleToast content={<DisclaimerInfo />} />,
+      {
+        autoClose: false,
+        toastId: 'portfolioValueApprovedInfo',
+      },
+    );
+  };
+
+  const children = (
+    trackPortfolio ? (
+      <PortfolioValueApproved />
+    ) : (
+      <Content>
         <TrackButton label="Start Tracking" onClick={handleTrackPortfolio} />
-      </Container>
-    </LabeledContainer>
+      </Content>
+    )
+  );
+
+  return (
+    <Container>
+      <DivFlex flexDirection="row" alignItems="center" gap="12px">
+        <SecondaryLabel>PORTFOLIO VALUE CHART</SecondaryLabel>
+        <ButtonWrapper onClick={onInfo}>
+          <IconContainer src={InfoIcon} />
+        </ButtonWrapper>
+      </DivFlex>
+      {children}
+    </Container>
   );
 };
 
