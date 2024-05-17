@@ -4,6 +4,7 @@ import { Header as PageHeader, PageFullScreen, BodyFullScreen } from 'src/compon
 import Toolbar from 'src/components/Analytics/Toolbar';
 import TotalTransactions from 'src/components/Analytics/TotalTransactions';
 import PortfolioValue from 'src/components/Analytics/PortfolioValue';
+import Heatmap from 'src/components/Analytics/Heatmap';
 import TopTokens from './TopTokens';
 
 const Header = styled(PageHeader)`
@@ -26,6 +27,7 @@ const Analytics = () => (
       <TopTokens />
       <TotalTransactions />
       <PortfolioValue />
+      <Heatmap />
     </Body>
   </PageFullScreen>
 );
