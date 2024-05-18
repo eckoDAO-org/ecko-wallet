@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 
 import { useQuery } from '@tanstack/react-query';
+import { TimeStep } from 'src/components/Analytics/TimeSelector';
 
 export type TickerPerformance = {
   ticker: string;
@@ -19,7 +20,7 @@ export type TokenPerformanceData = {
   tickers: TickerPerformance[];
 };
 
-export const useTokensPerformance = (interval: '1D' | '1W' | '1M' | '1Y' = '1D') =>
+export const useTokensPerformance = (interval: TimeStep = '1D') =>
   useQuery({
     queryKey: ['performance-summary', interval],
     queryFn: async () => {
@@ -31,7 +32,7 @@ export const useTokensPerformance = (interval: '1D' | '1W' | '1M' | '1Y' = '1D')
       }
 
       const data = await response.json();
-      return data?.data as TokenPerformanceData;
+      return data as TokenPerformanceData;
     },
     initialData: { tickers: [] },
   });
