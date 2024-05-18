@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react';
 import Spinner from 'src/components/Spinner';
-import { Treemap, Tooltip, ResponsiveContainer } from 'recharts';
+import { Treemap, ResponsiveContainer } from 'recharts';
 import { getNumberWithValidDecimals } from 'src/utils';
 import { useAppThemeContext } from 'src/contexts/AppThemeContext';
-import { useTokensPerformance } from 'src/hooks/tokensPerformance';
+import { useDexTokensPerformance } from 'src/hooks/dexTokensPerformance';
 import styled from 'styled-components';
 import TimeSelector, { TimeStep } from '../TimeSelector';
 import { LabeledContainer } from '../UI';
@@ -27,8 +27,8 @@ const SpinnerContainer = styled.div`
 const CustomizedContent = (props: any) => {
   const { depth, x, y, width, height, diff, name, price } = props;
 
-  const backgroundColor = diff >= 0 ? '#00C853' : '#D50000';
-  const fontSize = Math.max(12, Math.min(18, width / 8, height / 8));
+  const backgroundColor = diff >= 0 ? '#009b10' : '#e33a3c';
+  const fontSize = Math.max(12, Math.min(14, width / 8, height / 8));
 
   return width < 20 || height < 20 ? null : (
     <g>
@@ -54,7 +54,7 @@ const CustomizedContent = (props: any) => {
 const Heatmap = () => {
   const { theme } = useAppThemeContext();
   const [interval, setInterval] = useState<TimeStep>('1D');
-  const { data: performanceData, isFetching } = useTokensPerformance(interval);
+  const { data: performanceData, isFetching } = useDexTokensPerformance(interval);
   const data = useMemo(
     () =>
       [
@@ -66,7 +66,7 @@ const Heatmap = () => {
   return (
     <LabeledContainer label="HEATMAP">
       <Container>
-        <ResponsiveContainer width="100%" height={400}>
+        <ResponsiveContainer width="100%">
           {isFetching ? (
             <SpinnerContainer>
               <Spinner color={theme.text.secondary} />
@@ -85,7 +85,7 @@ const Heatmap = () => {
           )}
         </ResponsiveContainer>
       </Container>
-      <TimeSelector timeSteps={['1D', '1M', '1Y']} onTimeSelected={(step: TimeStep) => setInterval(step)} />
+      <TimeSelector defaultStep="1D" timeSteps={['1D', '1M', '1Y']} onTimeSelected={(step: TimeStep) => setInterval(step)} />
     </LabeledContainer>
   );
 };

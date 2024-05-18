@@ -20,7 +20,7 @@ export type TokenPerformanceData = {
   tickers: TickerPerformance[];
 };
 
-export const useTokensPerformance = (interval: TimeStep = '1D') =>
+export const useDexTokensPerformance = (interval: TimeStep = '1D') =>
   useQuery({
     queryKey: ['performance-summary', interval],
     queryFn: async () => {

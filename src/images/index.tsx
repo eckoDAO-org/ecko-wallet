@@ -82,6 +82,8 @@ import iconKapy from './kapy-logo.svg';
 import iconJde from './jodie-logo.svg';
 import iconKwbtc from './kwbtc-logo.svg';
 import iconUsdc from './usdc-logo.png';
+import iconMaga from './maga-token.png';
+import iconHeron from './heron-token.png';
 import iconKayc from './kayc-logo.svg';
 import iconKds from './kds-logo.svg';
 import iconCrna from './corona-logo.svg';
@@ -190,7 +192,31 @@ const wallet = {
   iconDropDown,
   iconCreate,
   iconBuy,
+  tickers: {
+    generic: iconUnknownKadenaToken,
+    KDA: iconKadenaToken,
+    KDX: iconKdx,
+    zUSD,
+    MAGA: iconMaga,
+    HERON: iconHeron,
+    KISHK: iconKishu,
+    FLUX: iconFlux,
+    HYPE: iconHype,
+    KDL: iconKdl,
+    BABENA: iconBabena,
+    ANEDAK: iconAnedak,
+    MOK: iconMok,
+    KWBTC: iconKwbtc,
+    KAPY: iconKapy,
+    DOCU: iconDocu,
+    KDS: iconKds,
+    ARKD: iconArkd,
+    WIZ: iconWiz,
+    TECKEL: iconTeckel,
+    CRANKK: iconCrankk,
+  },
   tokens: {
+    generic: iconUnknownKadenaToken,
     coin: iconKadenaToken,
     'kaddex.kdx': iconKdx,
     'n_dd05101ff4df21179bfc038a912fc88c38d777a1.kdx': iconKdx,
@@ -214,7 +240,9 @@ const wallet = {
     'free.teckel': iconTeckel,
     'free.crankk01': iconCrankk,
     'free.corona-token': iconCrna,
+    'free.maga': iconMaga,
     'n_b742b4e9c600892af545afb408326e82a6c0c6ed.zUSD': zUSD,
+    'n_e309f0fa7cf3a13f93a8da5325cdad32790d2070.heron': iconHeron,
   },
 };
 const initPage = {

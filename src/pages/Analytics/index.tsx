@@ -1,8 +1,7 @@
-import React from 'react';
 import styled from 'styled-components';
 import { Header as PageHeader, PageFullScreen, BodyFullScreen } from 'src/components/Page';
 import Toolbar from 'src/components/Analytics/Toolbar';
-import TotalTransactions from 'src/components/Analytics/TotalTransactions';
+// import TotalTransactions from 'src/components/Analytics/TotalTransactions';
 import PortfolioValue from 'src/components/Analytics/PortfolioValue';
 import Heatmap from 'src/components/Analytics/Heatmap';
 import TopTokens from './TopTokens';
@@ -25,7 +24,7 @@ const Analytics = () => (
     </Header>
     <Body>
       <TopTokens />
-      <TotalTransactions />
+      {/* <TotalTransactions /> */}
       <PortfolioValue />
       <Heatmap />
     </Body>
