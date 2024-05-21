@@ -19,11 +19,12 @@ const Pill = styled.div`
     outline: 1px solid #E6E6E6;
   `}
 `;
-export type TimeStep = '1D' | '1W' | '1M' | '1Y' | 'ALL';
+export type TimeStep = '1D' | '1W' | '2W' | '1M' | '1Y' | 'ALL';
 
 export const stepsInDays: Record<TimeStep, number> = {
   '1D': 1,
   '1W': 7,
+  '2W': 14,
   '1M': 30,
   '1Y': 365,
   ALL: -1,

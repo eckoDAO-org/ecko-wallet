@@ -6,7 +6,7 @@ import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 import { useDexTokensPerformance } from 'src/hooks/dexTokensPerformance';
 import styled from 'styled-components';
 import TimeSelector, { TimeStep } from '../TimeSelector';
-import { LabeledContainer } from '../UI';
+import { LabeledContainer, SpinnerContainer } from '../UI';
 
 const Container = styled.div`
   width: 100%;
@@ -14,14 +14,6 @@ const Container = styled.div`
   .recharts-treemap-depth-0 rect:not(.recharts-treemap-depth-1 rect) {
     fill: ${({ theme }) => theme.background} !important;
   }
-`;
-
-const SpinnerContainer = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 `;
 
 const CustomizedContent = (props: any) => {
