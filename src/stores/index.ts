@@ -28,7 +28,7 @@ const appReducer = combineReducers({
   extensions: storeExtensions.reducer,
   auth: authSlice.reducer,
   notifications: notificationsSlice.reducer,
-  analytics: analyticsSlice.reducer,
+  analytics_v1: analyticsSlice.reducer,
 });
 
 const rootReducer = (state: any, action: any) => appReducer(state, action);
@@ -40,7 +40,7 @@ const enhancer = composeWithDevTools(applyMiddleware(...middlewares));
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['auth', 'notifications', 'analytics'],
+  whitelist: ['auth', 'notifications', 'analytics_v1'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

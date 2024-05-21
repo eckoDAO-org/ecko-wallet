@@ -1,40 +1,43 @@
-import { Dictionary, PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { RootState } from 'src/stores';
 
-export interface Analytics {
+export type AnalyticsState = {
   trackPortfolio: boolean;
+  trackedAddresses: string[];
 }
 
-export type AnalyticsState = Dictionary<Analytics>;
-
-const initialState: AnalyticsState = {};
+const initialState: AnalyticsState = {
+  trackPortfolio: false,
+  trackedAddresses: [],
+};
 
 const analyticsSlice = createSlice({
-  name: 'analytics',
+  name: 'analytics_v1',
   initialState,
   reducers: {
-    startTrackPortfolio(state, action: PayloadAction<string>) {
-      const address = action.payload;
-
-      state[address] = {
-        ...state[address],
-        trackPortfolio: true,
-      };
+    startTrackPortfolio(state) {
+      state.trackPortfolio = true;
     },
 
-    stopTrackPortfolio(state, action: PayloadAction<string>) {
-      const address = action.payload;
+    stopTrackPortfolio(state) {
+      state.trackPortfolio = false;
+    },
 
-      state[address] = {
-        ...state[address],
-        trackPortfolio: false,
-      };
+    addTrackedAddress(state, action: PayloadAction<string>) {
+      const address = action.payload;
+      state.trackedAddresses.push(address);
+    },
+
+    removeTrackedAddress(state, action: PayloadAction<string>) {
+      const address = action.payload;
+      state.trackedAddresses = state.trackedAddresses.filter((item) => item !== address);
     },
   },
 });
 
-export const { startTrackPortfolio, stopTrackPortfolio } = analyticsSlice.actions;
+export const { startTrackPortfolio, stopTrackPortfolio, addTrackedAddress, removeTrackedAddress } = analyticsSlice.actions;
 
-export const canTrackPortfolio = (address: string) => (state: RootState) => !!state.analytics[address]?.trackPortfolio;
+export const canTrackPortfolio = () => (state: RootState) => state.analytics_v1.trackPortfolio;
+export const getTrackedAddresses = () => (state: RootState) => state.analytics_v1.trackedAddresses;
 
 export { analyticsSlice };

@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQueries, useQuery } from '@tanstack/react-query';
 import { useAppSelector } from 'src/stores/hooks';
 import { getCurrentWallet } from 'src/stores/slices/wallet';
 import { useSignMessage } from './wallet';
@@ -9,53 +9,71 @@ export type AccountBalanceChartResponse = {
 }[];
 export type AccountBalancheChartPoint = AccountBalanceChartResponse[number];
 
-export const useAccountBalanceChart = (from: string, to: string) => {
+const accountBalanceChart = async (account: string, from: string, to: string) => {
+  if (!account) {
+    throw new Error('Account is not provided');
+  }
+
+  const apiUrl = `${process.env.REACT_APP_ECKO_DEXTOOLS_API_URL}api/account-balance-chart?account=${account}&from=${from}&to=${to}`;
+  const response = await fetch(apiUrl);
+
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+
+  const data = await response.json();
+  return data as AccountBalancheChartPoint[];
+};
+
+export const useCurrentAccountBalanceChart = (from: string, to: string) => {
   const currentWallet = useAppSelector(getCurrentWallet);
 
-  return useQuery({
-    queryKey: [
-      'account-balance-chart',
-      {
-        account: currentWallet?.account,
-        from,
-        to,
-      },
-    ] as const,
-    queryFn: async ({ queryKey }) => {
-      const [, { account }] = queryKey;
-      if (!account) {
-        throw new Error('No account provided');
-      }
+  return useAccountBalanceChart(currentWallet?.account || '', from, to);
+};
 
-      const accountId = currentWallet?.account;
-      const apiUrl = `${process.env.REACT_APP_ECKO_DEXTOOLS_API_URL}api/account-balance-chart?account=${accountId}&from=${from}&to=${to}`;
-      const response = await fetch(apiUrl);
+export const useAccountBalanceChart = (account: string, from: string, to: string) => useQuery({
+  queryKey: [
+    'account-balance-chart', { account, from, to },
+  ] as const,
+  queryFn: () => accountBalanceChart(account, from, to),
+  initialData: [],
+});
 
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const data = await response.json();
-      return data as AccountBalancheChartPoint[];
-    },
-    initialData: [],
+export const useAccountsBalanceChart = (accounts: string[], from: string, to: string) => {
+  const queries = useQueries({
+    queries: accounts.map((account) => ({
+      queryKey: ['account-balance-chart', { account, from, to }],
+      queryFn: async () => accountBalanceChart(account, from, to),
+      initialData: [],
+    })),
   });
+
+  const summedData = queries.reduce((acc, query) => {
+    if (query.status !== 'success') {
+      return acc;
+    }
+
+    return query.data.map((point, index) => ({
+      ...point,
+      totalUsdValue: (acc[index]?.totalUsdValue || 0) + point.totalUsdValue,
+    }));
+  }, [] as AccountBalancheChartPoint[]);
+
+  return summedData;
 };
 
 const ADD_ME_MESSAGE = 'please-add-me-to-ecko-balance-tracking';
 
 export const useTrackAccountBalance = () => {
-  const currentWallet = useAppSelector(getCurrentWallet);
   const signMessage = useSignMessage();
 
-  return async () => {
-    const signature = await signMessage(ADD_ME_MESSAGE);
+  return async (accountId: string) => {
+    const signature = await signMessage(ADD_ME_MESSAGE, accountId);
 
     if (!signature) {
       throw new Error('Cannot sign the track request');
     }
 
-    const accountId = currentWallet?.account;
     const apiUrl = `${process.env.REACT_APP_ECKO_DEXTOOLS_API_URL}api/account-balance-chart?account=${accountId}&from=2024-04-01&to=2024-04-30`;
     const response = await fetch(apiUrl, {
       headers: {

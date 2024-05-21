@@ -5,7 +5,6 @@ import SimpleToast from 'src/components/Toast/SimpleToast';
 import { useModalContext } from 'src/contexts/ModalContext';
 import { useAppSelector } from 'src/stores/hooks';
 import { canTrackPortfolio } from 'src/stores/slices/analytics';
-import { getAccount } from 'src/stores/slices/wallet';
 import { DivFlex, SecondaryLabel } from 'src/components';
 import images from 'src/images';
 import InfoIcon from 'src/images/info.svg';
@@ -46,8 +45,7 @@ const IconContainer = styled.img`
 `;
 
 const PortfolioValue = () => {
-  const account = useAppSelector(getAccount);
-  const trackPortfolio = useAppSelector(canTrackPortfolio(account));
+  const trackPortfolio = useAppSelector(canTrackPortfolio());
   const { openModal, closeModal } = useModalContext();
 
   const handleTrackPortfolio = () => {

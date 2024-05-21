@@ -45,6 +45,7 @@ import GovernanceMining from './pages/GovernanceMining';
 import MarmaladeNGCollectionDetails from './pages/Nft/NftTypes/MarmaladeNG/MarmaladeNGCollectionDetails';
 import TransactionsImporter from './components/TransactionsImporter';
 import Analytics from './pages/Analytics';
+import AnalyticsTracker from './components/AnalyticsTracker';
 
 const Container = styled.div`
   width: 1000px;
@@ -108,6 +109,7 @@ const AppContainer = () => {
         {isLoading && <Loading />}
         <WalletCreator />
         <TransactionsImporter />
+        <AnalyticsTracker />
       </TwoFactorAuthenticator>
     </Container>
   );
