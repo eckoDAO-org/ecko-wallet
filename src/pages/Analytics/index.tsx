@@ -1,28 +1,28 @@
 import styled from 'styled-components';
-import { Header as PageHeader, PageFullScreen, BodyFullScreen } from 'src/components/Page';
+import { /* Header as PageHeader, */ PageFullScreen, BodyFullScreen } from 'src/components/Page';
+// import Toolbar from 'src/components/Analytics/Toolbar';
 import PnLChart from 'src/components/Analytics/DailyP&L';
-import Toolbar from 'src/components/Analytics/Toolbar';
 // import TotalTransactions from 'src/components/Analytics/TotalTransactions';
 import PortfolioValue from 'src/components/Analytics/PortfolioValue';
 import Heatmap from 'src/components/Analytics/Heatmap';
 import TopTokens from './TopTokens';
 
-const Header = styled(PageHeader)`
+/* const Header = styled(PageHeader)`
   padding: 24px 16px;
   margin: 0;
   border: 1px solid ${({ theme }) => theme.border};
-`;
+`; */
 
 const Body = styled(BodyFullScreen)`
-  padding: 24px 16px;
+  padding: 0 16px 24px;
   box-sizing: border-box;
 `;
 
 const Analytics = () => (
   <PageFullScreen addFooter>
-    <Header>
+    {/* <Header>
       <Toolbar />
-    </Header>
+    </Header> */}
     <Body>
       <TopTokens />
       {/* <TotalTransactions /> */}
