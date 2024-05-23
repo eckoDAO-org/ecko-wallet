@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react';
 import moment from 'moment';
 import styled from 'styled-components';
-import { useAccountBalanceChart } from 'src/hooks/analytics';
+import { useAccountsBalanceChart } from 'src/hooks/analytics';
 import { DivFlex } from 'src/components';
+import { useAppSelector } from 'src/stores/hooks';
+import { getTrackedAddresses } from 'src/stores/slices/analytics';
 import PortfolioValueChart from '../PortfolioValueChart';
 import TimeSelector, { TIME_EPOCH, TimeStep, stepsInDays } from '../TimeSelector';
 import Trend from '../Trend';
@@ -14,11 +16,12 @@ const Content = styled.div`
 `;
 
 const PortfolioValueApproved = () => {
+  const trackedAddresses = useAppSelector(getTrackedAddresses());
   const [step, setStep] = useState<TimeStep>('1W');
   const stepInDays = stepsInDays[step];
   const to = moment().format('YYYY-MM-DD');
   const from = stepInDays === -1 ? TIME_EPOCH : moment().subtract(stepInDays, 'days').format('YYYY-MM-DD');
-  const { data } = useAccountBalanceChart(from, to);
+  const data = useAccountsBalanceChart(trackedAddresses, from, to);
 
   const points = useMemo(() => (
     data.map((item) => [
@@ -31,11 +34,25 @@ const PortfolioValueApproved = () => {
     return <span>No data available</span>;
   }
 
-  const firstValue = points[0][1];
+  const firstNonZeroValue = points.find(([, value]) => value > 0)?.[1];
   const lastValue = points[points.length - 1][1];
   const value = Number((lastValue).toFixed(2)).toLocaleString();
-  const growingFactor = ((lastValue / firstValue) - 1) * 100;
-  const trendValue = points.length > 1 ? growingFactor : 0;
+
+  let growingFactor = 0;
+  let isUp = true;
+
+  if (points.length > 1) {
+    if (firstNonZeroValue === undefined) {
+      growingFactor = 0;
+      isUp = true;
+    } else if (lastValue === 0) {
+      growingFactor = 100;
+      isUp = false;
+    } else {
+      growingFactor = ((lastValue / firstNonZeroValue) - 1) * 100;
+      isUp = lastValue > firstNonZeroValue;
+    }
+  }
 
   const onTimeSelected = (newStep: TimeStep) => {
     setStep(newStep);
@@ -45,7 +62,7 @@ const PortfolioValueApproved = () => {
     <>
       <DivFlex flexDirection="row" alignItems="center" gap="12px">
         <Label>{`$ ${value}`}</Label>
-        <Trend value={trendValue} isUp={lastValue > firstValue} />
+        <Trend value={growingFactor} isUp={isUp} />
       </DivFlex>
       <Content>
         <PortfolioValueChart points={points} />

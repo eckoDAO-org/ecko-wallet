@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { DEFAULT_BIP32_PATH, bufferToHex, useLedgerContext } from 'src/contexts/LedgerContext';
 import { useAppSelector } from 'src/stores/hooks';
 import { RawNetwork, getNetworks, getPasswordHash, getSelectedNetwork, setSelectedNetwork } from 'src/stores/slices/extensions';
-import { AccountType, getWalletInfo, getWallets, setBalance, setCurrentWallet, setWallets } from 'src/stores/slices/wallet';
+import { AccountType, getWallets, setBalance, setCurrentWallet, setWallets } from 'src/stores/slices/wallet';
 import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import { getKeyPairsFromSeedPhrase, getSignatureFromHash } from 'src/utils/chainweb';
 import { decryptKey, encryptKey } from 'src/utils/security';
@@ -144,10 +144,13 @@ export const useSelectNetwork = () => {
 };
 
 export const useSignMessage = () => {
-  const { publicKey, secretKey, type } = useAppSelector(getWalletInfo);
+  const wallets = useAppSelector(getWallets);
   const { getLedger } = useLedgerContext();
 
-  return async (message: string) => {
+  return async (message: string, accountId: string) => {
+    const { publicKey, secretKey, type } = wallets.find((wallet) => wallet.account === accountId) || {};
+    if (!secretKey || !publicKey) return undefined;
+
     const hash = kadenaJSHash(message);
 
     if (type === AccountType.LEDGER) {

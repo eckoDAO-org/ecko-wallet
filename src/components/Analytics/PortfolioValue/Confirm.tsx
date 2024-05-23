@@ -2,12 +2,8 @@ import { useState } from 'react';
 import styled from 'styled-components';
 import { DivFlex, SecondaryLabel } from 'src/components';
 import Button from 'src/components/Buttons';
-import { useAppDispatch, useAppSelector } from 'src/stores/hooks';
+import { useAppDispatch } from 'src/stores/hooks';
 import { startTrackPortfolio } from 'src/stores/slices/analytics';
-import { getAccount } from 'src/stores/slices/wallet';
-import { toast } from 'react-toastify';
-import Toast from 'src/components/Toast/Toast';
-import { useTrackAccountBalance } from 'src/hooks/analytics';
 import Disclaimer from './Disclaimer';
 
 const Subtitle = styled(SecondaryLabel)`
@@ -29,22 +25,13 @@ const Separator = styled.div`
 
 const Confirm = ({ onConfirm }: ConfirmProps) => {
   const [loading, setLoading] = useState(false);
-  const account = useAppSelector(getAccount);
   const dispatch = useAppDispatch();
-  const trackAccountBalance = useTrackAccountBalance();
 
   const handleConfirm = async () => {
     if (loading) return;
     setLoading(true);
-    try {
-      await trackAccountBalance();
-      dispatch(startTrackPortfolio(account));
-      onConfirm?.();
-    } catch (reason: unknown) {
-      toast.error(
-        <Toast type="error" content={(reason as Error).message} />,
-      );
-    }
+    dispatch(startTrackPortfolio());
+    onConfirm?.();
   };
 
   return (
