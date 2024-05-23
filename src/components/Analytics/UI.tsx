@@ -33,3 +33,11 @@ export const Label = styled(SecondaryLabel)`
   font-size: 14px;
   flex: 1;
 `;
+
+export const SpinnerContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
