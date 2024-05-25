@@ -62,7 +62,12 @@ const isSKdx = (contractAddress) => contractAddress === 'kaddex.skdx';
 const Wallet = () => {
   const history = useHistory();
   const { openModal, closeModal } = useModalContext();
-  const { isLoadingBalances, selectedAccountBalance, allAccountsBalance, usdPrices } = useAccountBalanceContext();
+  const {
+    isLoadingBalances,
+    selectedAccountBalance,
+    allAccountsBalance,
+    usdPrices /* TODO: do usd prices refactor with->, allAccountsBalanceUsd */,
+  } = useAccountBalanceContext();
   const rootState = useSelector((state) => state);
   const { selectedNetwork } = rootState.extensions;
   const networkId = selectedNetwork?.networkId;

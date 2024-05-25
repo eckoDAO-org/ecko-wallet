@@ -7,7 +7,7 @@ export type AccountBalanceChartResponse = {
   date: string;
   totalUsdValue: number;
 }[];
-export type AccountBalancheChartPoint = AccountBalanceChartResponse[number];
+export type AccountBalanceChartPoint = AccountBalanceChartResponse[number];
 
 const accountBalanceChart = async (account: string, from: string, to: string) => {
   if (!account) {
@@ -22,7 +22,7 @@ const accountBalanceChart = async (account: string, from: string, to: string) =>
   }
 
   const data = await response.json();
-  return data as AccountBalancheChartPoint[];
+  return data as AccountBalanceChartPoint[];
 };
 
 export const useCurrentAccountBalanceChart = (from: string, to: string) => {
@@ -31,13 +31,12 @@ export const useCurrentAccountBalanceChart = (from: string, to: string) => {
   return useAccountBalanceChart(currentWallet?.account || '', from, to);
 };
 
-export const useAccountBalanceChart = (account: string, from: string, to: string) => useQuery({
-  queryKey: [
-    'account-balance-chart', { account, from, to },
-  ] as const,
-  queryFn: () => accountBalanceChart(account, from, to),
-  initialData: [],
-});
+export const useAccountBalanceChart = (account: string, from: string, to: string) =>
+  useQuery({
+    queryKey: ['account-balance-chart', { account, from, to }] as const,
+    queryFn: () => accountBalanceChart(account, from, to),
+    initialData: [],
+  });
 
 export const useAccountsBalanceChart = (accounts: string[], from: string, to: string) => {
   const queries = useQueries({
@@ -48,16 +47,18 @@ export const useAccountsBalanceChart = (accounts: string[], from: string, to: st
     })),
   });
 
-  const summedData = queries.reduce((acc, query) => {
-    if (query.status !== 'success') {
-      return acc;
-    }
+  const queriesData = queries.map((q) => q.data).filter((data) => Array.isArray(data)) as AccountBalanceChartResponse[];
+  const mergedFlatData: AccountBalanceChartPoint[] = queriesData.flat();
 
-    return query.data.map((point, index) => ({
-      ...point,
-      totalUsdValue: (acc[index]?.totalUsdValue || 0) + point.totalUsdValue,
-    }));
-  }, [] as AccountBalancheChartPoint[]);
+  const summedData = mergedFlatData?.reduce<AccountBalanceChartPoint[]>((acc, item) => {
+    const existingItem = acc.find((i) => i.date === item.date);
+    if (existingItem) {
+      existingItem.totalUsdValue += item.totalUsdValue;
+    } else {
+      acc.push({ date: item.date, totalUsdValue: item.totalUsdValue });
+    }
+    return acc;
+  }, []);
 
   return summedData;
 };
