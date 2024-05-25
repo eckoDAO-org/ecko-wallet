@@ -2,8 +2,10 @@ import moment from 'moment';
 import { useState } from 'react';
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell, YAxis } from 'recharts';
 import Spinner from 'src/components/Spinner';
+import { useAppSelector } from 'src/stores/hooks';
+import { getTrackedAddresses } from 'src/stores/slices/analytics';
 import { useAppThemeContext } from 'src/contexts/AppThemeContext';
-import { useAccountBalanceChart } from 'src/hooks/analytics';
+import { useAccountsBalanceChart } from 'src/hooks/analytics';
 import TimeSelector, { stepsInDays, TimeStep } from '../TimeSelector';
 import { LabeledContainer, SpinnerContainer } from '../UI';
 
@@ -35,16 +37,16 @@ const convertDataToPnL = (data) =>
 
 const PnLChart = () => {
   const [interval, setInterval] = useState<TimeStep>('2W');
+  const trackedAddresses = useAppSelector(getTrackedAddresses());
   const { theme } = useAppThemeContext();
-  const { data: analyticsData, isFetching } = useAccountBalanceChart(
-    moment().subtract(stepsInDays[interval], 'days').format('YYYY-MM-DD'),
-    moment().format('YYYY-MM-DD'),
-  );
+  const from = moment().subtract(stepsInDays[interval], 'days').format('YYYY-MM-DD');
+  const to = moment().format('YYYY-MM-DD');
+  const analyticsData = useAccountsBalanceChart(trackedAddresses, from, to);
   const data = convertDataToPnL(analyticsData ?? []);
   const firstAvailableData = data.slice(1);
   const minPnl = Math.min(...firstAvailableData.map((d) => d.pnl));
   const maxPnl = Math.max(...firstAvailableData.map((d) => d.pnl));
-  return isFetching ? (
+  return !analyticsData?.length ? (
     <SpinnerContainer style={{ height: 400 }}>
       <Spinner color={theme.text.secondary} />
     </SpinnerContainer>
