@@ -6,6 +6,7 @@ import { useAppSelector } from 'src/stores/hooks';
 import { getTrackedAddresses } from 'src/stores/slices/analytics';
 import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 import { useAccountsBalanceChart } from 'src/hooks/analytics';
+import { DivFlex, SecondaryLabel } from 'src/components';
 import TimeSelector, { stepsInDays, TimeStep } from '../TimeSelector';
 import { LabeledContainer, SpinnerContainer } from '../UI';
 
@@ -41,34 +42,40 @@ const PnLChart = () => {
   const { theme } = useAppThemeContext();
   const from = moment().subtract(stepsInDays[interval], 'days').format('YYYY-MM-DD');
   const to = moment().format('YYYY-MM-DD');
-  const analyticsData = useAccountsBalanceChart(trackedAddresses, from, to);
+  const { data: analyticsData, isFetching } = useAccountsBalanceChart(trackedAddresses, from, to);
   const data = convertDataToPnL(analyticsData ?? []);
   const firstAvailableData = data.slice(1);
   const minPnl = Math.min(...firstAvailableData.map((d) => d.pnl));
   const maxPnl = Math.max(...firstAvailableData.map((d) => d.pnl));
-  return !analyticsData?.length ? (
+  return isFetching ? (
     <SpinnerContainer style={{ height: 400 }}>
       <Spinner color={theme.text.secondary} />
     </SpinnerContainer>
   ) : (
-    <LabeledContainer label="Daily P&L">
-      <ResponsiveContainer width="100%" height={400}>
-        <BarChart data={firstAvailableData} margin={{ top: 10, right: 30, left: -10, bottom: 0 }}>
-          <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-          <YAxis
-            domain={[minPnl * 1.1, maxPnl * 1.1]}
-            tickFormatter={(tick) => `${tick < 0 ? '-' : ''}$${Math.abs(tick.toFixed(2))}`}
-            tick={{ fontSize: 12 }}
-          />
+    <LabeledContainer label="DAILY P&L">
+      {analyticsData.length > 0 ? (
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart data={firstAvailableData} margin={{ top: 10, right: 30, left: -10, bottom: 0 }}>
+            <XAxis dataKey="date" tick={{ fontSize: 12 }} />
+            <YAxis
+              domain={[minPnl * 1.1, maxPnl * 1.1]}
+              tickFormatter={(tick) => `${tick < 0 ? '-' : ''}$${Math.abs(tick.toFixed(2))}`}
+              tick={{ fontSize: 12 }}
+            />
 
-          <Tooltip content={<CustomTooltip />} />
-          <Bar dataKey="pnl" radius={[10, 10, 0, 0]} isAnimationActive={false}>
-            {firstAvailableData.map((entry) => (
-              <Cell key={`cell-${entry.date}`} fill={entry.pnl >= 0 ? '#009b10' : '#e33a3c'} />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+            <Tooltip content={<CustomTooltip />} />
+            <Bar dataKey="pnl" radius={[10, 10, 0, 0]} isAnimationActive={false}>
+              {firstAvailableData.map((entry) => (
+                <Cell key={`cell-${entry.date}`} fill={entry.pnl >= 0 ? '#009b10' : '#e33a3c'} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      ) : (
+        <DivFlex justifyContent="center" alignItems="center" style={{ height: 200 }}>
+          <SecondaryLabel>No data yet</SecondaryLabel>
+        </DivFlex>
+      )}
       <TimeSelector defaultStep={interval} timeSteps={['1W', '2W', '1M']} onTimeSelected={(step: TimeStep) => setInterval(step)} />
     </LabeledContainer>
   );

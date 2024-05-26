@@ -4,6 +4,7 @@ import { /* Header as PageHeader, */ PageFullScreen, BodyFullScreen } from 'src/
 import PnLChart from 'src/components/Analytics/DailyP&L';
 // import TotalTransactions from 'src/components/Analytics/TotalTransactions';
 import PortfolioValue from 'src/components/Analytics/PortfolioValue';
+import { AssetAllocationChart } from 'src/components/Analytics/AssetAllocation';
 import Heatmap from 'src/components/Analytics/Heatmap';
 import TopTokens from './TopTokens';
 
@@ -29,6 +30,7 @@ const Analytics = () => (
       <PortfolioValue />
       <Heatmap />
       <PnLChart />
+      <AssetAllocationChart />
     </Body>
   </PageFullScreen>
 );

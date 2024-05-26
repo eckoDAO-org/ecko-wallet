@@ -38,7 +38,7 @@ export const useAccountBalanceChart = (account: string, from: string, to: string
     initialData: [],
   });
 
-export const useAccountsBalanceChart = (accounts: string[], from: string, to: string) => {
+export const useAccountsBalanceChart = (accounts: string[], from: string, to: string): { data: AccountBalanceChartPoint[]; isFetching: boolean } => {
   const queries = useQueries({
     queries: accounts.map((account) => ({
       queryKey: ['account-balance-chart', { account, from, to }],
@@ -60,7 +60,7 @@ export const useAccountsBalanceChart = (accounts: string[], from: string, to: st
     return acc;
   }, []);
 
-  return summedData;
+  return { data: summedData, isFetching: queries.some((q) => q.isFetching) };
 };
 
 const ADD_ME_MESSAGE = 'please-add-me-to-ecko-balance-tracking';

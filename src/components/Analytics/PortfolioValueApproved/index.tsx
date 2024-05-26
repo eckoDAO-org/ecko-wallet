@@ -21,14 +21,9 @@ const PortfolioValueApproved = () => {
   const stepInDays = stepsInDays[step];
   const to = moment().format('YYYY-MM-DD');
   const from = stepInDays === -1 ? TIME_EPOCH : moment().subtract(stepInDays, 'days').format('YYYY-MM-DD');
-  const data = useAccountsBalanceChart(trackedAddresses, from, to);
+  const { data } = useAccountsBalanceChart(trackedAddresses, from, to);
 
-  const points = useMemo(() => (
-    data.map((item) => [
-      new Date(item.date).getTime(),
-      item.totalUsdValue,
-    ])
-  ), [data]);
+  const points = useMemo(() => data.map((item) => [new Date(item.date).getTime(), item.totalUsdValue]), [data]);
 
   if (points.length === 0) {
     return <span>No data available</span>;
@@ -36,7 +31,7 @@ const PortfolioValueApproved = () => {
 
   const firstNonZeroValue = points.find(([, value]) => value > 0)?.[1];
   const lastValue = points[points.length - 1][1];
-  const value = Number((lastValue).toFixed(2)).toLocaleString();
+  const value = Number(lastValue.toFixed(2)).toLocaleString();
 
   let growingFactor = 0;
   let isUp = true;
@@ -49,7 +44,7 @@ const PortfolioValueApproved = () => {
       growingFactor = 100;
       isUp = false;
     } else {
-      growingFactor = ((lastValue / firstNonZeroValue) - 1) * 100;
+      growingFactor = (lastValue / firstNonZeroValue - 1) * 100;
       isUp = lastValue > firstNonZeroValue;
     }
   }
