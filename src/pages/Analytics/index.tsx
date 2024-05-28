@@ -5,6 +5,7 @@ import PnLChart from 'src/components/Analytics/DailyP&L';
 // import TotalTransactions from 'src/components/Analytics/TotalTransactions';
 import PortfolioValue from 'src/components/Analytics/PortfolioValue';
 import Heatmap from 'src/components/Analytics/Heatmap';
+import ChartAllocation from 'src/components/Analytics/ChartAllocation';
 import TopTokens from './TopTokens';
 
 /* const Header = styled(PageHeader)`
@@ -29,6 +30,7 @@ const Analytics = () => (
       <PortfolioValue />
       <Heatmap />
       <PnLChart />
+      <ChartAllocation />
     </Body>
   </PageFullScreen>
 );
