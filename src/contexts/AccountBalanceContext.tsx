@@ -13,15 +13,15 @@ import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
 import { SettingsContext } from './SettingsContext';
 
-interface TokenBalance {
+export interface TokenBalance {
   [contractAddress: string]: number;
 }
 
-interface AccountBalanceProps {
+export interface AccountBalanceProps {
   [account: string]: TokenBalance[];
 }
 
-interface AccountBalanceContextProps {
+export interface AccountBalanceContextProps {
   selectedAccountBalance?: TokenBalance[];
   allAccountsBalance?: AccountBalanceProps;
   allAccountsBalanceUsd?: AccountBalanceProps;

@@ -6,6 +6,7 @@ import PnLChart from 'src/components/Analytics/DailyP&L';
 import PortfolioValue from 'src/components/Analytics/PortfolioValue';
 import { AssetAllocationChart } from 'src/components/Analytics/AssetAllocation';
 import Heatmap from 'src/components/Analytics/Heatmap';
+import ChartAllocation from 'src/components/Analytics/ChartAllocation';
 import TopTokens from './TopTokens';
 
 /* const Header = styled(PageHeader)`
@@ -30,6 +31,7 @@ const Analytics = () => (
       <PortfolioValue />
       <Heatmap />
       <PnLChart />
+      <ChartAllocation />
       <AssetAllocationChart />
     </Body>
   </PageFullScreen>
