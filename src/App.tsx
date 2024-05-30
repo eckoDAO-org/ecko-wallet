@@ -49,6 +49,13 @@ const ToastWrapper = styled.div`
     width: 90%;
     margin: 10px auto;
   }
+  .Toastify__toast-theme--light.Toastify__toast--warning {
+    background: ${({ theme }) => theme.iconBackground};
+    border-left: 4px solid #ffa900;
+    border-radius: 4px;
+    width: 90%;
+    margin: 10px auto;
+  }
   .Toastify__toast-container {
     margin-top: 90px;
   }

@@ -8,7 +8,7 @@ import { useGoHome } from 'src/hooks/ui';
 import { setCurrentWallet, setWallets } from 'src/stores/slices/wallet';
 import { getLocalSeedPhrase, initDataFromLocal } from 'src/utils/storage';
 import { ReactComponent as EckoWalletLogoBar } from 'src/images/ecko-wallet-icon.svg';
-import { ReactComponent as HistoryIcon } from 'src/images/history-icon.svg';
+import { ReactComponent as AnalyticsIcon } from 'src/images/ic_analytics.svg';
 import { ReactComponent as GearIcon } from 'src/images/gear-icon.svg';
 import { ReactComponent as NFTIcon } from 'src/images/nft-icon.svg';
 import { ACTIVE_TAB } from 'src/utils/constant';
@@ -76,14 +76,14 @@ const Footer = () => {
   const location = useLocation().pathname;
   const locationExtension = window.location.hash;
   const showSettingAndSelectNetworks = !(location.includes('networks') || location.includes('contact') || location.includes('about'));
-  const isFooterWeb = location === '/' || location === '/wallet' || location === '/history' || location === '/setting' || location === '/nft';
-  const isFooterExtenstion =
-    locationExtension.substr(1) === '/' ||
-    locationExtension.substr(1) === '/wallet' ||
-    locationExtension.substr(1) === '/popup' ||
-    locationExtension.substr(1) === '/history' ||
-    locationExtension.substr(1) === '/setting';
-  const isFooter = (isFooterWeb || isFooterExtenstion) && account !== null && account !== '' && account !== undefined;
+  const isFooterWeb = location === '/' || location === '/wallet' || location === '/analytics' || location === '/setting' || location === '/nft';
+  const isFooterExtension =
+    locationExtension.substring(1) === '/' ||
+    locationExtension.substring(1) === '/wallet' ||
+    locationExtension.substring(1) === '/popup' ||
+    locationExtension.substring(1) === '/analytics' ||
+    locationExtension.substring(1) === '/setting';
+  const isFooter = (isFooterWeb || isFooterExtension) && account !== null && account !== '' && account !== undefined;
   const { isLocked } = useSettingsContext();
 
   const history = useHistory();
@@ -140,9 +140,9 @@ const Footer = () => {
   const setIconHomeActive = () => {
     goHome();
   };
-  const setIconHistoryActive = () => {
-    history.push('/history');
-    setActiveTab(ACTIVE_TAB.HISTORY);
+  const setIconAnalyticsActive = () => {
+    history.push('/analytics');
+    setActiveTab(ACTIVE_TAB.ANALYTICS);
   };
   const setIconSettingActive = () => {
     history.push('/setting');
@@ -162,11 +162,11 @@ const Footer = () => {
           </span>
           <SecondaryLabel fontWeight={700}>WALLET</SecondaryLabel>
         </ActionBarElement>
-        <ActionBarElement className={activeTab === ACTIVE_TAB.HISTORY && 'active'} onClick={setIconHistoryActive}>
+        <ActionBarElement className={activeTab === ACTIVE_TAB.ANALYTICS && 'active'} onClick={setIconAnalyticsActive}>
           <span>
-            <HistoryIcon />
+            <AnalyticsIcon />
           </span>
-          <SecondaryLabel fontWeight={700}>HISTORY</SecondaryLabel>
+          <SecondaryLabel fontWeight={700}>ANALYTICS</SecondaryLabel>
         </ActionBarElement>
         <ActionBarElement className={activeTab === ACTIVE_TAB.NFT && 'active'} onClick={setIconNftActive}>
           <span>

@@ -6,24 +6,25 @@ import useLocalStorage from 'src/hooks/useLocalStorage';
 import { useInterval } from 'src/hooks/useInterval';
 import { IFungibleToken, IFungibleTokensByNetwork, LOCAL_DEFAULT_FUNGIBLE_TOKENS, LOCAL_KEY_FUNGIBLE_TOKENS } from 'src/pages/ImportToken';
 import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
-import { fetchListLocal, fetchTokenList, MAINNET_NETWORK_ID } from 'src/utils/chainweb';
+import { extractDecimal, fetchListLocal, fetchTokenList, MAINNET_NETWORK_ID } from 'src/utils/chainweb';
 import { KADDEX_ANALYTICS_API } from 'src/utils/config';
 import { CHAIN_COUNT } from 'src/utils/constant';
 import { toast } from 'react-toastify';
 import Toast from 'src/components/Toast/Toast';
 import { SettingsContext } from './SettingsContext';
 
-interface TokenBalance {
+export interface TokenBalance {
   [contractAddress: string]: number;
 }
 
-interface AccountBalanceProps {
+export interface AccountBalanceProps {
   [account: string]: TokenBalance[];
 }
 
-interface AccountBalanceContextProps {
+export interface AccountBalanceContextProps {
   selectedAccountBalance?: TokenBalance[];
   allAccountsBalance?: AccountBalanceProps;
+  allAccountsBalanceUsd?: AccountBalanceProps;
   usdPrices: TokenBalance;
   isLoadingBalances: boolean;
 }
@@ -109,7 +110,10 @@ export const AccountBalanceProvider = ({ children }: any) => {
             const accountIndex = splitted[1];
             const account = sortedWallets[accountIndex];
             balanceProps[account] = [...(balanceProps[account] || [])];
-            balanceProps[account][chainId] = { ...(balanceProps[account][chainId] || []), [contractAddress]: chainBalance?.result?.data[key] };
+            balanceProps[account][chainId] = {
+              ...(balanceProps[account][chainId] || []),
+              [contractAddress]: extractDecimal(chainBalance?.result?.data[key]),
+            };
           }
         } else if (chainBalance?.result?.status === 'failure') {
           // check for gasLimit error
@@ -143,7 +147,7 @@ export const AccountBalanceProvider = ({ children }: any) => {
           txSettings?.gasPrice,
           txSettings?.gasLimit,
         );
-        tokenBalance[ft.contractAddress] = pactResponse?.result?.data || 0;
+        tokenBalance[ft.contractAddress] = extractDecimal(pactResponse?.result?.data) || 0;
       }
       chainBalance.push(tokenBalance);
     }
@@ -180,8 +184,11 @@ export const AccountBalanceProvider = ({ children }: any) => {
           if (candleAnalytics.length) {
             const lastCandle = candleAnalytics?.pop();
             const asset = lastCandle?.pairName?.split('/')[0];
-            usdPricesData[asset?.toLowerCase() === 'kda' ? 'coin' : asset?.toLowerCase()] =
-              lastCandle?.usdPrice?.close || lastCandle?.price?.close || 0;
+            const moduleName = asset?.toLowerCase() === 'kda' ? 'coin' : asset?.toLowerCase();
+            usdPricesData[moduleName] = lastCandle?.usdPrice?.close || lastCandle?.price?.close || 0;
+            if (moduleName === 'kaddex.kdx') {
+              usdPricesData['kaddex.skdx'] = lastCandle?.usdPrice?.close || lastCandle?.price?.close || 0;
+            }
           }
         });
         setUsdPrices(usdPricesData);
@@ -198,6 +205,30 @@ export const AccountBalanceProvider = ({ children }: any) => {
         fetchSinglesBalances();
       }
     }
+  };
+
+  const convertToUsd = (balanceState: AccountBalanceProps | undefined, prices: TokenBalance) => {
+    const result = {};
+    if (!balanceState) {
+      return result;
+    }
+    for (const account in balanceState) {
+      if (Object.prototype.hasOwnProperty.call(balanceState, account)) {
+        result[account] = balanceState[account].map((balance) => {
+          const usdBalance = {};
+          for (const token in balance) {
+            if (Object.prototype.hasOwnProperty.call(balance, token)) {
+              const priceKey = token.toLowerCase();
+              const price = prices[priceKey] || 0;
+              usdBalance[token] = (balance[token] || 0) * price;
+            }
+          }
+          return usdBalance;
+        });
+      }
+    }
+
+    return result;
   };
 
   const refreshBalances = async () => {
@@ -219,6 +250,7 @@ export const AccountBalanceProvider = ({ children }: any) => {
         isLoadingBalances,
         selectedAccountBalance: accountsBalanceState && accountsBalanceState[selectedAccount],
         allAccountsBalance: accountsBalanceState,
+        allAccountsBalanceUsd: convertToUsd(accountsBalanceState, usdPrices),
         usdPrices,
       }}
     >

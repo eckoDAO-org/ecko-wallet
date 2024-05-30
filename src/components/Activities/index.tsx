@@ -72,7 +72,7 @@ const Activities = () => {
   }
 
   return (
-    <div>
+    <>
       <ActivitiyList
         activities={accountActivities}
         pendingCrossChainRequestKeys={pendingCrossChainRequestKeys}
@@ -88,7 +88,7 @@ const Activities = () => {
           onCloseModal={() => setSelectedActivity(null)}
         />
       )}
-    </div>
+    </>
   );
 };
 
