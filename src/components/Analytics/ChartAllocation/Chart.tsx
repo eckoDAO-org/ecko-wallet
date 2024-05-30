@@ -2,8 +2,9 @@ import { useMemo } from 'react';
 import styled from 'styled-components';
 import ApexChart, { Props as ApexProps } from 'react-apexcharts';
 import { AccountBalanceProps, TokenBalance } from 'src/contexts/AccountBalanceContext';
+import { useAppThemeContext } from 'src/contexts/AppThemeContext';
 import { IFungibleToken, IFungibleTokensByNetwork } from 'src/pages/ImportToken';
-import { DivFlex } from 'src/components';
+import { DivFlex, SecondaryLabel } from 'src/components';
 import images from 'src/images';
 import { LabeledContainer } from '../UI';
 
@@ -23,11 +24,11 @@ const Token = styled.img`
   margin-right: 8px;
 `;
 
-const TokenName = styled.div`
+const TokenName = styled(SecondaryLabel)`
   padding-right: 8px;
 `;
 
-const TokenPercentual = styled.span`
+const TokenPercentual = styled(SecondaryLabel)`
   font-weight: bold;
 `;
 
@@ -47,6 +48,7 @@ interface Props {
 }
 
 const Chart = ({ allAccountsBalanceUsd, fungibleTokens }: Props) => {
+  const { theme } = useAppThemeContext();
   const summedTokenBalance = Object.values(allAccountsBalanceUsd).reduce(
     (sumPerAccount, account) =>
       account.reduce(
@@ -137,14 +139,14 @@ const Chart = ({ allAccountsBalanceUsd, fungibleTokens }: Props) => {
             },
             value: {
               offsetY: -45,
-              color: '#fff',
+              color: theme.text.primary,
               fontFamily: 'Montserrat',
               fontWeight: 'bold',
               formatter: (value) => `$ ${Number(value).toFixed(2).toLocaleString()}`,
             },
             total: {
               show: true,
-              color: '#fff',
+              color: theme.text.primary,
               fontFamily: 'Montserrat',
               label: 'TOT',
               fontWeight: 'bold',
@@ -162,7 +164,7 @@ const Chart = ({ allAccountsBalanceUsd, fungibleTokens }: Props) => {
       position: 'bottom',
       offsetY: -45,
       labels: {
-        colors: '#fff',
+        colors: theme.text.primary,
       },
     },
     tooltip: {
