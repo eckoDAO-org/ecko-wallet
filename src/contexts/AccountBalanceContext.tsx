@@ -184,8 +184,11 @@ export const AccountBalanceProvider = ({ children }: any) => {
           if (candleAnalytics.length) {
             const lastCandle = candleAnalytics?.pop();
             const asset = lastCandle?.pairName?.split('/')[0];
-            usdPricesData[asset?.toLowerCase() === 'kda' ? 'coin' : asset?.toLowerCase()] =
-              lastCandle?.usdPrice?.close || lastCandle?.price?.close || 0;
+            const moduleName = asset?.toLowerCase() === 'kda' ? 'coin' : asset?.toLowerCase();
+            usdPricesData[moduleName] = lastCandle?.usdPrice?.close || lastCandle?.price?.close || 0;
+            if (moduleName === 'kaddex.kdx') {
+              usdPricesData['kaddex.skdx'] = lastCandle?.usdPrice?.close || lastCandle?.price?.close || 0;
+            }
           }
         });
         setUsdPrices(usdPricesData);

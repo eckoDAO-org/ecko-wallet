@@ -9,9 +9,7 @@ const ChartAllocation = () => {
 
   if (!accountBalance.allAccountsBalanceUsd || !fungibleTokens) return null;
 
-  return (
-    <Chart allAccountsBalanceUsd={accountBalance.allAccountsBalanceUsd} fungibleTokens={fungibleTokens} />
-  );
+  return <Chart allAccountsBalanceUsd={accountBalance.allAccountsBalanceUsd} fungibleTokens={fungibleTokens} />;
 };
 
 export default ChartAllocation;

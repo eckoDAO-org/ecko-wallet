@@ -9,12 +9,12 @@ import { LabeledContainer } from '../UI';
 
 const TokensContainer = styled.div`
   display: grid;
-  justify-content: center;
+  justify-content: start;
+  align-items: start;
   grid-template-columns: 50% 50%;
-  justify-items: center;
   gap: 12px;
   font-size: 13px;
-  color: #E6E6E6;
+  color: #e6e6e6;
 `;
 
 const Token = styled.img`
@@ -46,24 +46,27 @@ interface Props {
   fungibleTokens: IFungibleTokensByNetwork;
 }
 
-const Chart = ({
-  allAccountsBalanceUsd,
-  fungibleTokens,
-}: Props) => {
+const Chart = ({ allAccountsBalanceUsd, fungibleTokens }: Props) => {
   const summedTokenBalance = Object.values(allAccountsBalanceUsd).reduce(
-    (sumPerAccount, account) => account.reduce(
-      (sumPerNetwork, tokenBalance) => Object.keys(tokenBalance).reduce(
-        (sumPerToken, contractAddress) => ({
-          ...sumPerToken,
-          [contractAddress]: (sumPerToken[contractAddress] || 0) + tokenBalance[contractAddress],
-        }), sumPerNetwork,
-      ), sumPerAccount,
-  ), {} as TokenBalance);
+    (sumPerAccount, account) =>
+      account.reduce(
+        (sumPerNetwork, tokenBalance) =>
+          Object.keys(tokenBalance).reduce(
+            (sumPerToken, contractAddress) => ({
+              ...sumPerToken,
+              [contractAddress]: (sumPerToken[contractAddress] || 0) + tokenBalance[contractAddress],
+            }),
+            sumPerNetwork,
+          ),
+        sumPerAccount,
+      ),
+    {} as TokenBalance,
+  );
 
   const { series, labels, addresses, total } = useMemo(() => {
     const data = Object.keys(summedTokenBalance).reduce(
       (acc, contractAddress) => {
-        const sum = Number(summedTokenBalance[contractAddress].toFixed(2));
+        const sum = Number(summedTokenBalance[contractAddress]);
         if (sum === 0) return acc;
 
         let token: IFungibleToken | undefined;
@@ -92,7 +95,8 @@ const Chart = ({
           labels: [...acc.labels, symbol],
           addresses: [...acc.addresses, contractAddress],
         };
-      }, {
+      },
+      {
         series: [] as number[],
         labels: [] as string[],
         addresses: [] as string[],
@@ -134,12 +138,14 @@ const Chart = ({
             value: {
               offsetY: -45,
               color: '#fff',
+              fontFamily: 'Montserrat',
               fontWeight: 'bold',
               formatter: (value) => `$ ${Number(value).toFixed(2).toLocaleString()}`,
             },
             total: {
               show: true,
               color: '#fff',
+              fontFamily: 'Montserrat',
               label: 'TOT',
               fontWeight: 'bold',
               formatter: () => `$ ${total.toFixed(2).toLocaleString()}`,
@@ -159,6 +165,14 @@ const Chart = ({
         colors: '#fff',
       },
     },
+    tooltip: {
+      y: {
+        formatter: (value) => `$ ${value.toFixed(2).toLocaleString()}`,
+      },
+      style: {
+        fontFamily: 'Montserrat',
+      },
+    },
     grid: {
       padding: {
         bottom: -168,
@@ -171,7 +185,7 @@ const Chart = ({
       <ApexChart options={options} series={series} type="donut" height={360} />
       <TokensContainer>
         {series.map((value, index) => (
-          <DivFlex key={labels[index]} alignItems="center">
+          <DivFlex key={labels[index]} alignItems="center" justifyContent="flex-start">
             <Token src={images.wallet.tokens[addresses[index]] || images.wallet.iconUnknownKadenaToken} />
             <Dot color={COLORS[index % COLORS.length]} />
             <TokenName>{labels[index]}</TokenName>

@@ -1,4 +1,4 @@
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Legend } from 'recharts';
 import { DivFlex, SecondaryLabel } from 'src/components';
 import { useAccountBalanceContext } from 'src/contexts/AccountBalanceContext';
 import { LabeledContainer } from '../UI';
@@ -45,14 +45,6 @@ const CustomLegend = ({ payload, assetGroupsData }: { payload?: any; assetGroups
     ))}
   </DivFlex>
 );
-// const CustomTooltip = (props: any) => {
-//   console.log(`🚀 !!! ~ props:`, props);
-//   return (
-//     <DivFlex flexDirection="column" alignItems="start">
-//       ciao
-//     </DivFlex>
-//   );
-// };
 
 export const AssetAllocationChart = () => {
   const { allAccountsBalanceUsd } = useAccountBalanceContext();
@@ -98,7 +90,7 @@ export const AssetAllocationChart = () => {
   return (
     <LabeledContainer label="ASSET ALLOCATION">
       {Object.keys(summedBalances).length ? (
-        <ResponsiveContainer height={200}>
+        <ResponsiveContainer height={170}>
           <BarChart layout="vertical" barSize={30} height={80} data={assetGroupsData as any} margin={{ top: -20 }} barGap="5px">
             <Legend content={<CustomLegend assetGroupsData={assetGroupsData} />} />
             {/* <Tooltip content={<CustomTooltip />} /> */}

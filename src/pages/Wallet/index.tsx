@@ -57,17 +57,10 @@ const DivAssetList = styled.div`
   }
 `;
 
-const isSKdx = (contractAddress) => contractAddress === 'kaddex.skdx';
-
 const Wallet = () => {
   const history = useHistory();
   const { openModal, closeModal } = useModalContext();
-  const {
-    isLoadingBalances,
-    selectedAccountBalance,
-    allAccountsBalance,
-    usdPrices /* TODO: do usd prices refactor with->, allAccountsBalanceUsd */,
-  } = useAccountBalanceContext();
+  const { isLoadingBalances, selectedAccountBalance, allAccountsBalance, allAccountsBalanceUsd } = useAccountBalanceContext();
   const rootState = useSelector((state) => state);
   const { selectedNetwork } = rootState.extensions;
   const networkId = selectedNetwork?.networkId;
@@ -81,20 +74,25 @@ const Wallet = () => {
     return accountChainBalance?.reduce((prev, curr) => prev + ((curr && extractDecimal(curr[contractAddress])) || 0), 0) || 0;
   };
 
-  const getUsdPrice = (tokenSymbol, tokenBalance): number => {
-    const symbol = isSKdx(tokenSymbol) ? 'kaddex.kdx' : tokenSymbol;
-    const usdPrice = usdPrices[symbol] || 0;
-    return BigNumberConverter(Number(tokenBalance) * Number(usdPrice)) || 0;
+  const getTokenUsdBalance = (tokenSymbol, chainId?: number): number => {
+    const account = stateWallet?.account;
+    let sum = 0;
+    if (allAccountsBalanceUsd && allAccountsBalanceUsd[account]) {
+      if (typeof chainId === 'number') {
+        sum = allAccountsBalanceUsd[account][chainId]?.[tokenSymbol] ?? 0;
+      } else {
+        sum = allAccountsBalanceUsd[account].reduce((prev, curr) => prev + (curr[tokenSymbol] ?? 0), 0);
+      }
+    }
+    return BigNumberConverter(sum);
   };
 
   const getAccountBalance = (account: string) => {
-    const totalTokenUSD =
-      fungibleTokensByNetwork?.reduce(
-        (prev, curr) => prev + getUsdPrice(curr.contractAddress, getTokenTotalBalance(curr.contractAddress, account) || 0),
-        0,
-      ) ?? 0;
-
-    return totalTokenUSD + getUsdPrice('coin', getTokenTotalBalance('coin', account) || 0);
+    let sum = 0;
+    if (allAccountsBalanceUsd && allAccountsBalanceUsd[account]) {
+      sum = allAccountsBalanceUsd[account].reduce((prev, curr) => prev + Object.values(curr).reduce((p, c) => p + c, 0), 0);
+    }
+    return sum;
   };
 
   const getTokenChainDistribution = (contractAddress: string): ChainDistribution[] =>
@@ -102,11 +100,11 @@ const Wallet = () => {
 
   const getAllChainUsdBalance = () => {
     let totalUSDBalance = 0;
-    allAccountsBalance &&
-      Object.keys(allAccountsBalance).forEach((account) => {
-        totalUSDBalance += getAccountBalance(account);
-      });
-
+    if (allAccountsBalanceUsd && Object.values(allAccountsBalanceUsd).length) {
+      totalUSDBalance = Object.values(allAccountsBalanceUsd)
+        .flat()
+        .reduce((sum, value) => sum + Object.values(value).reduce((p, c) => p + c), 0);
+    }
     return totalUSDBalance;
   };
 
@@ -140,7 +138,7 @@ const Wallet = () => {
               contractAddress={contractAddress}
               chainId={cD.chainId}
               balance={cD.balance}
-              usdBalance={getUsdPrice(contractAddress, cD.balance)}
+              usdBalance={getTokenUsdBalance(contractAddress, cD.chainId)}
             />
           ))}
         {!hasBalance && symbol?.toLowerCase() === 'kda' ? (
@@ -239,7 +237,7 @@ const Wallet = () => {
             isLoadingBalances={isLoadingBalances}
             balance={getTokenTotalBalance('coin', stateWallet?.account)}
             name="KDA"
-            usdBalance={roundNumber(getUsdPrice('coin', getTokenTotalBalance('coin', stateWallet?.account)), 2)}
+            usdBalance={roundNumber(getTokenUsdBalance('coin'), 2)}
             logo={images.wallet.tokens.coin}
             onClick={() => selectedAccountBalance && openModal({ title: 'KDA Chain Distribution', content: renderChainDistribution('kda', 'coin') })}
           />
@@ -250,7 +248,7 @@ const Wallet = () => {
                 isLoadingBalances={isLoadingBalances}
                 balance={getTokenTotalBalance(t.contractAddress, stateWallet?.account)}
                 name={t.symbol?.toLocaleUpperCase()}
-                usdBalance={roundNumber(getUsdPrice(t.contractAddress, getTokenTotalBalance(t.contractAddress, stateWallet?.account)), 2)}
+                usdBalance={roundNumber(getTokenUsdBalance(t.contractAddress), 2)}
                 logo={images.wallet.tokens[t.contractAddress]}
                 onClick={() =>
                   selectedAccountBalance &&
@@ -277,7 +275,7 @@ const Wallet = () => {
                   isLoadingBalances={isLoadingBalances}
                   balance={tokenBalance || 0}
                   name={fT.symbol?.toUpperCase()}
-                  usdBalance={roundNumber(getUsdPrice(fT.contractAddress, tokenBalance || 0), 2)}
+                  usdBalance={roundNumber(getTokenUsdBalance(fT.contractAddress), 2)}
                   logo={images.wallet.tokens[fT.contractAddress] || images.wallet.iconUnknownKadenaToken}
                   onClick={() => {
                     selectedAccountBalance &&
