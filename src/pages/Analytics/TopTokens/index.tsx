@@ -19,7 +19,7 @@ const TopTokens = () => {
         title="TOP GAINER"
         iconPath={images.wallet.tickers[bestPerformer?.ticker] ?? images.wallet.tickers.generic}
         symbol={bestPerformer.ticker}
-        value={parseFloat(bestPerformer.diff.toFixed(2))}
+        value={parseFloat(bestPerformer?.diff?.toFixed(2) ?? 0)}
         isUp={bestPerformer.diff > 0}
       />
 
@@ -27,7 +27,7 @@ const TopTokens = () => {
         title="TOP LOSER"
         iconPath={images.wallet.tickers[worstPerformer?.ticker] ?? images.wallet.tickers.generic}
         symbol={worstPerformer.ticker}
-        value={parseFloat(worstPerformer.diff.toFixed(2))}
+        value={parseFloat(worstPerformer?.diff?.toFixed(2) ?? 0)}
         isUp={worstPerformer.diff > 0}
       />
 
@@ -38,7 +38,7 @@ const TopTokens = () => {
           secondTokenIconPath={images.wallet.tickers[topTradedPair?.token1.name] ?? images.wallet.tickers.generic}
           firstTokenSymbol={topTradedPair.token0.name}
           secondTokenSymbol={topTradedPair.token1.name}
-          value={parseFloat(topTradedPair.pricePercChange24h.toFixed(2))}
+          value={parseFloat(topTradedPair?.pricePercChange24h?.toFixed(2) ?? 0)}
           isUp={topTradedPair.pricePercChange24h > 0}
         />
       ) : null}
