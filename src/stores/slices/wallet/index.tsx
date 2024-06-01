@@ -84,5 +84,6 @@ export const getCurrentWallet = (state: RootState) => state.wallet.wallets.find(
 export const getWallets = (state: RootState) => state.wallet.wallets;
 export const getAccount = (state: RootState) => state.wallet.account;
 export const getChainId = (state: RootState) => state.wallet.chainId;
+export const getWalletInfo = (state: RootState) => state.wallet;
 
 export { storeWallet };

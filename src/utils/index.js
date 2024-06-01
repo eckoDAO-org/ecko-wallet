@@ -68,8 +68,7 @@ export const convertRecent = (data) => {
 export const shortenAddress = (address = '', start = 5, chars = 5) =>
   address.length > 14 ? `${address.substring(0, start)} ... ${address.substring(address.length - chars)}` : address;
 
-export const shortenString = (string = '', limit = 20) =>
-  string.length > limit ? `${string.substring(0, limit)}...` : string;
+export const shortenString = (string = '', limit = 20) => (string.length > limit ? `${string.substring(0, limit)}...` : string);
 
 export const shortenPrivateKey = (address = '', start = 5, chars = 5) =>
   `${address.substring(0, start)}****************${address.substring(address.length - chars)}`;
@@ -93,6 +92,31 @@ export const BigNumberConverter = (value) => {
   const valueConverter = parseFloat(value);
   const result = new BigNumber(valueConverter).decimalPlaces(12, BigNumber.ROUND_DOWN).toString();
   return parseFloat(result);
+};
+
+export const getNumberWithValidDecimals = (value) => {
+  const bn = new BigNumber(value);
+  if (bn.isZero()) {
+    return '0';
+  }
+  const formatted = bn.toFixed();
+  let nonZeroCount = 0;
+  const decimalIndex = formatted.indexOf('.');
+
+  if (decimalIndex === -1) {
+    return formatted;
+  }
+  for (let i = decimalIndex + 1; i < formatted.length; i += 1) {
+    if (formatted[i] !== '0') {
+      nonZeroCount += 1;
+    }
+
+    if (nonZeroCount >= 2) {
+      return formatted.slice(0, i + 1);
+    }
+  }
+
+  return formatted;
 };
 
 export const getCoingeckoIdFromContractAddress = (contractAddress) =>

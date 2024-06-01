@@ -44,6 +44,8 @@ import ImportLedger from './pages/ImportHardwareWallet/ImportLedger';
 import GovernanceMining from './pages/GovernanceMining';
 import MarmaladeNGCollectionDetails from './pages/Nft/NftTypes/MarmaladeNG/MarmaladeNGCollectionDetails';
 import TransactionsImporter from './components/TransactionsImporter';
+import Analytics from './pages/Analytics';
+import AnalyticsTracker from './components/AnalyticsTracker';
 
 const Container = styled.div`
   width: 1000px;
@@ -99,6 +101,7 @@ const AppContainer = () => {
           <PrivateRoute path="/nft-details" component={CategoryDetail} />
           <PrivateRoute path="/ng-details" component={MarmaladeNGCollectionDetails} />
           <PrivateRoute path="/governance-mining" component={GovernanceMining} />
+          <PrivateRoute path="/analytics" component={Analytics} />
           <PrivateRoute path="/" component={Wallet} />
           <Redirect to="/" />
         </Switch>
@@ -106,6 +109,7 @@ const AppContainer = () => {
         {isLoading && <Loading />}
         <WalletCreator />
         <TransactionsImporter />
+        <AnalyticsTracker />
       </TwoFactorAuthenticator>
     </Container>
   );
