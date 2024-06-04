@@ -23,7 +23,7 @@ const PortfolioValueApproved = () => {
   const from = stepInDays === -1 ? TIME_EPOCH : moment().subtract(stepInDays, 'days').format('YYYY-MM-DD');
   const { data } = useAccountsBalanceChart(trackedAddresses, from, to);
 
-  const points = useMemo(() => data.map((item) => [new Date(item.date).getTime(), item.totalUsdValue]), [data]);
+  const points = useMemo(() => data.map((item) => [new Date(item.date).getTime(), item.totalUsdValue]), [data]).sort((a, b) => b[0] - a[0]);
 
   if (points.length === 0) {
     return <span>No data available</span>;
