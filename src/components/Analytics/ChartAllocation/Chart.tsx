@@ -40,7 +40,7 @@ const Dot = styled.div<{ color: string }>`
   margin-right: 8px;
 `;
 
-const COLORS = ['#E25F5F', '#E1E794', '#E3E3E3', '#94AEE7', '#B7E794', '#ED1CB5', '#FD9F28', '#E794E7', '#E7E494', '#94E7DA'];
+const COLORS = ['#E25F5F', '#E1E794', '#877ce6', '#94AEE7', '#B7E794', '#ED1CB5', '#FD9F28', '#E794E7', '#E7E494', '#94E7DA'];
 
 interface Props {
   allAccountsBalanceUsd: AccountBalanceProps;
@@ -177,7 +177,9 @@ const Chart = ({ allAccountsBalanceUsd, fungibleTokens }: Props) => {
     },
     grid: {
       padding: {
-        bottom: -168,
+        right: 20,
+        left: 20,
+        bottom: -160,
       },
     },
   };
