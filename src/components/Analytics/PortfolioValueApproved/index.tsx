@@ -23,7 +23,7 @@ const PortfolioValueApproved = () => {
   const from = stepInDays === -1 ? TIME_EPOCH : moment().subtract(stepInDays, 'days').format('YYYY-MM-DD');
   const { data } = useAccountsBalanceChart(trackedAddresses, from, to);
 
-  const points = useMemo(() => data.map((item) => [new Date(item.date).getTime(), item.totalUsdValue]), [data]).sort((a, b) => b[0] - a[0]);
+  const points = useMemo(() => data.map((item) => [new Date(item.date).getTime(), item.totalUsdValue]), [data]);
 
   if (points.length === 0) {
     return <span>No data available</span>;
@@ -60,7 +60,7 @@ const PortfolioValueApproved = () => {
         <Trend value={growingFactor} isUp={isUp} />
       </DivFlex>
       <Content>
-        <PortfolioValueChart points={points} />
+        <PortfolioValueChart points={points.sort((a, b) => b[0] - a[0])} />
       </Content>
       <TimeSelector defaultStep={step} onTimeSelected={onTimeSelected} />
     </>
