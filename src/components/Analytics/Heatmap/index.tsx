@@ -20,7 +20,7 @@ const CustomizedContent = (props: any) => {
   const { depth, x, y, width, height, diff, name, price } = props;
 
   const backgroundColor = diff >= 0 ? '#009b10' : '#e33a3c';
-  const fontSize = Math.max(12, Math.min(14, width / 8, height / 8));
+  const fontSize = Math.min(14, Math.max(8, Math.min(width / 8, height / 8)));
 
   return width < 20 || height < 20 ? null : (
     <g>
