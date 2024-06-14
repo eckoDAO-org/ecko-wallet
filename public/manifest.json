@@ -1,7 +1,7 @@
 {
   "name": "eckoWALLET",
   "description": "The best web extension wallet for the Kadena blockchain.",
-  "version": "2.14.2",
+  "version": "2.14.3",
   "manifest_version": 3,
   "background": {
     "service_worker": "app/background.js"

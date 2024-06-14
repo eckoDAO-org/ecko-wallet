@@ -92,6 +92,9 @@ import iconArkd from './arkade-logo.png';
 import iconWiz from './wizz.svg';
 import iconTeckel from './teckel-coin.png';
 import iconCrankk from './crankk.svg';
+import iconBro from './bro-logo.png';
+import iconCfly from './cfly-logo.svg';
+import iconFinux from './finux-logo.png';
 import zUSD from './zUSD.png';
 import checkedV from './checked-v.svg';
 import violetAdd from './violet-add.svg';
@@ -194,26 +197,29 @@ const wallet = {
   iconBuy,
   tickers: {
     generic: iconUnknownKadenaToken,
-    KDA: iconKadenaToken,
-    KDX: iconKdx,
-    zUSD,
-    MAGA: iconMaga,
-    HERON: iconHeron,
-    KISHK: iconKishu,
-    FLUX: iconFlux,
-    HYPE: iconHype,
-    KDL: iconKdl,
-    BABENA: iconBabena,
     ANEDAK: iconAnedak,
-    MOK: iconMok,
-    KWBTC: iconKwbtc,
-    KAPY: iconKapy,
-    DOCU: iconDocu,
-    KDS: iconKds,
     ARKD: iconArkd,
-    WIZ: iconWiz,
-    TECKEL: iconTeckel,
+    BABENA: iconBabena,
+    BRO: iconBro,
+    CFLY: iconCfly,
     CRANKK: iconCrankk,
+    DOCU: iconDocu,
+    FINUX: iconFinux,
+    FLUX: iconFlux,
+    HERON: iconHeron,
+    HYPE: iconHype,
+    KAPY: iconKapy,
+    KDA: iconKadenaToken,
+    KDL: iconKdl,
+    KDS: iconKds,
+    KDX: iconKdx,
+    KISHK: iconKishu,
+    KWBTC: iconKwbtc,
+    MAGA: iconMaga,
+    MOK: iconMok,
+    TECKEL: iconTeckel,
+    zUSD,
+    WIZ: iconWiz,
   },
   tokens: {
     generic: iconUnknownKadenaToken,
@@ -241,8 +247,11 @@ const wallet = {
     'free.crankk01': iconCrankk,
     'free.corona-token': iconCrna,
     'free.maga': iconMaga,
+    'free.finux': iconFinux,
     'n_b742b4e9c600892af545afb408326e82a6c0c6ed.zUSD': zUSD,
     'n_e309f0fa7cf3a13f93a8da5325cdad32790d2070.heron': iconHeron,
+    'n_582fed11af00dc626812cd7890bb88e72067f28c.bro': iconBro,
+    'free.cyberfly_token': iconCfly,
   },
 };
 const initPage = {
