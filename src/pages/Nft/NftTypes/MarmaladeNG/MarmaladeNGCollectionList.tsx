@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import images from 'src/images';
 import { useHistory } from 'react-router-dom';
 import { idToPascalCase } from 'src/utils';
+import { hideLoading, showLoading } from 'src/stores/slices/extensions';
 import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import { fetchLocal } from 'src/utils/chainweb';
 import {
@@ -66,10 +67,10 @@ const MarmaladeNGCollectionList = () => {
           // eslint-disable-next-line no-console
           console.error('Error fetching NG NFTs', err);
         }
-
+        showLoading();
         Promise.all(promises)
           .then(async (resArray: any[]) => {
-            for (const res of resArray) {
+            const allPrepareNgCollectionsPromises = resArray.map(async (res) => {
               if (res?.result?.status === 'success' && Object.values(res?.result?.data)?.length) {
                 const collections: {
                   firstToken: string;
@@ -77,49 +78,55 @@ const MarmaladeNGCollectionList = () => {
                   id: string;
                   name: string;
                 }[] = Object.values(res?.result?.data);
-                const prepareNgCollections: NgCollection[] = [];
-                for (const collection of collections) {
-                  if (MARMALADE_NG_WHITELISTED_COLLECTIONS.includes(collection.id)) {
-                    try {
-                      let ownedCount = 0;
-                      const allCollectionTokensResponse = await fetchLocal(
-                        `(${MARMALADE_NG_CONTRACT}.policy-collection.list-tokens-of-collection "${collection.id}")`,
-                        selectedNetwork?.url,
-                        selectedNetwork?.networkId,
-                        res?.metaData?.publicMeta?.chainId,
-                      );
-                      if (allCollectionTokensResponse?.result?.status === 'success') {
-                        ownedCount = allCollectionTokensResponse?.result?.data?.filter((t) => ownedTokens.includes(t))?.length;
-                      }
-                      const uriDataResponse = await fetch(getGatewayUrlByIPFS(collection?.firstTokenURI, res?.metaData?.publicMeta?.chainId));
-                      const uriData = await uriDataResponse.json();
-                      const src = uriData?.image;
 
-                      prepareNgCollections.push({
-                        id: collection.id,
-                        name: collection?.name,
-                        src,
-                        chainId: res?.metaData?.publicMeta?.chainId,
-                        ownedCount,
-                      });
-                    } catch (err) {
-                      // eslint-disable-next-line no-console
-                      console.error('Error fetching IPFS', err);
+                showLoading();
+                const prepareNgCollections: (NgCollection | null)[] = await Promise.all(
+                  collections.map(async (collection) => {
+                    if (MARMALADE_NG_WHITELISTED_COLLECTIONS.includes(collection.id)) {
+                      try {
+                        let ownedCount = 0;
+                        const allCollectionTokensResponse = await fetchLocal(
+                          `(${MARMALADE_NG_CONTRACT}.policy-collection.list-tokens-of-collection "${collection.id}")`,
+                          selectedNetwork?.url,
+                          selectedNetwork?.networkId,
+                          res?.metaData?.publicMeta?.chainId,
+                        );
+                        if (allCollectionTokensResponse?.result?.status === 'success') {
+                          ownedCount = allCollectionTokensResponse?.result?.data?.filter((t) => ownedTokens.includes(t))?.length;
+                        }
+
+                        const uriDataResponse = await fetch(getGatewayUrlByIPFS(collection?.firstTokenURI, res?.metaData?.publicMeta?.chainId));
+                        const uriData = await uriDataResponse.json();
+                        const src = uriData?.image;
+
+                        return {
+                          id: collection.id,
+                          name: collection?.name,
+                          src,
+                          chainId: res?.metaData?.publicMeta?.chainId,
+                          ownedCount,
+                        };
+                      } catch (err) {
+                        console.error('Error fetching IPFS', err);
+                        return null;
+                      }
                     }
-                  }
-                }
-                setNgCollections(prepareNgCollections);
-                // eslint-disable-next-line no-console
-                console.log('SUCCESS GET NG NFT DATA');
-              } else {
-                // eslint-disable-next-line no-console
-                console.log('fetch error');
+                    return null;
+                  }),
+                );
+                hideLoading();
+                return prepareNgCollections.filter((collection): collection is NgCollection => collection !== null);
               }
-            }
+              return [];
+            });
+
+            const allPrepareNgCollections = (await Promise.all(allPrepareNgCollectionsPromises)).flat();
+            setNgCollections(allPrepareNgCollections);
+            console.log('SUCCESS GET NG NFT DATA');
           })
           .catch((err) => {
-            // eslint-disable-next-line no-console
             console.error('Error fetching NG NFTs', err);
+            hideLoading();
           });
       }
     };

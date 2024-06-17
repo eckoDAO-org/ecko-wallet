@@ -10,8 +10,20 @@ export enum NFTTypes {
 export const MARMALADE_NG_CHAINS = ['8', '1'];
 export const MARMALADE_NG_CONTRACT = 'n_4e470a97222514a8662dd1219000a0431451b0ee';
 export const MARMALADE_NG_WHITELISTED_COLLECTIONS = [
+  // "c_80's Arkade Bulls_sxPvAu4nOiM0RUWTKq0e2ZW61uCRlqcLpuUWYuxZ3t0",
+  // "c_Arkade 90's Bulls_izEBv6viJhCRtM439l26ILzBrHGKFV9k3dFyus7IZ6Q",
+  // 'c_Arkade 90s Bulls_jyHFdiUA1UlatNjIikOv1vonYXgP3tgy9c8wKRGv0Vw',
+  // 'c_Arkade Looney Bulls_eDlz6M-QhPYAVNo33CMrliYgZbQKtsrES2nVlvz1_j4',
+  // 'c_Eighties Bulls_NR69rRj4h0HSxgDFDp9kUJFaoFnQjKPOuYO_XTeE2L8',
+  // 'c_Kadena Monster Punks_KzuxG2Vd3FhDi74qTI_3GhFShtcdSF1Of85jsGCdQUQ',
+  // 'c_Kadena_Monster_Punks_DqTG1NpthxhgfKDG8MVd_IloPlhTJeCH9s8-PSUcWjI',
+  // 'c_Kadena_Skellies_v1.0_hmPtidxDM3f9fE3nv58qweE_yd4yFe656pVB5x2Yhvg',
+  'c_Kadena_Skellies_v1.5_zGbEtoi80xds-7OTR7ydWPHPqWvqpybulAPDL-OewGQ',
+  // 'c_Looney Bulls_zi6BNKuuVu1Qgkyq58duzP79VNYGnLeFlS0r8HMbsfc',
   'c_Marmalade_NG_launch_Q9AJ859ISCW2BoqPumvm-T3XetV0-4SJzKpjc9G-LZg',
   'c_NGE_UyGj-2fVLsysbfa6hTobIIE9nOh_aqPDDfYEhWlJv6c',
+  // 'c_Skellies_v1.0_TN_sTgd1BaLG_-promP51MlRNWOrEB4R667See6VZtM',
+  // 'c_TestCollection_P8k5ckLwbIxKkvrOtGBrRojuaMbSgoPXPPuKUo6hyU4',
   'c_kadena-kings_dyedla8EGc56PDwvcF9VrO5RvpssA0jD4XUS2pvBWxA',
 ];
 
@@ -278,8 +290,8 @@ export function getCollectionsAndTokens(numCollections) {
       (collection${i} (at ${i} collections))
       (collection-details${i} (${MARMALADE_NG_CONTRACT}.policy-collection.get-collection collection${i}))
       (tokens${i} (${MARMALADE_NG_CONTRACT}.policy-collection.list-tokens-of-collection collection${i}))
-      (first-token${i} (at 0 tokens${i}))
-      (first-token-uri${i} (if (not (= "0" first-token${i})) (${MARMALADE_NG_CONTRACT}.ledger.get-uri first-token${i}) "No URI"))`;
+      (first-token${i} (if (> (length tokens${i}) 0) (at 0 tokens${i}) "No Token"))
+      (first-token-uri${i} (if (not (= "No Token" first-token${i})) (${MARMALADE_NG_CONTRACT}.ledger.get-uri first-token${i}) "No URI"))`;
   }
 
   pactCode += '\n)\n{';
