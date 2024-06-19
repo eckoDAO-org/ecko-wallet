@@ -14,7 +14,6 @@ import received from './received-white.svg';
 import send from './send.svg';
 import trash from './trash.png';
 import violetInfo from './violet-info.svg';
-import logoName from './logo-name.svg';
 import trashPink from './trash-pink.png';
 import view from './view.svg';
 import arrowRight from './arrow-right.png';
@@ -100,9 +99,7 @@ import checkedV from './checked-v.svg';
 import violetAdd from './violet-add.svg';
 import trashViolet from './trash-violet.svg';
 import kdaIcon from './kda-icons.svg';
-import logoWallet from './logo-wallet.svg';
 import iconSend from './arrow-down.svg';
-import logoWalletKadena from './logo-wallet-kaden.svg';
 import iconKadenaToken from './icon-kadena-token.svg';
 import iconUnknownKadenaToken from './unknown_token.svg';
 import iconHome from './icon-home.svg';
@@ -188,7 +185,6 @@ const wallet = {
   checkedV,
   kdaIcon,
   iconSend,
-  logoWalletKadena,
   iconKadenaToken,
   iconUnknownKadenaToken,
   iconMorePurple,
@@ -317,7 +313,6 @@ const analytics = {
 };
 const images = {
   wallet,
-  logoName,
   initPage,
   generateAccount,
   transfer,
@@ -335,7 +330,6 @@ const images = {
   toast,
   search,
   settingWhite,
-  logoWallet,
   iconHome,
   iconHistory,
   iconHistoryActive,
