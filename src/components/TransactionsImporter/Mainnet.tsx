@@ -56,6 +56,10 @@ const MainnetTransactionsImporter = () => {
 
   const processActivities = useCallback(
     async (activities: LocalActivity[]) => {
+      if (!transactions.length) {
+        return;
+      }
+
       const newActivities: Record<string, LocalActivity> = {};
 
       for (let i = 0; i < transactions.length; i += 1) {
@@ -67,11 +71,58 @@ const MainnetTransactionsImporter = () => {
         }
       }
 
-      const updatedActivities = Object.keys(newActivities).map((requestKeyId) => newActivities[requestKeyId]);
+      const updatedActivities = activities.map((activity) => {
+        const activityId = activity.id || generateActivityId(activity);
 
+        // New activity already exists in local: update it
+        if (newActivities[activityId]) {
+          return {
+            ...activity,
+            ...newActivities[activity.id],
+            id: activityId,
+          };
+        }
+
+        // Activity doesn't have id: generate it
+        if (!activity.id) {
+          return {
+            ...activity,
+            id: activityId,
+          };
+        }
+
+        // Activity has id and it's not in new activities: keep it as is
+        return activity;
+      });
+
+      // Add new activities that are not already in the list filtering duplicates
       const updatedActivitiesWithNew = updatedActivities.concat(
         Object.values(newActivities).filter((activity) => !updatedActivities.find((a) => a.id === activity.id)),
       );
+
+      const duplicates = updatedActivitiesWithNew.filter(
+        (activity, index, self) => index !== self.findIndex((a) => a.id === activity.id),
+      );
+
+      // TODO: added for monitoring - remove it later
+      /* START */
+      if (duplicates.length) {
+        // eslint-disable-next-line no-console
+        console.warn('Duplicates found!');
+        // eslint-disable-next-line no-console
+        console.log('Duplicates: ', duplicates);
+        // eslint-disable-next-line no-console
+        console.log('updatedActivitiesWithNew: ', updatedActivitiesWithNew);
+        // eslint-disable-next-line no-console
+        console.log('updatedActivities: ', updatedActivities);
+        // eslint-disable-next-line no-console
+        console.log('newActivities: ', newActivities);
+        // eslint-disable-next-line no-console
+        console.log('transactions: ', transactions);
+        // eslint-disable-next-line no-console
+        console.log('activities: ', activities);
+      }
+      /* END */
 
       if (!isEqual(updatedActivitiesWithNew, activities)) {
         await setLocalActivities('mainnet01', account, updatedActivitiesWithNew);
