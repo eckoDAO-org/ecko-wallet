@@ -181,7 +181,7 @@ const Wallet = () => {
   const { theme } = useAppThemeContext();
 
   const handleBuy = () => {
-    const url = history.createHref({ pathname: 'buy' });
+    const url = history.createHref({ pathname: 'buy/simplex' });
     window.open(url, '_blank');
   };
 
