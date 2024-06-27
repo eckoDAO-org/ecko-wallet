@@ -16,6 +16,7 @@ import { ConfirmModal } from 'src/components/ConfirmModal';
 import { IconButton } from 'src/components/IconButton';
 import { ActionList } from 'src/components/ActionList';
 import { useSelector } from 'react-redux';
+import BuyCryptoCurrenciesModal from 'src/components/BuyCryptoCurrenciesModal';
 import KDXGovernanceMiningButton from 'src/components/GovernanceMining/KDXButton';
 import { roundNumber, BigNumberConverter, humanReadableNumber } from 'src/utils';
 import { MAINNET_NETWORK_ID, extractDecimal } from 'src/utils/chainweb';
@@ -180,11 +181,6 @@ const Wallet = () => {
 
   const { theme } = useAppThemeContext();
 
-  const handleBuy = () => {
-    const url = history.createHref({ pathname: 'buy/simplex' });
-    window.open(url, '_blank');
-  };
-
   const handleHistory = () => {
     history.push('/history');
   };
@@ -218,7 +214,12 @@ const Wallet = () => {
             iconUrl={images.wallet.arrowReceive}
             variant="secondary"
           />
-          <CircledButton onClick={handleBuy} label="Buy" iconUrl={images.wallet.iconBuy} variant="brand" />
+          <CircledButton
+            onClick={() => openModal({ title: 'Buy Crypto Currencies', content: <BuyCryptoCurrenciesModal /> })}
+            label="Buy"
+            iconUrl={images.wallet.iconBuy}
+            variant="brand"
+          />
           <CircledButton onClick={handleHistory} label="History" iconUrl={images.iconHistory} variant="empty" />
         </DivFlex>
       </DivBottomShadow>
