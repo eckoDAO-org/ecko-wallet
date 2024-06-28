@@ -1,25 +1,25 @@
 import React from 'react';
 import { BuyCryptoProvider } from 'src/utils/crypto-providers/types';
-import CryptoProvider from 'src/utils/crypto-providers/simplex';
-import Step1 from './steps/QuoteRequestor';
-import Step2 from './steps/PaymentRequestor';
-import Step3 from './steps/PaymentCheckout';
-import Step4 from './steps/CheckoutCompleted';
-import Logic1 from './logics/QuoteRequestor';
-import Logic2 from './logics/PaymentRequestor';
-import Logic3 from './logics/PaymentCheckout';
-import Logic4 from './logics/CheckoutCompleted';
-import View1 from './views/QuoteRequestor';
-import View2 from './views/PaymentRequestor';
+import SimplexProvider from 'src/utils/crypto-providers/simplex';
+import Step1 from 'src/components/BaseCryptocurrenciesWizard/steps/QuoteRequestor';
+import Step2 from 'src/components/BaseCryptocurrenciesWizard/steps/PaymentRequestor';
+import Step3 from 'src/components/BaseCryptocurrenciesWizard/steps/PaymentCheckout';
+import Step4 from 'src/components/BaseCryptocurrenciesWizard/steps/CheckoutCompleted';
+import Logic1 from 'src/components/BaseCryptocurrenciesWizard/logics/QuoteRequestor';
+import Logic2 from 'src/components/BaseCryptocurrenciesWizard/logics/PaymentRequestor';
+import Logic3 from 'src/components/BaseCryptocurrenciesWizard/logics/PaymentCheckout';
+import Logic4 from 'src/components/BaseCryptocurrenciesWizard/logics/CheckoutCompleted';
+import View1 from 'src/components/BaseCryptocurrenciesWizard/views/QuoteRequestor';
+import View2 from 'src/components/BaseCryptocurrenciesWizard/views/PaymentRequestor';
+import View4 from 'src/components/BaseCryptocurrenciesWizard/views/CheckoutCompleted';
 import View3 from './views/SimplexPaymentCheckout';
-import View4 from './views/CheckoutCompleted';
 
-const Wizard = () => {
+const BuySimplexCryptocurrenciesWizard = () => {
   const provider = React.useRef<BuyCryptoProvider>();
   const [step, setStep] = React.useState(0);
 
   if (!provider.current) {
-    provider.current = new CryptoProvider();
+    provider.current = new SimplexProvider();
   }
 
   const goToStep = (newStep: number) => () => {
@@ -40,4 +40,4 @@ const Wizard = () => {
   return steps[step];
 };
 
-export default Wizard;
+export default BuySimplexCryptocurrenciesWizard;

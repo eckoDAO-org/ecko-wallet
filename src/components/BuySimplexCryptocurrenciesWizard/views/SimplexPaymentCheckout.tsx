@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { CommonLabel } from 'src/components';
 import { Body, Header, Page } from 'src/components/Page';
-import { PaymentCheckoutViewProps } from './types';
+import { PaymentCheckoutViewProps } from 'src/components/BaseCryptocurrenciesWizard/views/types';
 
 const Checkout = styled.div`
   min-width: 350px;
