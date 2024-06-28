@@ -40,7 +40,13 @@ interface FormData {
 
 const optionify = (option: string) => ({ label: option, value: option });
 
-const QuoteRequestor = ({ fiatCurrencyAvailabilities, cryptoCurrencies, requestQuote }: QuoteRequestorViewProps) => {
+const QuoteRequestor = ({
+  fiatCurrencyAvailabilities,
+  cryptoCurrencies,
+  requestQuote,
+  providerName,
+  providerEmail,
+}: QuoteRequestorViewProps) => {
   const [showDisclaimer, setShowDisclaimer] = React.useState(false);
   const wallets = useAppSelector(getWallets);
   const currentWallet = useAppSelector(getCurrentWallet);
@@ -256,7 +262,7 @@ const QuoteRequestor = ({ fiatCurrencyAvailabilities, cryptoCurrencies, requestQ
                   label={
                     <CommonLabel>
                       I have read the <DisclaimerLabel onClick={handleClickDisclaimer}>disclaimer</DisclaimerLabel>&nbsp; and consent to eckoWALLET
-                      providing my deposit address and user name to Simplex.
+                      providing my deposit address and user name to {providerName}.
                     </CommonLabel>
                   }
                 />
@@ -265,14 +271,14 @@ const QuoteRequestor = ({ fiatCurrencyAvailabilities, cryptoCurrencies, requestQ
             {errors.consent && <InputError>{errors.consent.message}</InputError>}
             {showDisclaimer && (
               <LabelWithLink fontSize={12}>
-                Please read and agree to the Terms of Use of Simplex before using this service. eckoWALLET does not currently support purchases of
+                Please read and agree to the Terms of Use of {providerName} before using this service. eckoWALLET does not currently support purchases of
                 cryptocurrency using debit or credit cards. These transactions must be completed with a third-party. While eckoWALLET will direct you
-                to Simplex to complete the transaction above, you are not required to purchase cryptocurrency through Simplex and there may be other
-                ways to purchase cryptocurrency using your debit or credit card. Simplex is not owned or operated by eckoWALLET and as such we cannot
+                to {providerName} to complete the transaction above, you are not required to purchase cryptocurrency through {providerName} and there may be other
+                ways to purchase cryptocurrency using your debit or credit card. {providerName} is not owned or operated by eckoWALLET and as such we cannot
                 guarantee that your transaction will process successfully. As a convenience to our customers, eckoWALLET will provide your deposit
-                address and username to Simplex should you choose to complete this transaction. By checking the box below, you consent to eckoWALLET
-                providing this information to Simplex on your behalf and acknowledge your agreement to this disclaimer. For any questions about your
-                card payment, please contact <a href="mailto:support@simplex.com">support@simplex.com</a>. eckoWALLET does not assume responsibility
+                address and username to {providerName} should you choose to complete this transaction. By checking the box below, you consent to eckoWALLET
+                providing this information to {providerName} on your behalf and acknowledge your agreement to this disclaimer. For any questions about your
+                card payment, please contact <a href={`mailto:${providerEmail}`}>{providerEmail}</a>. eckoWALLET does not assume responsibility
                 for any loss or damage caused by the use of the service.
               </LabelWithLink>
             )}

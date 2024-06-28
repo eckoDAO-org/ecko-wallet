@@ -73,6 +73,9 @@ class SimplexProvider implements BuyCryptoProvider {
   private quoteRequest?: PurchaseQuoteRequest;
   private checkoutStatus?: PurchaseCheckoutStatus;
 
+  getName = () => 'Simplex';
+  getEmail = () => 'support@simplex.com';
+
   constructor() {
     this.initSdk();
   }

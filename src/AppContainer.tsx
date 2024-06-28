@@ -37,7 +37,7 @@ import PageSelectTheme from './pages/Setting/SelectTheme';
 import PageConnectedSites from './pages/Setting/ConnectedSites';
 import TwoFactorAuthenticator from './components/TwoFactorAuthenticator';
 import PageWalletConnect from './pages/Setting/WalletConnect';
-import BuySimplexCryptocurrencies from './pages/Wallet/views/BuySimplexCryptocurrencies';
+import BuySimplexCryptocurrencies from './components/BuySimplexCryptocurrenciesWizard';
 import CategoryDetail from './pages/Nft/CategoryDetail';
 import ImportHardwareWallet from './pages/ImportHardwareWallet';
 import ImportLedger from './pages/ImportHardwareWallet/ImportLedger';

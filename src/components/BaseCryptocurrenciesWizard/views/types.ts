@@ -6,6 +6,8 @@ export interface QuoteRequestorViewProps extends ViewProps {
   fiatCurrencyAvailabilities: FiatCurrencyAvailabilities;
   cryptoCurrencies: CryptoCurrencies;
   requestQuote: (requestQuote: PurchaseQuoteRequest) => void;
+  providerName: string;
+  providerEmail: string;
 }
 
 export interface PaymentRequestorViewProps extends ViewProps {

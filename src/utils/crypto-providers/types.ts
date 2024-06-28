@@ -42,6 +42,9 @@ export interface PurchaseCheckoutStatus {
 }
 
 export interface BuyCryptoProvider {
+  getName: () => string;
+  getEmail: () => string;
+
   getQuote: () => PurchaseQuote|undefined;
   getPayment: () => PurchasePayment|undefined;
   getCheckoutStatus: () => PurchaseCheckoutStatus|undefined;

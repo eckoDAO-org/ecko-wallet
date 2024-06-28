@@ -6,6 +6,9 @@ class MockProvider implements BuyCryptoProvider {
   quoteRequest?: PurchaseQuoteRequest;
   checkoutStatus?: PurchaseCheckoutStatus;
 
+  getName = () => 'Mock Provider';
+  getEmail = () => 'mock@example.com';
+
   getFiatCurrencyAvailabilities = () => (
     new Promise<FiatCurrencyAvailabilities>((resolve) => {
       setTimeout(() => {

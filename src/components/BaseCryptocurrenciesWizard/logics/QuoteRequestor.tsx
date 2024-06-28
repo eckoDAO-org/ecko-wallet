@@ -42,7 +42,15 @@ const QuoteRequestor = ({ provider, View, onQuoteRetrieved }: QuoteRequestorLogi
     return <Loading />;
   }
 
-  return <View fiatCurrencyAvailabilities={fiatCurrencyAvailabilities} cryptoCurrencies={cryptoCurrencies} requestQuote={handleRequestQuote} />;
+  return (
+    <View
+      fiatCurrencyAvailabilities={fiatCurrencyAvailabilities}
+      cryptoCurrencies={cryptoCurrencies}
+      requestQuote={handleRequestQuote}
+      providerName={provider.getName()}
+      providerEmail={provider.getEmail()}
+    />
+  );
 };
 
 export default QuoteRequestor;
