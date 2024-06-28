@@ -38,6 +38,7 @@ import PageConnectedSites from './pages/Setting/ConnectedSites';
 import TwoFactorAuthenticator from './components/TwoFactorAuthenticator';
 import PageWalletConnect from './pages/Setting/WalletConnect';
 import BuySimplexCryptocurrencies from './components/BuySimplexCryptocurrenciesWizard';
+import BuyTopperCryptocurrencies from './components/BuyTopperCryptocurrenciesWizard';
 import CategoryDetail from './pages/Nft/CategoryDetail';
 import ImportHardwareWallet from './pages/ImportHardwareWallet';
 import ImportLedger from './pages/ImportHardwareWallet/ImportLedger';
@@ -97,6 +98,7 @@ const AppContainer = () => {
           <PrivateRoute path="/setting" component={PageSetting} />
           <PrivateRoute path="/history" component={History} />
           <PrivateRoute path="/buy/simplex" component={BuySimplexCryptocurrencies} />
+          <PrivateRoute path="/buy/topper" component={BuyTopperCryptocurrencies} />
           <PrivateRoute path="/nft" component={Nft} />
           <PrivateRoute path="/nft-details" component={CategoryDetail} />
           <PrivateRoute path="/ng-details" component={MarmaladeNGCollectionDetails} />
