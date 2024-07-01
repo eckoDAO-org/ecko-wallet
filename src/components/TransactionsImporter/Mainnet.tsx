@@ -71,38 +71,38 @@ const MainnetTransactionsImporter = () => {
         }
       }
 
-      const updatedActivities = activities.map((activity) => {
-        const activityId = activity.id || generateActivityId(activity);
+      const updatedActivities = activities
+        .filter((txLoc) => txLoc.status === 'pending')
+        .map((activity) => {
+          const activityId = activity.id || generateActivityId(activity);
 
-        // New activity already exists in local: update it
-        if (newActivities[activityId]) {
-          return {
-            ...activity,
-            ...newActivities[activity.id],
-            id: activityId,
-          };
-        }
+          // New activity already exists in local: update it
+          if (newActivities[activityId]) {
+            return {
+              ...activity,
+              ...newActivities[activity.id],
+              id: activityId,
+            };
+          }
 
-        // Activity doesn't have id: generate it
-        if (!activity.id) {
-          return {
-            ...activity,
-            id: activityId,
-          };
-        }
+          // Activity doesn't have id: generate it
+          if (!activity.id) {
+            return {
+              ...activity,
+              id: activityId,
+            };
+          }
 
-        // Activity has id and it's not in new activities: keep it as is
-        return activity;
-      });
+          // Activity has id and it's not in new activities: keep it as is
+          return activity;
+        });
 
       // Add new activities that are not already in the list filtering duplicates
       const updatedActivitiesWithNew = updatedActivities.concat(
         Object.values(newActivities).filter((activity) => !updatedActivities.find((a) => a.id === activity.id)),
       );
 
-      const duplicates = updatedActivitiesWithNew.filter(
-        (activity, index, self) => index !== self.findIndex((a) => a.id === activity.id),
-      );
+      const duplicates = updatedActivitiesWithNew.filter((activity, index, self) => index !== self.findIndex((a) => a.id === activity.id));
 
       // TODO: added for monitoring - remove it later
       /* START */
