@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 import moment from 'moment';
+import { getContacts } from 'src/stores/slices/extensions';
+import { useAppSelector } from 'src/stores/hooks';
 import { ReactComponent as ArrowSendIcon } from 'src/images/arrow-send.svg';
 import { ReactComponent as ArrowReceiveIcon } from 'src/images/arrow-receive.svg';
 import { shortenAddress, shortenString } from 'src/utils';
@@ -35,16 +37,11 @@ interface Props {
   activity: LocalActivity;
 }
 
-const FinishTransferItem = ({
-  isFinishing,
-  activity,
-}: Props) => {
-  const {
-    createdTime,
-    amount,
-    receiver,
-    status,
-  } = activity;
+const FinishTransferItem = ({ isFinishing, activity }: Props) => {
+  const { createdTime, amount, receiver, status } = activity;
+
+  const contacts = useAppSelector(getContacts);
+
   const isIncoming = activity.direction === 'IN';
 
   const tokens = useFungibleTokensList();
@@ -61,7 +58,7 @@ const FinishTransferItem = ({
 
   const Icon = isIncoming ? ArrowReceiveIcon : ArrowSendIcon;
   const sign = isIncoming ? '+' : '-';
-
+  const accName = contacts?.find((c) => c?.accountName === receiver)?.aliasName ?? shortenAddress(receiver);
   return (
     <ActivityElement justifyContent="space-between" alignItems="center" padding="10px 0px">
       <DivFlex alignItems="center">
@@ -69,7 +66,7 @@ const FinishTransferItem = ({
           <Icon />
         </RoundedArrow>
         <DivFlex flexDirection="column" justifyContent="flex-start">
-          <CommonLabel fontWeight={700}>{`${shortenAddress(receiver)}`}</CommonLabel>
+          <CommonLabel fontWeight={700}>{accName}</CommonLabel>
           <SecondaryLabel>{moment(new Date(createdTime)).format('DD/MM/YYYY HH:mm')}</SecondaryLabel>
         </DivFlex>
       </DivFlex>
