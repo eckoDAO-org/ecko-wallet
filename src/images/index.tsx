@@ -141,6 +141,10 @@ import profitAndLoss from './ic_profit_and_loss.svg';
 import uptrend from './ic_uptrend.svg';
 import downtrend from './ic_downtrend.svg';
 import portfolioValueBlurred from './portfolio-blurred.png';
+import simplexLight from './simplex-light.svg';
+import simplexDark from './simplex-dark.svg';
+import topperLight from './topper-light.svg';
+import topperDark from './topper-dark.svg';
 
 const wallet = {
   checked,
@@ -311,6 +315,16 @@ const analytics = {
   downtrend,
   portfolioValueBlurred,
 };
+const cryptoProviders = {
+  simplex: {
+    light: simplexLight,
+    dark: simplexDark,
+  },
+  topper: {
+    light: topperLight,
+    dark: topperDark,
+  },
+};
 const images = {
   wallet,
   initPage,
@@ -344,6 +358,7 @@ const images = {
   governance,
   iconMarmaladeNG,
   analytics,
+  cryptoProviders,
 };
 
 export default images;

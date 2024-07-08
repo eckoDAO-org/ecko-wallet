@@ -1,5 +1,8 @@
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
+import { useAppThemeContext } from 'src/contexts/AppThemeContext';
+import images from 'src/images';
+import { AppThemeEnum } from 'src/themes';
 
 const Container = styled.div`
   margin: 0 24px;
@@ -14,15 +17,23 @@ const Button = styled.button`
   background-color: transparent;
   border: ${({ theme }) => `1px solid ${theme.button.secondary}`};
   border-radius: 16px;
-  color: ${({ theme }) => theme.text.primary};
-  font-weight: bold;
   cursor: pointer;
-  text-align: center;
-  font-size: 16px;
+`;
+
+const Image = styled.img`
+  width: auto;
+  height: 24px;
 `;
 
 const BuyCryptoCurrenciesModal = () => {
   const history = useHistory();
+  const { selectedTheme } = useAppThemeContext();
+
+  const key = selectedTheme === AppThemeEnum.LIGHT ? 'light' : 'dark';
+  const [simplexImage, topperImage] = [
+    images.cryptoProviders.simplex[key],
+    images.cryptoProviders.topper[key],
+  ];
 
   const handleSimplex = () => {
     const url = history.createHref({ pathname: 'buy/simplex' });
@@ -36,8 +47,12 @@ const BuyCryptoCurrenciesModal = () => {
 
   return (
     <Container>
-      <Button onClick={handleSimplex}>simplex</Button>
-      <Button onClick={handleTopper}>topper</Button>
+      <Button onClick={handleSimplex}>
+        <Image src={simplexImage} />
+      </Button>
+      <Button onClick={handleTopper}>
+        <Image src={topperImage} />
+      </Button>
     </Container>
   );
 };
