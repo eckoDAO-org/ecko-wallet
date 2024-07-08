@@ -1,7 +1,7 @@
 import React from 'react';
 import { BuyCryptoProvider } from 'src/utils/crypto-providers/types';
 import TopperProvider from 'src/utils/crypto-providers/topper';
-import MockProvider from 'src/utils/crypto-providers/mock';
+import FullPageWithPoweredByLayout from 'src/components/BaseCryptocurrenciesWizard/layouts/FullPageWithPoweredBy';
 import Step1 from 'src/components/BaseCryptocurrenciesWizard/steps/QuoteRequestor';
 import Step2 from 'src/components/BaseCryptocurrenciesWizard/steps/PaymentRequestor';
 import Step3 from 'src/components/BaseCryptocurrenciesWizard/steps/PaymentCheckout';
@@ -10,14 +10,18 @@ import Logic2 from 'src/components/BaseCryptocurrenciesWizard/logics/PaymentRequ
 import Logic3 from 'src/components/BaseCryptocurrenciesWizard/logics/PaymentCheckout';
 import View1 from 'src/components/BaseCryptocurrenciesWizard/views/QuoteRequestor';
 import View2 from 'src/components/BaseCryptocurrenciesWizard/views/PaymentRequestor';
+import { useAppThemeContext } from 'src/contexts/AppThemeContext';
+import { AppThemeEnum } from 'src/themes';
+import images from 'src/images';
 import View3 from './views/TopperPaymentCheckout';
 
 const BuyTopperCryptocurrenciesWizard = () => {
+  const { selectedTheme } = useAppThemeContext();
   const provider = React.useRef<BuyCryptoProvider>();
   const [step, setStep] = React.useState(0);
 
   if (!provider.current) {
-    provider.current = new MockProvider();
+    provider.current = new TopperProvider();
   }
 
   const goToStep = (newStep: number) => () => {
@@ -34,7 +38,14 @@ const BuyTopperCryptocurrenciesWizard = () => {
     return <span>done.</span>;
   }
 
-  return steps[step];
+  const key = selectedTheme === AppThemeEnum.LIGHT ? 'light' : 'dark';
+  const topperImage = images.cryptoProviders.topper[key];
+
+  return (
+    <FullPageWithPoweredByLayout providerImage={topperImage}>
+      {steps[step]}
+    </FullPageWithPoweredByLayout>
+  );
 };
 
 export default BuyTopperCryptocurrenciesWizard;

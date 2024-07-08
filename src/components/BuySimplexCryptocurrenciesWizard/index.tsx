@@ -1,6 +1,7 @@
 import React from 'react';
 import { BuyCryptoProvider } from 'src/utils/crypto-providers/types';
 import SimplexProvider from 'src/utils/crypto-providers/simplex';
+import FullPageWithPoweredByLayout from 'src/components/BaseCryptocurrenciesWizard/layouts/FullPageWithPoweredBy';
 import Step1 from 'src/components/BaseCryptocurrenciesWizard/steps/QuoteRequestor';
 import Step2 from 'src/components/BaseCryptocurrenciesWizard/steps/PaymentRequestor';
 import Step3 from 'src/components/BaseCryptocurrenciesWizard/steps/PaymentCheckout';
@@ -12,9 +13,13 @@ import Logic4 from 'src/components/BaseCryptocurrenciesWizard/logics/CheckoutCom
 import View1 from 'src/components/BaseCryptocurrenciesWizard/views/QuoteRequestor';
 import View2 from 'src/components/BaseCryptocurrenciesWizard/views/PaymentRequestor';
 import View4 from 'src/components/BaseCryptocurrenciesWizard/views/CheckoutCompleted';
+import { useAppThemeContext } from 'src/contexts/AppThemeContext';
+import { AppThemeEnum } from 'src/themes';
+import images from 'src/images';
 import View3 from './views/SimplexPaymentCheckout';
 
 const BuySimplexCryptocurrenciesWizard = () => {
+  const { selectedTheme } = useAppThemeContext();
   const provider = React.useRef<BuyCryptoProvider>();
   const [step, setStep] = React.useState(0);
 
@@ -37,7 +42,14 @@ const BuySimplexCryptocurrenciesWizard = () => {
     return <span>done.</span>;
   }
 
-  return steps[step];
+  const key = selectedTheme === AppThemeEnum.LIGHT ? 'light' : 'dark';
+  const simplexImage = images.cryptoProviders.simplex[key];
+
+  return (
+    <FullPageWithPoweredByLayout providerImage={simplexImage}>
+      {steps[step]}
+    </FullPageWithPoweredByLayout>
+  );
 };
 
 export default BuySimplexCryptocurrenciesWizard;
