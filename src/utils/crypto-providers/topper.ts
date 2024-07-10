@@ -19,10 +19,14 @@ const headers = {
 };
 
 type TopperFiatCurrenciesResponse = {
-  ticker_symbol: string;
-  min_amount: string;
-  max_amount: string;
-}[];
+  currencies: {
+    code: string;
+    name: string;
+    symbol: string;
+    maximum: string;
+    minimum: string;
+  }[];
+};
 
 type TopperQuoteRequest = {
   account: string;
@@ -35,9 +39,10 @@ type TopperQuoteResponse = {
   account: string;
   fiatCurrency: string;
   fiatBaseAmount: string;
+  fiatTotalAmount: string;
+  totalFees: string;
   cryptoAmount: string;
   bootstrapToken: string;
-  checkoutUrl: string;
 };
 
 class TopperProvider implements BuyCryptoProvider {
@@ -57,17 +62,17 @@ class TopperProvider implements BuyCryptoProvider {
 
   getFiatCurrencyAvailabilities = async () => {
     const options = { method: 'GET', headers };
-    const response = await fetch(`${baseUrl}topper/fiat-currencies`, options);
+    const response = await fetch(`${baseUrl}fiat-on-ramp/currencies?provider=topper`, options);
     this.assertOk(response);
 
     const json = (await response.json()) as TopperFiatCurrenciesResponse;
-    const fiatCurrencyAvailabilities: FiatCurrencyAvailabilities = json.reduce((accumulator, element) => {
-      const minAmount = parseFloat(element.min_amount);
-      const maxAmount = parseFloat(element.max_amount);
+    const fiatCurrencyAvailabilities: FiatCurrencyAvailabilities = json.currencies.reduce((accumulator, element) => {
+      const minAmount = parseFloat(element.minimum);
+      const maxAmount = parseFloat(element.maximum);
 
       if (!Number.isNaN(minAmount) && !Number.isNaN(maxAmount)) {
-        accumulator[element.ticker_symbol] = {
-          symbol: element.ticker_symbol,
+        accumulator[element.code] = {
+          symbol: element.code,
           minAmount,
           maxAmount,
         } as FiatCurrencyAvailability;
@@ -106,7 +111,7 @@ class TopperProvider implements BuyCryptoProvider {
       account: json.account,
       fiatCurrency: json.fiatCurrency,
       fiatBaseAmount: +json.fiatBaseAmount,
-      fiatTotalAmount: +json.fiatBaseAmount,
+      fiatTotalAmount: +json.fiatTotalAmount,
       cryptoCurrency: buyQuoteRequest.cryptoToBuy,
       cryptoAmount: +json.cryptoAmount,
       validUntil: Date.now() + 86_400_000,
