@@ -7,7 +7,7 @@ import { useAppSelector } from 'src/stores/hooks';
 import { getAccount } from 'src/stores/slices/wallet';
 import { useFungibleTokensList } from 'src/hooks/fungibleTokens';
 import { getLocalActivities, setLocalActivities } from 'src/utils/storage';
-import { generateActivityWithId } from '../Activities/utils';
+import { generateActivityId, generateActivityWithId } from '../Activities/utils';
 
 const supportedTransactions = ['TRANSFER', 'SWAP'];
 
