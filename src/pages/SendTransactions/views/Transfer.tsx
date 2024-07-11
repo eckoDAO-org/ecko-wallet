@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { BaseTextInput } from 'src/baseComponent';
 import { useSelector } from 'react-redux';
-import { hideLoading, showLoading } from 'src/stores/slices/extensions';
+import { useAppSelector } from 'src/stores/hooks';
+import { getContacts, hideLoading, showLoading } from 'src/stores/slices/extensions';
 import { ReactComponent as AddIconSVG } from 'src/images/add-round.svg';
 import { ReactComponent as AlertIconSVG } from 'src/images/icon-alert.svg';
 import { ReactComponent as GearIconSVG } from 'src/images/gear-icon.svg';
@@ -61,33 +62,37 @@ interface TransactionInfo {
   receiverChainId: string;
 }
 
-export const renderTransactionInfo = (info: TransactionInfo, containerStyle?: React.CSSProperties) => (
-  <AccountTransferDetail justifyContent="space-between" alignItems="center" style={containerStyle}>
-    <div>
-      <JazzAccount
-        account={info.sender}
-        renderAccount={(acc) => (
-          <DivFlex flexDirection="column">
-            <TransferAccountSpan>{shortenAddress(acc)}</TransferAccountSpan>
-            <SecondaryLabel uppercase>chain {info.senderChainId}</SecondaryLabel>
-          </DivFlex>
-        )}
-      />
-    </div>
-    <TransferImage src={images.wallet.arrowTransfer} />
-    <div>
-      <JazzAccount
-        account={info.receiver}
-        renderAccount={(acc) => (
-          <DivFlex flexDirection="column">
-            <TransferAccountSpan>{info.aliasName || shortenAddress(acc)}</TransferAccountSpan>
-            <SecondaryLabel uppercase>chain {info.receiverChainId}</SecondaryLabel>
-          </DivFlex>
-        )}
-      />
-    </div>
-  </AccountTransferDetail>
-);
+export const renderTransactionInfo = (info: TransactionInfo, containerStyle?: React.CSSProperties) => {
+  const contacts = useAppSelector(getContacts);
+  const renderContactOrAccount = (acc) => contacts?.find((c) => c?.accountName === acc)?.aliasName ?? shortenAddress(acc);
+  return (
+    <AccountTransferDetail justifyContent="space-between" alignItems="center" style={containerStyle}>
+      <div>
+        <JazzAccount
+          account={info.sender}
+          renderAccount={(acc) => (
+            <DivFlex flexDirection="column">
+              <TransferAccountSpan>{renderContactOrAccount(acc)}</TransferAccountSpan>
+              <SecondaryLabel uppercase>chain {info.senderChainId}</SecondaryLabel>
+            </DivFlex>
+          )}
+        />
+      </div>
+      <TransferImage src={images.wallet.arrowTransfer} />
+      <div>
+        <JazzAccount
+          account={info.receiver}
+          renderAccount={(acc) => (
+            <DivFlex flexDirection="column">
+              <TransferAccountSpan>{info.aliasName || renderContactOrAccount(acc)}</TransferAccountSpan>
+              <SecondaryLabel uppercase>chain {info.receiverChainId}</SecondaryLabel>
+            </DivFlex>
+          )}
+        />
+      </div>
+    </AccountTransferDetail>
+  );
+};
 
 const Transfer = (props: Props) => {
   const { destinationAccount, fungibleToken, sourceChainId, isDappTransfer } = props;
