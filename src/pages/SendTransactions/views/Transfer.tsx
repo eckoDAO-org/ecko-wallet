@@ -149,6 +149,7 @@ const Transfer = (props: Props) => {
     formState: { errors },
     setValue,
     clearErrors,
+    setError,
   } = useForm<any>();
   const rootState = useSelector((state) => state);
   const { selectedNetwork } = rootState.extensions;
@@ -394,6 +395,19 @@ const Transfer = (props: Props) => {
     </>
   );
 
+  const gasFee = BigNumberConverter(Number(selectedGas.GAS_PRICE) * Number(selectedGas.GAS_LIMIT));
+  const canPayGas = wallet.coinBalance >= gasFee;
+
+  useEffect(() => {
+    if (!canPayGas) {
+      setError('cannotPayGas', {
+        message: 'Insufficient funds for gas fee',
+      });
+    } else {
+      clearErrors('cannotPayGas');
+    }
+  }, [canPayGas]);
+
   return (
     <PaddedBodyStickyFooter paddingBottom={!isDappTransfer && 50}>
       <AccountTransferDetail justifyContent="space-between" alignItems="center">
@@ -459,6 +473,12 @@ const Transfer = (props: Props) => {
           </SecondaryLabel>
           <GearIconSVG style={{ cursor: 'pointer' }} onClick={() => setIsOpenGasOptionsModal(true)} />
         </DivFlex>
+        { errors.cannotPayGas && (
+          <Warning type="danger" margin="10px 0">
+            <AlertIconSVG />
+            <span>Insufficient funds for gas fee</span>
+          </Warning>
+        )}
         <DivFlex justifyContent="space-between" alignItems="center" margin="20px 0">
           <SecondaryLabel fontSize={12} fontWeight={600} uppercase>
             Estimated gas {configs.gasLimit * configs.gasPrice}
