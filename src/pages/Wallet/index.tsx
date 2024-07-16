@@ -103,7 +103,16 @@ const Wallet = () => {
     if (allAccountsBalanceUsd && Object.values(allAccountsBalanceUsd).length) {
       totalUSDBalance = Object.values(allAccountsBalanceUsd)
         .flat()
-        .reduce((sum, value) => sum + Object.values(value).reduce((p, c) => p + c), 0);
+        .reduce(
+          // Iterate over all accounts
+          (sum, value) => (
+            // Iterate over all tokens
+            sum + Object.values(value).reduce(
+              (p, c) => p + c,
+              0,
+            )
+          ), 0,
+        );
     }
     return totalUSDBalance;
   };

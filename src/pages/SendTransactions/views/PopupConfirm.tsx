@@ -221,7 +221,7 @@ const PopupConfirm = (props: Props) => {
         sendCmd.sigs = sigs;
       }
 
-      setIsLoading(true);
+      // setIsLoading(true);
       Pact.wallet
         .sendSigned(sendCmd, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, senderChainId))
         .then(async (data) => {
@@ -268,7 +268,9 @@ const PopupConfirm = (props: Props) => {
           toast.success(<Toast type="success" content="Transaction sent successfully! Please check the transaction status in the history tab" />);
           goHome();
         })
-        .catch(() => {
+        .catch((err) => {
+          // eslint-disable-next-line no-console
+          console.log('ON SEND Err:', err);
           if (domain) {
             const newData = {
               status: 'fail',
