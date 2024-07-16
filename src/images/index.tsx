@@ -1,5 +1,4 @@
 import close from './close.svg';
-import closeBlack from './close-black.png';
 import barCode from './barcode-scanner.png';
 import setting from './icon-setting.svg';
 import checked from './checked.png';
@@ -65,6 +64,7 @@ import eyeHidden from './eye-hidden.svg';
 import successToast from './success-toast.svg';
 import failToast from './fail-toast.svg';
 import closeWhite from './close-white.svg';
+import closeBlack from './close-black.svg';
 import radioChecked from './radio-checked.svg';
 import radioUnchecked from './radio-unchecked.svg';
 import settingWhite from './setting-white.svg';
@@ -162,7 +162,6 @@ const wallet = {
   iconPending,
   iconSuccess,
   iconFail,
-  closeBlack,
   arrowDownBlack,
   arrowGreenDown,
   copyGray,
@@ -270,7 +269,6 @@ const transfer = {
 };
 const settings = {
   trashPink,
-  closeBlack,
   lock,
   lockWhite,
   trashViolet,
@@ -293,6 +291,7 @@ const toast = {
   successToast,
   failToast,
   closeWhite,
+  closeBlack,
 };
 const governance = {
   governanceMiningBg,
