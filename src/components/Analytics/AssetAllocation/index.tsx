@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Legend } from 'recharts';
 import { DivFlex, SecondaryLabel } from 'src/components';
 import { useAccountBalanceContext } from 'src/contexts/AccountBalanceContext';
@@ -46,7 +47,7 @@ const CustomLegend = ({ payload, assetGroupsData }: { payload?: any; assetGroups
   </DivFlex>
 );
 
-export const AssetAllocationChart = () => {
+export const AssetAllocationChart = forwardRef<HTMLDivElement>((_, ref) => {
   const { allAccountsBalanceUsd } = useAccountBalanceContext();
 
   const sumSelectedKeys = (obj, keys) => {
@@ -88,7 +89,7 @@ export const AssetAllocationChart = () => {
   });
   const maxValue = Math.max(Object.values(assetGroupsData[0]) as any);
   return (
-    <LabeledContainer label="ASSET ALLOCATION">
+    <LabeledContainer label="ASSET ALLOCATION" ref={ref}>
       {Object.keys(summedBalances).length ? (
         <ResponsiveContainer height={170}>
           <BarChart layout="vertical" barSize={30} height={80} data={assetGroupsData as any} margin={{ top: -20 }} barGap="5px">
@@ -110,4 +111,4 @@ export const AssetAllocationChart = () => {
       ) : null}
     </LabeledContainer>
   );
-};
+});

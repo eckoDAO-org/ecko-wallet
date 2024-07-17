@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import Button from 'src/components/Buttons';
@@ -5,11 +6,11 @@ import SimpleToast from 'src/components/Toast/SimpleToast';
 import { useModalContext } from 'src/contexts/ModalContext';
 import { useAppSelector } from 'src/stores/hooks';
 import { canTrackPortfolio } from 'src/stores/slices/analytics';
-import { DivFlex, SecondaryLabel } from 'src/components';
+import { DivFlex } from 'src/components';
 import images from 'src/images';
 import InfoIcon from 'src/images/info.svg';
 import PortfolioValueApproved from '../PortfolioValueApproved';
-import { Container } from '../UI';
+import { AnalyticTile, Container } from '../UI';
 import Confirm from './Confirm';
 import DisclaimerInfo from './DisclaimerInfo';
 
@@ -44,7 +45,7 @@ const IconContainer = styled.img`
   height: 24px;
 `;
 
-const PortfolioValue = () => {
+const PortfolioValue = forwardRef<HTMLDivElement>((_, ref) => {
   const trackPortfolio = useAppSelector(canTrackPortfolio());
   const { openModal, closeModal } = useModalContext();
 
@@ -76,9 +77,9 @@ const PortfolioValue = () => {
   );
 
   return (
-    <Container>
+    <Container ref={ref}>
       <DivFlex flexDirection="row" alignItems="center" gap="12px">
-        <SecondaryLabel>PORTFOLIO VALUE CHART</SecondaryLabel>
+        <AnalyticTile>PORTFOLIO VALUE CHART</AnalyticTile>
         <ButtonWrapper onClick={onInfo}>
           <IconContainer src={InfoIcon} />
         </ButtonWrapper>
@@ -86,6 +87,6 @@ const PortfolioValue = () => {
       {children}
     </Container>
   );
-};
+});
 
 export default PortfolioValue;
