@@ -33,12 +33,14 @@ const Analytics = () => {
   const pnlChartRef = useRef<HTMLDivElement>(null);
   const chartAllocationRef = useRef<HTMLDivElement>(null);
   const assetAllocationRef = useRef<HTMLDivElement>(null);
+  const topTokensRef = useRef<HTMLDivElement>(null);
   const heatmapRef = useRef<HTMLDivElement>(null);
   const allRefs: Record<AnalyticType, RefObject<HTMLDivElement>> = {
     [AnalyticType.portfolioValue]: portfolioValueRef,
     [AnalyticType.profitAndLoss]: pnlChartRef,
     [AnalyticType.chartAllocation]: chartAllocationRef,
     [AnalyticType.assetAllocation]: assetAllocationRef,
+    [AnalyticType.topTokens]: topTokensRef,
     [AnalyticType.heatMap]: heatmapRef,
   };
 
@@ -59,7 +61,7 @@ const Analytics = () => {
         <AssetAllocationChart ref={assetAllocationRef} />
         {/* <TotalTransactions /> */}
         <Title>DEX ANALYTICS</Title>
-        <TopTokens />
+        <TopTokens ref={topTokensRef} />
         <Heatmap ref={heatmapRef} />
       </Body>
     </PageFullScreen>

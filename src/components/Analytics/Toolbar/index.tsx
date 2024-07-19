@@ -13,6 +13,7 @@ export enum AnalyticType {
   profitAndLoss,
   chartAllocation,
   assetAllocation,
+  topTokens,
   heatMap,
 }
 
@@ -31,6 +32,7 @@ const Toolbar = ({ onLinkClick }: ToolbarProps) => {
       <Icon src={images.analytics.profitAndLoss} onClick={toggleFilterValue(AnalyticType.profitAndLoss)} />
       <Icon src={images.analytics.piechart} onClick={toggleFilterValue(AnalyticType.chartAllocation)} />
       <Icon src={images.analytics.assetAllocation} onClick={toggleFilterValue(AnalyticType.assetAllocation)} />
+      <Icon src={images.analytics.topTokens} onClick={toggleFilterValue(AnalyticType.topTokens)} />
       <Icon src={images.analytics.heatmap} onClick={toggleFilterValue(AnalyticType.heatMap)} />
     </DivFlex>
   );
