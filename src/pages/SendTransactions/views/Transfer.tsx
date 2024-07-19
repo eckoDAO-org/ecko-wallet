@@ -62,7 +62,15 @@ interface TransactionInfo {
   receiverChainId: string;
 }
 
-export const renderTransactionInfo = (info: TransactionInfo, containerStyle?: React.CSSProperties) => {
+interface TransactionInfoProps {
+  info: TransactionInfo;
+  containerStyle?: React.CSSProperties;
+}
+
+export const TransactionInfoView = ({
+  info,
+  containerStyle,
+}: TransactionInfoProps) => {
   const contacts = useAppSelector(getContacts);
   const renderContactOrAccount = (acc) => contacts?.find((c) => c?.accountName === acc)?.aliasName ?? shortenAddress(acc);
   return (
