@@ -49,8 +49,16 @@ const transactionToActivity = (transaction: Transaction, tokens: IFungibleToken[
   return activity;
 };
 
-const MainnetTransactionsImporter = () => {
-  const { data: transactions } = useTransactions();
+interface MainnetTransactionsImporterProps {
+  limit?: number;
+  skip?: number;
+}
+
+const MainnetTransactionsImporter = ({
+  limit = 50,
+  skip = 0,
+}: MainnetTransactionsImporterProps) => {
+  const { data: transactions } = useTransactions(limit, skip);
   const account = useAppSelector(getAccount);
   const tokens = useFungibleTokensList();
 
@@ -101,28 +109,6 @@ const MainnetTransactionsImporter = () => {
       const updatedActivitiesWithNew = updatedActivities.concat(
         Object.values(newActivities).filter((activity) => !updatedActivities.find((a) => a.id === activity.id)),
       );
-
-      const duplicates = updatedActivitiesWithNew.filter((activity, index, self) => index !== self.findIndex((a) => a.id === activity.id));
-
-      // TODO: added for monitoring - remove it later
-      /* START */
-      if (duplicates.length) {
-        // eslint-disable-next-line no-console
-        console.warn('Duplicates found!');
-        // eslint-disable-next-line no-console
-        console.log('Duplicates: ', duplicates);
-        // eslint-disable-next-line no-console
-        console.log('updatedActivitiesWithNew: ', updatedActivitiesWithNew);
-        // eslint-disable-next-line no-console
-        console.log('updatedActivities: ', updatedActivities);
-        // eslint-disable-next-line no-console
-        console.log('newActivities: ', newActivities);
-        // eslint-disable-next-line no-console
-        console.log('transactions: ', transactions);
-        // eslint-disable-next-line no-console
-        console.log('activities: ', activities);
-      }
-      /* END */
 
       if (!isEqual(updatedActivitiesWithNew, activities)) {
         await setLocalActivities('mainnet01', account, updatedActivitiesWithNew);

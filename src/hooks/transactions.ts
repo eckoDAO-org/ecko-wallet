@@ -28,20 +28,22 @@ export type TransactionsResponse = {
 
 export type Transaction = TransactionsResponse[number];
 
-export const useTransactions = () => {
+export const useTransactions = (transactionsLimit: number = 50, transactionsToSkip: number = 0) => {
   const currentWallet = useAppSelector(getCurrentWallet);
 
   return useQuery({
-    queryKey: ['transactions', { account: currentWallet?.account }] as const,
+    queryKey: ['transactions', {
+      account: currentWallet?.account,
+      limit: transactionsLimit,
+      skip: transactionsToSkip,
+    }] as const,
     queryFn: async ({ queryKey }) => {
-      const [, { account }] = queryKey;
+      const [, { account, limit, skip }] = queryKey;
       if (!account) {
         throw new Error('No account provided');
       }
 
       const accountId = currentWallet?.account;
-      const limit = 50;
-      const skip = 0;
       const apiUrl = `${API_URL}account-transaction-history?account=${accountId}&limit=${limit}&skip=${skip}`;
       const response = await fetch(apiUrl);
 
