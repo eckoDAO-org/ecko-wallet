@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import { useFungibleTokensList } from 'src/hooks/fungibleTokens';
 import Button from 'src/components/Buttons';
-import { renderTransactionInfo } from 'src/pages/SendTransactions/views/Transfer';
+import { TransactionInfoView } from 'src/pages/SendTransactions/views/Transfer';
 import { DivFlex } from 'src/components';
 import { LocalActivity } from 'src/components/Activities/types';
 import { inferSymbolFromLocalActivity } from 'src/components/Activities/utils';
@@ -97,7 +97,7 @@ const PopupDetailTransaction = (props: Props) => {
   return (
     <ModalCustom isOpen={isOpen} onCloseModal={onCloseModal} closeOnOverlayClick={closeOnOverlayClick} title={title} showCloseIcon={showCloseIcon}>
       <DetailTx>
-        {renderTransactionInfo(activityDetails, { borderTop: ' none', margin: '0px -20px 20px', paddingBottom: 10 })}
+        <TransactionInfoView info={activityDetails} containerStyle={{ borderTop: ' none', margin: '0px -20px 20px', paddingBottom: 10 }} />
         <Item>
           <DivChild fontWeight="700">Status</DivChild>
           <CustomDiv fontSize="14px" fontWeight="700" color={color}>
