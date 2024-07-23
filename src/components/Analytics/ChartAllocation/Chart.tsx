@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { forwardRef, useMemo } from 'react';
 import styled from 'styled-components';
 import ApexChart, { Props as ApexProps } from 'react-apexcharts';
 import { AccountBalanceProps, TokenBalance } from 'src/contexts/AccountBalanceContext';
@@ -47,7 +47,7 @@ interface Props {
   fungibleTokens: IFungibleTokensByNetwork;
 }
 
-const Chart = ({ allAccountsBalanceUsd, fungibleTokens }: Props) => {
+const Chart = forwardRef<HTMLDivElement, Props>(({ allAccountsBalanceUsd, fungibleTokens }, ref) => {
   const { theme } = useAppThemeContext();
   const summedTokenBalance = Object.values(allAccountsBalanceUsd).reduce(
     (sumPerAccount, account) =>
@@ -185,7 +185,7 @@ const Chart = ({ allAccountsBalanceUsd, fungibleTokens }: Props) => {
   };
 
   return (
-    <LabeledContainer label="CHART">
+    <LabeledContainer label="CHART" ref={ref}>
       <ApexChart options={options} series={series} type="donut" height={360} />
       <TokensContainer>
         {series.map((value, index) => (
@@ -199,6 +199,6 @@ const Chart = ({ allAccountsBalanceUsd, fungibleTokens }: Props) => {
       </TokensContainer>
     </LabeledContainer>
   );
-};
+});
 
 export default Chart;

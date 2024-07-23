@@ -10,19 +10,19 @@ interface AppThemeContextValue {
 }
 
 const defaultAppThemeValue: AppThemeContextValue = {
-  theme: appThemes[AppThemeEnum.LIGHT],
-  selectedTheme: AppThemeEnum.LIGHT,
+  theme: appThemes[AppThemeEnum.DARK_BLUE],
+  selectedTheme: AppThemeEnum.DARK_BLUE,
   setTheme: () => {},
 };
 
 export const AppThemeContext = createContext<AppThemeContextValue>(defaultAppThemeValue);
 
 export const AppThemeProvider = ({ children }: any) => {
-  const [selectedTheme, setSelectedTheme] = useLocalStorage<AppThemeEnum | null>('APP_THEME', AppThemeEnum.LIGHT);
+  const [selectedTheme, setSelectedTheme] = useLocalStorage<AppThemeEnum | null>('APP_THEME', AppThemeEnum.DARK_BLUE);
 
   const setTheme = (theme: string) => setSelectedTheme(theme);
 
-  const theme = selectedTheme ? appThemes[selectedTheme] : appThemes[AppThemeEnum.LIGHT];
+  const theme = selectedTheme ? appThemes[selectedTheme] : appThemes[AppThemeEnum.DARK_BLUE];
 
   return (
     <AppThemeContext.Provider

@@ -3,7 +3,6 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import styled from 'styled-components';
-import { ToastContainer } from 'react-toastify';
 import store, { persistor } from './stores';
 import 'react-toastify/dist/ReactToastify.css';
 import AppContainer from './AppContainer';
@@ -16,6 +15,7 @@ import { GovernanceMiningContextProvider } from './contexts/GovernanceMiningCont
 import ModalCustom from './components/Modal/ModalCustom';
 import { LedgerProvider } from './contexts/LedgerContext';
 import { NotificationContextProvider } from './contexts/NotificationsContext';
+import ToastContainer from './components/ToastContainer';
 
 const AppWrapper = styled.div`
   display: block;
@@ -33,32 +33,6 @@ const Content = styled.div`
   display: flex;
   justify-content: center;
   flex: 1 0 auto;
-`;
-const ToastWrapper = styled.div`
-  .Toastify__toast-theme--light.Toastify__toast--success {
-    background: ${({ theme }) => theme.iconBackground};
-    border-left: 4px solid #25d366;
-    border-radius: 4px;
-    width: 90%;
-    margin: 10px auto;
-  }
-  .Toastify__toast-theme--light.Toastify__toast--error {
-    background: ${({ theme }) => theme.iconBackground};
-    border-left: 4px solid #e74c3c;
-    border-radius: 4px;
-    width: 90%;
-    margin: 10px auto;
-  }
-  .Toastify__toast-theme--light.Toastify__toast--warning {
-    background: ${({ theme }) => theme.iconBackground};
-    border-left: 4px solid #ffa900;
-    border-radius: 4px;
-    width: 90%;
-    margin: 10px auto;
-  }
-  .Toastify__toast-container {
-    margin-top: 90px;
-  }
 `;
 
 const queryClient = new QueryClient();
@@ -95,22 +69,7 @@ const App = () => (
             </LedgerProvider>
           </Content>
         </AppWrapper>
-        <ToastWrapper>
-          <ToastContainer
-            position="top-center"
-            autoClose={3000}
-            hideProgressBar
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            icon={false}
-            closeButton={false}
-            pauseOnFocusLoss
-            draggable
-            theme="light"
-            pauseOnHover
-          />
-        </ToastWrapper>
+        <ToastContainer />
       </AppThemeProvider>
     </PersistGate>
   </Provider>

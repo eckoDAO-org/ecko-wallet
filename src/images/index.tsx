@@ -1,5 +1,4 @@
 import close from './close.svg';
-import closeBlack from './close-black.png';
 import barCode from './barcode-scanner.png';
 import setting from './icon-setting.svg';
 import checked from './checked.png';
@@ -65,6 +64,7 @@ import eyeHidden from './eye-hidden.svg';
 import successToast from './success-toast.svg';
 import failToast from './fail-toast.svg';
 import closeWhite from './close-white.svg';
+import closeBlack from './close-black.svg';
 import radioChecked from './radio-checked.svg';
 import radioUnchecked from './radio-unchecked.svg';
 import settingWhite from './setting-white.svg';
@@ -140,6 +140,7 @@ import assetAllocation from './ic_asset_allocation.svg';
 import profitAndLoss from './ic_profit_and_loss.svg';
 import uptrend from './ic_uptrend.svg';
 import downtrend from './ic_downtrend.svg';
+import topTokens from './ic_top_tokens.svg';
 import portfolioValueBlurred from './portfolio-blurred.png';
 
 const wallet = {
@@ -162,7 +163,6 @@ const wallet = {
   iconPending,
   iconSuccess,
   iconFail,
-  closeBlack,
   arrowDownBlack,
   arrowGreenDown,
   copyGray,
@@ -270,7 +270,6 @@ const transfer = {
 };
 const settings = {
   trashPink,
-  closeBlack,
   lock,
   lockWhite,
   trashViolet,
@@ -293,6 +292,7 @@ const toast = {
   successToast,
   failToast,
   closeWhite,
+  closeBlack,
 };
 const governance = {
   governanceMiningBg,
@@ -307,6 +307,7 @@ const analytics = {
   piechart,
   assetAllocation,
   profitAndLoss,
+  topTokens,
   uptrend,
   downtrend,
   portfolioValueBlurred,
