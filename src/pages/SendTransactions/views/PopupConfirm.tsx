@@ -5,11 +5,13 @@ import Button from 'src/components/Buttons';
 import { convertRecent, getTimestamp, humanReadableNumber, shortenAddress } from 'src/utils';
 import { getApiUrl, getSignatureFromHash, fetchLocal, pollRequestKey } from 'src/utils/chainweb';
 import { getFloatPrecision } from 'src/utils/numbers';
+import { useAppDispatch } from 'src/stores/hooks';
+import { addActivity } from 'src/stores/slices/activities';
 import { setRecent } from 'src/stores/slices/extensions';
 import { AccountType } from 'src/stores/slices/wallet';
 import { CONFIG, ECKO_WALLET_SEND_TX_NONCE } from 'src/utils/config';
 import { updateSendDapp } from 'src/utils/message';
-import { addLocalActivity, addPendingCrossChainRequestKey, getLocalRecent, setLocalRecent } from 'src/utils/storage';
+import { getLocalRecent, setLocalRecent } from 'src/utils/storage';
 import { ReactComponent as AlertIconSVG } from 'src/images/icon-alert.svg';
 import { useLedgerContext } from 'src/contexts/LedgerContext';
 import { useGoHome } from 'src/hooks/ui';
@@ -34,6 +36,7 @@ type Props = {
 
 const PopupConfirm = (props: Props) => {
   const { configs, onClose, aliasContact, fungibleToken, kdaUSDPrice, estimateUSDAmount } = props;
+  const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
   // const { setCrossChainRequest, getCrossChainRequestsAsync } = useContext(CrossChainContext);
@@ -242,16 +245,10 @@ const PopupConfirm = (props: Props) => {
             aliasName: configs?.aliasName,
             status: 'pending',
             transactionType: 'TRANSFER',
+            networkId: selectedNetwork.networkId,
+            accountId: senderName,
           });
-          addLocalActivity(selectedNetwork.networkId, senderName, activity);
-          if (senderChainId.toString() !== receiverChainId.toString()) {
-            await addPendingCrossChainRequestKey({
-              requestKey,
-              sourceChainId: senderChainId.toString(),
-              targetChainId: receiverChainId.toString(),
-              networkId: selectedNetwork.networkId,
-            });
-          }
+          dispatch(addActivity(activity));
           if (domain) {
             const newData = {
               status: 'success',

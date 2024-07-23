@@ -27,4 +27,6 @@ export interface LocalActivity {
   module: string;
   transactionType: 'TRANSFER' | 'SWAP' | 'STAKE' | 'UNSTAKE' | 'CLAIM';
   ticker?: string;
+  networkId: string;
+  accountId: string;
 }

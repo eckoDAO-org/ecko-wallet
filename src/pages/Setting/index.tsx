@@ -143,7 +143,7 @@ const PageSetting = () => {
   ];
 
   const getSettingsItem = ({ img, title, description, onClick }: ISettingsMenu) => (
-    <SettingMenu className="settingMenu" justifyContent="flex-start" gap="10px" padding="15px 0" onClick={onClick}>
+    <SettingMenu key={title} className="settingMenu" justifyContent="flex-start" gap="10px" padding="15px 0" onClick={onClick}>
       {img}
       <DivFlex flexDirection="column" justifyContent="flex-start">
         <CommonLabel fontWeight={600} fontSize={16}>

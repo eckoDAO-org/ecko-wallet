@@ -1,16 +1,18 @@
 /* eslint-disable no-console */
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import styled from 'styled-components';
 import { BaseTextInput, InputError } from 'src/baseComponent';
 import Button from 'src/components/Buttons';
-import styled from 'styled-components';
+import { useAppDispatch } from 'src/stores/hooks';
 import { setCurrentWallet, setWallets } from 'src/stores/slices/wallet';
-import { setLocalActivities, setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
+import { setLocalSelectedWallet, setLocalWallets } from 'src/utils/storage';
 import { encryptKey } from 'src/utils/security';
-import { useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useSelector } from 'react-redux';
 import { DivFlex } from 'src/components';
 import { isValidPassword } from 'src/pages/SignIn';
+import { removeByAccountAndNetwork } from 'src/stores/slices/activities';
 
 const DivChild = styled.div`
   font-size: ${(props) => props.fontSize};
@@ -65,6 +67,7 @@ const RemoveWalletPopup = (props: Props) => {
   const { passwordHash, selectedNetwork } = rootState.extensions;
   const { wallets, account } = rootState.wallet;
   const [passwordInput, setPasswordInput] = useState('');
+  const dispatch = useAppDispatch();
 
   const {
     register,
@@ -101,7 +104,10 @@ const RemoveWalletPopup = (props: Props) => {
         });
         setLocalWallets(selectedNetwork.networkId, []);
         setWallets([]);
-        setLocalActivities(selectedNetwork.networkId, account, []);
+        dispatch(removeByAccountAndNetwork({
+          networkId: selectedNetwork.networkId,
+          accountId: account,
+        }));
         history.push('/init');
       } else {
         setWallets(newWallets);
@@ -116,7 +122,10 @@ const RemoveWalletPopup = (props: Props) => {
         }));
         setLocalSelectedWallet(newLocalWallets[0]);
         setLocalWallets(selectedNetwork.networkId, newLocalWallets);
-        setLocalActivities(selectedNetwork.networkId, account, []);
+        dispatch(removeByAccountAndNetwork({
+          networkId: selectedNetwork.networkId,
+          accountId: account,
+        }));
       }
       onClose();
     } else {

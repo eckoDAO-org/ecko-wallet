@@ -1,7 +1,8 @@
 import Pact from 'pact-lang-api';
+import { useAppDispatch } from 'src/stores/hooks';
+import { addActivity } from 'src/stores/slices/activities';
 import { useCurrentWallet } from 'src/stores/slices/wallet/hooks';
 import { ExecCommandResult, payGasCap, useExecCommand, useExecPactWithLocalAccount, usePoolRequestKey } from 'src/hooks/pact';
-import { addLocalActivity } from 'src/utils/storage';
 import { LocalActivity } from 'src/components/Activities/types';
 import { generateActivityWithId } from 'src/components/Activities/utils';
 import { useStakingConstants } from '../constants/staking';
@@ -90,6 +91,7 @@ export const usePoolStakeRequest = () => {
 
 export const useCreatePendingStakeActivity = () => {
   const { chainId } = useStakingConstants();
+  const dispatch = useAppDispatch();
 
   return (stakeResult: ExecCommandResult) => {
     const activity: LocalActivity = generateActivityWithId({
@@ -105,9 +107,11 @@ export const useCreatePendingStakeActivity = () => {
       sender: stakeResult.request.meta.sender,
       status: 'pending',
       transactionType: 'STAKE',
+      networkId: stakeResult.request.networkId,
+      accountId: stakeResult.request.meta.sender,
     });
 
-    addLocalActivity(stakeResult.request.networkId, stakeResult.request.meta.sender, activity);
+    dispatch(addActivity(activity));
   };
 };
 
@@ -176,6 +180,7 @@ export const usePoolUnstakeRequest = () => {
 
 export const useCreatePendingUnstakeActivity = () => {
   const { chainId } = useStakingConstants();
+  const dispatch = useAppDispatch();
 
   return (unstakeResult: ExecCommandResult) => {
     const activity: LocalActivity = generateActivityWithId({
@@ -191,9 +196,11 @@ export const useCreatePendingUnstakeActivity = () => {
       sender: unstakeResult.request.meta.sender,
       status: 'pending',
       transactionType: 'UNSTAKE',
+      networkId: unstakeResult.request.networkId,
+      accountId: unstakeResult.request.meta.sender,
     });
 
-    addLocalActivity(unstakeResult.request.networkId, unstakeResult.request.meta.sender, activity);
+    dispatch(addActivity(activity));
   };
 };
 
@@ -232,6 +239,7 @@ export const usePoolClaimRequest = () => {
 
 export const useCreatePendingClaimActivity = () => {
   const { chainId } = useStakingConstants();
+  const dispatch = useAppDispatch();
 
   return (claimResult: ExecCommandResult) => {
     const activity: LocalActivity = generateActivityWithId({
@@ -247,8 +255,10 @@ export const useCreatePendingClaimActivity = () => {
       sender: claimResult.request.meta.sender,
       status: 'pending',
       transactionType: 'CLAIM',
+      networkId: claimResult.request.networkId,
+      accountId: claimResult.request.meta.sender,
     });
 
-    addLocalActivity(claimResult.request.networkId, claimResult.request.meta.sender, activity);
+    dispatch(addActivity(activity));
   };
 };

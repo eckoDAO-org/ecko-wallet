@@ -1,21 +1,14 @@
-import { useCallback, useEffect } from 'react';
-import { isEqual } from 'lodash';
+import { useEffect, useState } from 'react';
+import { useFungibleTokensList } from 'src/hooks/fungibleTokens';
 import { Transaction, useTransactions } from 'src/hooks/transactions';
+import { useAppDispatch, useAppSelector } from 'src/stores/hooks';
+import { selectActivitiesByAccountAndNetwork, upsertActivities } from 'src/stores/slices/activities';
+import { getAccount } from 'src/stores/slices/wallet';
 import { IFungibleToken } from 'src/pages/ImportToken';
 import { LocalActivity } from 'src/components/Activities/types';
-import { useAppSelector } from 'src/stores/hooks';
-import { getAccount } from 'src/stores/slices/wallet';
-import { useFungibleTokensList } from 'src/hooks/fungibleTokens';
-import { getLocalActivities, setLocalActivities } from 'src/utils/storage';
-import { generateActivityId, generateActivityWithId } from '../Activities/utils';
+import { generateActivityWithId } from 'src/components/Activities/utils';
 
-const supportedTransactions = ['TRANSFER', 'SWAP'];
-
-const transactionToActivity = (transaction: Transaction, tokens: IFungibleToken[]) => {
-  if (!supportedTransactions.includes(transaction.transactionType)) {
-    return undefined;
-  }
-
+const transactionToActivity = (transaction: Transaction, tokens: IFungibleToken[], accountId: string) => {
   const date = new Date(transaction.creationtime);
   const inferredToken = tokens.find((t) => t.contractAddress === transaction.modulename);
   const receiver = transaction.transactionType === 'SWAP' ? 'Swap' : transaction.to_acct;
@@ -36,6 +29,8 @@ const transactionToActivity = (transaction: Transaction, tokens: IFungibleToken[
     module: transaction.modulename,
     ticker: transaction.ticker,
     transactionType: transaction.transactionType,
+    networkId: 'mainnet01',
+    accountId,
 
     result: {
       status: transaction.status.toLowerCase(),
@@ -51,77 +46,45 @@ const transactionToActivity = (transaction: Transaction, tokens: IFungibleToken[
 
 interface MainnetTransactionsImporterProps {
   limit?: number;
-  skip?: number;
 }
 
 const MainnetTransactionsImporter = ({
-  limit = 50,
-  skip = 0,
+  limit = 5,
 }: MainnetTransactionsImporterProps) => {
-  const { data: transactions } = useTransactions(limit, skip);
+  const [skip, setSkip] = useState(0);
+  const { data: fetchedTransactions, isLoading } = useTransactions(limit, skip);
   const account = useAppSelector(getAccount);
   const tokens = useFungibleTokensList();
-
-  const processActivities = useCallback(
-    async (activities: LocalActivity[]) => {
-      if (!transactions.length) {
-        return;
-      }
-
-      const newActivities: Record<string, LocalActivity> = {};
-
-      for (let i = 0; i < transactions.length; i += 1) {
-        const transaction = transactions[i];
-        const activity = transactionToActivity(transaction, tokens);
-
-        if (activity) {
-          newActivities[activity.id] = activity;
-        }
-      }
-
-      const updatedActivities = activities
-        .filter((txLoc) => txLoc.status === 'pending')
-        .map((activity) => {
-          const activityId = activity.id || generateActivityId(activity);
-
-          // New activity already exists in local: update it
-          if (newActivities[activityId]) {
-            return {
-              ...activity,
-              ...newActivities[activity.id],
-              id: activityId,
-            };
-          }
-
-          // Activity doesn't have id: generate it
-          if (!activity.id) {
-            return {
-              ...activity,
-              id: activityId,
-            };
-          }
-
-          // Activity has id and it's not in new activities: keep it as is
-          return activity;
-        });
-
-      // Add new activities that are not already in the list filtering duplicates
-      const updatedActivitiesWithNew = updatedActivities.concat(
-        Object.values(newActivities).filter((activity) => !updatedActivities.find((a) => a.id === activity.id)),
-      );
-
-      if (!isEqual(updatedActivitiesWithNew, activities)) {
-        await setLocalActivities('mainnet01', account, updatedActivitiesWithNew);
-      }
-    },
-    [transactions],
-  );
+  const localActivities = useAppSelector((state) => selectActivitiesByAccountAndNetwork(state, account, 'mainnet01'));
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    getLocalActivities('mainnet01', account, processActivities, () => {
-      processActivities([]);
-    });
-  }, [transactions, account, processActivities]);
+    if (!fetchedTransactions.length || isLoading) {
+      return;
+    }
+
+    const newActivities = fetchedTransactions
+      .map((transaction) => transactionToActivity(transaction, tokens, account))
+      .filter((activity) => activity !== undefined);
+      dispatch(upsertActivities(newActivities));
+  }, [fetchedTransactions, tokens, account, isLoading, dispatch]);
+
+  useEffect(() => {
+    if (!fetchedTransactions.length || fetchedTransactions.length < limit || isLoading) {
+      return;
+    }
+
+    const lastActivity = transactionToActivity(fetchedTransactions[limit - 1], tokens, account);
+    const syncReached = localActivities.find((activity) => (
+      (activity.status !== 'pending') && (activity.id === lastActivity.id)
+    ));
+
+    if (syncReached) {
+      return;
+    }
+
+    setSkip((prevSkip) => prevSkip + limit);
+  }, [fetchedTransactions, tokens, account, localActivities, limit, isLoading]);
 
   return null;
 };

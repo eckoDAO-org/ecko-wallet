@@ -99,6 +99,7 @@ export const AssetAllocationChart = forwardRef<HTMLDivElement>((_, ref) => {
             <YAxis type="category" dataKey="name" width={0} />
             {assetGroups.map((assetGroup, i) => (
               <Bar
+                key={assetGroup.name}
                 dataKey={assetGroup.name}
                 stackId="a"
                 fill={assetGroup.fill}

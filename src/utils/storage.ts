@@ -645,27 +645,3 @@ export const updateRecent = (networkId) => {
     () => {},
   );
 };
-export const STORAGE_KEY_PENDING_CROSSCHAIN = 'pendingCrossChainRequestKeys';
-interface PendingCrossChainRequest {
-  requestKey: string;
-  networkId: string;
-  sourceChainId: string;
-  targetChainId: string;
-}
-
-export const getPendingCrossChainRequestKey = (): Promise<PendingCrossChainRequest[]> => getLocalStorageDataByKey(STORAGE_KEY_PENDING_CROSSCHAIN);
-
-export const addPendingCrossChainRequestKey = ({ requestKey, networkId, sourceChainId, targetChainId }: PendingCrossChainRequest): Promise<boolean> =>
-  new Promise((resolve, reject) => {
-    getPendingCrossChainRequestKey().then((pendingCrossChains) => {
-      (window as any)?.chrome?.storage?.local
-        ?.set({
-          [STORAGE_KEY_PENDING_CROSSCHAIN]: [
-            ...(Array.isArray(pendingCrossChains) ? pendingCrossChains : []),
-            { networkId, requestKey, sourceChainId, targetChainId },
-          ],
-        })
-        .then(() => resolve(true))
-        .catch(() => reject());
-    });
-  });

@@ -1,80 +1,70 @@
 import { useState, useEffect } from 'react';
 import Pact from 'pact-lang-api';
-import { getApiUrl } from 'src/utils/chainweb';
-import Spinner from 'src/components/Spinner';
-import { useAppThemeContext } from 'src/contexts/AppThemeContext';
-import { getLocalActivities, getPendingCrossChainRequestKey, updateLocalActivity } from 'src/utils/storage';
-import { useAppSelector } from 'src/stores/hooks';
-import { getAccount, getChainId } from 'src/stores/slices/wallet';
+import { useAppDispatch, useAppSelector } from 'src/stores/hooks';
+import { selectActivitiesByAccountAndNetwork, selectPendingCrossChainActivities, upsertActivities } from 'src/stores/slices/activities';
 import { getSelectedNetwork } from 'src/stores/slices/extensions';
+import { getAccount } from 'src/stores/slices/wallet';
+import { getApiUrl } from 'src/utils/chainweb';
 import PopupDetailTransaction from 'src/pages/Wallet/views/PopupDetailTransaction';
-import { LocalActivity } from './types';
 import ActivitiyList from './List';
+import { LocalActivity } from './types';
+
+const supportedTransactions = ['TRANSFER', 'SWAP'];
 
 const Activities = () => {
-  const [pendingCrossChainRequestKeys, setPendingCrossChainRequestKeys] = useState<string[]>([]);
-  const [accountActivities, setAccountActivities] = useState<LocalActivity[]>([]);
+  const dispatch = useAppDispatch();
+  const account = useAppSelector(getAccount);
+  const selectedNetwork = useAppSelector(getSelectedNetwork);
+  const activities = useAppSelector((state) => selectActivitiesByAccountAndNetwork(state, account, selectedNetwork.networkId));
+  const pendingCrossChainActivities = useAppSelector(selectPendingCrossChainActivities);
+  const pendingCrossChainRequestKeys = pendingCrossChainActivities.map((a) => a.requestKey);
   const [selectedActivity, setSelectedActivity] = useState<LocalActivity | null>(null);
 
-  const account = useAppSelector(getAccount);
-  const chainId = useAppSelector(getChainId);
-  const selectedNetwork = useAppSelector(getSelectedNetwork);
-  const { theme } = useAppThemeContext();
-
-  const [isLoadData, setIsLoadData] = useState(true);
-
   useEffect(() => {
-    getLocalActivities(
-      selectedNetwork.networkId,
-      account,
-      (activities: LocalActivity[]) => {
-        setIsLoadData(false);
-        setAccountActivities(activities);
+    const promises = activities
+      .filter((a) => a.status === 'pending' && a.requestKey !== null)
+      .map((a) =>
+        Pact.fetch.poll({ requestKeys: [a.requestKey] }, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, a.senderChainId.toString())),
+      );
 
-        const promises = activities
-          .filter((a) => a.status === 'pending' && a.requestKey !== null)
-          .map((a) =>
-            Pact.fetch.poll({ requestKeys: [a.requestKey] }, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, a.senderChainId.toString())),
-          );
+    Promise
+      .all(promises)
+      .then((pollResArray: any[] = []) => {
+        const newActivities = pollResArray
+          .map((pollRes) => {
+            const reqKey = Object.keys(pollRes)[0];
 
-        Promise.all(promises)
-          .then((pollResArray: any[]) => {
-            pollResArray?.forEach((pollRes) => {
-              const reqKey = Object.keys(pollRes)[0];
-              if (pollRes[reqKey] && pollRes[reqKey]?.result?.status === 'success') {
-                const activity = activities.find((a) => a.requestKey === reqKey);
-                if (activity) {
-                  updateLocalActivity(selectedNetwork.networkId, account, {
-                    ...activity,
-                    ...pollRes[reqKey],
-                    status: 'success',
-                  });
-                }
-              }
-            });
+            if (pollRes[reqKey] && pollRes[reqKey]?.result?.status !== 'success') {
+              return null;
+            }
+
+            const activity = activities.find((a) => a.requestKey === reqKey);
+
+            if (!activity) {
+              return null;
+            }
+
+            return {
+              ...activity,
+              ...pollRes[reqKey],
+              status: 'success',
+            } as LocalActivity;
           })
-          .catch(() => {});
-      },
+          .filter((a) => a !== null);
 
-      () => {
-        setIsLoadData(false);
-      },
-    );
+        dispatch(upsertActivities(newActivities));
+      })
+      .catch(() => {});
+  }, [activities, dispatch, selectedNetwork]);
 
-    getPendingCrossChainRequestKey().then((pendingTx) => {
-      if (!pendingTx) return;
-      setPendingCrossChainRequestKeys(pendingTx.map((tx) => tx.requestKey));
-    });
-  }, [account, chainId, selectedNetwork.networkId]);
-
-  if (isLoadData) {
-    return <Spinner size={10} color={theme.text?.primary} weight={2} />;
-  }
+  const filteredActivities = activities.filter(
+    (activity) => supportedTransactions.includes(activity.transactionType),
+  );
 
   return (
     <>
       <ActivitiyList
-        activities={accountActivities}
+        activities={filteredActivities}
         pendingCrossChainRequestKeys={pendingCrossChainRequestKeys}
         openActivityDetail={setSelectedActivity}
       />

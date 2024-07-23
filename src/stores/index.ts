@@ -8,6 +8,7 @@ import { setStoreExtensions, storeExtensions } from './slices/extensions';
 import { authSlice } from './slices/auth';
 import { notificationsSlice } from './slices/notifications';
 import { analyticsSlice } from './slices/analytics';
+import { activitiesSlice } from './slices/activities';
 
 let customStore: Store | undefined;
 
@@ -29,6 +30,7 @@ const appReducer = combineReducers({
   auth: authSlice.reducer,
   notifications: notificationsSlice.reducer,
   analytics_v1: analyticsSlice.reducer,
+  activities: activitiesSlice.reducer,
 });
 
 const rootReducer = (state: any, action: any) => appReducer(state, action);
@@ -40,7 +42,7 @@ const enhancer = composeWithDevTools(applyMiddleware(...middlewares));
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['auth', 'notifications', 'analytics_v1'],
+  whitelist: ['auth', 'notifications', 'analytics_v1', 'activities'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
