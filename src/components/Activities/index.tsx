@@ -50,7 +50,7 @@ const Activities = () => {
               status: 'success',
             } as LocalActivity;
           })
-          .filter((a) => a !== null);
+          .filter((a) => a !== null) as LocalActivity[];
 
         dispatch(upsertActivities(newActivities));
       })

@@ -49,7 +49,7 @@ interface MainnetTransactionsImporterProps {
 }
 
 const MainnetTransactionsImporter = ({
-  limit = 5,
+  limit = 50,
 }: MainnetTransactionsImporterProps) => {
   const [skip, setSkip] = useState(0);
   const { data: fetchedTransactions, isLoading } = useTransactions(limit, skip);

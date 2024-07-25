@@ -62,7 +62,6 @@ const Wallet = () => {
   const { openModal, closeModal } = useModalContext();
   const { isLoadingBalances, selectedAccountBalance, allAccountsBalance, allAccountsBalanceUsd } = useAccountBalanceContext();
   const rootState = useSelector((state) => state);
-  console.log("rootState", rootState);
   const { selectedNetwork } = rootState.extensions;
   const networkId = selectedNetwork?.networkId;
   const [fungibleTokens, setFungibleTokens] = useLocalStorage<IFungibleTokensByNetwork>(LOCAL_KEY_FUNGIBLE_TOKENS, LOCAL_DEFAULT_FUNGIBLE_TOKENS);
