@@ -280,60 +280,6 @@ export const getLocalSelectedWallet = (successCallback, failCallback) => {
   });
 };
 
-// Activities
-export const setLocalActivities = async (network, account, activities) => {
-  const key = `${network}.activities.${account}`;
-  const obj = {};
-  obj[key] = activities;
-  return (window as any)?.chrome?.storage?.local?.set(obj) as Promise<void>;
-};
-
-export const getLocalActivities = (network, account, successCallback, failCallback) => {
-  const key = `${network}.activities.${account}`;
-  (window as any)?.chrome?.storage?.local?.get(`${key}`, (result) => {
-    if (result && result[key] && result[key].length) {
-      successCallback(result[key]);
-    } else {
-      failCallback();
-    }
-  });
-};
-
-export const addLocalActivity = async (network: string, account: string, activity: LocalActivity) => (
-  new Promise<void>((resolve) => {
-    getLocalActivities(
-      network,
-      account,
-      async (activities) => {
-        const newActivities = [...activities];
-        newActivities.push(activity);
-        await setLocalActivities(network, account, newActivities);
-        resolve();
-      },
-      async () => {
-        const newActivities: any[] = [];
-        newActivities.push(activity);
-        await setLocalActivities(network, account, newActivities);
-        resolve();
-      },
-    );
-  })
-);
-
-export const updateLocalActivity = (network: string, account: string, activity: LocalActivity) => {
-  getLocalActivities(
-    network,
-    account,
-    (activities: LocalActivity[]) => {
-      const foundedActivity = activities?.find((a) => a.requestKey === activity.requestKey);
-      if (foundedActivity) {
-        setLocalActivities(network, account, [...activities.filter((a) => a.requestKey !== activity.requestKey), activity]);
-      }
-    },
-    () => {},
-  );
-};
-
 // Password
 export const setLocalPassword = (passwordHash) => {
   (window as any)?.chrome?.storage?.session?.set({ accountPassword: passwordHash });
