@@ -48,6 +48,7 @@ const SPBlackDrop = styled.div`
   justify-content: center;
 `;
 const Title = styled.div`
+  color: ${({ theme }) => theme.text.primary};
   font-weight: 700;
   font-size: 24px;
   line-height: 25px;
@@ -73,6 +74,7 @@ const VerifyWrapper = styled.div`
   margin-top: 40px;
 `;
 const ItemWrapper = styled.div`
+  color: ${({ theme }) => theme.text.primary};
   text-align: center;
   width: 22%;
 `;
@@ -80,13 +82,13 @@ const SInput = styled.input`
   text-align: center;
   width: 100%;
   font-size: 16px;
-  border: 1px solid #44444444;
+  border: 1px solid ${({ theme }) => theme.text.primary};
   padding: 13px 0;
   border-radius: 8px;
   margin: 10px 0 25px 0;
   outline: none;
-
   background: none;
+  color: ${({ theme }) => theme.text.primary};
 `;
 const SPText = styled.div`
   ${(props) => (props.isBlur ? 'filter: blur(4px);' : '')};

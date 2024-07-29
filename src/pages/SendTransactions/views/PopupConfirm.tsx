@@ -167,6 +167,7 @@ const PopupConfirm = (props: Props) => {
 
   const onSend = async () => {
     if (!isSending) {
+      setIsSending(true);
       const cmd = await getCmd();
       const meta = Pact.lang.mkMeta(senderName, senderChainId.toString(), validGasPrice, validGasLimit, getTimestamp(), CONFIG.X_CHAIN_TTL);
       let sendCmd: any = Pact.api.prepareExecCmd(
@@ -177,7 +178,6 @@ const PopupConfirm = (props: Props) => {
         meta,
         selectedNetwork.networkId,
       );
-      setIsSending(true);
       const newCreatedTime = new Date();
       const createdTime = newCreatedTime.toString();
       if (configs?.type === AccountType.LEDGER) {
@@ -378,7 +378,7 @@ const PopupConfirm = (props: Props) => {
       )}
       <DivFlex margin={isCrossChain ? '10px 0' : '30px 0'} gap="5px">
         <Button label="Cancel" size="full" variant="secondary" onClick={() => onClose()} />
-        <Button label="Confirm" size="full" onClick={onSend} />
+        <Button label="Confirm" size="full" onClick={onSend} disabled={isSending} />
       </DivFlex>
     </div>
   );
