@@ -20,7 +20,7 @@ import SpokesLoading from 'src/components/Loading/Spokes';
 import Toast from 'src/components/Toast/Toast';
 import { IFungibleToken } from 'src/pages/ImportToken';
 import { LoadingTitle, SpinnerWrapper } from './style';
-import { renderTransactionInfo } from './Transfer';
+import { TransactionInfoView } from './Transfer';
 import { Warning } from '../styles';
 
 type Props = {
@@ -167,6 +167,7 @@ const PopupConfirm = (props: Props) => {
 
   const onSend = async () => {
     if (!isSending) {
+      setIsSending(true);
       const cmd = await getCmd();
       const meta = Pact.lang.mkMeta(senderName, senderChainId.toString(), validGasPrice, validGasLimit, getTimestamp(), CONFIG.X_CHAIN_TTL);
       let sendCmd: any = Pact.api.prepareExecCmd(
@@ -177,7 +178,6 @@ const PopupConfirm = (props: Props) => {
         meta,
         selectedNetwork.networkId,
       );
-      setIsSending(true);
       const newCreatedTime = new Date();
       const createdTime = newCreatedTime.toString();
       if (configs?.type === AccountType.LEDGER) {
@@ -221,7 +221,7 @@ const PopupConfirm = (props: Props) => {
         sendCmd.sigs = sigs;
       }
 
-      // setIsLoading(true);
+      setIsLoading(true);
       Pact.wallet
         .sendSigned(sendCmd, getApiUrl(selectedNetwork.url, selectedNetwork.networkId, senderChainId))
         .then(async (data) => {
@@ -307,7 +307,7 @@ const PopupConfirm = (props: Props) => {
 
   return (
     <div style={{ padding: '0 20px 20px 20px', marginTop: -15 }}>
-      {renderTransactionInfo(info, { borderTop: ' none', margin: '0px -20px 20px' })}
+      <TransactionInfoView info={info} containerStyle={{ borderTop: ' none', margin: '0px -20px 20px' }} />
       <div style={{ textAlign: 'center' }}>
         {configs.aliasName && (
           <DivFlex margin="10px 0 0 0" justifyContent="space-between" alignItems="center">
@@ -378,7 +378,7 @@ const PopupConfirm = (props: Props) => {
       )}
       <DivFlex margin={isCrossChain ? '10px 0' : '30px 0'} gap="5px">
         <Button label="Cancel" size="full" variant="secondary" onClick={() => onClose()} />
-        <Button label="Confirm" size="full" onClick={onSend} />
+        <Button label="Confirm" size="full" onClick={onSend} disabled={isSending} />
       </DivFlex>
     </div>
   );

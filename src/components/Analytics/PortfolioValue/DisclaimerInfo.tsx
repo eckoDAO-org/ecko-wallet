@@ -17,7 +17,6 @@ const Info = styled.div`
 `;
 
 const InfoCaption = styled.div`
-  color: white;
   text-align: left;
   font-size: 12px;
   padding-bottom: 8px;

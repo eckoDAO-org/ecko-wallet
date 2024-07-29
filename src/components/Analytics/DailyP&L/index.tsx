@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { useState } from 'react';
+import { forwardRef, useState } from 'react';
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell, YAxis } from 'recharts';
 import Spinner from 'src/components/Spinner';
 import { useAppSelector } from 'src/stores/hooks';
@@ -36,7 +36,7 @@ const convertDataToPnL = (data) =>
     return { date: moment(item.date).format('D MMM'), pnl: Number(pnl.toFixed(2)) };
   });
 
-const PnLChart = () => {
+const PnLChart = forwardRef<HTMLDivElement>((_, ref) => {
   const [interval, setInterval] = useState<TimeStep>('2W');
   const trackedAddresses = useAppSelector(getTrackedAddresses());
   const { theme } = useAppThemeContext();
@@ -52,7 +52,7 @@ const PnLChart = () => {
       <Spinner color={theme.text.secondary} />
     </SpinnerContainer>
   ) : (
-    <LabeledContainer label="DAILY P&L">
+    <LabeledContainer label="DAILY P&L" ref={ref}>
       {analyticsData.length > 0 ? (
         <ResponsiveContainer width="100%" height={400}>
           <BarChart data={firstAvailableData} margin={{ top: 10, right: 30, left: -10, bottom: 0 }}>
@@ -79,6 +79,6 @@ const PnLChart = () => {
       <TimeSelector defaultStep={interval} timeSteps={['1W', '2W', '1M']} onTimeSelected={(step: TimeStep) => setInterval(step)} />
     </LabeledContainer>
   );
-};
+});
 
 export default PnLChart;

@@ -54,15 +54,15 @@
         "tsx": "never"
       }
     ],
-    "no-await-in-loop": "off"
+    "no-await-in-loop": "off",
+    "react/prop-types": "off"
   },
   "settings": {
     "import/resolver": {
       "typescript": {}
     },
     "jsx-a11y/click-events-have-key-events": "off",
-    "jsx-a11y/no-noninteractive-element-interactions": "off",
-    "react/prop-types": "off"
+    "jsx-a11y/no-noninteractive-element-interactions": "off"
   },
   "ignorePatterns": ["build/*", ".cache/*", "dist/*"]
 }

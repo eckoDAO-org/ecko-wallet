@@ -30,6 +30,11 @@ const HeaderWallet = styled(DivFlex)`
   border-bottom: 1px solid ${({ theme }) => theme?.border};
 `;
 
+const AccountLabel = styled.span`
+  color: ${({ theme }) => theme.text.primary};
+  margin-left: 5px;
+`;
+
 export const Header = ({ hideAccounts }: { hideAccounts?: boolean }) => {
   const history = useHistory();
   const location = useLocation().pathname;
@@ -116,7 +121,7 @@ export const Header = ({ hideAccounts }: { hideAccounts?: boolean }) => {
           title={
             <DivFlex>
               {type === AccountType.LEDGER ? <LedgerIcon /> : <Jazzicon diameter={24} seed={jsNumberForAddress(stateWallet?.account)} />}{' '}
-              <span style={{ color: '#787B8E', marginLeft: 5 }}>{selectedWallet?.alias || shortenAddress(stateWallet?.account)}</span>{' '}
+              <AccountLabel>{selectedWallet?.alias || shortenAddress(stateWallet?.account)}</AccountLabel>{' '}
             </DivFlex>
           }
           iconComponent={<img src={images.moreIcon} style={{ width: 14, marginTop: 10 }} />}

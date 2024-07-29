@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import styled from 'styled-components';
 import { DivFlex, SecondaryLabel } from 'src/components';
 
@@ -7,6 +7,12 @@ export const Container = styled(DivFlex)`
   gap: 12px;
   padding: 12px 0px;
   border-bottom: 1px solid #707070;
+`;
+
+export const AnalyticTile = styled(SecondaryLabel)`
+  font-size: 12px;
+  text-transform: uppercase;
+  opacity: 0.75;
 `;
 
 export type LabeledContainerProps = React.PropsWithChildren<{
@@ -21,12 +27,12 @@ export const LabeledRow = ({ label, children }: LabeledContainerProps) => (
   </LabeledContainer>
 );
 
-export const LabeledContainer = ({ label, children }: LabeledContainerProps) => (
-  <Container>
-    <SecondaryLabel>{label}</SecondaryLabel>
+export const LabeledContainer = forwardRef<HTMLDivElement, LabeledContainerProps>(({ label, children }, ref) => (
+  <Container ref={ref}>
+    <AnalyticTile>{label}</AnalyticTile>
     {children}
   </Container>
-);
+));
 
 export const Label = styled(SecondaryLabel)`
   color: ${({ theme }) => theme.text.primary};

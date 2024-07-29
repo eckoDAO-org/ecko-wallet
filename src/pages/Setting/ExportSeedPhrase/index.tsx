@@ -19,6 +19,7 @@ const Wrapper = styled.div`
 `;
 
 export const SPWrapper = styled.div`
+  color: ${({ theme }) => theme.text.primary};
   padding: 16px;
   font-size: 16px;
   position: relative;

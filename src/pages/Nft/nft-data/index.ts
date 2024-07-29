@@ -21,7 +21,7 @@ export const MARMALADE_NG_WHITELISTED_COLLECTIONS = [
   'c_Kadena_Skellies_v1.5_zGbEtoi80xds-7OTR7ydWPHPqWvqpybulAPDL-OewGQ',
   // 'c_Looney Bulls_zi6BNKuuVu1Qgkyq58duzP79VNYGnLeFlS0r8HMbsfc',
   'c_Marmalade_NG_launch_Q9AJ859ISCW2BoqPumvm-T3XetV0-4SJzKpjc9G-LZg',
-  'c_NGE_UyGj-2fVLsysbfa6hTobIIE9nOh_aqPDDfYEhWlJv6c',
+  // 'c_NGE_UyGj-2fVLsysbfa6hTobIIE9nOh_aqPDDfYEhWlJv6c',
   // 'c_Skellies_v1.0_TN_sTgd1BaLG_-promP51MlRNWOrEB4R667See6VZtM',
   // 'c_TestCollection_P8k5ckLwbIxKkvrOtGBrRojuaMbSgoPXPPuKUo6hyU4',
   'c_kadena-kings_dyedla8EGc56PDwvcF9VrO5RvpssA0jD4XUS2pvBWxA',

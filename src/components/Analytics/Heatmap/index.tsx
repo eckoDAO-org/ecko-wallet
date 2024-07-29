@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, forwardRef } from 'react';
 import Spinner from 'src/components/Spinner';
 import { Treemap, ResponsiveContainer } from 'recharts';
 import { getNumberWithValidDecimals } from 'src/utils';
@@ -43,7 +43,7 @@ const CustomizedContent = (props: any) => {
   );
 };
 
-const Heatmap = () => {
+const Heatmap = forwardRef<HTMLDivElement>((_, ref) => {
   const { theme } = useAppThemeContext();
   const [interval, setInterval] = useState<TimeStep>('1D');
   const { data: performanceData, isFetching } = useDexTokensPerformance(interval);
@@ -56,7 +56,7 @@ const Heatmap = () => {
     [performanceData],
   );
   return (
-    <LabeledContainer label="HEATMAP">
+    <LabeledContainer label="HEATMAP" ref={ref}>
       <Container>
         <ResponsiveContainer width="100%">
           {isFetching ? (
@@ -80,6 +80,6 @@ const Heatmap = () => {
       <TimeSelector defaultStep="1D" timeSteps={['1D', '1M', '1Y']} onTimeSelected={(step: TimeStep) => setInterval(step)} />
     </LabeledContainer>
   );
-};
+});
 
 export default Heatmap;
