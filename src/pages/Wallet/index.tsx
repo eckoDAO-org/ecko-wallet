@@ -105,13 +105,10 @@ const Wallet = () => {
         .flat()
         .reduce(
           // Iterate over all accounts
-          (sum, value) => (
+          (sum, value) =>
             // Iterate over all tokens
-            sum + Object.values(value).reduce(
-              (p, c) => p + c,
-              0,
-            )
-          ), 0,
+            sum + Object.values(value).reduce((p, c) => p + c, 0),
+          0,
         );
     }
     return totalUSDBalance;
@@ -189,15 +186,6 @@ const Wallet = () => {
 
   const { theme } = useAppThemeContext();
 
-  const handleBuy = () => {
-    const url = history.createHref({ pathname: 'buy' });
-    window.open(url, '_blank');
-  };
-
-  const handleHistory = () => {
-    history.push('/history');
-  };
-
   return (
     <div>
       <Header />
@@ -227,8 +215,6 @@ const Wallet = () => {
             iconUrl={images.wallet.arrowReceive}
             variant="secondary"
           />
-          <CircledButton onClick={handleBuy} label="Buy" iconUrl={images.wallet.iconBuy} variant="brand" />
-          <CircledButton onClick={handleHistory} label="History" iconUrl={images.iconHistory} variant="empty" />
         </DivFlex>
       </DivBottomShadow>
       <DivAsset>

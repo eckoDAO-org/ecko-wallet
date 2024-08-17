@@ -11,8 +11,10 @@ import { getTimestamp } from './index';
 export const MAINNET_NETWORK_ID = 'mainnet01';
 
 export const getApiUrl = (url, networkId, chainId) =>
-  // old storage issue
-  `${url === 'https://chainweb.kaddex.com' ? 'https://chainweb.ecko.finance' : url}/chainweb/0.0/${networkId}/chain/${chainId}/pact`;
+  // ignore dismissed networks
+  `${
+    url === 'https://chainweb.kaddex.com' || url === 'https://chainweb.ecko.finance' ? 'https://api.chainweb.com' : url
+  }/chainweb/0.0/${networkId}/chain/${chainId}/pact`;
 
 export const fetchLocal = (code, url, networkId, chainId) => {
   const localCmd = {

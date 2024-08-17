@@ -26,9 +26,9 @@ export const GAS_PAYER = [{ value: 0, label: 'Public Gas Station' }];
 
 export const ACTIVE_TAB = {
   HOME: 'home',
+  HISTORY: 'history',
   SETTINGS: 'settings',
   NFT: 'nft',
-  ANALYTICS: 'analytics',
 };
 
 export const CHAIN_COUNT = 20;
